@@ -1,0 +1,38 @@
+name = "Napkin"
+version = "2026.5.1"
+keywords = ["math", "textbook"]
+defaultTargets = ["napkin"]
+
+[leanOptions]
+pp.unicode.fun = true # pretty-prints `fun a ↦ b`
+relaxedAutoImplicit = false
+maxSynthPendingDepth = 3
+weak.verso.code.warnLineLength = 80
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.30.0-rc2"
+
+[[require]]
+name = "verso"
+git = "https://github.com/leanprover/verso"
+rev = "dfd33c868e47f2589315c3e2c7caec52aca418d4"
+
+[[lean_lib]]
+name = "Napkin"
+
+[[lean_exe]]
+name = "napkin"
+root = "Render"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "figures"
+root = "BuildFigures"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "chaptergraph"
+root = "BuildChapterGraph"
+supportInterpreter = true

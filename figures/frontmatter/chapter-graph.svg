@@ -1,0 +1,183 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" viewBox="0 0 646 562" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Chapter dependency graph">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#555"/>
+    </marker>
+  </defs>
+  <style>
+    .node a { cursor: pointer; }
+    .node-bg { fill: #fdf6e0; stroke: #1a1a1a; stroke-width: 0.75; }
+    .node-bg.req { stroke-width: 2.0; }
+    .node:hover .node-bg { fill: #f4e6b8; }
+    .node-label { fill: #1a1a1a; font: 600 16px "Bitter", "Charter", "Georgia", serif; text-anchor: middle; dominant-baseline: middle; pointer-events: none; }
+    .node-ch    { fill: #1a1a1a; font: 11px "Bitter", "Charter", "Georgia", serif; text-anchor: start; dominant-baseline: hanging; pointer-events: none; }
+    .edge { stroke: #1a1a1a; stroke-width: 0.7; fill: none; }
+    .edge.co { stroke-dasharray: 3 2; }
+  </style>
+  <path class="edge" d="M 204.3 79.5 Q 233.0 113.0 261.7 146.5" marker-end="url(#arr)"/>
+  <path class="edge co" d="M 232.0 60.5 Q 246.5 60.5 261.0 60.5" marker-end="url(#arr)"/>
+  <path class="edge" d="M 300.1 79.5 Q 291.5 113.0 282.9 146.5" marker-end="url(#arr)"/>
+  <path class="edge" d="M 349.0 69.1 Q 359.0 71.0 369.0 72.9" marker-end="url(#arr)"/>
+  <path class="edge" d="M 188.0 79.5 Q 188.0 149.8 188.0 220.0" marker-end="url(#arr)"/>
+  <path class="edge co" d="M 289.8 79.5 Q 219.7 167.3 196.4 220.0" marker-end="url(#arr)"/>
+  <path class="edge co" d="M 465.3 79.5 Q 353.4 135.8 218.5 220.0" marker-end="url(#arr)"/>
+  <path class="edge co" d="M 211.3 220.0 Q 233.0 202.3 254.7 184.5" marker-end="url(#arr)"/>
+  <path class="edge" d="M 163.6 79.5 Q 120.5 113.0 77.4 146.5" marker-end="url(#arr)"/>
+  <path class="edge" d="M 53.0 184.5 Q 53.0 223.3 53.0 262.0" marker-end="url(#arr)"/>
+  <path class="edge" d="M 318.4 79.5 Q 362.9 142.5 424.8 220.0" marker-end="url(#arr)"/>
+  <path class="edge" d="M 495.6 79.5 Q 467.7 151.1 446.0 220.0" marker-end="url(#arr)"/>
+  <path class="edge co" d="M 560.8 153.0 Q 500.2 202.7 471.5 220.0" marker-end="url(#arr)"/>
+  <path class="edge" d="M 523.9 79.5 Q 543.5 97.3 563.1 115.0" marker-end="url(#arr)"/>
+  <path class="edge co" d="M 584.0 153.0 Q 584.0 176.0 584.0 199.0" marker-end="url(#arr)"/>
+  <path class="edge" d="M 513.4 79.5 Q 547.1 141.1 574.9 199.0" marker-end="url(#arr)"/>
+  <path class="edge co" d="M 248.4 409.0 Q 399.5 323.0 550.6 237.0" marker-end="url(#arr)"/>
+  <path class="edge" d="M 503.0 79.5 Q 503.0 191.8 503.0 304.0" marker-end="url(#arr)"/>
+  <path class="edge co" d="M 573.1 153.0 Q 525.1 236.4 507.9 304.0" marker-end="url(#arr)"/>
+  <path class="edge" d="M 62.0 447.0 Q 62.0 480.5 62.0 514.0" marker-end="url(#arr)"/>
+  <path class="edge" d="M 181.5 79.5 Q 125.0 244.3 68.5 409.0" marker-end="url(#arr)"/>
+  <path class="edge" d="M 479.7 79.5 Q 292.7 232.0 84.4 409.0" marker-end="url(#arr)"/>
+  <path class="edge co" d="M 175.3 258.0 Q 125.0 333.5 74.7 409.0" marker-end="url(#arr)"/>
+  <path class="edge" d="M 180.6 258.0 Q 131.6 383.2 70.8 514.0" marker-end="url(#arr)"/>
+  <path class="edge" d="M 215.0 447.0 Q 215.0 480.5 215.0 514.0" marker-end="url(#arr)"/>
+  <path class="edge" d="M 488.1 79.5 Q 359.0 244.3 229.9 409.0" marker-end="url(#arr)"/>
+  <path class="edge" d="M 64.1 184.5 Q 127.2 292.5 202.7 409.0" marker-end="url(#arr)"/>
+  <path class="edge co" d="M 213.9 409.0 Q 209.4 334.6 192.3 258.0" marker-end="url(#arr)"/>
+  <path class="edge" d="M 199.0 258.0 Q 277.2 393.0 223.4 514.0" marker-end="url(#arr)"/>
+  <path class="edge" d="M 368.0 447.0 Q 368.0 480.5 368.0 514.0" marker-end="url(#arr)"/>
+  <path class="edge" d="M 198.4 79.5 Q 292.4 251.3 359.9 409.0" marker-end="url(#arr)"/>
+  <path class="edge" d="M 306.2 79.5 Q 316.8 240.9 362.8 409.0" marker-end="url(#arr)"/>
+  <path class="edge" d="M 69.2 184.5 Q 207.5 346.6 351.6 514.0" marker-end="url(#arr)"/>
+  <g class="node">
+    <a href="../../Set-theory/" target="_top"><title>Set Theory</title>
+      <rect class="node-bg req" x="9.0" y="41.5" width="88.000000" height="38.000000" rx="4" ry="4"/>
+      <text class="node-ch"    x="13.0" y="45.5">Ch 88-94</text>
+      <text class="node-label" x="53.0" y="65.5">Set Theory</text>
+    </a>
+  </g>
+  <g class="node">
+    <a href="../../Starting-Out/Groups/" target="_top"><title>Abs Alg</title>
+      <rect class="node-bg req" x="144.0" y="41.5" width="88.000000" height="38.000000" rx="4" ry="4"/>
+      <text class="node-ch"    x="148.0" y="45.5">Ch 1, 3-5</text>
+      <text class="node-label" x="188.0" y="65.5">Abs Alg</text>
+    </a>
+  </g>
+  <g class="node">
+    <a href="../../Linear-Algebra/" target="_top"><title>Lin Alg</title>
+      <rect class="node-bg" x="261.0" y="41.5" width="88.000000" height="38.000000" rx="4" ry="4"/>
+      <text class="node-ch"    x="265.0" y="45.5">Ch 9-15, 18</text>
+      <text class="node-label" x="305.0" y="65.5">Lin Alg</text>
+    </a>
+  </g>
+  <g class="node">
+    <a href="../../Quantum-Algorithms/Quantum-states-and-measurements/" target="_top"><title>Quantum</title>
+      <rect class="node-bg" x="369.0" y="62.5" width="88.000000" height="38.000000" rx="4" ry="4"/>
+      <text class="node-ch"    x="373.0" y="66.5">Ch 23-25</text>
+      <text class="node-label" x="413.0" y="86.5">Quantum</text>
+    </a>
+  </g>
+  <g class="node">
+    <a href="../../Starting-Out/Metric-spaces/" target="_top"><title>Topology</title>
+      <rect class="node-bg req" x="459.0" y="41.5" width="88.000000" height="38.000000" rx="4" ry="4"/>
+      <text class="node-ch"    x="463.0" y="45.5">Ch 2, 6-8</text>
+      <text class="node-label" x="503.0" y="65.5">Topology</text>
+    </a>
+  </g>
+  <g class="node">
+    <a href="../../Calculus-101/" target="_top"><title>Calc</title>
+      <rect class="node-bg" x="540.0" y="115.0" width="88.000000" height="38.000000" rx="4" ry="4"/>
+      <text class="node-ch"    x="544.0" y="119.0">Ch 26-30</text>
+      <text class="node-label" x="584.0" y="139.0">Calc</text>
+    </a>
+  </g>
+  <g class="node">
+    <a href="../../More-on-Groups/" target="_top"><title>Grp Act</title>
+      <rect class="node-bg" x="9.0" y="146.5" width="88.000000" height="38.000000" rx="4" ry="4"/>
+      <text class="node-ch"    x="13.0" y="150.5">Ch 16</text>
+      <text class="node-label" x="53.0" y="170.5">Grp Act</text>
+    </a>
+  </g>
+  <g class="node">
+    <a href="../../Representation-Theory/Representations-of-algebras/" target="_top"><title>Rep Th</title>
+      <rect class="node-bg" x="234.0" y="146.5" width="88.000000" height="38.000000" rx="4" ry="4"/>
+      <text class="node-ch"    x="238.0" y="150.5">Ch 19-22</text>
+      <text class="node-label" x="278.0" y="170.5">Rep Th</text>
+    </a>
+  </g>
+  <g class="node">
+    <a href="../../Complex-Analysis/" target="_top"><title>Cmplx Ana</title>
+      <rect class="node-bg" x="540.0" y="199.0" width="88.000000" height="38.000000" rx="4" ry="4"/>
+      <text class="node-ch"    x="544.0" y="203.0">Ch 31-34</text>
+      <text class="node-label" x="584.0" y="223.0">Cmplx Ana</text>
+    </a>
+  </g>
+  <g class="node">
+    <a href="../../Category-Theory/" target="_top"><title>Cat Th</title>
+      <rect class="node-bg" x="144.0" y="220.0" width="88.000000" height="38.000000" rx="4" ry="4"/>
+      <text class="node-ch"    x="148.0" y="224.0">Ch 67-70</text>
+      <text class="node-label" x="188.0" y="244.0">Cat Th</text>
+    </a>
+  </g>
+  <g class="node">
+    <a href="../../Differential-Geometry/" target="_top"><title>Diff Geo</title>
+      <rect class="node-bg" x="396.0" y="220.0" width="88.000000" height="38.000000" rx="4" ry="4"/>
+      <text class="node-ch"    x="400.0" y="224.0">Ch 43-52</text>
+      <text class="node-label" x="440.0" y="244.0">Diff Geo</text>
+    </a>
+  </g>
+  <g class="node">
+    <a href="../../More-on-Groups/Sylow-theorems/" target="_top"><title>Grp Classif</title>
+      <rect class="node-bg" x="9.0" y="262.0" width="88.000000" height="38.000000" rx="4" ry="4"/>
+      <text class="node-ch"    x="13.0" y="266.0">Ch 17</text>
+      <text class="node-label" x="53.0" y="286.0">Grp Classif</text>
+    </a>
+  </g>
+  <g class="node">
+    <a href="../../Measure-Theory/" target="_top"><title>Measure/Pr</title>
+      <rect class="node-bg" x="459.0" y="304.0" width="88.000000" height="38.000000" rx="4" ry="4"/>
+      <text class="node-ch"    x="463.0" y="308.0">Ch 35-39</text>
+      <text class="node-label" x="503.0" y="328.0">Measure/Pr</text>
+    </a>
+  </g>
+  <g class="node">
+    <a href="../../Algebraic-Number-Theory-I/" target="_top"><title>Alg NT 1</title>
+      <rect class="node-bg" x="324.0" y="409.0" width="88.000000" height="38.000000" rx="4" ry="4"/>
+      <text class="node-ch"    x="328.0" y="413.0">Ch 53-59</text>
+      <text class="node-label" x="368.0" y="433.0">Alg NT 1</text>
+    </a>
+  </g>
+  <g class="node">
+    <a href="../../Algebraic-Topology-I/" target="_top"><title>Alg Top 1</title>
+      <rect class="node-bg" x="171.0" y="409.0" width="88.000000" height="38.000000" rx="4" ry="4"/>
+      <text class="node-ch"    x="175.0" y="413.0">Ch 64-66</text>
+      <text class="node-label" x="215.0" y="433.0">Alg Top 1</text>
+    </a>
+  </g>
+  <g class="node">
+    <a href="../../Algebraic-Geometry-I/" target="_top"><title>Alg Geo 1</title>
+      <rect class="node-bg" x="18.0" y="409.0" width="88.000000" height="38.000000" rx="4" ry="4"/>
+      <text class="node-ch"    x="22.0" y="413.0">Ch 77-81</text>
+      <text class="node-label" x="62.0" y="433.0">Alg Geo 1</text>
+    </a>
+  </g>
+  <g class="node">
+    <a href="../../Algebraic-Number-Theory-II/" target="_top"><title>Alg NT 2</title>
+      <rect class="node-bg" x="324.0" y="514.0" width="88.000000" height="38.000000" rx="4" ry="4"/>
+      <text class="node-ch"    x="328.0" y="518.0">Ch 60-63</text>
+      <text class="node-label" x="368.0" y="538.0">Alg NT 2</text>
+    </a>
+  </g>
+  <g class="node">
+    <a href="../../Algebraic-Topology-II/" target="_top"><title>Alg Top 2</title>
+      <rect class="node-bg" x="171.0" y="514.0" width="88.000000" height="38.000000" rx="4" ry="4"/>
+      <text class="node-ch"    x="175.0" y="518.0">Ch 71-76</text>
+      <text class="node-label" x="215.0" y="538.0">Alg Top 2</text>
+    </a>
+  </g>
+  <g class="node">
+    <a href="../../Algebraic-Geometry-II/" target="_top"><title>Alg Geo 2-3</title>
+      <rect class="node-bg" x="18.0" y="514.0" width="88.000000" height="38.000000" rx="4" ry="4"/>
+      <text class="node-ch"    x="22.0" y="518.0">Ch 82-87</text>
+      <text class="node-label" x="62.0" y="538.0">Alg Geo 2-3</text>
+    </a>
+  </g>
+</svg>
