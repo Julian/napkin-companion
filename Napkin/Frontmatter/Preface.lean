@@ -1,0 +1,130 @@
+import VersoManual
+import Napkin.Meta.Lean
+import Napkin.Meta.Directives
+import Napkin.Meta.Citations
+
+open Verso.Genre Manual
+open Verso.Genre.Manual.InlineLean
+
+open Napkin
+
+set_option pp.rawOnError true
+
+#doc (Manual) "Preface" =>
+
+%%%
+number := false
+%%%
+
+The origin of the name "Napkin" comes from the following quote of mine.
+
+:::quote
+I'll be eating a quick lunch with some friends of mine who are still in high school.
+They'll ask me what I've been up to the last few weeks, and I'll tell them that I've been learning category theory.
+They'll ask me what category theory is about.
+I tell them it's about abstracting things by looking at just the structure-preserving morphisms between them, rather than the objects themselves.
+I'll try to give them the standard example $`\mathsf{Grp}`, but then I'll realize that they don't know what a homomorphism is.
+So then I'll start trying to explain what a homomorphism is, but then I'll remember that they haven't learned what a group is.
+So then I'll start trying to explain what a group is, but by the time I finish writing the group axioms on my napkin, they've already forgotten why I was talking about groups in the first place.
+And then it's 1PM, people need to go places, and I can't help but think:
+
+_"Man, if I had forty hours instead of forty minutes, I bet I could actually have explained this all."_
+:::
+
+This book was initially my attempt at those forty hours, but has grown considerably since then.
+
+# About this book
+
+The _Infinitely Large Napkin_ is a light but mostly self-contained introduction to a large amount of higher math.
+
+I should say at once that this book is not intended as a replacement for dedicated books or courses; the amount of depth is not comparable.
+On the flip side, the benefit of this "light" approach is that it becomes accessible to a larger audience, since the goal is merely to give the reader a feeling for any particular topic rather than to emulate a full semester of lectures.
+
+I initially wrote this book with talented high-school students in mind, particularly those with math-olympiad type backgrounds.
+Some remnants of that cultural bias can still be felt throughout the book, particularly in assorted challenge problems which are taken from mathematical competitions.
+However, in general I think this would be a good reference for anyone with some amount of mathematical maturity and curiosity.
+Examples include but certainly not limited to: math undergraduate majors, physics/CS majors, math PhD students who want to hear a little bit about fields other than their own, advanced high schoolers who like math but not math contests, and unusually intelligent kittens fluent in English.
+
+# Source code
+
+The project is hosted on GitHub at [https://github.com/vEnhance/napkin](https://github.com/vEnhance/napkin).
+Pull requests are quite welcome!
+I am also happy to receive suggestions and corrections by email.
+
+This Lean companion is hosted separately at [github.com/Julian/napkin-companion](https://github.com/Julian/napkin-companion); companion-specific issues should be reported there.
+
+# Philosophy behind the Napkin approach
+
+As far as I can tell, higher math for high-school students comes in two flavors:
+
+- Someone tells you about the hairy ball theorem in the form "you can't comb the hair on a spherical cat" then doesn't tell you anything about why it should be true, what it means to actually "comb the hair", or any of the underlying theory, leaving you with just some vague notion in your head.
+- You take a class and prove every result in full detail, and at some point you stop caring about what the professor is saying.
+
+Presumably you already know how unsatisfying the first approach is.
+So the second approach seems to be the default, but I really think there should be some sort of middle ground here.
+
+Unlike university, it is _not_ the purpose of this book to train you to solve exercises or write proofs,{margin}[Which is not to say problem-solving isn't valuable; I myself am a math olympiad coach at heart. It's just not the point of this book.] or prepare you for research in the field.
+Instead I just want to show you some interesting math.
+The things that are presented should be memorable and worth caring about.
+For that reason, proofs that would be included for completeness in any ordinary textbook are often omitted here, unless there is some idea in the proof which I think is worth seeing.
+In particular, I place a strong emphasis over explaining why a theorem _should_ be true rather than writing down its proof.
+This is a recurrent theme of this book:
+
+:::MORAL
+Natural explanations supersede proofs.
+:::
+
+My hope is that after reading any particular chapter in Napkin, one might get the following out of it:
+
+- Knowing what the precise definitions are of the main characters,
+- Being acquainted with the few really major examples,
+- Knowing the precise statements of famous theorems, and having a sense of why they _should_ be true.
+
+Understanding "why" something is true can have many forms.
+This is sometimes accomplished with a complete rigorous proof; in other cases, it is given by the idea of the proof; in still other cases, it is just a few key examples with extensive cheerleading.
+
+Obviously this is nowhere near enough if you want to e.g. do research in a field; but if you are just a curious outsider, I hope that it's more satisfying than the elevator pitch or Wikipedia articles.
+Even if you do want to learn a topic with serious depth, I hope that it can be a good zoomed-out overview before you really dive in, because in many senses the choice of material is "what I wish someone had told me before I started".
+
+# More pedagogical comments and references
+
+The preface would become too long if I talked about some of my pedagogical decisions chapter by chapter, so [Appendix A](Backmatter/References/) contains those comments instead.
+
+In particular, I often name specific references, and the end of that appendix has more references.
+So this is a good place to look if you want further reading.
+
+# Historical and personal notes
+
+I began writing this book in December 2014, after having finished my first semester of undergraduate at Harvard.
+It became my main focus for about 18 months after that, as I became immersed in higher math.
+I essentially took only math classes (gleefully ignoring all my other graduation requirements), and merged as much of it as I could (as well as lots of other math I learned on my own time) into the Napkin.
+
+Towards August 2016, though, I finally lost steam.
+The first public drafts went online then, and I decided to step back.
+Having burnt out slightly, I then took a break from higher math, and spent the remaining two undergraduate years{margin}[Alternatively: "… and spent the next two years forgetting everything I had painstakingly learned". Which made me grateful for all the past notes in the Napkin!] working extensively as a coach for the American math olympiad team, and trying to spend as much time with my friends as I could before they graduated and went their own ways.
+
+During those two years, readers sent me many kind words of gratitude, many reports of errors, and many suggestions for additions.
+So in November 2018, some weeks into my first semester as a math PhD student, I decided I should finish what I had started.
+Some months later, here is what I have.
+
+# Acknowledgements
+
+I am indebted to countless people for this work.
+Here is a partial (surely incomplete) list.
+
+- Thanks to all my teachers and professors for teaching me much of the material covered in these notes, as well as the authors of all the references I have cited here.
+  A special call-out to {cite}`ref:55a`, {cite}`ref:msci`, {cite}`ref:manifolds`, {cite}`ref:gathmann`, {cite}`ref:18-435`, {cite}`ref:etingof`, {cite}`ref:145a`, {cite}`ref:vakil`, {cite}`ref:pugh`, {cite}`ref:gorin`, which were especially influential.
+- Thanks also to dozens of friends and strangers who read through preview copies of my draft, and pointed out errors and gave other suggestions.
+  Special mention to Andrej Vuković and Alexander Chua for together catching over a thousand errors.
+  Thanks also to Brian Gu and Tom Tseng for many corrections.
+  (If you find mistakes or have suggestions yourself, I would love to hear them!)
+  Thanks also to Royce Yao and `user202729` for their contributions of guest chapters to the document.
+- Thanks to Jenny Chu and Lanie Deng for the cover artwork.
+- I'd also like to express my gratitude for many, many kind words I received during the development of this project.
+  These generous comments led me to keep working on this, and were largely responsible for my decision in November 2018 to begin updating the Napkin again.
+
+Finally, a huge thanks to the math olympiad community, from which the Napkin (and me) has its roots.
+All the enthusiasm, encouragement, and thank-you notes I have received over the years led me to begin writing this in the first place.
+I otherwise would never have the arrogance to dream a project like this was at all possible.
+And of course I would be nowhere near where I am today were it not for the life-changing journey I took in chasing my dreams to the IMO.
+Forever TWN2!
