@@ -8,9 +8,12 @@ repos:
       - id: check-vcs-permalinks
       - id: check-xml
       - id: end-of-file-fixer
+        exclude: ^Test/fixtures/
       - id: mixed-line-ending
         args: [--fix, lf]
+        exclude: ^Test/fixtures/
       - id: trailing-whitespace
+        exclude: ^Test/fixtures/
   - repo: https://github.com/DavidAnson/markdownlint-cli2
     rev: v0.22.0
     hooks:
