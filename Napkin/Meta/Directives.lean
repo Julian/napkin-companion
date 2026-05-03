@@ -1,5 +1,19 @@
+/-
+Verso block / inline extensions for Napkin's structural callouts:
+theorems, lemmas, definitions, examples, exercises, problems, asides,
+remarks, abuses, prototypes, epigraphs, figures, and so on. Each
+declares a `block_extension` (storing per-block data in JSON), a
+`@[directive]` to invoke it from `:::DIRECTIVE` markup, and inline
+HTML+CSS rendering.
+
+Numbered callouts share a per-chapter counter assigned during the
+traverse pass (see `assignCalloutNumber`) so cross-references like
+"Theorem 4.5.2" stay consistent with Napkin's print numbering.
+-/
+
 import VersoManual
 import Napkin.Meta.Lint
+import Napkin.Meta.Citations
 import Verso.Doc.ArgParse
 import Verso.Doc.Elab
 import Napkin.Bibliography
@@ -30,20 +44,111 @@ def renderTitleMarkup (s : String) : Verso.Output.Html := Id.run do
     if !first.isEmpty then
       out := out.push (.text true first)
     for part in rest do
-      let segments := part.splitOn "`"
-      if segments.length = 1 then
+      match part.splitOn "`" with
+      | [] => pure ()  -- unreachable: splitOn always returns a non-empty list
+      | [_] =>
         -- No closing backtick — emit `$`<rest>` as literal text
         -- (degraded but visible) instead of swallowing the marker.
         out := out.push (.text true ("$`" ++ part))
-      else
-        let math := segments.head!
-        let textAfter := "`".intercalate segments.tail!
+      | math :: after =>
+        let textAfter := "`".intercalate after
         out := out.push
           (.tag "code" #[("class", "math inline")] (.text true math))
         if !textAfter.isEmpty then
           out := out.push (.text true textAfter)
   if out.size = 1 then return out[0]!
   return .seq out
+
+/-! ## Shared callout rendering helpers -/
+
+/-- "Kind N" when the block has been assigned label `N`, else just "Kind".
+    Numbered callouts feed this into the title formatters below. -/
+def numberedKindLabel (kind : String) (label : String) : String :=
+  if label.isEmpty then kind else s!"{kind} {label}"
+
+/-- Title HTML for a callout whose label-and-title reads as
+    "Kind N. *Title*" (theorem-, definition-, example-style). -/
+def renderTitledLabel (kindLabel : String) (titleStr : String)
+    : Verso.Output.Html :=
+  if titleStr.isEmpty then
+    .text true (kindLabel ++ ".")
+  else
+    .seq #[
+      .text true (kindLabel ++ ". "),
+      .tag "em" #[] (renderTitleMarkup titleStr)
+    ]
+
+/-- Title HTML for a callout whose label-and-title reads as
+    "Kind N (Title). " (remark-, abuse-style; italic prefix folded
+    into the body paragraph via CSS). -/
+def renderParenLabel (kindLabel : String) (titleStr : String)
+    : Verso.Output.Html :=
+  if titleStr.isEmpty then
+    .text true (kindLabel ++ ". ")
+  else
+    .seq #[
+      .text true (kindLabel ++ " ("),
+      renderTitleMarkup titleStr,
+      .text true "). "
+    ]
+
+/-- `<div class="cls"><div class="cls-title">…</div>…</div>` wrapper
+    used by box-style numbered callouts (Example, Definition, Exercise,
+    Problem, Statement). `extraCls` is appended to the wrapper's class
+    list (e.g. `"statement-theorem"`) but does not affect the inner
+    title's class. -/
+def renderBoxCallout (baseCls : String) (title : Verso.Output.Html)
+    (body : Array Verso.Output.Html) (extraCls : String := "")
+    : Verso.Output.Html :=
+  let wrapperCls :=
+    if extraCls.isEmpty then baseCls else s!"{baseCls} {extraCls}"
+  .tag "div" #[("class", wrapperCls)]
+    (.seq #[
+      .tag "div" #[("class", baseCls ++ "-title")] title,
+      .seq body
+    ])
+
+/-- `<div class="cls"><span class="cls-label">…</span>…</div>` wrapper
+    used by inline-label callouts (Remark, Abuse). -/
+def renderInlineLabelCallout (baseCls : String) (label : Verso.Output.Html)
+    (body : Array Verso.Output.Html) : Verso.Output.Html :=
+  .tag "div" #[("class", baseCls)]
+    (.seq #[
+      .tag "span" #[("class", baseCls ++ "-label")] label,
+      .seq body
+    ])
+
+/-- N chili-pepper emoji as a string. -/
+def chiliPeppers (n : Nat) : String :=
+  String.ofList (List.replicate n '🌶')
+
+/-- Read a string out of a JSON `data` payload, falling back to
+    `default` when the data is not a string. Used by `block_extension`
+    `toHtml` callbacks that store a single string in their `data` field. -/
+private def dataStr (data : Lean.Json) (default : String := "") : String :=
+  match data with | .str s => s | _ => default
+
+/-! ## Shared "title-only" config
+
+Most callouts (Example, Definition, Exercise, Aside, Remark, Abuse,
+Statement) accept the same single optional positional title argument,
+so they all use this one config + parser. Blocks that need additional
+arguments (Problem, ChiliPara, Figure, ObjSvg, Epigraph) keep their
+own. -/
+
+structure TitledConfig where
+  title : Option String
+
+section
+variable [Monad m] [MonadInfoTree m] [MonadLiftT CoreM m] [MonadEnv m]
+  [MonadError m] [MonadFileMap m]
+
+def TitledConfig.parse : ArgParse m TitledConfig :=
+  TitledConfig.mk <$> ((some <$> .positional `title .string) <|> pure none)
+
+instance : FromArgs TitledConfig m := ⟨TitledConfig.parse⟩
+
+end
 
 /-! ## Numbering for math callouts
 
@@ -76,6 +181,14 @@ def calloutCounterKey : Lean.Name := `Napkin.calloutCounters
     (e.g. `"1.2.3"`). -/
 def calloutNumberKey : Lean.Name := `Napkin.calloutNumbers
 
+/-- Read a JSON value out of a TraverseState, returning an empty
+    object `{}` when the key is absent or fails to deserialize. -/
+private def stateJsonOr (st : Verso.Genre.Manual.TraverseState)
+    (key : Lean.Name) : Lean.Json :=
+  match st.get? (α := Lean.Json) key with
+  | some (.ok v) => v
+  | _ => Lean.Json.mkObj []
+
 /-- Increment the chapter's callout counter and record the
     resulting "chapter.N" label for this block. No-ops if the
     block is outside any numbered section. -/
@@ -99,29 +212,16 @@ def assignCalloutNumber (blockId : Verso.Genre.Manual.InternalId)
     if s.endsWith "." then (s.dropEnd 1).toString else s
   let key := (Lean.toJson blockId).compress
   let st ← get
+  let nums := stateJsonOr st calloutNumberKey
   -- Idempotency: Verso may run the traverse pass multiple times
   -- (e.g. to converge cross-references). If this block already has
   -- a label, leave it alone so the counter doesn't drift up.
-  let alreadyAssigned : Bool :=
-    match st.get? (α := Lean.Json) calloutNumberKey with
-    | some (.ok v) => (v.getObjValAs? String key).toOption.isSome
-    | _ => false
-  if alreadyAssigned then return
-  let counters : Lean.Json :=
-    match st.get? (α := Lean.Json) calloutCounterKey with
-    | some (.ok v) => v
-    | _ => Lean.Json.mkObj []
-  let cur : Nat :=
-    match counters.getObjValAs? Nat chapterStr with
-    | .ok n => n
-    | .error _ => 0
+  if (nums.getObjValAs? String key).toOption.isSome then return
+  let counters := stateJsonOr st calloutCounterKey
+  let cur : Nat := (counters.getObjValAs? Nat chapterStr).toOption.getD 0
   let next := cur + 1
   let counters' := counters.setObjVal! chapterStr (Lean.toJson next)
   let label := s!"{chapterStr}.{next}"
-  let nums : Lean.Json :=
-    match st.get? (α := Lean.Json) calloutNumberKey with
-    | some (.ok v) => v
-    | _ => Lean.Json.mkObj []
   let nums' := nums.setObjVal! key (Lean.toJson label)
   set ((st.set calloutCounterKey counters').set calloutNumberKey nums')
 
@@ -134,12 +234,7 @@ def lookupCalloutNumber {m : Type → Type} [Monad m]
     : Verso.Doc.Html.HtmlT Verso.Genre.Manual m (Option String) := do
   let st ← Verso.Doc.Html.HtmlT.state
   let key := (Lean.toJson blockId).compress
-  match st.get? (α := Lean.Json) calloutNumberKey with
-  | some (.ok v) =>
-    match v.getObjValAs? String key with
-    | .ok label => return some label
-    | _ => return none
-  | _ => return none
+  return ((stateJsonOr st calloutNumberKey).getObjValAs? String key).toOption
 
 block_extension Block.prototype where
   traverse _ _ _ := pure none
@@ -191,12 +286,9 @@ block_extension Block.objSvg (src : String) where
   toHtml :=
     open Verso.Output.Html in
     some <| fun _ _ _ data _ => do
-      let s : String :=
-        match data with
-        | .str s => s
-        | _ => ""
       pure {{
-        <object class="napkin-svg" type="image/svg+xml" data={{s}}></object>
+        <object class="napkin-svg" type="image/svg+xml"
+                data={{dataStr data}}></object>
       }}
   extraCss := [r#"
     /* Break out of the 36rem text-measure so the diagram is readable.
@@ -272,28 +364,13 @@ block_extension Block.example (title : String) where
     some <| fun _ goB _ _ content => do
       content.mapM goB
   toHtml :=
-    open Verso.Output.Html in
     some <| fun _ goB blockId data content => do
-      let titleStr : String :=
-        match data with
-        | .str s => s
-        | _ => ""
-      let label := (← lookupCalloutNumber blockId).getD ""
-      let kind := if label.isEmpty then "Example." else s!"Example {label}."
-      let titleHtml : Verso.Output.Html :=
-        if titleStr.isEmpty then
-          .text true kind
-        else
-          .seq #[
-            .text true (kind ++ " "),
-            .tag "em" #[] (renderTitleMarkup titleStr)
-          ]
-      pure {{
-        <div class="example">
-          <div class="example-title">{{titleHtml}}</div>
-          {{← content.mapM goB}}
-        </div>
-      }}
+      let titleStr := dataStr data
+      let kindLabel := numberedKindLabel "Example"
+        ((← lookupCalloutNumber blockId).getD "")
+      pure (renderBoxCallout "example"
+              (renderTitledLabel kindLabel titleStr)
+              (← content.mapM goB))
   extraCss := [r#"
     div.example {
       border: 1px solid #c8c8c8;
@@ -314,22 +391,8 @@ block_extension Block.example (title : String) where
     div.example > *:last-child { margin-bottom: 0; }
   "#]
 
-structure ExampleConfig where
-  title : Option String
-
-section
-variable [Monad m] [MonadInfoTree m] [MonadLiftT CoreM m] [MonadEnv m]
-  [MonadError m] [MonadFileMap m]
-
-def ExampleConfig.parse : ArgParse m ExampleConfig :=
-  ExampleConfig.mk <$> ((some <$> .positional `title .string) <|> pure none)
-
-instance : FromArgs ExampleConfig m := ⟨ExampleConfig.parse⟩
-
-end
-
 @[directive]
-def EXAMPLE : DirectiveExpanderOf ExampleConfig
+def EXAMPLE : DirectiveExpanderOf TitledConfig
   | cfg, contents => do
     let title := cfg.title.getD ""
     ``(Verso.Doc.Block.other (Block.example $(quote title))
@@ -344,10 +407,7 @@ block_extension Block.aside (title : String) where
   toHtml :=
     open Verso.Output.Html in
     some <| fun _ goB _ data content => do
-      let titleStr : String :=
-        match data with
-        | .str s => s
-        | _ => "Aside"
+      let titleStr := dataStr data "Aside"
       pure {{
         <details class="aside">
           <summary>{{renderTitleMarkup titleStr}}</summary>
@@ -383,22 +443,8 @@ block_extension Block.aside (title : String) where
     details.aside > .aside-body > *:last-child { margin-bottom: 0; }
   "#]
 
-structure AsideConfig where
-  title : Option String
-
-section
-variable [Monad m] [MonadInfoTree m] [MonadLiftT CoreM m] [MonadEnv m]
-  [MonadError m] [MonadFileMap m]
-
-def AsideConfig.parse : ArgParse m AsideConfig :=
-  AsideConfig.mk <$> ((some <$> .positional `title .string) <|> pure none)
-
-instance : FromArgs AsideConfig m := ⟨AsideConfig.parse⟩
-
-end
-
 @[directive]
-def aside : DirectiveExpanderOf AsideConfig
+def aside : DirectiveExpanderOf TitledConfig
   | cfg, contents => do
     let title := cfg.title.getD "Aside"
     ``(Verso.Doc.Block.other (Block.aside $(quote title))
@@ -411,29 +457,13 @@ block_extension Block.definition (title : String) where
     some <| fun _ goB _ _ content => do
       content.mapM goB
   toHtml :=
-    open Verso.Output.Html in
     some <| fun _ goB blockId data content => do
-      let titleStr : String :=
-        match data with
-        | .str s => s
-        | _ => ""
-      let label := (← lookupCalloutNumber blockId).getD ""
-      let kind :=
-        if label.isEmpty then "Definition." else s!"Definition {label}."
-      let titleHtml : Verso.Output.Html :=
-        if titleStr.isEmpty then
-          .text true kind
-        else
-          .seq #[
-            .text true (kind ++ " "),
-            .tag "em" #[] (renderTitleMarkup titleStr)
-          ]
-      pure {{
-        <div class="definition">
-          <div class="definition-title">{{titleHtml}}</div>
-          {{← content.mapM goB}}
-        </div>
-      }}
+      let titleStr := dataStr data
+      let kindLabel := numberedKindLabel "Definition"
+        ((← lookupCalloutNumber blockId).getD "")
+      pure (renderBoxCallout "definition"
+              (renderTitledLabel kindLabel titleStr)
+              (← content.mapM goB))
   extraCss := [r#"
     div.definition {
       border-left: 4px solid #6a4ca0;
@@ -454,22 +484,8 @@ block_extension Block.definition (title : String) where
     div.definition > *:last-child { margin-bottom: 0; }
   "#]
 
-structure DefinitionConfig where
-  title : Option String
-
-section
-variable [Monad m] [MonadInfoTree m] [MonadLiftT CoreM m] [MonadEnv m]
-  [MonadError m] [MonadFileMap m]
-
-def DefinitionConfig.parse : ArgParse m DefinitionConfig :=
-  DefinitionConfig.mk <$> ((some <$> .positional `title .string) <|> pure none)
-
-instance : FromArgs DefinitionConfig m := ⟨DefinitionConfig.parse⟩
-
-end
-
 @[directive]
-def DEFINITION : DirectiveExpanderOf DefinitionConfig
+def DEFINITION : DirectiveExpanderOf TitledConfig
   | cfg, contents => do
     let title := cfg.title.getD ""
     ``(Verso.Doc.Block.other (Block.definition $(quote title))
@@ -482,30 +498,13 @@ block_extension Block.remark (title : String) where
     some <| fun _ goB _ _ content => do
       content.mapM goB
   toHtml :=
-    open Verso.Output.Html in
     some <| fun _ goB blockId data content => do
-      let titleStr : String :=
-        match data with
-        | .str s => s
-        | _ => ""
-      let label := (← lookupCalloutNumber blockId).getD ""
-      let pfx :=
-        if label.isEmpty then "Remark"
-        else s!"Remark {label}"
-      let labelHtml : Verso.Output.Html :=
-        if titleStr.isEmpty then
-          .text true (pfx ++ ". ")
-        else
-          .seq #[
-            .text true (pfx ++ " ("),
-            renderTitleMarkup titleStr,
-            .text true "). "
-          ]
-      pure (.tag "div" #[("class", "remark")]
-        (.seq #[
-          .tag "span" #[("class", "remark-label")] labelHtml,
-          .seq (← content.mapM goB)
-        ]))
+      let titleStr := dataStr data
+      let kindLabel := numberedKindLabel "Remark"
+        ((← lookupCalloutNumber blockId).getD "")
+      pure (renderInlineLabelCallout "remark"
+              (renderParenLabel kindLabel titleStr)
+              (← content.mapM goB))
   extraCss := [r#"
     div.remark {
       margin: 1em 0;
@@ -521,22 +520,8 @@ block_extension Block.remark (title : String) where
     div.remark > *:last-child { margin-bottom: 0; }
   "#]
 
-structure RemarkConfig where
-  title : Option String
-
-section
-variable [Monad m] [MonadInfoTree m] [MonadLiftT CoreM m] [MonadEnv m]
-  [MonadError m] [MonadFileMap m]
-
-def RemarkConfig.parse : ArgParse m RemarkConfig :=
-  RemarkConfig.mk <$> ((some <$> .positional `title .string) <|> pure none)
-
-instance : FromArgs RemarkConfig m := ⟨RemarkConfig.parse⟩
-
-end
-
 @[directive]
-def REMARK : DirectiveExpanderOf RemarkConfig
+def REMARK : DirectiveExpanderOf TitledConfig
   | cfg, contents => do
     let title := cfg.title.getD ""
     ``(Verso.Doc.Block.other (Block.remark $(quote title))
@@ -551,13 +536,9 @@ block_extension Block.figure (src : String) where
   toHtml :=
     open Verso.Output.Html in
     some <| fun _ goB _ data content => do
-      let srcStr : String :=
-        match data with
-        | .str s => s
-        | _ => ""
       pure {{
         <figure class="napkin-figure">
-          <img src={{srcStr}} alt=""/>
+          <img src={{dataStr data}} alt=""/>
           <figcaption>{{← content.mapM goB}}</figcaption>
         </figure>
       }}
@@ -605,29 +586,13 @@ block_extension Block.exercise (title : String) where
     some <| fun _ goB _ _ content => do
       content.mapM goB
   toHtml :=
-    open Verso.Output.Html in
     some <| fun _ goB blockId data content => do
-      let titleStr : String :=
-        match data with
-        | .str s => s
-        | _ => ""
-      let label := (← lookupCalloutNumber blockId).getD ""
-      let kind :=
-        if label.isEmpty then "Exercise." else s!"Exercise {label}."
-      let titleHtml : Verso.Output.Html :=
-        if titleStr.isEmpty then
-          .text true kind
-        else
-          .seq #[
-            .text true (kind ++ " "),
-            .tag "em" #[] (renderTitleMarkup titleStr)
-          ]
-      pure {{
-        <div class="exercise">
-          <div class="exercise-title">{{titleHtml}}</div>
-          {{← content.mapM goB}}
-        </div>
-      }}
+      let titleStr := dataStr data
+      let kindLabel := numberedKindLabel "Exercise"
+        ((← lookupCalloutNumber blockId).getD "")
+      pure (renderBoxCallout "exercise"
+              (renderTitledLabel kindLabel titleStr)
+              (← content.mapM goB))
   extraCss := [r#"
     div.exercise {
       border: 1px solid #d6c8a0;
@@ -648,22 +613,8 @@ block_extension Block.exercise (title : String) where
     div.exercise > *:last-child { margin-bottom: 0; }
   "#]
 
-structure ExerciseConfig where
-  title : Option String
-
-section
-variable [Monad m] [MonadInfoTree m] [MonadLiftT CoreM m] [MonadEnv m]
-  [MonadError m] [MonadFileMap m]
-
-def ExerciseConfig.parse : ArgParse m ExerciseConfig :=
-  ExerciseConfig.mk <$> ((some <$> .positional `title .string) <|> pure none)
-
-instance : FromArgs ExerciseConfig m := ⟨ExerciseConfig.parse⟩
-
-end
-
 @[directive]
-def EXERCISE : DirectiveExpanderOf ExerciseConfig
+def EXERCISE : DirectiveExpanderOf TitledConfig
   | cfg, contents => do
     let title := cfg.title.getD ""
     ``(Verso.Doc.Block.other (Block.exercise $(quote title))
@@ -678,30 +629,17 @@ block_extension Block.statement (kind : String) (title : String) where
     some <| fun _ goB _ _ content => do
       content.mapM goB
   toHtml :=
-    open Verso.Output.Html in
     some <| fun _ goB blockId data content => do
       let (kindStr, titleStr) : String × String :=
         match data with
         | .arr #[.str k, .str t] => (k, t)
         | _ => ("Statement", "")
-      let label := (← lookupCalloutNumber blockId).getD ""
-      let kindLabel :=
-        if label.isEmpty then s!"{kindStr}." else s!"{kindStr} {label}."
-      let titleHtml : Verso.Output.Html :=
-        if titleStr.isEmpty then
-          .text true kindLabel
-        else
-          .seq #[
-            .text true (kindLabel ++ " "),
-            .tag "em" #[] (renderTitleMarkup titleStr)
-          ]
-      let cls := "statement statement-" ++ kindStr.toLower
-      pure {{
-        <div class={{cls}}>
-          <div class="statement-title">{{titleHtml}}</div>
-          {{← content.mapM goB}}
-        </div>
-      }}
+      let kindLabel := numberedKindLabel kindStr
+        ((← lookupCalloutNumber blockId).getD "")
+      pure (renderBoxCallout "statement"
+              (renderTitledLabel kindLabel titleStr)
+              (← content.mapM goB)
+              (extraCls := "statement-" ++ kindStr.toLower))
   extraCss := [r#"
     /* Shared box for theorem/lemma/proposition/corollary; FACT has its
        own minimal treatment below. The kind class (statement-theorem,
@@ -759,50 +697,36 @@ block_extension Block.statement (kind : String) (title : String) where
     }
   "#]
 
-structure StatementConfig where
-  title : Option String
-
-section
-variable [Monad m] [MonadInfoTree m] [MonadLiftT CoreM m] [MonadEnv m]
-  [MonadError m] [MonadFileMap m]
-
-def StatementConfig.parse : ArgParse m StatementConfig :=
-  StatementConfig.mk <$> ((some <$> .positional `title .string) <|> pure none)
-
-instance : FromArgs StatementConfig m := ⟨StatementConfig.parse⟩
-
-end
-
 @[directive]
-def THEOREM : DirectiveExpanderOf StatementConfig
+def THEOREM : DirectiveExpanderOf TitledConfig
   | cfg, contents => do
     let title := cfg.title.getD ""
     ``(Verso.Doc.Block.other (Block.statement "Theorem" $(quote title))
         #[$[$(← contents.mapM elabBlock)],*])
 
 @[directive]
-def LEMMA : DirectiveExpanderOf StatementConfig
+def LEMMA : DirectiveExpanderOf TitledConfig
   | cfg, contents => do
     let title := cfg.title.getD ""
     ``(Verso.Doc.Block.other (Block.statement "Lemma" $(quote title))
         #[$[$(← contents.mapM elabBlock)],*])
 
 @[directive]
-def PROPOSITION : DirectiveExpanderOf StatementConfig
+def PROPOSITION : DirectiveExpanderOf TitledConfig
   | cfg, contents => do
     let title := cfg.title.getD ""
     ``(Verso.Doc.Block.other (Block.statement "Proposition" $(quote title))
         #[$[$(← contents.mapM elabBlock)],*])
 
 @[directive]
-def COROLLARY : DirectiveExpanderOf StatementConfig
+def COROLLARY : DirectiveExpanderOf TitledConfig
   | cfg, contents => do
     let title := cfg.title.getD ""
     ``(Verso.Doc.Block.other (Block.statement "Corollary" $(quote title))
         #[$[$(← contents.mapM elabBlock)],*])
 
 @[directive]
-def FACT : DirectiveExpanderOf StatementConfig
+def FACT : DirectiveExpanderOf TitledConfig
   | cfg, contents => do
     let title := cfg.title.getD ""
     ``(Verso.Doc.Block.other (Block.statement "Fact" $(quote title))
@@ -816,30 +740,13 @@ block_extension Block.abuse (title : String) where
     some <| fun _ goB _ _ content => do
       content.mapM goB
   toHtml :=
-    open Verso.Output.Html in
     some <| fun _ goB blockId data content => do
-      let titleStr : String :=
-        match data with
-        | .str s => s
-        | _ => ""
-      let label := (← lookupCalloutNumber blockId).getD ""
-      let pfx :=
-        if label.isEmpty then "Abuse of notation"
-        else s!"Abuse of notation {label}"
-      let labelHtml : Verso.Output.Html :=
-        if titleStr.isEmpty then
-          .text true (pfx ++ ". ")
-        else
-          .seq #[
-            .text true (pfx ++ " ("),
-            renderTitleMarkup titleStr,
-            .text true "). "
-          ]
-      pure (.tag "div" #[("class", "abuse")]
-        (.seq #[
-          .tag "span" #[("class", "abuse-label")] labelHtml,
-          .seq (← content.mapM goB)
-        ]))
+      let titleStr := dataStr data
+      let kindLabel := numberedKindLabel "Abuse of notation"
+        ((← lookupCalloutNumber blockId).getD "")
+      pure (renderInlineLabelCallout "abuse"
+              (renderParenLabel kindLabel titleStr)
+              (← content.mapM goB))
   extraCss := [r#"
     div.abuse {
       margin: 1em 0;
@@ -861,22 +768,8 @@ block_extension Block.abuse (title : String) where
     div.abuse > *:last-child { margin-bottom: 0; }
   "#]
 
-structure AbuseConfig where
-  title : Option String
-
-section
-variable [Monad m] [MonadInfoTree m] [MonadLiftT CoreM m] [MonadEnv m]
-  [MonadError m] [MonadFileMap m]
-
-def AbuseConfig.parse : ArgParse m AbuseConfig :=
-  AbuseConfig.mk <$> ((some <$> .positional `title .string) <|> pure none)
-
-instance : FromArgs AbuseConfig m := ⟨AbuseConfig.parse⟩
-
-end
-
 @[directive]
-def ABUSE : DirectiveExpanderOf AbuseConfig
+def ABUSE : DirectiveExpanderOf TitledConfig
   | cfg, contents => do
     let title := cfg.title.getD ""
     ``(Verso.Doc.Block.other (Block.abuse $(quote title))
@@ -937,12 +830,11 @@ block_extension Block.chiliPara (chili : Nat) where
         match data with
         | .num n => n.toFloat.toUInt32.toNat
         | _ => 0
-      let peppers := String.ofList (List.replicate chiliN '🌶')
       pure {{
         <div class="chili-para">
           <span class="chili-marker"
                 title={{s!"Difficulty: {chiliN}/3"}}>
-            {{.text true peppers}}
+            {{.text true (chiliPeppers chiliN)}}
           </span>
           {{← content.mapM goB}}
         </div>
@@ -1042,7 +934,6 @@ block_extension Block.problem (title : String) (chili : Nat) where
     some <| fun _ goB _ _ content => do
       content.mapM goB
   toHtml :=
-    open Verso.Output.Html in
     some <| fun _ goB blockId data content => do
       let (titleStr, chiliN) : String × Nat :=
         match data with
@@ -1050,28 +941,16 @@ block_extension Block.problem (title : String) (chili : Nat) where
         | _ => ("", 0)
       let chiliHtml : Verso.Output.Html :=
         if chiliN == 0 then .seq #[]
-        else
-          let peppers := String.ofList (List.replicate chiliN '🌶')
-          .tag "span" #[("class", "problem-chili"),
-                       ("title", s!"Difficulty: {chiliN}/3")]
-            (.text true peppers)
-      let label := (← lookupCalloutNumber blockId).getD ""
-      let kind := if label.isEmpty then "Problem." else s!"Problem {label}."
-      let titleHtml : Verso.Output.Html :=
-        if titleStr.isEmpty then
-          .seq #[.text true kind, chiliHtml]
-        else
-          .seq #[
-            .text true (kind ++ " "),
-            .tag "em" #[] (renderTitleMarkup titleStr),
-            chiliHtml
-          ]
-      pure {{
-        <div class="problem">
-          <div class="problem-title">{{titleHtml}}</div>
-          {{← content.mapM goB}}
-        </div>
-      }}
+        else .tag "span"
+          #[("class", "problem-chili"),
+            ("title", s!"Difficulty: {chiliN}/3")]
+          (.text true (chiliPeppers chiliN))
+      let kindLabel := numberedKindLabel "Problem"
+        ((← lookupCalloutNumber blockId).getD "")
+      let baseTitle := renderTitledLabel kindLabel titleStr
+      let titleHtml :=
+        if chiliN == 0 then baseTitle else .seq #[baseTitle, chiliHtml]
+      pure (renderBoxCallout "problem" titleHtml (← content.mapM goB))
   extraCss := [r#"
     div.problem {
       border-left: 3px solid #8a4a4a;
@@ -1141,18 +1020,7 @@ block_extension Block.epigraph (attribution : String) (citeKey : String) where
         | _ => ("", "")
       let citeHtml : Verso.Output.Html :=
         if cite.isEmpty then .seq #[]
-        else
-          let label :=
-            match lookupRef cite with
-            | some r => r.short
-            | none   => cite
-          let slug := cite.replace ":" "-"
-          let href := s!"Backmatter/References/#{slug}"
-          .seq #[
-            .text true " ",
-            .tag "a" #[("class", "cite"), ("href", href)]
-              (.text true s!"[{label}]")
-          ]
+        else .seq #[.text true " ", renderCiteRef cite]
       let attribHtml : Verso.Output.Html :=
         if attr.isEmpty && cite.isEmpty then .seq #[]
         else .tag "div"

@@ -12,6 +12,30 @@ open Verso.ArgParse
 
 namespace Napkin
 
+/-! ## Citation helpers
+
+Shared by the inline `{cite}` role here and by `:::epigraph` in
+`Napkin.Meta.Directives`. The bibliography lives on its own page;
+with the multi-page HTML output's `<base href="..."/>` set to the
+rendered tree root, the relative href resolves correctly from any
+chapter. -/
+
+/-- Resolve a citation key to its short bibliography label
+    (e.g. `Vakil`), falling back to the raw key when no entry matches. -/
+def citeShortLabel (key : String) : String :=
+  match lookupRef key with
+  | some r => r.short
+  | none   => key
+
+/-- The href into the bibliography page for citation `key`. -/
+def citeHref (key : String) : String :=
+  s!"Backmatter/References/#{key.replace ":" "-"}"
+
+/-- Render `[Short]` as an `<a class="cite">` link to the bibliography. -/
+def renderCiteRef (key : String) : Verso.Output.Html :=
+  .tag "a" #[("class", "cite"), ("href", citeHref key)]
+    (.text true s!"[{citeShortLabel key}]")
+
 /-! ## Inline citation element
 
 `{cite}` `ref:vakil` renders a small bracketed link to the bibliography
@@ -25,24 +49,9 @@ inline_extension Inline.napkinRef (key : String) where
     some <| fun _ _ _ _ => do
       pure .empty
   toHtml :=
-    open Verso.Output.Html in
     some <| fun _ _ data _ => do
-      let k : String :=
-        match data with
-        | .str s => s
-        | _ => ""
-      let label :=
-        match lookupRef k with
-        | some r => r.short
-        | none   => k
-      let slug := k.replace ":" "-"
-      -- The bibliography lives on its own page; with the multi-page
-      -- HTML output's `<base href="..."/>` set to the rendered tree
-      -- root, this relative path resolves correctly from any chapter.
-      let href := s!"Backmatter/References/#{slug}"
-      pure {{
-        <a class="cite" href={{href}}>{{ s!"[{label}]" }}</a>
-      }}
+      let k : String := match data with | .str s => s | _ => ""
+      pure (renderCiteRef k)
   extraCss := [r#"
     a.cite {
       text-decoration: none;
