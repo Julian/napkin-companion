@@ -674,14 +674,14 @@ def config : Config where
   htmlDepth := 2
   extraHead := napkinExtraHead
   extraFiles := [("figures", "figures"), ("fonts", "fonts"),
-                 ("book/cover-art.jpg", "cover-art.jpg"),
-                 ("book/media/kofi4.png", "kofi4.png"),
-                 ("book/media/abstruse-goose-exercise.png", "abstruse-goose-exercise.png"),
-                 ("book/media/read-with-pencil.jpg", "read-with-pencil.jpg"),
-                 ("book/media/chili.png", "chili.png"),
-                 ("book/media/love-proper-isomorphic-subgroup.jpg",
+                 ("media/cover-art.jpg", "cover-art.jpg"),
+                 ("media/kofi4.png", "kofi4.png"),
+                 ("media/abstruse-goose-exercise.png", "abstruse-goose-exercise.png"),
+                 ("media/read-with-pencil.jpg", "read-with-pencil.jpg"),
+                 ("media/chili.png", "chili.png"),
+                 ("media/love-proper-isomorphic-subgroup.jpg",
                   "love-proper-isomorphic-subgroup.jpg"),
-                 ("book/media/matrix-mult.jpg", "matrix-mult.jpg")]
+                 ("media/matrix-mult.jpg", "matrix-mult.jpg")]
 
 def main := manualMain (%doc Napkin)
   (extraSteps := [buildExercises]) (config := {config with})
