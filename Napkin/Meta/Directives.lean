@@ -150,6 +150,18 @@ instance : FromArgs TitledConfig m := ⟨TitledConfig.parse⟩
 
 end
 
+/-- Common shape for `TitledConfig` directive expanders: pull the title
+    out of `cfg`, hand it to `mkBlock` to construct the underlying
+    `Block.…` term, and wrap the result in `Block.other` with the
+    elaborated child blocks. Lets each `@[directive]` declaration be
+    a one-liner instead of repeating the same scaffolding. -/
+def titledDirective (defaultTitle : String)
+    (mkBlock : String → DocElabM Term) : DirectiveExpanderOf TitledConfig :=
+  fun cfg contents => do
+    let title := cfg.title.getD defaultTitle
+    let blockStx ← mkBlock title
+    ``(Verso.Doc.Block.other $blockStx #[$[$(← contents.mapM elabBlock)],*])
+
 /-! ## Numbering for math callouts
 
 Napkin numbers theorems, examples, definitions, and so on with a
@@ -392,11 +404,8 @@ block_extension Block.example (title : String) where
   "#]
 
 @[directive]
-def EXAMPLE : DirectiveExpanderOf TitledConfig
-  | cfg, contents => do
-    let title := cfg.title.getD ""
-    ``(Verso.Doc.Block.other (Block.example $(quote title))
-        #[$[$(← contents.mapM elabBlock)],*])
+def EXAMPLE : DirectiveExpanderOf TitledConfig :=
+  titledDirective "" fun t => ``(Block.example $(quote t))
 
 block_extension Block.aside (title : String) where
   data := .str title
@@ -444,11 +453,8 @@ block_extension Block.aside (title : String) where
   "#]
 
 @[directive]
-def aside : DirectiveExpanderOf TitledConfig
-  | cfg, contents => do
-    let title := cfg.title.getD "Aside"
-    ``(Verso.Doc.Block.other (Block.aside $(quote title))
-        #[$[$(← contents.mapM elabBlock)],*])
+def aside : DirectiveExpanderOf TitledConfig :=
+  titledDirective "Aside" fun t => ``(Block.aside $(quote t))
 
 block_extension Block.definition (title : String) where
   data := .str title
@@ -485,11 +491,8 @@ block_extension Block.definition (title : String) where
   "#]
 
 @[directive]
-def DEFINITION : DirectiveExpanderOf TitledConfig
-  | cfg, contents => do
-    let title := cfg.title.getD ""
-    ``(Verso.Doc.Block.other (Block.definition $(quote title))
-        #[$[$(← contents.mapM elabBlock)],*])
+def DEFINITION : DirectiveExpanderOf TitledConfig :=
+  titledDirective "" fun t => ``(Block.definition $(quote t))
 
 block_extension Block.remark (title : String) where
   data := .str title
@@ -521,11 +524,8 @@ block_extension Block.remark (title : String) where
   "#]
 
 @[directive]
-def REMARK : DirectiveExpanderOf TitledConfig
-  | cfg, contents => do
-    let title := cfg.title.getD ""
-    ``(Verso.Doc.Block.other (Block.remark $(quote title))
-        #[$[$(← contents.mapM elabBlock)],*])
+def REMARK : DirectiveExpanderOf TitledConfig :=
+  titledDirective "" fun t => ``(Block.remark $(quote t))
 
 block_extension Block.figure (src : String) where
   data := .str src
@@ -614,11 +614,8 @@ block_extension Block.exercise (title : String) where
   "#]
 
 @[directive]
-def EXERCISE : DirectiveExpanderOf TitledConfig
-  | cfg, contents => do
-    let title := cfg.title.getD ""
-    ``(Verso.Doc.Block.other (Block.exercise $(quote title))
-        #[$[$(← contents.mapM elabBlock)],*])
+def EXERCISE : DirectiveExpanderOf TitledConfig :=
+  titledDirective "" fun t => ``(Block.exercise $(quote t))
 
 -- Shared "statement" block: theorem/lemma/proposition/corollary/fact all
 -- use this with a different `kind` label.
@@ -698,39 +695,24 @@ block_extension Block.statement (kind : String) (title : String) where
   "#]
 
 @[directive]
-def THEOREM : DirectiveExpanderOf TitledConfig
-  | cfg, contents => do
-    let title := cfg.title.getD ""
-    ``(Verso.Doc.Block.other (Block.statement "Theorem" $(quote title))
-        #[$[$(← contents.mapM elabBlock)],*])
+def THEOREM : DirectiveExpanderOf TitledConfig :=
+  titledDirective "" fun t => ``(Block.statement "Theorem" $(quote t))
 
 @[directive]
-def LEMMA : DirectiveExpanderOf TitledConfig
-  | cfg, contents => do
-    let title := cfg.title.getD ""
-    ``(Verso.Doc.Block.other (Block.statement "Lemma" $(quote title))
-        #[$[$(← contents.mapM elabBlock)],*])
+def LEMMA : DirectiveExpanderOf TitledConfig :=
+  titledDirective "" fun t => ``(Block.statement "Lemma" $(quote t))
 
 @[directive]
-def PROPOSITION : DirectiveExpanderOf TitledConfig
-  | cfg, contents => do
-    let title := cfg.title.getD ""
-    ``(Verso.Doc.Block.other (Block.statement "Proposition" $(quote title))
-        #[$[$(← contents.mapM elabBlock)],*])
+def PROPOSITION : DirectiveExpanderOf TitledConfig :=
+  titledDirective "" fun t => ``(Block.statement "Proposition" $(quote t))
 
 @[directive]
-def COROLLARY : DirectiveExpanderOf TitledConfig
-  | cfg, contents => do
-    let title := cfg.title.getD ""
-    ``(Verso.Doc.Block.other (Block.statement "Corollary" $(quote title))
-        #[$[$(← contents.mapM elabBlock)],*])
+def COROLLARY : DirectiveExpanderOf TitledConfig :=
+  titledDirective "" fun t => ``(Block.statement "Corollary" $(quote t))
 
 @[directive]
-def FACT : DirectiveExpanderOf TitledConfig
-  | cfg, contents => do
-    let title := cfg.title.getD ""
-    ``(Verso.Doc.Block.other (Block.statement "Fact" $(quote title))
-        #[$[$(← contents.mapM elabBlock)],*])
+def FACT : DirectiveExpanderOf TitledConfig :=
+  titledDirective "" fun t => ``(Block.statement "Fact" $(quote t))
 
 -- Lightweight "abuse of notation" callout.
 block_extension Block.abuse (title : String) where
@@ -769,11 +751,8 @@ block_extension Block.abuse (title : String) where
   "#]
 
 @[directive]
-def ABUSE : DirectiveExpanderOf TitledConfig
-  | cfg, contents => do
-    let title := cfg.title.getD ""
-    ``(Verso.Doc.Block.other (Block.abuse $(quote title))
-        #[$[$(← contents.mapM elabBlock)],*])
+def ABUSE : DirectiveExpanderOf TitledConfig :=
+  titledDirective "" fun t => ``(Block.abuse $(quote t))
 
 -- Proof block, with a "Proof." prefix and a small QED marker on the
 -- last paragraph.
