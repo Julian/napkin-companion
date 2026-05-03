@@ -12,10 +12,6 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  # Fast-failing test job: only builds what `lake test` needs (the
-  # fixture renderer + its transitive deps), not the full book. So a
-  # red rendering test fails the workflow long before the docs build
-  # would have finished.
   test:
     name: Run tests
     runs-on: ubuntu-latest
@@ -29,22 +25,3 @@ jobs:
         with:
           build: "false"  # `lake test` builds what it needs; skip the full book.
           test: "true"
-
-  # Doc build + deploy. Gated on `test` so we never publish docs from
-  # a commit that broke the rendering tests.
-  docs:
-    name: Build and deploy docs
-    needs: test
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read # Required to check out the repository.
-      pages: write # Required by docgen-action to deploy to GitHub Pages.
-      id-token: write # Required by docgen-action for OIDC token to deploy Pages.
-    steps:
-      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
-        with:
-          persist-credentials: false
-      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
-        with:
-          test: "false"  # already covered by the `test` job.
-      - uses: leanprover-community/docgen-action@56dff2bb89f3e9b8c1b6d5c8410362c19de2d904 # v1
