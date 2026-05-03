@@ -2,6 +2,7 @@ name = "Napkin"
 version = "2026.5.1"
 keywords = ["math", "textbook"]
 defaultTargets = ["napkin"]
+testDriver = "test"
 
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
@@ -22,6 +23,12 @@ rev = "dfd33c868e47f2589315c3e2c7caec52aca418d4"
 [[lean_lib]]
 name = "Napkin"
 
+# Holds the test runner and individual test modules. Not built by
+# the default `lake build` target; only when `lake test` runs.
+[[lean_lib]]
+name = "Test"
+roots = ["Test.Main", "Test.Fixture", "Test.CheckFixture"]
+
 [[lean_exe]]
 name = "napkin"
 root = "Render"
@@ -35,4 +42,12 @@ supportInterpreter = true
 [[lean_exe]]
 name = "chaptergraph"
 root = "BuildChapterGraph"
+supportInterpreter = true
+
+# Test runner. Wired up as `testDriver` so `lake test` invokes it.
+# Currently runs the render-diff check; new tests are registered in
+# `Test/Main.lean`.
+[[lean_exe]]
+name = "test"
+root = "Test.Main"
 supportInterpreter = true
