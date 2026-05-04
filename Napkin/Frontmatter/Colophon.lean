@@ -36,6 +36,8 @@ If you like this book and want to support Evan, please consider buying him a cof
 Text licensed under [CC-by-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/).
 Source files licensed under [GNU GPL v3](https://choosealicense.com/licenses/gpl-3.0/).
 
+This is (still!) an *incomplete draft*, and an incomplete companion to an incomplete draft!
+
 For corrections, comments, or pictures of kittens regarding the original Napkin, contact Evan at [evan@evanchen.cc](mailto:evan@evanchen.cc), or pull-request at [https://github.com/vEnhance/napkin](https://github.com/vEnhance/napkin).
 
 # A Lean companion

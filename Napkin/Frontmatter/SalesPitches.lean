@@ -18,6 +18,11 @@ file := "Sales-pitches"
 
 This chapter contains a pitch for each part, to help you decide what you want to read and to elaborate more on how they are interconnected.
 
+For convenience, here is again the dependency plot that appeared in the frontmatter.
+
+:::objSvg "figures/frontmatter/chapter-graph.svg"
+:::
+
 # The basics
 
 *Starting Out.*
@@ -106,7 +111,7 @@ We then introduce *meromorphic functions*, which are like quotients of holomorph
 
 *Measure Theory.*
 Measure theory is the upgraded version of integration.
-The Riemann integration is for a lot of purposes not really sufficient; for example, if $`f` is the function equals $`1` at rational numbers but $`0` at irrational numbers, we would hope that $`\int_0^1 f(x) \, dx = 0`, but the Riemann integral is not capable of handling this function $`f`.
+The Riemann integration is for a lot of purposes not really sufficient; for example, if $`f` is the function equals $`1` at rational numbers but $`0` at irrational numbers, we would hope that $`\int_0^1 f(x) \; dx = 0`, but the Riemann integral is not capable of handling this function $`f`.
 
 The *Lebesgue integral* will handle these mistakes by assigning a _measure_ to a generic space $`\Omega`, making it into a *measure space*.
 This will let us develop a richer theory of integration where the above integral _does_ work out to zero because the "rational numbers have measure zero".

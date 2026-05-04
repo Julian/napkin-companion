@@ -28,7 +28,7 @@ So then I'll start trying to explain what a homomorphism is, but then I'll remem
 So then I'll start trying to explain what a group is, but by the time I finish writing the group axioms on my napkin, they've already forgotten why I was talking about groups in the first place.
 And then it's 1PM, people need to go places, and I can't help but think:
 
-_"Man, if I had forty hours instead of forty minutes, I bet I could actually have explained this all."_
+_"Man, if I had forty hours instead of forty minutes, I bet I could actually have explained this all"._
 :::
 
 This book was initially my attempt at those forty hours, but has grown considerably since then.

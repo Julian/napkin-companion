@@ -35,6 +35,8 @@ Dependencies are indicated by arrows; dotted lines are optional dependencies.
 *I suggest that you simply pick a chapter you find interesting, and then find the shortest path.*
 With that in mind, I hope the length of the entire book is not intimidating.
 
+(The text in the following diagram should be clickable and links to the relevant part.)
+
 :::objSvg "figures/frontmatter/chapter-graph.svg"
 :::
 
