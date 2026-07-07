@@ -1,0 +1,25 @@
+% Three paths from p to q in the complex plane, all "the same": a red
+% arc over the top, a green straight segment, and a blue polyline
+% underneath. Motivates homotopy of paths.
+% Source: book/tex/topology/top-more.tex (§ Homotopy and simply
+% connected spaces) — first asy figure.
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usepackage{amssymb}
+\begin{document}
+\begin{tikzpicture}[>=latex]
+  % Bounding box standing in for the plane, labeled ℂ.
+  \draw (-4,-2) rectangle (4,2.8);
+  \node[anchor=north west] at (-4,2.8) {$\mathbb{C}$};
+  % Endpoints.
+  \fill (-3,0) circle (1.6pt) node[left] {$p$};
+  \fill (3,0) circle (1.6pt) node[right] {$q$};
+  % Red arc over the top.
+  \draw[red,->] plot [smooth, tension=0.8]
+    coordinates {(-3,0) (-2,0.5) (0,2) (1,1.2) (3,0)};
+  % Green straight path.
+  \draw[green!60!black,->] (-3,0) -- (3,0);
+  % Blue polyline underneath.
+  \draw[blue,->] (-3,0) -- (-1,-1) -- (2,-1) -- (3,0);
+\end{tikzpicture}
+\end{document}

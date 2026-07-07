@@ -118,7 +118,7 @@ This will let us develop a richer theory of integration where the above integral
 Even the development of the measure will be an achievement, because it means we've developed a rigorous, complete way of talking about what notions like area and volume mean — on any space, not just $`\mathbb{R}^n`!
 So for example the Lebesgue integral will let us integrate functions over any *measure space*.
 
-*Probability (TO DO).*
+*Probability.*
 Using the tools of measure theory, we'll be able to start giving rigorous definitions of *probability*, too.
 We'll see that a *random variable* is actually a function from a measure space of worlds to $`\mathbb{R}`, giving us a rigorous way to talk about its probabilities.
 We can then start actually stating results like the *law of large numbers* and *central limit theorem* in ways that make them both easy to state and straightforward to prove.

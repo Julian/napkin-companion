@@ -1,0 +1,16 @@
+% Open disk x^2 + y^2 < 1 in R^2, with a point p inside and a small
+% open neighborhood around p, dashed. Source: book/tex/topology/metric-top.tex
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\begin{document}
+\begin{tikzpicture}[scale=2]
+  % Outer circle (boundary of unit disk) — dashed because it's open.
+  \draw[dashed] (0,0) circle (1);
+  % Label inside the disk near the upper right.
+  \node at (0.55,0.55) {$x^2 + y^2 < 1$};
+  % A point p inside the disk.
+  \fill (0.6,0.2) circle (0.6pt) node[below] {$p$};
+  % A small open neighborhood around p (dotted).
+  \draw[dotted] (0.6,0.2) circle (0.3);
+\end{tikzpicture}
+\end{document}

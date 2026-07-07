@@ -1,0 +1,39 @@
+% Two ideals of Z[sqrt(-5)] drawn in the complex plane. Left: the
+% principal ideal (1), the full lattice with unit cell 1 x sqrt(5).
+% Right: the non-principal ideal (2, 1 + sqrt(-5)) — the sublattice of
+% points a + b sqrt(-5) with a + b even — with two fundamental cells
+% showing its different "shape".
+% Source: book/tex/alg-NT/classgrp.tex (§ The class group) — asy figure.
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\begin{document}
+\begin{tikzpicture}[scale=0.42]
+  \pgfmathsetmacro{\rt}{sqrt(5)}
+  % Left picture: the ideal (1).
+  \begin{scope}
+    \draw[dotted] (-5.2,0) -- (5.2,0);
+    \draw[dotted] (0,-5.2) -- (0,5.2);
+    \draw[cyan] (0,0) rectangle (1,\rt);
+    \foreach \x in {-5,...,5}
+      \foreach \y in {-2,...,2}
+        \fill[blue] (\x,\y*\rt) circle (2.6pt);
+  \end{scope}
+  % Right picture: the ideal (2, 1 + sqrt(-5)).
+  \begin{scope}[shift={(13.5,0)}]
+    \draw[dotted] (-5.2,0) -- (5.2,0);
+    \draw[dotted] (0,-5.2) -- (0,5.2);
+    \draw[cyan] (0,0) rectangle (2,2*\rt);
+    \draw[cyan] (0,0) -- (1,\rt) -- (-4,2*\rt) -- (-5,\rt) -- cycle;
+    \foreach \x in {-5,...,5}
+      \foreach \y in {-2,...,2}
+      {
+        \pgfmathparse{Mod(\x+\y,2)}
+        \ifdim\pgfmathresult pt=0pt
+          \fill[blue] (\x,\y*\rt) circle (2.6pt);
+        \else
+          \fill[gray!50] (\x,\y*\rt) circle (2.6pt);
+        \fi
+      }
+  \end{scope}
+\end{tikzpicture}
+\end{document}

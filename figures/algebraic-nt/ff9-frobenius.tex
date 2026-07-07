@@ -1,0 +1,23 @@
+% The fate of the nine elements of 𝔽₉ = ℤ[i]/(3) under the Frobenius
+% x ↦ x³: 0, 1, 2 are fixed and the other six swap in pairs.
+% Source: book/tex/alg-NT/finite-field.tex (§ The Galois theory of
+% finite fields) — tikzcd.
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\begin{document}
+\begin{tikzpicture}[>=latex]
+  \node (z) at (0,1.4) {$0$};
+  \node (o) at (1.2,1.4) {$1$};
+  \node (t) at (2.4,1.4) {$2$};
+  \node (i1) at (4.0,1.4) {$i$};
+  \node (i2) at (4.0,0) {$-i$};
+  \node (j1) at (5.8,1.4) {$1+i$};
+  \node (j2) at (5.8,0) {$1-i$};
+  \node (k1) at (7.8,1.4) {$2+i$};
+  \node (k2) at (7.8,0) {$2-i$};
+  \draw[<->] (i1) -- (i2) node[midway,right] {$\sigma$};
+  \draw[<->] (j1) -- (j2) node[midway,right] {$\sigma$};
+  \draw[<->] (k1) -- (k2) node[midway,right] {$\sigma$};
+\end{tikzpicture}
+\end{document}

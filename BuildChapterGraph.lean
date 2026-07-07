@@ -54,7 +54,7 @@ def nodeTable : List (String × Node) := [
   ("LinAlg",   {pos := (33.0, 45.0), label := "Lin Alg",     ch := "Ch 9-15, 18",req := false, href := "../../Linear-Algebra/"}),
   ("Quantum",  {pos := (45.0, 43.0), label := "Quantum",     ch := "Ch 23-25",   req := false, href := "../../Quantum-Algorithms/Quantum-states-and-measurements/"}),
   ("Top",      {pos := (55.0, 45.0), label := "Topology",    ch := "Ch 2, 6-8",  req := true,  href := "../../Starting-Out/Metric-spaces/"}),
-  ("Calc",     {pos := (64.0, 38.0), label := "Calc",        ch := "Ch 26-30",   req := false, href := "../../Calculus-101/"}),
+  ("Calc",     {pos := (64.0, 38.0), label := "Calc",        ch := "Ch 26-30",   req := false, href := "../../Calculus-101/Limits-and-series/"}),
   ("GrpAct",   {pos := (5.0,  35.0), label := "Grp Act",     ch := "Ch 16",      req := false, href := "../../More-on-Groups/"}),
   ("RepTh",    {pos := (30.0, 35.0), label := "Rep Th",      ch := "Ch 19-22",   req := false, href := "../../Representation-Theory/Representations-of-algebras/"}),
   ("CmplxAna", {pos := (64.0, 30.0), label := "Cmplx Ana",   ch := "Ch 31-34",   req := false, href := "../../Complex-Analysis/"}),

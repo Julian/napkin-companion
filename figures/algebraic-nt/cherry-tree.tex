@@ -1,0 +1,17 @@
+% The "cherry tree": each branch is a rational prime (p), and the
+% cherries below it are the finitely many prime ideals dividing (p).
+% Source: book/tex/alg-NT/classgrp.tex (§ The class group is finite) —
+% asy figure.
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\begin{document}
+\begin{tikzpicture}[scale=1.4]
+  \node[above] at (1,0) {$(2)$};
+  \foreach \i in {1,...,4} \fill (1,-\i/4) circle (1.4pt);
+  \node[above] at (2,0) {$(3)$};
+  \foreach \i in {1,...,6} \fill (2,-\i/4) circle (1.4pt);
+  \node[above] at (3,0) {$(5)$};
+  \foreach \i in {1,...,2} \fill (3,-\i/4) circle (1.4pt);
+  \node[above] at (4,0) {$\dots$};
+\end{tikzpicture}
+\end{document}

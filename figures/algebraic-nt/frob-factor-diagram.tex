@@ -1,0 +1,31 @@
+% The factorization-pattern setup: K over E over ℚ matched with
+% {1} ⊆ H ⊆ G, and the primes 𝔓, 𝔭₁⋯𝔭_g, (p) with f₁+⋯+f_g = n.
+% Source: book/tex/alg-NT/frobenius.tex (§ Frobenius elements control
+% factorization) — tikzcd.
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\begin{document}
+\begin{tikzpicture}[>=latex]
+  \node (K)  at (0,3.0)   {$K$};
+  \node (E)  at (0,1.5)   {$E$};
+  \node (Q)  at (0,0)     {$\mathbb{Q}$};
+  \node (e)  at (2.2,3.0) {$\{1\}$};
+  \node (H)  at (2.2,1.5) {$H$};
+  \node (G)  at (2.2,0)   {$G$};
+  \node (PP) at (4.8,3.0) {$\operatorname{Frob}_{\mathfrak{P}}$};
+  \node (pp) at (4.8,1.5) {$\mathfrak{p}_1 \dots \mathfrak{p}_g$};
+  \node (p)  at (4.8,0)   {$(p)$};
+  \node (f)  at (7.9,1.5) {$f_1 + \dots + f_g = n$};
+  \draw (K) -- (E) node[midway,left] {};
+  \draw (E) -- (Q) node[midway,left] {$n$};
+  \draw (e) -- (H);
+  \draw (H) -- (G) node[midway,right] {$n$};
+  \draw[<->] (K) -- (e);
+  \draw[<->] (E) -- (H);
+  \draw[<->] (Q) -- (G);
+  \draw (pp) -- (p);
+\end{tikzpicture}
+\end{document}

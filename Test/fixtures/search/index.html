@@ -1,0 +1,398 @@
+<!DOCTYPE html><html>
+  <head>
+    <script>
+      (function(){
+  const {protocol:proto, host:hostName, pathname:path, search:srch, hash:hsh} = window.location;
+  if (!(path.endsWith("/") || path.endsWith(".html"))) {
+    window.location.replace(`${proto}//${hostName}${path}/${srch}${hsh}`);
+  }
+})()</script>
+    <script>
+      // Enable TypeScript checking.
+// @ts-check
+
+// Applies a saved table-of-contents width before the first paint.
+//
+// This is a tiny inline counterpart to toc-resize.js: it runs in the page head so that
+// returning desktop readers do not see the default width flash to their saved width.
+// It only records the width in the --verso-toc-user-width custom property; the
+// stylesheet clamps it and ignores it on mobile, and toc-resize.js then takes over the
+// interactive resizing. Keep the storage key in sync with toc-resize.js.
+
+(function () {
+    try {
+        const saved = localStorage.getItem("verso-toc-width");
+        // Parse to a number (as toc-resize.js does) and write that back, so a stored
+        // value with stray whitespace becomes a valid length rather than `" 420 px"`.
+        const width = saved === null ? NaN : Number(saved);
+        if (Number.isFinite(width)) {
+            document.documentElement.style.setProperty("--verso-toc-user-width", `${width}px`);
+        }
+    } catch (_) {
+        // Leave the default width in place when local storage is unavailable.
+    }
+})();
+</script>
+    <base href="./../"><meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <title>Search</title><link rel="stylesheet" href="book.css">
+    <link rel="stylesheet" href="verso-vars.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js" integrity="sha384-zbcZAIxlvJtNE3Dp5nxLXdXtXyxwOdnILY1TDPVmKFhl4r4nSUG1r8bcFXGVa4Te" crossorigin="anonymous"></script>
+    <script defer="defer" src="-verso-search/elasticlunr.min.js"></script>
+    <script defer="defer" src="-verso-search/fuzzysort.min.js"></script>
+    <script defer="defer" src="-verso-search/searchIndex.js"></script>
+    <script defer="defer" src="-verso-search/search-config.js"></script>
+    <script type="module" src="-verso-search/search-init.js"></script>
+    <link rel="stylesheet" href="-verso-search/search-box.css">
+    <link rel="stylesheet" href="-verso-search/search-page.css">
+    <link rel="stylesheet" href="-verso-search/search-highlight.css">
+    <link rel="stylesheet" href="-verso-search/domain-display.css">
+    <script src="-verso-search/search-highlight.js" defer="defer"></script>
+    <script src="toc-resize.js" defer="defer"></script>
+    <script src="-verso-data/katex/katex.js"></script>
+    <script src="-verso-data/katex/math.js"></script>
+    <link rel="stylesheet" href="-verso-data/katex/katex.css">
+    <style>
+    div.question {
+      margin: 1em 0;
+    }
+    div.question > p:first-of-type::before {
+      content: "Question. ";
+      font-style: italic;
+      font-weight: 600;
+    }
+    div.question > *:first-child { margin-top: 0; }
+    div.question > *:last-child { margin-bottom: 0; }
+  </style><style>
+    div.remark {
+      margin: 1em 0;
+    }
+    div.remark > span.remark-label {
+      font-style: italic;
+      font-weight: 600;
+    }
+    div.remark > span.remark-label + p {
+      display: inline;
+    }
+    div.remark > *:first-child { margin-top: 0; }
+    div.remark > *:last-child { margin-bottom: 0; }
+  </style><style>
+    /* Prototype boxes are rendered in red per Napkin's convention:
+       "I also often highlight a 'prototypical example' for some
+       sections, and reserve the color red for such a note." */
+    div.prototype {
+      border-left: 4px solid #b03a2e;
+      background: #fdf3f1;
+      padding: 0.75em 1em;
+      margin: 1.25em 0;
+      border-radius: 3px;
+      color: #6e1f15;
+    }
+    div.prototype::before {
+      content: "Prototypical example for this section:";
+      font-weight: bold;
+      color: #b03a2e;
+      display: block;
+      margin-bottom: 0.25em;
+    }
+    div.prototype > *:first-child,
+    div.prototype::before + * { margin-top: 0; }
+    div.prototype > *:last-child { margin-bottom: 0; }
+  </style><style>
+    a.cite {
+      text-decoration: none;
+      color: var(--napkin-link-color, #2a5a8a);
+    }
+    a.cite:hover { text-decoration: underline; }
+  </style><style>
+    div.chili-para {
+      position: relative;
+      margin: 1em 0;
+    }
+    div.chili-para > .chili-marker {
+      position: absolute;
+      /* Anchor the marker at the section's left edge by negating the
+         list indentation that paragraphs inside a `<ul>` inherit, so
+         the chili sits in the left page-margin whitespace next to the
+         body text — matching Napkin's `\reversemarginpar` placement
+         in the LaTeX rendering. */
+      right: 100%;
+      top: 0.1em;
+      margin-right: 5rem;
+      font-size: 1.1em;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      user-select: none;
+    }
+    /* On phones there is no left whitespace margin to float into,
+       so fall back to inline placement. */
+    @media screen and (max-width: 700px) {
+      div.chili-para > .chili-marker {
+        position: static;
+        margin-right: 0.4em;
+        font-size: 1em;
+      }
+    }
+    div.chili-para > *:first-child:not(.chili-marker) {
+      margin-top: 0;
+    }
+    div.chili-para > *:last-child {
+      margin-bottom: 0;
+    }
+  </style><style>
+    details.aside {
+      margin: 1.25em 0;
+      border-left: 3px solid #aaa;
+      background: #fafafa;
+      border-radius: 3px;
+    }
+    details.aside > summary {
+      cursor: pointer;
+      font-variant: small-caps;
+      letter-spacing: 0.04em;
+      font-size: 0.9em;
+      padding: 0.5em 0.75em;
+      color: #555;
+      list-style-position: inside;
+    }
+    details.aside > summary:hover {
+      background: #f0f0f0;
+    }
+    details.aside[open] > summary {
+      border-bottom: 1px solid #ddd;
+    }
+    details.aside > .aside-body {
+      padding: 0.5em 0.75em;
+    }
+    details.aside > .aside-body > *:first-child { margin-top: 0; }
+    details.aside > .aside-body > *:last-child { margin-bottom: 0; }
+  </style><style>
+    div.moral {
+      margin: 1.25em 0;
+      padding: 0.75em 1em;
+      background: #eaf3ea;
+      border-left: 3px solid #5a8a5a;
+      border-radius: 3px;
+      font-style: italic;
+    }
+    /* nested italic in an italic block flips back to upright,
+       matching LaTeX \emph behavior */
+    div.moral em { font-style: normal; }
+    div.moral > *:first-child { margin-top: 0; }
+    div.moral > *:last-child { margin-bottom: 0; }
+  </style><style>
+    /* Shared box for theorem/lemma/proposition/corollary; FACT has its
+       own minimal treatment below. The kind class (statement-theorem,
+       statement-lemma, ...) sets the border-left color so the family
+       reads as related but distinguishable at a glance. */
+    div.statement {
+      border-left: 4px solid #2a5a8a;
+      background: #f4f8fc;
+      padding: 0.75em 1em;
+      margin: 1.25em 0;
+      border-radius: 3px;
+    }
+    div.statement > div.statement-title {
+      font-weight: 700;
+      margin-bottom: 0.4em;
+      color: #1f4a6a;
+    }
+    div.statement > div.statement-title em {
+      font-weight: 400;
+    }
+    div.statement > div.statement-title + * { margin-top: 0; }
+    div.statement > *:last-child { margin-bottom: 0; }
+
+    /* Theorem: the canonical blue, full panel. */
+    div.statement-theorem    { border-left-color: #2a5a8a; }
+    /* Lemma: teal, marking it as a supporting result. */
+    div.statement-lemma      { border-left-color: #2a7a7a; }
+    div.statement-lemma > div.statement-title { color: #1f5a5a; }
+    /* Proposition: slate, between theorem and lemma in weight. */
+    div.statement-proposition { border-left-color: #4a6a8a; }
+    div.statement-proposition > div.statement-title { color: #2a4a6a; }
+    /* Corollary: thinner border, slightly indented — visually
+       "follows from" something else. */
+    div.statement-corollary {
+      border-left-width: 2px;
+      border-left-color: #6a7a4a;
+      margin-left: 1em;
+    }
+    div.statement-corollary > div.statement-title { color: #4a5a2a; }
+    /* Fact: no panel, just a bold inline label — declarative aside. */
+    div.statement-fact {
+      border: none;
+      background: none;
+      padding: 0;
+      margin: 1em 0;
+      border-radius: 0;
+    }
+    div.statement-fact > div.statement-title {
+      display: inline;
+      margin-right: 0.4em;
+      color: inherit;
+    }
+    div.statement-fact > div.statement-title + p {
+      display: inline;
+    }
+  </style><style>
+    div.definition {
+      border-left: 4px solid #6a4ca0;
+      background: #f7f4fa;
+      padding: 0.75em 1em;
+      margin: 1.25em 0;
+      border-radius: 3px;
+    }
+    div.definition > div.definition-title {
+      font-weight: 700;
+      margin-bottom: 0.4em;
+      color: #4a3678;
+    }
+    div.definition > div.definition-title em {
+      font-weight: 400;
+    }
+    div.definition > div.definition-title + * { margin-top: 0; }
+    div.definition > *:last-child { margin-bottom: 0; }
+  </style><style>
+    div.example {
+      border: 1px solid #c8c8c8;
+      background: #fafafa;
+      padding: 0.75em 1em;
+      margin: 1.25em 0;
+      border-radius: 3px;
+    }
+    div.example > div.example-title {
+      font-weight: 700;
+      margin-bottom: 0.4em;
+      color: #2a2a2a;
+    }
+    div.example > div.example-title em {
+      font-weight: 400;
+    }
+    div.example > div.example-title + * { margin-top: 0; }
+    div.example > *:last-child { margin-bottom: 0; }
+  </style><style>
+    div.proof {
+      margin: 1em 0 1.25em 0;
+    }
+    div.proof > p:first-of-type::before {
+      content: "Proof. ";
+      font-style: italic;
+      font-weight: 600;
+    }
+    div.proof > p:last-of-type::after {
+      content: " \220E";
+      font-weight: 700;
+      margin-left: 0.3em;
+    }
+    div.proof > *:first-child { margin-top: 0; }
+    div.proof > *:last-child { margin-bottom: 0; }
+  </style><style>
+    div.exercise {
+      border: 1px solid #d6c8a0;
+      background: #fef9ec;
+      padding: 0.75em 1em;
+      margin: 1.25em 0;
+      border-radius: 3px;
+    }
+    div.exercise > div.exercise-title {
+      font-weight: 700;
+      margin-bottom: 0.4em;
+      color: #6b4a00;
+    }
+    div.exercise > div.exercise-title em {
+      font-weight: 400;
+    }
+    div.exercise > div.exercise-title + * { margin-top: 0; }
+    div.exercise > *:last-child { margin-bottom: 0; }
+  </style><style>
+    div.problem {
+      border-left: 3px solid #8a4a4a;
+      background: #fdf5f5;
+      padding: 0.75em 1em;
+      margin: 1.25em 0;
+      border-radius: 3px;
+    }
+    div.problem > div.problem-title {
+      font-weight: 700;
+      margin-bottom: 0.4em;
+      color: #6a2a2a;
+    }
+    div.problem > div.problem-title em {
+      font-weight: 400;
+    }
+    div.problem > div.problem-title .problem-chili {
+      margin-left: 0.5em;
+      font-size: 0.9em;
+      letter-spacing: 0.05em;
+      vertical-align: 0.05em;
+    }
+    div.problem > div.problem-title + * { margin-top: 0; }
+    div.problem > *:last-child { margin-bottom: 0; }
+  </style><style>
+    div.abuse {
+      margin: 1em 0;
+      padding-left: 0.75em;
+      border-left: 2px dotted #888;
+    }
+    /* Inline label rendered as the first child of the block; the
+       following <p> picks up next to it via display:inline on the
+       label and a small right margin. */
+    div.abuse > span.abuse-label {
+      font-style: italic;
+      font-weight: 600;
+    }
+    /* Fold the label into the first paragraph visually. */
+    div.abuse > span.abuse-label + p {
+      display: inline;
+    }
+    div.abuse > *:first-child { margin-top: 0; }
+    div.abuse > *:last-child { margin-bottom: 0; }
+  </style><link rel="preload" href="xref.json" as="fetch">
+    </head>
+  <body>
+    <header>
+      <div class="header-logo-wrapper"></div>
+      <div class="header-title-wrapper">
+        <a href="" class="header-title"><h1>
+            Directive Fixture</h1>
+          </a></div>
+      </header>
+    <label for="toggle-toc" id="toggle-toc-click"><span class="line line1"></span><span class="line line2"></span><span class="line line3"></span></label><div class="with-toc">
+      <div class="toc-backdrop" onclick="document.getElementById('toggle-toc-click')?.click()"></div>
+      <nav id="toc">
+        <input type="checkbox" id="toggle-toc"><div class="first">
+          <a href="" class="toc-title"><h1>
+              Directive Fixture</h1>
+            </a><div class="split-tocs">
+            <div class="split-toc book">
+              <div class="title">
+                <label for="--verso-manual-toc-----bookRoot" class="toggle-split-toc"><input type="checkbox" class="toggle-split-toc" id="--verso-manual-toc-----bookRoot" checked="checked"></label><span class="">Table of Contents</span></div>
+              <table><tr class="numbered"><td class="num">1.</td><td><a href="Numbered-Part/#Directive-Fixture--Numbered-Part">Numbered Part</a></td></tr></table></div>
+            </div>
+          </div>
+        <div class="last"></div>
+        </nav>
+      <div class="toc-resize-handle"></div>
+      <main><div class="content-wrapper">
+          <nav class="prev-next-buttons">
+            <div></div>
+            <div></div>
+            </nav>
+          <section class="search-page">
+            <h1>
+              Search</h1>
+            <div data-search-host="" class="search-page-host"></div>
+            <noscript><p>
+                This search feature requires JavaScript.</p>
+              </noscript><div id="search-page-results"></div>
+            <script type="module" src="-verso-search/search-page.js"></script>
+            </section>
+          <nav class="prev-next-buttons">
+            <div></div>
+            <div></div>
+            </nav>
+          </div>
+        </main></div>
+    </body>
+  </html>

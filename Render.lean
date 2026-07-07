@@ -683,5 +683,12 @@ def config : Config where
                   "love-proper-isomorphic-subgroup.jpg"),
                  ("media/matrix-mult.jpg", "matrix-mult.jpg")]
 
+-- `ExtraStep` now runs in `BuildLogT IO` and no longer receives a
+-- logging callback; recover one from the ambient `Logger` so
+-- `buildExercises` itself can stay in plain `IO`.
+def buildExercisesStep : ExtraStep := fun mode cfg state text => do
+  let logger ← read
+  buildExercises mode (fun msg => logger.reportError msg) cfg state text
+
 def main := manualMain (%doc Napkin)
-  (extraSteps := [buildExercises]) (config := {config with})
+  (extraSteps := [buildExercisesStep]) (config := {config with})

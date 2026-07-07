@@ -1,0 +1,28 @@
+% The correspondence between abelian extensions of ℚ and congruence
+% subgroups for the modulus 15∞, drawn inside (ℤ/15ℤ)ˣ.
+% Source: book/tex/alg-NT/artin.tex (§ Application, example) — tikzcd.
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\begin{document}
+\begin{tikzpicture}[>=latex]
+  \node (a) at (0,4.5) {$\mathbb{Q}(\zeta_{15})$};
+  \node (b) at (0,3.0) {$\mathbb{Q}(\zeta_{5})$};
+  \node (c) at (0,1.5) {$\mathbb{Q}(\sqrt 5)$};
+  \node (d) at (0,0)   {$\mathbb{Q}$};
+  \node (w) at (4,4.5) {$\{ 1 \}$};
+  \node (x) at (4,3.0) {$\{ 1, 11 \}$};
+  \node (y) at (4,1.5) {$\{ 1, 11, 4, 14 \}$};
+  \node (z) at (4,0)   {$(\mathbb{Z}/15\mathbb{Z})^\times$};
+  \draw[->] (b) -- (a);
+  \draw[->] (c) -- (b);
+  \draw[->] (d) -- (c);
+  \draw[->] (w) -- (x);
+  \draw[->] (x) -- (y);
+  \draw[->] (y) -- (z);
+  \draw[<->] (a) -- (w);
+  \draw[<->] (d) -- (z);
+\end{tikzpicture}
+\end{document}

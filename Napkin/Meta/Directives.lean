@@ -206,7 +206,8 @@ private def stateJsonOr (st : Verso.Genre.Manual.TraverseState)
     block is outside any numbered section. -/
 def assignCalloutNumber (blockId : Verso.Genre.Manual.InternalId)
     : ReaderT Verso.Genre.Manual.TraverseContext
-        (StateT Verso.Genre.Manual.TraverseState IO) Unit := do
+        (StateT Verso.Genre.Manual.TraverseState
+          (Verso.BuildLogT IO)) Unit := do
   let ctx ← read
   -- Take the first two numbered ancestors as the chapter prefix.
   -- For Napkin's part/chapter/section nesting that's "{part}.{chapter}";

@@ -148,8 +148,14 @@ Let $`X \xrightarrow{f} Y` be a function:
 - By $`f^{\mathrm{pre}}(T)` I mean the *pre-image* $$`f^{\mathrm{pre}}(T) \coloneqq \{x : X \mid f(x) \in T\}.` This is in contrast to the $`f^{-1}(T)` used in the rest of the world; I only use $`f^{-1}` for an inverse _function_.
 
   By abuse of notation, we may abbreviate $`f^{\mathrm{pre}}(\{y\})` to $`f^{\mathrm{pre}}(y)`.
-  We call $`f^{\mathrm{pre}}(y)` a *fiber*. - By $`f^{\mathrm{img}}(S)` I mean the *image* $$`f^{\mathrm{img}}(S) \coloneqq \{f(x) \mid x \in S\}.` Almost everyone else in the world uses $`f(S)` (though $`f[S]` sees some use, and $`f''(S)` is often used in logic) but this is abuse of notation, and I prefer $`f^{\mathrm{img}}(S)` for emphasis.
-  This image notation is _not_ standard. - If $`S \subseteq X`, then the *restriction* of $`f` to $`S` is denoted $`f \restriction_S`, i.e. it is the function $`f \restriction_S \colon S \to Y`. - Sometimes functions $`f \colon X \to Y` are _injective_ or _surjective_; I may emphasize this sometimes by writing $`f \colon X \hookrightarrow Y` or $`f \colon X \twoheadrightarrow Y`, respectively.
+  We call $`f^{\mathrm{pre}}(y)` a *fiber*.
+
+- By $`f^{\mathrm{img}}(S)` I mean the *image* $$`f^{\mathrm{img}}(S) \coloneqq \{f(x) \mid x \in S\}.` Almost everyone else in the world uses $`f(S)` (though $`f[S]` sees some use, and $`f''(S)` is often used in logic) but this is abuse of notation, and I prefer $`f^{\mathrm{img}}(S)` for emphasis.
+  This image notation is _not_ standard.
+
+- If $`S \subseteq X`, then the *restriction* of $`f` to $`S` is denoted $`f \restriction_S`, i.e. it is the function $`f \restriction_S \colon S \to Y`.
+
+- Sometimes functions $`f \colon X \to Y` are _injective_ or _surjective_; I may emphasize this sometimes by writing $`f \colon X \hookrightarrow Y` or $`f \colon X \twoheadrightarrow Y`, respectively.
 
 ## Cycle notation for permutations
 

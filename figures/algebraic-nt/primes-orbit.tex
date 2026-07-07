@@ -1,0 +1,21 @@
+% The Galois group acting on the prime ideals above a rational prime
+% p: the primes 𝔭ᵢ float above p, and σ moves one to another.
+% Source: book/tex/alg-NT/ramification.tex (§ The magic of Galois
+% extensions) — asy figure.
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usepackage{amssymb}
+\usetikzlibrary{arrows.meta}
+\begin{document}
+\begin{tikzpicture}[>=latex]
+  \node (p) at (0,-2.6) {$p$};
+  \node (a) at (-1.4,-0.9) {$\mathfrak{p}_1$};
+  \node (b) at (-0.8,0.6) {$\mathfrak{p}_2$};
+  \node (c) at (0.5,1.1) {$\mathfrak{p}_3$};
+  \node (d) at (1.5,-0.3) {$\mathfrak{p}_4$};
+  \node (e) at (1.8,0.5) {$\mathfrak{p}_5$};
+  \node (f) at (-1.3,1.3) {$\mathfrak{p}_6$};
+  \draw (0,-1.4) -- (p);
+  \draw[dashed,->] (a) -- (d) node[midway,below] {$\sigma$};
+\end{tikzpicture}
+\end{document}

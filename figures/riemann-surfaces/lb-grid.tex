@@ -1,0 +1,26 @@
+% Fibers varying smoothly: the grid picture of a line bundle chart.
+% Source: book/tex/riemann-surface/line-bundles.tex (asy figure).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\begin{document}
+\begin{tikzpicture}[scale=0.5,>=latex]
+  \draw[blue,->] (-5,0) -- (5,0) node[anchor=south east] {$X$};
+  \draw[->] (0,-5) -- (0,5);
+  \draw[violet] (-4,-4.8) -- (-4,4.8);
+  \draw[violet] (-4.8,-4) -- (4.8,-4);
+  \draw[violet] (-3,-4.8) -- (-3,4.8);
+  \draw[violet] (-4.8,-3) -- (4.8,-3);
+  \draw[violet] (-2,-4.8) -- (-2,4.8);
+  \draw[violet] (-4.8,-2) -- (4.8,-2);
+  \draw[violet] (-1,-4.8) -- (-1,4.8);
+  \draw[violet] (-4.8,-1) -- (4.8,-1);
+  \draw[violet] (1,-4.8) -- (1,4.8);
+  \draw[violet] (-4.8,1) -- (4.2,1);
+  \draw[violet] (2,-4.8) -- (2,4.8);
+  \draw[violet] (-4.8,2) -- (4.8,2);
+  \draw[violet] (3,-4.8) -- (3,4.8);
+  \draw[violet] (-4.8,3) -- (4.8,3);
+  \draw[violet] (4,-4.8) -- (4,4.8);
+  \draw[violet] (-4.8,4) -- (4.8,4);
+\end{tikzpicture}
+\end{document}

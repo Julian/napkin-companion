@@ -43,7 +43,10 @@ For corrections, comments, or pictures of kittens regarding the original Napkin,
 # A Lean companion
 
 This rendering is a Lean companion to the Napkin, prepared by [Julian](https://github.com/Julian).
-The math prose is Evan's, ported close to verbatim; the executable Lean and Mathlib excerpts, formalization-driven asides, and minor presentation tweaks needed to bridge the two are Julian's.
+The math prose is Evan's, ported close to verbatim; the executable Lean and Mathlib excerpts and minor presentation tweaks needed to bridge the two are Julian's.
+
+Each chapter ends with a *Formalities* section that revisits its content in Mathlib's vocabulary — pointing at the names, lemmas, and (occasionally) design choices you'd reach for if you wanted to formalize what you've just read.
+The body of each chapter stays free of Lean, so you can read it as math without needing to know any.
 
 Evan's voice and first-person pronouns have been preserved in the book contents wherever feasible — so when the body of a chapter says "I" or "mine", that's Evan.
 

@@ -8,18 +8,48 @@
     window.location.replace(`${proto}//${hostName}${path}/${srch}${hsh}`);
   }
 })()</script>
+    <script>
+      // Enable TypeScript checking.
+// @ts-check
+
+// Applies a saved table-of-contents width before the first paint.
+//
+// This is a tiny inline counterpart to toc-resize.js: it runs in the page head so that
+// returning desktop readers do not see the default width flash to their saved width.
+// It only records the width in the --verso-toc-user-width custom property; the
+// stylesheet clamps it and ignores it on mobile, and toc-resize.js then takes over the
+// interactive resizing. Keep the storage key in sync with toc-resize.js.
+
+(function () {
+    try {
+        const saved = localStorage.getItem("verso-toc-width");
+        // Parse to a number (as toc-resize.js does) and write that back, so a stored
+        // value with stray whitespace becomes a valid length rather than `" 420 px"`.
+        const width = saved === null ? NaN : Number(saved);
+        if (Number.isFinite(width)) {
+            document.documentElement.style.setProperty("--verso-toc-user-width", `${width}px`);
+        }
+    } catch (_) {
+        // Leave the default width in place when local storage is unavailable.
+    }
+})();
+</script>
     <base href="./../"><meta charset="utf-8">
     <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
     <title>Numbered Part</title><link rel="stylesheet" href="book.css">
     <link rel="stylesheet" href="verso-vars.css">
     <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js" integrity="sha384-zbcZAIxlvJtNE3Dp5nxLXdXtXyxwOdnILY1TDPVmKFhl4r4nSUG1r8bcFXGVa4Te" crossorigin="anonymous"></script>
-    <script src="-verso-search/elasticlunr.min.js"></script>
-    <script src="-verso-search/fuzzysort.min.js"></script>
-    <script src="-verso-search/searchIndex.js"></script>
+    <script defer="defer" src="-verso-search/elasticlunr.min.js"></script>
+    <script defer="defer" src="-verso-search/fuzzysort.min.js"></script>
+    <script defer="defer" src="-verso-search/searchIndex.js"></script>
+    <script defer="defer" src="-verso-search/search-config.js"></script>
     <script type="module" src="-verso-search/search-init.js"></script>
     <link rel="stylesheet" href="-verso-search/search-box.css">
+    <link rel="stylesheet" href="-verso-search/search-page.css">
     <link rel="stylesheet" href="-verso-search/search-highlight.css">
     <link rel="stylesheet" href="-verso-search/domain-display.css">
+    <script src="-verso-search/search-highlight.js" defer="defer"></script>
+    <script src="toc-resize.js" defer="defer"></script>
     <script src="-verso-data/katex/katex.js"></script>
     <script src="-verso-data/katex/math.js"></script>
     <link rel="stylesheet" href="-verso-data/katex/katex.css">
@@ -319,8 +349,7 @@
     }
     div.abuse > *:first-child { margin-top: 0; }
     div.abuse > *:last-child { margin-bottom: 0; }
-  </style><script src="-verso-search/search-highlight.js" defer="defer"></script>
-    </head>
+  </style></head>
   <body>
     <header>
       <div class="header-logo-wrapper"></div>
@@ -348,6 +377,7 @@
           </div>
         <div class="last"></div>
         </nav>
+      <div class="toc-resize-handle"></div>
       <main><div class="content-wrapper">
           <nav class="prev-next-buttons">
             <a class="local-button active" href="#" rel="prev" title=" Directive Fixture"><span class="arrow">←</span><span class="where"> Directive Fixture</span></a><a class="local-button active" href="Numbered-Part/Numbered-Chapter/#Directive-Fixture--Numbered-Part--Numbered-Chapter" rel="next" title="1.1. Numbered Chapter"><span class="where">1.1. Numbered Chapter</span><span class="arrow">→</span></a></nav>
