@@ -369,15 +369,192 @@ drops the "(TO DO)" from the part, chapter, and sales-pitch titles.
   the Frobenius/Chebotarev story; asides note Chebotarev density is
   absent from Mathlib.
 
+### Algebraic Topology I: Homotopy
+
+- **Some topological constructions.** All of the chapter's Asymptote
+  art (the $S^0$/$D^1$/$D^2$ sketches, the product-topology and unit-
+  square pictures, the figure-eight, the CW-cell diagrams, and the
+  torus/Klein/$\mathbb{RP}^2$ edge-identification squares) is omitted
+  with the prose adjusted to stand alone; the two vendored raster
+  images (`Projection_color_torus.jpg`, the Klein-bottle photos, and
+  `earth.pdf`) are likewise dropped. The section header "The torus,
+  Klein bottle, $\mathbb{RP}^n$, $\mathbb{CP}^n$" is de-symbolized to
+  unicode. Reveals cover `Metric.sphere`/`Metric.closedBall`, the
+  quotient/product/sum topologies (`Setoid`/`Quotient` with
+  `isOpen_coinduced`, `isOpen_prod_iff`, `isOpen_sum_iff`),
+  `UnitAddCircle` for the torus, `Projectivization` for real/complex
+  projective space (noting the general topology instance is not yet in
+  Mathlib), and `Topology.CWComplex`. The **wedge sum**, absent from
+  Mathlib, is **built from scratch** as a quotient of `X ⊕ Y`.
+- **Fundamental groups.** The path-fusing, loop, basepoint-independence,
+  and homotopy-equivalence figures are omitted (prose stands alone); the
+  `S2-simply.png` raster is dropped. The `\venus`/`\mars` symbols (not in
+  KaTeX) become unicode ♀/♂. The higher-homotopy table is ported as a
+  KaTeX array with `\{1\}` rendered as `1` and `\Zc{n}` as
+  `\mathbb{Z}_n`. Two cross-references (to the category-theory chapters
+  and to the covariant-Yoneda example) become descriptive phrases, and
+  the commented-out functor diagram is realized as prose. Reveals cover
+  `Path`/`Path.trans`/`Path.symm`/`Path.refl`, `Path.Homotopic`(`.Quotient`),
+  `FundamentalGroup` (with a note on Mathlib's reversed `mul_def`
+  composition order), `PathConnectedSpace`, `SimplyConnectedSpace`,
+  `GenLoop`/`HomotopyGroup.Pi` for $\pi_n$, `ContinuousMap.HomotopyEquiv`
+  /`ContractibleSpace`, and `FundamentalGroupoid.fundamentalGroupoidFunctor`.
+- **Covering projections.** All Asymptote/TikZ art (the helix, the
+  even-covering pancakes, the lifting diagrams, and the $\mathbb{R}/G$,
+  torus, and $\mathbb{RP}^2$ pictures) is omitted along with the
+  `even-covering.png` and `warsaw_circle.png` rasters; prose is adjusted
+  to stand alone. Upstream's Problems section is only a `\todo{problems}`
+  stub, so the port has none either. A cross-reference to the complex-
+  logarithm chapter becomes a descriptive phrase. Reveals cover
+  `IsEvenlyCovered`/`IsCoveringMap`, path lifting
+  (`IsCoveringMap.liftPath`/`liftPath_lifts`/`liftPath_zero`), the general
+  lifting criterion (`existsUnique_continuousMap_lifts` with
+  `LocPathConnectedSpace`), homotopy lifting (`liftHomotopy`), and regular
+  coverings (`IsQuotientCoveringMap`).
+
+### Category Theory
+
+- **Objects and morphisms** and the first two sections of **Functors
+  and natural transformations** were ported in an earlier pass; the
+  remaining functor sections and the two following chapters are new
+  here.
+- **Functors and natural transformations.** The remaining sections
+  ("indexed family of objects", "contravariant functors", "equivalence
+  of categories", "natural transformations", "the Yoneda lemma") are
+  ported. The large Asymptote picture of a natural transformation
+  dragging one functor's image onto another's is omitted, its content
+  absorbed into the surrounding prose. All TikZ commutative diagrams
+  become prose or inline arrows. Upstream's "Equivalence of categories"
+  is only a `\todo{fully faithful and essentially surjective}` stub;
+  it is **newly written** as a short section stating the definition and
+  the fully-faithful-plus-essentially-surjective criterion. Cross-refs
+  to the double-dual problem and the Hurewicz remark become descriptive
+  phrases. Reveals cover the product category `C × D` and `Discrete`,
+  `Functor.op`/`yoneda`/`coyoneda`, `Equivalence`/`Functor.FullyFaithful`
+  /`Functor.EssSurj`, `NatTrans`/`NatIso.ofComponents`, and the Yoneda
+  lemma (`yonedaEquiv`, `yonedaLemma`, `Yoneda.fullyFaithful`).
+- **Limits in categories.** Upstream is an explicitly incomplete
+  chapter (its title carries "(TO DO)", the pullback section is a
+  `\todo{write me}` stub, and it trails off in author notes-to-self).
+  The port keeps the complete Equalizers section verbatim, writes a
+  short self-contained **Pullback squares** section over the stub
+  (keeping upstream's differentiable-functions example), and ports the
+  brief Limits section; the stray trailing notes ("pushout square gives
+  tensor product", "p-adic", "relative Chinese remainder theorem") are
+  dropped as they are not content. All fork/cone TikZ diagrams become
+  prose. Reveals cover `Limits.Fork`/`equalizer`/`HasEqualizer`,
+  `Limits.pullback`/`HasPullback`, and `Limits.Cone`/`IsLimit`/`limit`
+  /`HasLimit`.
+- **Abelian categories.** All TikZ diagrams (the kernel/cokernel/image
+  factorizations, the exact-sequence splicing, and the five-/four-
+  /snake-lemma squares) become prose or inline sequences. The nested
+  block quote from Aluffi on diagram chasing is **summarized in prose**
+  rather than reproduced verbatim. Several `\Cref` cross-references
+  (rank-nullity, the equalizer-monic problem, PairTop) become
+  descriptive phrases. Reveals cover `HasZeroObject`/`HasZeroMorphisms`,
+  `Limits.kernel`/`cokernel`, `Abelian.image`, `Preadditive`/`Abelian`,
+  `ShortComplex`/`.Exact`/`.ShortExact`, and `Abelian.Pseudoelement` for
+  diagram chasing; an aside notes the Freyd–Mitchell embedding theorem
+  is not in Mathlib, though pseudoelements recover its practical payoff.
+
+### Algebraic Topology II: Homology
+
+- **Singular homology.** All Asymptote art (the singular-simplex,
+  annulus-cycle, boundary-in-$S^1$, and prism-operator figures) is
+  omitted with prose adjusted; footnotes become `{margin}[…]` notes;
+  cross-references (Hurewicz, the figure-eight example, the torus
+  homology proposition) become descriptive phrases. Inline hints stay
+  as "(Hint: …)" parentheticals and the two problems keep their
+  upstream statements. Reveals cover the topological simplex
+  (`SimplexCategory.toTop`), the singular simplicial set
+  (`TopCat.toSSet`), the singular chain complex and its $H_n$
+  (`singularChainComplexFunctor`, `singularHomologyFunctor`), the
+  abstract `HomologicalComplex`/`ChainComplex` with `d_comp_d` for
+  $\partial^2 = 0$, and chain homotopy (`Homotopy`).
+- **The long exact sequence.** Figures/diagrams omitted; the snake-lemma
+  and connecting-map discussion is ported in prose. Reveals cover
+  `CategoryTheory.ShortComplex`, `.Exact`, `.ShortExact`, and
+  `.Splitting`.
+- **Excision and relative homology.** Figures omitted, cross-references
+  to the good-pair theorem and triple sequence become descriptive
+  phrases. Relative/reduced singular homology, the category of pairs,
+  excision, and deformation retracts are honestly flagged as **not
+  present in Mathlib** (prose asides, no invented names).
+- **Cellular homology.** Upstream's "Bonus:" title prefix becomes a
+  one-line "this is a bonus chapter" note; figures omitted. Cellular
+  homology, degree, Euler characteristic, and Betti numbers are flagged
+  as absent from Mathlib; `Topology.CWComplex` (which does exist) is
+  cited for the underlying complexes.
+- **Singular cohomology.** Figures omitted. Reveals cover
+  `CochainComplex`/`HomologicalComplex.homology`; the universal
+  coefficient theorem and the elementary one-step `Ext` recipe are
+  flagged as absent (a note distinguishes Mathlib's derived-category
+  `Ext`).
+- **Application of cohomology (cup products).** Figures omitted. The
+  cohomology ring, cup product on singular cohomology, Poincaré
+  duality, and Künneth are flagged as absent from Mathlib; the graded/
+  anticommutative-ring backdrop is illustrated with `GradedRing` and
+  `ExteriorAlgebra`, which do exist. Incidental solution-only citations
+  (`ref:maxim752`) were dropped.
+
+### Algebraic Geometry I: Classical Varieties
+
+- **Affine varieties.** All figures (the parabola, the $\mathbb{A}^1$/
+  $\mathbb{A}^2$ sketches, the double-point) omitted; the "flavors of
+  ideals" table rendered as a prose list; footnotes → parentheticals/
+  margin; `\Cref`s → descriptive phrases. Problems ported with hints
+  inlined and solutions deferred. Reveals cover
+  `MvPolynomial.zeroLocus`/`vanishingIdeal`, the Nullstellensatz
+  (`MvPolynomial.vanishingIdeal_zeroLocus_eq_radical`, over an
+  algebraically closed field in finitely many variables) and its Galois
+  connection, `Ideal.span`/`radical`/`IsRadical`, `IsNoetherianRing`,
+  `Ideal.IsPrime`/`IsMaximal`, and `PrimeSpectrum`.
+- **Affine varieties as ringed spaces.** Figures omitted; problems
+  ported. Reveals cover `PrimeSpectrum.zariskiTopology`/`zeroLocus`/
+  `basicOpen`, `IsLocalization.Away`, and `AlgebraicGeometry.RingedSpace`.
+- **Projective varieties.** Figures (cone, conic) omitted. Upstream has
+  only a `\todo` for problems, so the port has no Problems section (not
+  a content deviation). Reveals cover `GradedRing`,
+  `Ideal.IsHomogeneous`/`HomogeneousIdeal`, `ProjectiveSpectrum`, and
+  `HomogeneousLocalization`.
+- **Bézout's theorem** (kept as a bonus chapter). SES diagrams rendered
+  as prose; Pascal/parabola figures omitted; two problems ported (hints
+  inlined). Classical projective Bézout, the degree of a projective
+  variety, and Pascal's theorem are flagged as **absent from Mathlib**,
+  with an explicit warning that Mathlib's `IsBezout` means the unrelated
+  "Bézout domain"; `Polynomial.hilbertPoly` and
+  `ShortComplex.ShortExact` are cited where they do apply.
+- **Morphisms of varieties.** Figures omitted; four problems ported
+  (hints inlined). Reveals cover `AlgebraicGeometry.LocallyRingedSpace`,
+  `AffineScheme`, `Scheme.Opens`, and `IsAffineOpen`; an aside notes
+  Mathlib has no separate quasi-projective-variety type and works with
+  open subschemes instead.
+
 ### Backmatter
 
 - **References** is an auto-generated bibliography; upstream's
   per-topic "Pedagogical comments and references" prose is not yet
   ported.
+- **Glossary of notations** is ported verbatim as a reference list.
+  Custom upstream macros are rewritten into KaTeX-safe forms: bra–ket
+  notation becomes `\langle`/`\rangle` (the `\ket`/`\bra` macros are
+  not available), spin states are spelled with arrows, cyclic groups
+  become `\mathbb{Z}/n\mathbb{Z}` and units `(\mathbb{Z}/n\mathbb{Z})^\times`,
+  and fraktur ideals/sheaves use `\mathfrak{…}`/`\mathcal{…}`. Being a
+  glossary, it carries no formalization asides. It still lists notation
+  from not-yet-ported chapters (set theory, algebraic geometry), as a
+  glossary should.
+- **Terminology on sets and functions.** Ported verbatim; the
+  cross-reference to the ZFC chapter becomes a descriptive phrase.
+  This is prerequisite set/function vocabulary, so it stays in the
+  language of sets (not the book-wide types convention). Asides connect
+  each notion to its Mathlib counterpart: `Set`/`∈`/`⊆`/`𝒫`, the
+  `∪`/`∩`/`\` operations, `Function.Injective`/`Surjective`/`Bijective`,
+  `Equiv` for bijections, `Set.image`/`Set.preimage`, and
+  `Setoid`/`Quotient` with `Setoid.IsPartition`.
 
 ## Unported content
 
 Tracked as open work, not deviations:
-Parts XIV–XXII (Algebraic NT I/II, Topology II, Category Theory,
-Homology, Algebraic Geometry I/II, Set Theory I/II), and the
-hints/solutions, notation, and sets-and-functions backmatter.
+Algebraic Geometry II (Affine Schemes) and Set Theory I/II, together
+with the hints/solutions backmatter appendix.

@@ -146,14 +146,14 @@
     </a>
   </g>
   <g class="node">
-    <a href="../../Algebraic-Topology-I/" target="_top"><title>Alg Top 1</title>
+    <a href="../../Algebraic-Topology-I-Homotopy/Some-topological-constructions/" target="_top"><title>Alg Top 1</title>
       <rect class="node-bg" x="171.0" y="409.0" width="88.000000" height="38.000000" rx="4" ry="4"/>
       <text class="node-ch"    x="175.0" y="413.0">Ch 64-66</text>
       <text class="node-label" x="215.0" y="433.0">Alg Top 1</text>
     </a>
   </g>
   <g class="node">
-    <a href="../../Algebraic-Geometry-I/" target="_top"><title>Alg Geo 1</title>
+    <a href="../../Algebraic-Geometry-I-Classical-Varieties/Affine-varieties/" target="_top"><title>Alg Geo 1</title>
       <rect class="node-bg" x="18.0" y="409.0" width="88.000000" height="38.000000" rx="4" ry="4"/>
       <text class="node-ch"    x="22.0" y="413.0">Ch 77-81</text>
       <text class="node-label" x="62.0" y="433.0">Alg Geo 1</text>
@@ -167,7 +167,7 @@
     </a>
   </g>
   <g class="node">
-    <a href="../../Algebraic-Topology-II/" target="_top"><title>Alg Top 2</title>
+    <a href="../../Algebraic-Topology-II-Homology/Singular-homology/" target="_top"><title>Alg Top 2</title>
       <rect class="node-bg" x="171.0" y="514.0" width="88.000000" height="38.000000" rx="4" ry="4"/>
       <text class="node-ch"    x="175.0" y="518.0">Ch 71-76</text>
       <text class="node-label" x="215.0" y="538.0">Alg Top 2</text>

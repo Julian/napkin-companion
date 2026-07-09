@@ -63,10 +63,10 @@ def nodeTable : List (String × Node) := [
   ("GrpClass", {pos := (5.0,  24.0), label := "Grp Classif", ch := "Ch 17",      req := false, href := "../../More-on-Groups/Sylow-theorems/"}),
   ("MeasPr",   {pos := (55.0, 20.0), label := "Measure/Pr",  ch := "Ch 35-39",   req := false, href := "../../Measure-Theory/"}),
   ("ANT1",     {pos := (40.0, 10.0), label := "Alg NT 1",    ch := "Ch 53-59",   req := false, href := "../../Algebraic-Number-Theory-I/"}),
-  ("AT1",      {pos := (23.0, 10.0), label := "Alg Top 1",   ch := "Ch 64-66",   req := false, href := "../../Algebraic-Topology-I/"}),
-  ("AG1",      {pos := (6.0,  10.0), label := "Alg Geo 1",   ch := "Ch 77-81",   req := false, href := "../../Algebraic-Geometry-I/"}),
+  ("AT1",      {pos := (23.0, 10.0), label := "Alg Top 1",   ch := "Ch 64-66",   req := false, href := "../../Algebraic-Topology-I-Homotopy/Some-topological-constructions/"}),
+  ("AG1",      {pos := (6.0,  10.0), label := "Alg Geo 1",   ch := "Ch 77-81",   req := false, href := "../../Algebraic-Geometry-I-Classical-Varieties/Affine-varieties/"}),
   ("ANT2",     {pos := (40.0, 0.0),  label := "Alg NT 2",    ch := "Ch 60-63",   req := false, href := "../../Algebraic-Number-Theory-II/"}),
-  ("AT2",      {pos := (23.0, 0.0),  label := "Alg Top 2",   ch := "Ch 71-76",   req := false, href := "../../Algebraic-Topology-II/"}),
+  ("AT2",      {pos := (23.0, 0.0),  label := "Alg Top 2",   ch := "Ch 71-76",   req := false, href := "../../Algebraic-Topology-II-Homology/Singular-homology/"}),
   ("AG2",      {pos := (6.0,  0.0),  label := "Alg Geo 2-3", ch := "Ch 82-87",   req := false, href := "../../Algebraic-Geometry-II/"})
 ]
 

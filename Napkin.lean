@@ -67,7 +67,27 @@ import Napkin.AlgebraicNT.Galois
 import Napkin.AlgebraicNT.FiniteFields
 import Napkin.AlgebraicNT.Ramification
 import Napkin.AlgebraicNT.FrobeniusElements
+import Napkin.Homotopy.Constructions
+import Napkin.Homotopy.FundamentalGroup
+import Napkin.Homotopy.CoveringSpaces
+import Napkin.Categories.Basics
+import Napkin.Categories.Functors
+import Napkin.Categories.Limits
+import Napkin.Categories.Abelian
+import Napkin.Homology.Singular
+import Napkin.Homology.LongExact
+import Napkin.Homology.Excision
+import Napkin.Homology.Cellular
+import Napkin.Homology.Cohomology
+import Napkin.Homology.CupProduct
+import Napkin.AlgebraicGeometry.AffineVarieties
+import Napkin.AlgebraicGeometry.Zariski
+import Napkin.AlgebraicGeometry.ProjectiveVarieties
+import Napkin.AlgebraicGeometry.Bezout
+import Napkin.AlgebraicGeometry.QuasiProjective
 import Napkin.Backmatter.References
+import Napkin.Backmatter.Notation
+import Napkin.Backmatter.SetsFunctions
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -312,6 +332,66 @@ file := "Algebraic-Number-Theory-II"
 
 {include 2 Napkin.AlgebraicNT.FrobeniusElements}
 
+# Algebraic Topology I: Homotopy
+
+%%%
+file := "Algebraic-Topology-I-Homotopy"
+%%%
+
+{include 2 Napkin.Homotopy.Constructions}
+
+{include 2 Napkin.Homotopy.FundamentalGroup}
+
+{include 2 Napkin.Homotopy.CoveringSpaces}
+
+# Category Theory
+
+%%%
+file := "Category-Theory"
+%%%
+
+{include 2 Napkin.Categories.Basics}
+
+{include 2 Napkin.Categories.Functors}
+
+{include 2 Napkin.Categories.Limits}
+
+{include 2 Napkin.Categories.Abelian}
+
+# Algebraic Topology II: Homology
+
+%%%
+file := "Algebraic-Topology-II-Homology"
+%%%
+
+{include 2 Napkin.Homology.Singular}
+
+{include 2 Napkin.Homology.LongExact}
+
+{include 2 Napkin.Homology.Excision}
+
+{include 2 Napkin.Homology.Cellular}
+
+{include 2 Napkin.Homology.Cohomology}
+
+{include 2 Napkin.Homology.CupProduct}
+
+# Algebraic Geometry I: Classical Varieties
+
+%%%
+file := "Algebraic-Geometry-I-Classical-Varieties"
+%%%
+
+{include 2 Napkin.AlgebraicGeometry.AffineVarieties}
+
+{include 2 Napkin.AlgebraicGeometry.Zariski}
+
+{include 2 Napkin.AlgebraicGeometry.ProjectiveVarieties}
+
+{include 2 Napkin.AlgebraicGeometry.Bezout}
+
+{include 2 Napkin.AlgebraicGeometry.QuasiProjective}
+
 # Backmatter
 
 %%%
@@ -319,3 +399,7 @@ number := false
 %%%
 
 {include 2 Napkin.Backmatter.References}
+
+{include 2 Napkin.Backmatter.Notation}
+
+{include 2 Napkin.Backmatter.SetsFunctions}

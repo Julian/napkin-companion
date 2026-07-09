@@ -8,8 +8,13 @@ import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.CategoryTheory.Equivalence
 import Mathlib.CategoryTheory.NatTrans
+import Mathlib.CategoryTheory.NatIso
+import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.CategoryTheory.Opposites
+import Mathlib.CategoryTheory.Products.Basic
+import Mathlib.CategoryTheory.Equivalence
+import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.Tactic.Recall
 import Napkin.Meta.Recall
 
@@ -173,4 +178,285 @@ As another example:
 
 :::QUESTION
 If $`\mathcal{P}` and $`\mathcal{Q}` are posets interpreted as categories, what's a functor from $`\mathcal{P}` to $`\mathcal{Q}`?
+:::
+
+# Covariant functors as indexed family of objects
+
+Instead of viewing functor as a _function_, sometimes it is more convenient to view a functor as an _object_ (or a family of objects).
+
+For sets $`A` and $`B`, sometimes the notation $`A^B` is used to denote the set $`\mathrm{Hom}(B, A)` being the set of all functions from $`B` to $`A`.
+This notation is natural because, for finite sets $`A` and $`B`, then $`|\mathrm{Hom}(B, A)| = |A|^{|B|}`.
+
+That said, the product set $`A \times A` is sometimes also denoted $`A^2`.
+Is there a relation?
+
+Certainly!
+We define the set $`\mathbf{2} = \{0, 1\}` (or any set of two elements).
+Then we have $`|\mathbf{2}| = 2`.
+It is not difficult to see there is a correspondence between $`A^2` and $`\mathrm{Hom}(\mathbf{2}, A)`.
+
+Now, let $`\mathcal{A}` be a category.
+Define the category $`\mathcal{A} \times \mathcal{A} = \mathcal{A}^2` the obvious way:
+
+- The objects of $`\mathcal{A}^2` are pairs of objects $`(A_1, A_2)` with $`A_1, A_2 \in \mathcal{A}`,
+- The morphisms are pairs of morphisms…
+
+:::EXERCISE
+For $`X, Y \in \mathsf{Top}`, we can define the product space $`X \times Y \in \mathsf{Top}`.
+This gives a functor $`\mathsf{Top}^2 \to \mathsf{Top}`.
+Verify this.
+(From a pair of maps $`(f, g) \colon (X_1, Y_1) \to (X_2, Y_2)` in $`\mathsf{Top}^2`, how do we get a map $`X_1 \times Y_1 \to X_2 \times Y_2`?
+Check this map is continuous, i.e. it is indeed a morphism in $`\mathsf{Top}`.)
+:::
+
+Similar to above, each object in $`\mathcal{A}^2` should correspond to some sort of function $`f \colon 2 \to \mathcal{A}`.
+But a function's codomain must be an object… $`\mathcal{A}` is a category, so $`f` should be a functor!
+
+So we can make a category $`\mathsf{2}`, and we have $`F \colon \mathsf{2} \to \mathcal{A}`.
+There is only one reasonable way to define $`\mathsf{2}`{margin}[This is *different* from the category $`\mathbf{2}` that we will define later for natural transformation! Be careful.] that do what we want:
+
+- The objects are $`\{0, 1\}`;
+- There is no morphism, except $`\mathrm{id}_0` and $`\mathrm{id}_1`.
+
+More generally,
+
+:::MORAL
+A functor $`F \colon \mathcal{A} \to \mathcal{B}` can be viewed as an indexed collection of objects $`\{B_A \in \mathcal{B}\}_{A \in \mathcal{A}}`.
+:::
+
+This can be most easily seen for a presheaf: "a contravariant functor $`\mathrm{Opens}(X)^{\mathrm{op}} \to \mathsf{Rings}`" means "a family of rings indexed by open sets of $`X`, satisfying certain niceness conditions".
+
+In fact, just as $`\mathcal{A}^2` is a category, the functors $`\mathsf{2} \to \mathcal{A}` also forms a category.
+We will see this in the Yoneda section below.
+
+:::aside "Product categories in Mathlib"
+The product category $`\mathcal{A}^2` is just $`C \times D` with `C = D`; Mathlib puts a {name}`CategoryTheory.Category` instance on the product of any two categories, with morphisms the pairs `(f, g)`.
+The two-object discrete category $`\mathsf{2}` — objects but only identity arrows — is {name}`CategoryTheory.Discrete` applied to a two-element type, and a functor out of it is exactly a choice of two objects.
+
+```lean
+open CategoryTheory in
+example (C : Type*) [Category C] : Type _ := C × C
+```
+:::
+
+# Contravariant functors
+
+:::PROTOTYPE
+Dual spaces, contravariant Yoneda functor, etc.
+:::
+
+Now I have to explain what the opposite categories were doing earlier.
+In all the previous examples, we took an arrow $`A_1 \to A_2`, and it became an arrow $`F(A_1) \to F(A_2)`.
+Sometimes, however, the arrow in fact goes the other way: we get an arrow $`F(A_2) \to F(A_1)` instead.
+In other words, instead of just getting a functor $`\mathcal{A} \to \mathcal{B}` we ended up with a functor $`\mathcal{A}^{\mathrm{op}} \to \mathcal{B}`.
+
+These functors have a name:
+
+:::DEFINITION
+A *contravariant functor* from $`\mathcal{A}` to $`\mathcal{B}` is a functor $`F \colon \mathcal{A}^{\mathrm{op}} \to \mathcal{B}`.
+(Note that we do _not_ write "contravariant functor $`F \colon \mathcal{A} \to \mathcal{B}`", since that would be confusing; the function notation will always use the correct domain and codomain.)
+:::
+
+For emphasis, a usual functor is often called a *covariant functor*.
+(The word "functor" with no adjective always refers to covariant.)
+
+Let's see why this might happen.
+
+:::EXAMPLE "$V \\mapsto V^\\vee$ is contravariant"
+Consider the functor $`\mathsf{Vect}_k \to \mathsf{Vect}_k` by $`V \mapsto V^\vee`.
+
+If we were trying to specify a covariant functor, we would need, for every linear map $`T \colon V_1 \to V_2`, a linear map $`T^\vee \colon V_1^\vee \to V_2^\vee`.
+But recall that $`V_1^\vee = \mathrm{Hom}(V_1, k)` and $`V_2^\vee = \mathrm{Hom}(V_2, k)`: there's no easy way to get an obvious map from left to right.
+
+However, there _is_ an obvious map from right to left: given $`\xi_2 \colon V_2 \to k`, we can easily give a map from $`V_1 \to k`: just compose with $`T`!
+In other words, there is a very natural map $`V_2^\vee \to V_1^\vee` according to the composition $`V_1 \xrightarrow{T} V_2 \xrightarrow{\xi_2} k`.
+In summary, a map $`T \colon V_1 \to V_2` induces naturally a map $`T^\vee \colon V_2^\vee \to V_1^\vee` in the opposite direction.
+:::
+
+We can generalize the example above in any category by replacing the field $`k` with any chosen object $`A \in \mathcal{A}`.
+
+:::EXAMPLE "Contravariant Yoneda functor"
+The *contravariant Yoneda functor* on $`\mathcal{A}`, denoted $`H_A \colon \mathcal{A}^{\mathrm{op}} \to \mathsf{Set}`, is used to describe how objects of $`\mathcal{A}` see $`A`.
+For each $`X \in \mathcal{A}` it puts $$`H_A(X) \mathrel{:=} \mathrm{Hom}_{\mathcal{A}}(X, A) \in \mathsf{Set}.`
+For $`X \xrightarrow{f} Y` in $`\mathcal{A}`, the map $`H_A(f)` sends each arrow $`Y \xrightarrow{p} A \in \mathrm{Hom}_\mathcal{A}(Y, A)` to $$`X \xrightarrow{f} Y \xrightarrow{p} A \quad \in \mathrm{Hom}_\mathcal{A}(X, A)`
+as we did above.
+Thus $`H_A(f)` is an arrow from $`\mathrm{Hom}_\mathcal{A}(Y, A) \to \mathrm{Hom}_\mathcal{A}(X, A)`.
+(Note the flipping!)
+:::
+
+:::EXERCISE
+Check now the claim that $`\mathcal{A}^{\mathrm{op}} \times \mathcal{A} \to \mathsf{Set}` by $`(A_1, A_2) \mapsto \mathrm{Hom}(A_1, A_2)` is in fact a functor.
+:::
+
+:::aside "Opposite categories and Yoneda in Mathlib"
+Mathlib writes the opposite category as $`C^{\mathrm{op}}`, so a contravariant functor is literally a term of type `Cᵒᵖ ⥤ D`; the operation $`\bullet^\vee` on the arrows is what {name}`CategoryTheory.Functor.op` produces.
+The contravariant Yoneda functor $`H_A = \mathrm{Hom}(-, A)` is bundled by {name}`CategoryTheory.yoneda`, and its covariant partner $`H^A = \mathrm{Hom}(A, -)` by {name}`CategoryTheory.coyoneda`.
+:::
+
+# Equivalence of categories
+
+When are two categories "the same"?
+Requiring an honest inverse functor on the nose is too rigid — as with natural isomorphism below, we only want the round trips to be _naturally isomorphic_ to the identities, not literally equal.
+This gives the right notion:
+
+:::DEFINITION
+Two categories $`\mathcal{A}` and $`\mathcal{B}` are *equivalent* if there are functors $`F \colon \mathcal{A} \to \mathcal{B}` and $`G \colon \mathcal{B} \to \mathcal{A}` with natural isomorphisms $`G \circ F \cong \mathrm{id}_\mathcal{A}` and $`F \circ G \cong \mathrm{id}_\mathcal{B}`.
+:::
+
+A cleaner criterion avoids naming $`G` at all: $`F` alone is an equivalence exactly when it is *fully faithful* (a bijection on each hom-set, so it neither collapses nor invents arrows) and *essentially surjective* (every object of $`\mathcal{B}` is isomorphic to some $`F(A)`, so it misses nothing up to isomorphism).
+
+:::aside "Equivalences in Mathlib"
+An equivalence is {name}`CategoryTheory.Equivalence`, written `C ≌ D`, packaging the two functors and the two natural isomorphisms.
+The criterion is the pair {name}`CategoryTheory.Functor.FullyFaithful` and {name}`CategoryTheory.Functor.EssSurj`; from a fully faithful, essentially surjective functor Mathlib manufactures the inverse and the isomorphisms.
+:::
+
+# Natural transformations
+
+We made categories to keep track of objects and maps, then went a little crazy and asked "what are the maps between categories?" to get functors.
+Now we'll ask "what are the maps between functors?" to get natural transformations.
+
+It might sound terrifying that we're drawing arrows between functors, but this is actually an old idea.
+Recall that given two paths $`\alpha, \beta \colon [0, 1] \to X`, we built a path-homotopy by "continuously deforming" the path $`\alpha` to $`\beta`; this could be viewed as a function $`[0, 1] \times [0, 1] \to X`.
+The definition of a natural transformation is similar: we want to pull $`F` to $`G` along a series of arrows in the target space $`\mathcal{B}`.
+
+:::DEFINITION
+Let $`F, G \colon \mathcal{A} \to \mathcal{B}` be two functors.
+A *natural transformation* $`\alpha` from $`F` to $`G` consists of, for each $`A \in \mathcal{A}` an arrow $`\alpha_A \in \mathrm{Hom}_\mathcal{B}(F(A), G(A))`, which is called the *component* of $`\alpha` at $`A`.
+These $`\alpha_A` are subject to the "naturality" requirement that for any $`A_1 \xrightarrow{f} A_2`, we have $`\alpha_{A_2} \circ F(f) = G(f) \circ \alpha_{A_1}`.
+:::
+
+The arrow $`\alpha_A` represents the path that $`F(A)` takes to get to $`G(A)` (just as in a path-homotopy from $`\alpha` to $`\beta` each _point_ $`\alpha(t)` gets deformed to the _point_ $`\beta(t)` continuously).
+
+There is a second equivalent definition that looks much more like the homotopy.
+
+:::DEFINITION
+Let $`\mathbf{2}` denote the category generated by a poset with two elements $`0 \le 1`.
+Then a *natural transformation* $`\alpha \colon F \to G` is just a functor $`\alpha \colon \mathcal{A} \times \mathbf{2} \to \mathcal{B}` satisfying $$`\alpha(A, 0) = F(A), \;\; \alpha(f, 0) = F(f) \quad\text{and}\quad \alpha(A, 1) = G(A), \;\; \alpha(f, 1) = G(f).`
+More succinctly, $`\alpha(-, 0) = F`, $`\alpha(-, 1) = G`.
+:::
+
+The proof that these are equivalent is left as a practice problem.
+
+Naturally, two natural transformations $`\alpha \colon F \to G` and $`\beta \colon G \to H` can get composed.
+
+Now suppose $`\alpha` is a natural transformation such that $`\alpha_A` is an isomorphism for each $`A`.
+In this way, we can construct an inverse arrow $`\beta_A` to it.
+In this case, we say $`\alpha` is a *natural isomorphism*.
+We can then say that $`F(A) \cong G(A)` *naturally* in $`A`.
+(And $`\beta` is an isomorphism too!)
+This means that the functors $`F` and $`G` are "really the same": not only are they isomorphic on the level of objects, but these isomorphisms are "natural".
+As a result of this, we also write $`F \cong G` to mean that the functors are naturally isomorphic.
+
+This is what it really means when we say that "there is a natural / canonical isomorphism".
+For example, one often claims that there is a canonical isomorphism $`(V^\vee)^\vee \cong V`, and mumbles something about "not having to pick a basis" and "God-given".
+Category theory, amazingly, lets us formalize this: it just says that $`(V^\vee)^\vee \cong \mathrm{id}(V)` naturally in $`V \in \mathsf{FDVect}_k`.
+Really, we have a natural transformation with component $`\varepsilon_V` given by $`v \mapsto \mathrm{ev}_v` (the fact that it is an isomorphism follows from the fact that $`V` and $`(V^\vee)^\vee` have equal dimensions and $`\varepsilon_V` is injective).
+
+:::aside "Natural transformations in Mathlib"
+A natural transformation is {name}`CategoryTheory.NatTrans`, and since functors $`\mathcal{A} \to \mathcal{B}` themselves form a category (with natural transformations as arrows) the notation `F ⟶ G` denotes one.
+A natural isomorphism is then just an isomorphism `F ≅ G` in that functor category; {name}`CategoryTheory.NatIso.ofComponents` builds one from componentwise isomorphisms together with the naturality square.
+:::
+
+# The Yoneda lemma
+
+Now that I have natural transformations, I can define:
+
+:::DEFINITION
+The *functor category* of two categories $`\mathcal{A}` and $`\mathcal{B}`, denoted $`[\mathcal{A}, \mathcal{B}]`, is defined as follows:
+
+- The objects of $`[\mathcal{A}, \mathcal{B}]` are (covariant) functors $`F \colon \mathcal{A} \to \mathcal{B}`, and
+- The morphisms are natural transformations $`\alpha \colon F \to G`.
+:::
+
+:::QUESTION
+When are two objects in the functor category isomorphic?
+:::
+
+With this, I can make good on the last example I mentioned at the beginning:
+
+:::EXERCISE
+Construct the following functors:
+
+- $`\mathcal{A} \to [\mathcal{A}^{\mathrm{op}}, \mathsf{Set}]` by $`A \mapsto H_A`, which we call $`H_\bullet`.
+- $`\mathcal{A}^{\mathrm{op}} \to [\mathcal{A}, \mathsf{Set}]` by $`A \mapsto H^A`, which we call $`H^\bullet`.
+:::
+
+Notice that we have opposite categories either way; even if you like $`H^A` because it is covariant, the map $`H^\bullet` is contravariant.
+So for what follows, we'll prefer to use $`H_\bullet`.
+
+The main observation now is that given a category $`\mathcal{A}`, $`H_\bullet` provides some _special_ functors $`\mathcal{A}^{\mathrm{op}} \to \mathsf{Set}` which are already "built" in to the category $`\mathcal{A}`.
+In light of this, we define:
+
+:::DEFINITION
+A *presheaf* $`X` is just a contravariant functor $`\mathcal{A}^{\mathrm{op}} \to \mathsf{Set}`.
+It is called *representable* if $`X \cong H_A` for some $`A`.
+:::
+
+In other words, when we think about representable, the question we're asking is: what kind of presheaves are already "built in" to the category $`\mathcal{A}`?
+
+One way to get at this question is: given a presheaf $`X` and a particular $`H_A`, we can look at the _set_ of natural transformations $`\alpha \colon X \Rightarrow H_A`, and see if we can learn anything about it.
+In fact, this set can be written explicitly:
+
+:::THEOREM "Yoneda lemma"
+Let $`\mathcal{A}` be a category, pick $`A \in \mathcal{A}`, and let $`H_A` be the contravariant Yoneda functor.
+Let $`X \colon \mathcal{A}^{\mathrm{op}} \to \mathsf{Set}` be a contravariant functor.
+Then the map $$`\left\{ \text{Natural transformations } H_A \xrightarrow{\alpha} X \right\} \to X(A)`
+defined by $`\alpha \mapsto \alpha_A(\mathrm{id}_A) \in X(A)` is an isomorphism of $`\mathsf{Set}` (i.e. a bijection).
+Moreover, if we view both sides of the equality as functors $`\mathcal{A}^{\mathrm{op}} \times [\mathcal{A}^{\mathrm{op}}, \mathsf{Set}] \to \mathsf{Set}` then this isomorphism is natural.
+:::
+
+This might be startling at first sight.
+Here's an unsatisfying explanation why this might not be too crazy: in category theory, a rule of thumb is that "two objects of the same type that are built naturally are probably the same".
+You can see this theme when we defined functors and natural transformations, and even just compositions.
+Now to look at the set of natural transformations, we took a pair of elements $`A \in \mathcal{A}` and $`X \in [\mathcal{A}^{\mathrm{op}}, \mathsf{Set}]` and constructed a _set_ of natural transformations.
+Is there another way we can get a set from these two pieces of information?
+Yes: just look at $`X(A)`.
+The Yoneda lemma is telling us that our heuristic still holds true here.
+
+:::aside "The Yoneda lemma in Mathlib"
+The bijection is {name}`CategoryTheory.yonedaEquiv`, and its naturality is packaged by {name}`CategoryTheory.yonedaLemma`.
+Its most-quoted consequence, that $`H_\bullet` embeds $`\mathcal{A}` into the presheaf category, is {name}`CategoryTheory.Yoneda.fullyFaithful` — the fully faithful Yoneda embedding, a category-theoretic Cayley theorem.
+:::
+
+Some consequences of the Yoneda lemma are recorded in {cite}`ref:msci`.
+Since this chapter is already a bit too long, I'll just write down the statements, and refer you to {cite}`ref:msci` for the proofs.
+
+1. As we mentioned before, $`H^\bullet` provides a functor $`\mathcal{A} \to [\mathcal{A}^{\mathrm{op}}, \mathsf{Set}]`.
+   It turns out this functor is in fact _fully faithful_; it quite literally embeds the category $`\mathcal{A}` into the functor category on the right (much like Cayley's theorem embeds every group into a permutation group).
+2. If $`X, Y \in \mathcal{A}` then $$`H_X \cong H_Y \iff X \cong Y \iff H^X \cong H^Y.`
+   To see why this is expected, consider $`\mathcal{A} = \mathsf{Grp}` for concreteness.
+   Suppose $`A`, $`X`, $`Y` are groups such that $`H_X(A) \cong H_Y(A)` for all $`A`.
+   For example, if $`A = \mathbb{Z}`, then $`\left\lvert X \right\rvert = \left\lvert Y \right\rvert`; and if $`A = \mathbb{Z}/2\mathbb{Z}`, then $`X` and $`Y` have the same number of elements of order $`2`; and so on.
+   Each $`A` gives us some information on how $`X` and $`Y` are similar, but the whole natural isomorphism is strong enough to imply $`X \cong Y`.
+3. Consider the covariant forgetful functor $`U \colon \mathsf{Grp} \to \mathsf{Set}`.
+   It can be represented by $`H^\mathbb{Z}`, in the sense that $$`\mathrm{Hom}_{\mathsf{Grp}}(\mathbb{Z}, G) \cong U(G) \qquad\text{ by }\qquad \phi \mapsto \phi(1).`
+   That is, elements of $`G` are in bijection with maps $`\mathbb{Z} \to G`, determined by the image of $`+1` (or $`-1` if you prefer).
+   So a representation of $`U` was determined by looking at $`\mathbb{Z}` and picking $`+1 \in U(\mathbb{Z})`.
+
+   The generalization of this is as follows: let $`\mathcal{A}` be a category and $`X \colon \mathcal{A} \to \mathsf{Set}` a covariant functor.
+   Then a representation $`H^A \cong X` consists of an object $`A \in \mathcal{A}` and an element $`u \in X(A)` satisfying a certain condition.{margin}[Just for completeness, the condition is: for all $`A' \in \mathcal{A}` and $`x \in X(A')`, there's a unique $`f \colon A \to A'` with $`(Xf)(u) = x`.]
+   In the above situation, $`X = U`, $`A = \mathbb{Z}` and $`u = \pm 1`.
+
+# Problems
+
+:::PROBLEM
+Show that the two definitions of natural transformation (one in terms of $`\mathcal{A} \times \mathbf{2} \to \mathcal{B}` and one in terms of arrows $`F(A) \xrightarrow{\alpha_A} G(A)`) are equivalent.
+(Hint: the category $`\mathcal{A} \times \mathbf{2}` has "redundant arrows".)
+:::
+
+:::PROBLEM
+Let $`\mathcal{A}` be the category of finite sets whose arrows are bijections between sets.
+For $`A \in \mathcal{A}`, let $`F(A)` be the set of _permutations_ of $`A` and let $`G(A)` be the set of _orderings_ on $`A`.{margin}[A permutation is a bijection $`A \to A`, and an ordering is a bijection $`\{1, \dots, n\} \to A`, where $`n` is the size of $`A`.]
+
+1. Extend $`F` and $`G` to functors $`\mathcal{A} \to \mathsf{Set}`.
+2. Show that $`F(A) \cong G(A)` for every $`A`, but this isomorphism is _not_ natural.
+:::
+
+:::PROBLEM "Proving the Yoneda lemma"
+In the context of the Yoneda lemma:
+
+1. Prove that the map described is in fact a bijection.
+   (To do this, you will probably have to explicitly write down the inverse map.)
+2. Prove that the bijection is indeed natural.
+   (This is long-winded, but not difficult; from start to finish, there is only one thing you can possibly do.)
 :::
