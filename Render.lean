@@ -147,6 +147,30 @@ main section, main .content-wrapper {
   }
 }
 
+/* The header title wrapper doesn't share <main>'s ToC-width origin at every size:
+   book.css hides the ToC-width logo slot in `701px <= width <= 1500px`, so there
+   the title wrapper starts flush at the left edge (x = 0), while <main> keeps its
+   ToC margin. To keep the title locked to the body column, add that ToC width back
+   as the title's origin, then reuse the body's *own* (already clamped) margin. When
+   the viewport is wide enough to center, both land centered; when it's too narrow —
+   the ToC and column nearly fill the row, so the body clamps left — the title
+   clamps with it and stays aligned rather than drifting to its own center. Above
+   1500px the logo reappears and the shared rule above (which subtracts the ToC) is
+   correct. Same selector + later source order wins the tie. */
+@media screen and (min-width: 701px) and (max-width: 1500px) {
+  header .header-title {
+    margin-left: calc(
+      var(--verso-toc-effective-width)
+      + max(
+          0px,
+          calc(50vw - var(--verso-content-max-width) / 2
+               - var(--verso--content-padding-x)
+               - var(--verso-toc-effective-width))
+        )
+    );
+  }
+}
+
 main h1, main h2, main h3, main h4 {
   font-family: var(--verso-structure-font-family);
   margin-top: 1.6em;

@@ -325,7 +325,8 @@ So there has to be some point that's in $`S_\varepsilon` for every $`\varepsilon
 Both halves are Mathlib theorems, stated for a Haar measure on any finite-dimensional real vector space, with "mesh" phrased as the measure of a fundamental domain `F` for the lattice `L`:
 
 ```lean
-recall MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
+open MeasureTheory in
+recall exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
     {E : Type*} [MeasurableSpace E]
     {μ : MeasureTheory.Measure E}
     {F s : Set E} [NormedAddCommGroup E] [NormedSpace ℝ E] [BorelSpace E]
