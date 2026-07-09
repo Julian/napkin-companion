@@ -48,7 +48,7 @@
   <path class="edge" d="M 306.2 79.5 Q 316.8 240.9 362.8 409.0" marker-end="url(#arr)"/>
   <path class="edge" d="M 69.2 184.5 Q 207.5 346.6 351.6 514.0" marker-end="url(#arr)"/>
   <g class="node">
-    <a href="../../Set-theory/" target="_top"><title>Set Theory</title>
+    <a href="../../Set-Theory-I-ZFC-Ordinals-and-Cardinals/Cauchys-functional-equation-and-Zorns-lemma/" target="_top"><title>Set Theory</title>
       <rect class="node-bg req" x="9.0" y="41.5" width="88.000000" height="38.000000" rx="4" ry="4"/>
       <text class="node-ch"    x="13.0" y="45.5">Ch 88-94</text>
       <text class="node-label" x="53.0" y="65.5">Set Theory</text>
@@ -174,7 +174,7 @@
     </a>
   </g>
   <g class="node">
-    <a href="../../Algebraic-Geometry-II/" target="_top"><title>Alg Geo 2-3</title>
+    <a href="../../Algebraic-Geometry-II-Affine-Schemes/Sheaves-and-ringed-spaces/" target="_top"><title>Alg Geo 2-3</title>
       <rect class="node-bg" x="18.0" y="514.0" width="88.000000" height="38.000000" rx="4" ry="4"/>
       <text class="node-ch"    x="22.0" y="518.0">Ch 82-87</text>
       <text class="node-label" x="62.0" y="538.0">Alg Geo 2-3</text>

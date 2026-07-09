@@ -49,7 +49,7 @@ structure Edge where
 /-- Order matters only for the rendering pass below — nodes are
     drawn in this order so the visual stacking is deterministic. -/
 def nodeTable : List (String × Node) := [
-  ("SetTh",    {pos := (5.0,  45.0), label := "Set Theory",  ch := "Ch 88-94",   req := true,  href := "../../Set-theory/"}),
+  ("SetTh",    {pos := (5.0,  45.0), label := "Set Theory",  ch := "Ch 88-94",   req := true,  href := "../../Set-Theory-I-ZFC-Ordinals-and-Cardinals/Cauchys-functional-equation-and-Zorns-lemma/"}),
   ("AbsAlg",   {pos := (20.0, 45.0), label := "Abs Alg",     ch := "Ch 1, 3-5",  req := true,  href := "../../Starting-Out/Groups/"}),
   ("LinAlg",   {pos := (33.0, 45.0), label := "Lin Alg",     ch := "Ch 9-15, 18",req := false, href := "../../Linear-Algebra/"}),
   ("Quantum",  {pos := (45.0, 43.0), label := "Quantum",     ch := "Ch 23-25",   req := false, href := "../../Quantum-Algorithms/Quantum-states-and-measurements/"}),
@@ -67,7 +67,7 @@ def nodeTable : List (String × Node) := [
   ("AG1",      {pos := (6.0,  10.0), label := "Alg Geo 1",   ch := "Ch 77-81",   req := false, href := "../../Algebraic-Geometry-I-Classical-Varieties/Affine-varieties/"}),
   ("ANT2",     {pos := (40.0, 0.0),  label := "Alg NT 2",    ch := "Ch 60-63",   req := false, href := "../../Algebraic-Number-Theory-II/"}),
   ("AT2",      {pos := (23.0, 0.0),  label := "Alg Top 2",   ch := "Ch 71-76",   req := false, href := "../../Algebraic-Topology-II-Homology/Singular-homology/"}),
-  ("AG2",      {pos := (6.0,  0.0),  label := "Alg Geo 2-3", ch := "Ch 82-87",   req := false, href := "../../Algebraic-Geometry-II/"})
+  ("AG2",      {pos := (6.0,  0.0),  label := "Alg Geo 2-3", ch := "Ch 82-87",   req := false, href := "../../Algebraic-Geometry-II-Affine-Schemes/Sheaves-and-ringed-spaces/"})
 ]
 
 def edgeTable : List Edge := [

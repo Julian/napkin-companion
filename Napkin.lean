@@ -85,6 +85,19 @@ import Napkin.AlgebraicGeometry.Zariski
 import Napkin.AlgebraicGeometry.ProjectiveVarieties
 import Napkin.AlgebraicGeometry.Bezout
 import Napkin.AlgebraicGeometry.QuasiProjective
+import Napkin.AlgebraicGeometry.Sheaves
+import Napkin.AlgebraicGeometry.Localization
+import Napkin.AlgebraicGeometry.SpecZariski
+import Napkin.AlgebraicGeometry.SpecSheaf
+import Napkin.AlgebraicGeometry.SpecExamples
+import Napkin.AlgebraicGeometry.MorScheme
+import Napkin.SetTheory.ZornLemma
+import Napkin.SetTheory.ZFC
+import Napkin.SetTheory.Ordinals
+import Napkin.SetTheory.Cardinals
+import Napkin.SetTheory.Models
+import Napkin.SetTheory.Forcing
+import Napkin.SetTheory.ContinuumHypothesis
 import Napkin.Backmatter.References
 import Napkin.Backmatter.Notation
 import Napkin.Backmatter.SetsFunctions
@@ -391,6 +404,50 @@ file := "Algebraic-Geometry-I-Classical-Varieties"
 {include 2 Napkin.AlgebraicGeometry.Bezout}
 
 {include 2 Napkin.AlgebraicGeometry.QuasiProjective}
+
+# Algebraic Geometry II: Affine Schemes
+
+%%%
+file := "Algebraic-Geometry-II-Affine-Schemes"
+%%%
+
+{include 2 Napkin.AlgebraicGeometry.Sheaves}
+
+{include 2 Napkin.AlgebraicGeometry.Localization}
+
+{include 2 Napkin.AlgebraicGeometry.SpecZariski}
+
+{include 2 Napkin.AlgebraicGeometry.SpecSheaf}
+
+{include 2 Napkin.AlgebraicGeometry.SpecExamples}
+
+{include 2 Napkin.AlgebraicGeometry.MorScheme}
+
+# Set Theory I: ZFC, Ordinals, and Cardinals
+
+%%%
+file := "Set-Theory-I-ZFC-Ordinals-and-Cardinals"
+%%%
+
+{include 2 Napkin.SetTheory.ZornLemma}
+
+{include 2 Napkin.SetTheory.ZFC}
+
+{include 2 Napkin.SetTheory.Ordinals}
+
+{include 2 Napkin.SetTheory.Cardinals}
+
+# Set Theory II: Model Theory and Forcing
+
+%%%
+file := "Set-Theory-II-Model-Theory-and-Forcing"
+%%%
+
+{include 2 Napkin.SetTheory.Models}
+
+{include 2 Napkin.SetTheory.Forcing}
+
+{include 2 Napkin.SetTheory.ContinuumHypothesis}
 
 # Backmatter
 

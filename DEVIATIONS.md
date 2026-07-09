@@ -530,6 +530,102 @@ drops the "(TO DO)" from the part, chapter, and sales-pitch titles.
   Mathlib has no separate quasi-projective-variety type and works with
   open subschemes instead.
 
+### Algebraic Geometry II: Affine Schemes
+
+- **Sheaves and ringed spaces.** Section/germ figures omitted; the
+  categorical pullback-square and colimit remarks ported as prose; one
+  footnote inlined. Reveals cover `TopCat.Presheaf`/`Sheaf`,
+  `TopCat.Presheaf.stalk`/`germ`, and sheafification
+  (`sheafify`/`toSheafify`/`stalkToFiber`), with a buildable
+  presheaf-as-functor block.
+- **Localization.** Cross-references become descriptive phrases.
+  Reveals cover `Submonoid`, `Localization`/`IsLocalization`,
+  `Localization.Away`/`AtPrime`, `FractionRing`/`IsFractionRing`,
+  `IsLocalization.orderIsoOfPrime`, and `Ideal.comap`/`map`.
+- **Affine schemes: the Zariski topology.** The Calvin-and-Hobbes and
+  parabola figures omitted; the post-`\endinput` Critch problem is
+  correctly excluded. Reveals cover `PrimeSpectrum` with
+  `zeroLocus`/`vanishingIdeal`, `isClosed_singleton_iff_isMaximal`,
+  `isIrreducible_iff_vanishingIdeal_isPrime`, and Krull dimension
+  (`ringKrullDim`/`topologicalKrullDim`).
+- **Affine schemes: the sheaf.** A Vakil footnote becomes a
+  `{cite}`ref:vakil`` margin note. Reveals cover
+  `AlgebraicGeometry.Spec.structureSheaf`,
+  `StructureSheaf.globalSectionsIso`, `PrimeSpectrum.basicOpen`,
+  `Localization.AtPrime`, and `IsLocalRing`/`ResidueField` (with a
+  buildable local-ring instance block).
+- **Eighteen examples of affine schemes** (interlude). All 18 figures
+  (including the Mumford raster) omitted; section headers containing
+  `[…]`/`_` are escaped so Verso does not read them as markup. One
+  orienting aside; the rest are worked examples.
+- **Morphisms of locally ringed spaces.** Ported through the upstream
+  `\endinput` (the later projective-scheme and morphisms-of-sheaves
+  sections are excluded upstream); a MathOverflow quote is dropped;
+  figures omitted; two problems ported (hints inlined). Reveals cover
+  `AlgebraicGeometry.Scheme`/`Scheme.Hom`/`stalkMap`,
+  `LocallyRingedSpace`, `IsLocalHom`, and `Spec`/`Spec.map` (buildable
+  `noncomputable` blocks).
+
+### Set Theory I: ZFC, Ordinals, and Cardinals
+
+Per the book-wide types-not-sets exception, this part models sets *as*
+sets (`ZFSet`/`Class`), since sets are the actual subject.
+
+- **Cauchy's functional equation and Zorn's lemma** (the interlude).
+  Figures (apples, the "zornaholic" cartoon) omitted; problems ported
+  with hints inlined. Reveals cover `zorn_le`/`zorn_subset`, `IsMax`,
+  and the Hamel-basis existence (`Module.Basis.ofVectorSpace` via
+  `LinearIndependent`).
+- **Zermelo–Fraenkel with choice.** The universe-triangle figure and
+  the Cantor-diagonal table are rendered in prose; footnotes →
+  `{margin}[…]`; cross-references become descriptive phrases. Reveals
+  cover `ZFSet` with its axiom-operations (`empty`/`pair`/`sUnion`/
+  `powerset`/`sep`/`image`/`omega`), `Class`, Cantor's theorem
+  (`Function.cantor_injective`/`cantor_surjective`, with a buildable
+  block), and `WellOrderingRel`/`IsWellOrder`.
+- **Ordinals.** The ω-spiral figure omitted. An aside notes Mathlib
+  defines `Ordinal` as order-isomorphism classes of well-orders rather
+  than as transitive ∈-sets, with `ZFSet.rank` and `ZFSet.vonNeumann`
+  as the ∈-set bridge; ordinal exponentiation is discussed via `opow`
+  (there is no bare `Ordinal.opow` constant). Reveals also cover
+  `Ordinal.omega0`, `Order.IsSuccLimit`, and `Ordinal.limitRecOn`.
+- **Cardinals.** Equinumerosity and cardinal-squaring tables rendered
+  as prose. Reveals cover `Cardinal.mk`/`aleph`/`aleph0`, Cantor
+  (`Cardinal.cantor`), cardinal arithmetic collapse
+  (`Cardinal.mul_eq_self`/`mul_eq_max`/`add_eq_max`), cofinality
+  (`Ordinal.cof`), and `Cardinal.IsRegular`/`IsInaccessible`. The one
+  `\sproblem` is rendered as a plain problem per the starred-problem
+  convention.
+
+### Set Theory II: Model Theory and Forcing
+
+Sets are modeled as sets throughout, per the set-theory exception.
+
+- **Inner model theory.** The two universe-diagram figures omitted;
+  footnotes → `{margin}[…]`; `\Cref`s → descriptive phrases; the
+  ZFC-axiom macros spelled out ("Empty Set", "Power Set", …); three
+  problems ported with hints inlined. Reveals cover Mathlib's
+  first-order logic: `FirstOrder.Language`/`Structure`/`Sentence`
+  (with `Sentence.Realize`, `M ⊨ φ`), `Theory`/`Theory.Model`,
+  `ElementarySubstructure`/`ElementarilyEquivalent`/`ElementaryEmbedding`,
+  and downward Löwenheim–Skolem
+  (`FirstOrder.Language.exists_elementaryEmbedding_card_eq`). Transitive/
+  inner models of ZFC, absoluteness, the Levy hierarchy, Mostowski
+  collapse, reflection, and Replacement-as-a-schema are flagged as
+  **absent from Mathlib** (honest prose asides).
+- **Forcing.** Binary-tree/universe figures omitted; two problems
+  ported (Rasiowa–Sikorski hint inlined). Only the poset scaffolding
+  (`PartialOrder`, order density/bounds) is cited; generic filters,
+  $\mathbb{P}$-names, $M[G]$, and the forcing relation are flagged as
+  **entirely beyond Mathlib**.
+- **Breaking the continuum hypothesis.** The `Add(ω, ω₂)`/binary-tree
+  figures omitted; the commented-out `V ≠ L` section is left out (it is
+  commented out upstream); one problem ported with hint inlined. The
+  cardinal-arithmetic backdrop cites `Cardinal.aleph`, `Ordinal.cof`,
+  and `Cardinal.IsRegular`; the forcing-based independence of CH,
+  cardinal collapse, ccc-preservation, and the constructible universe
+  $L$ are flagged as absent from Mathlib.
+
 ### Backmatter
 
 - **References** is an auto-generated bibliography; upstream's
@@ -555,6 +651,7 @@ drops the "(TO DO)" from the part, chapter, and sales-pitch titles.
 
 ## Unported content
 
-Tracked as open work, not deviations:
-Algebraic Geometry II (Affine Schemes) and Set Theory I/II, together
-with the hints/solutions backmatter appendix.
+Tracked as open work, not deviations: only the hints/solutions
+backmatter appendix, whose hints need Lean-specific rewrites rather
+than a straight prose port. Every content chapter of the book, plus the
+notation and sets-and-functions appendices, is now ported.

@@ -97,6 +97,56 @@ main section, main .content-wrapper {
   max-width: var(--verso-content-max-width);
 }
 
+/* book.css centers both the body column (`.content-wrapper`) and the fixed-header
+   title with `margin: 0 auto` — but each within its own box, and those boxes are
+   pushed right by the fixed ToC (the content lives in <main>, offset by
+   `margin-left: <toc width>`; the title lives in a flex wrapper that starts after
+   a ToC-width logo slot). So both end up centered in the *post-ToC* area, well
+   right of the true page center — which our narrower measure only exaggerates.
+
+   Center both against the whole viewport instead, with one shared left margin.
+   For a column of width `--verso-content-max-width` whose text is inset by
+   `--verso--content-padding-x`, inside a containing block that itself starts a
+   ToC-width from the left, the margin that lands the text centered on the page is
+   `50vw − max-width/2 − padding − toc`. We give the header title matching
+   left padding so its text shares the body's left edge, then the same margin puts
+   the two on the same vertical line — centered together. `max(0px, …)` degrades to
+   left-aligned when the viewport is too narrow to center.
+
+   Deliberately vw/rem-based, not container-query units: `100cqw` inside a custom
+   property resolves inconsistently between the two elements (measured 0px for the
+   content wrapper but nonzero for the title), so it can't hold them in step.
+   Scoped to the non-mobile layout, where the ToC offset actually exists — below
+   700px book.css drops the ToC margin and gives the title its own burger spacing,
+   which these rules must not clobber.
+
+   One more offset to cancel first: at >=1501px book.css adds
+   `padding-left: calc(toc-width + 6rem)` (~432px) to <main> — a brute-force
+   wide-screen indent that pushes the content column far right of the title (which
+   has no such padding). Zero it so the content's containing block starts flush at
+   the ToC edge, exactly like the title wrapper; then the shared margin below
+   centers both against the same origin. */
+@media screen and (min-width: 701px) {
+  /* Extra specificity (leading `body`) so this beats book.css's own
+     `.with-toc > main` >=1501px padding rule, which otherwise wins on source
+     order since both selectors have equal specificity. */
+  body .with-toc > main {
+    padding-left: 0;
+  }
+  main .content-wrapper,
+  header .header-title {
+    max-width: var(--verso-content-max-width);
+    margin-left: max(
+      0px,
+      calc(50vw - var(--verso-content-max-width) / 2
+           - var(--verso--content-padding-x)
+           - var(--verso-toc-effective-width))
+    );
+    margin-right: auto;
+    padding-left: var(--verso--content-padding-x);
+  }
+}
+
 main h1, main h2, main h3, main h4 {
   font-family: var(--verso-structure-font-family);
   margin-top: 1.6em;
