@@ -440,7 +440,7 @@ Turns out the situation is very nice:
 :::PROPOSITION
 A Euclidean domain is a PID.
 
-`EuclideanDomain` records the norm and the division algorithm; $`\Z` is the canonical example.
+`EuclideanDomain` records the norm and the division algorithm; $`\mathbb{Z}` is the canonical example.
 
 ```lean
 recall : EuclideanDomain ℤ

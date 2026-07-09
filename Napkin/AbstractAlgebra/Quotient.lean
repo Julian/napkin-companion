@@ -417,7 +417,7 @@ It should be mentioned at this point that in general, if $`G` is a finite group 
 # Eliminating the homomorphism
 
 :::PROTOTYPE
-Again $`\mathbb{Z}/n\mathbb{Z} \cong \mathbb{Z}/n\mathbb{Z}`.
+Again $`\mathbb{Z}/(n \cdot \mathbb{Z}) \cong \mathbb{Z}/n\mathbb{Z}`.
 :::
 
 Let's look at the last definition of $`G/N` we provided.

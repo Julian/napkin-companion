@@ -131,7 +131,7 @@ Given $`k`-algebras $`A` and $`B`, the *direct sum* $`A \oplus B` is defined as 
 Show that $`1_A + 1_B` is the multiplicative identity of $`A \oplus B`.
 :::
 
-Equivalently, you can define the direct sum $`A \oplus B` to be the set of pairs $`(a, b)`, where multiplication is defined by $`(a, b)(a', b') = (a a', b b')`.
+Equivalently, similar to the vector-space direct sum and the product ring, you can define the direct sum $`A \oplus B` to be the set of pairs $`(a, b)`, where multiplication is defined by $`(a, b)(a', b') = (a a', b b')`.
 In this notation, $`(1_A, 1_B)` would be the multiplicative identity of $`A \oplus B`.
 
 # Representations

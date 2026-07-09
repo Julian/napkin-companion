@@ -101,6 +101,11 @@ import Napkin.SetTheory.ContinuumHypothesis
 import Napkin.Backmatter.References
 import Napkin.Backmatter.Notation
 import Napkin.Backmatter.SetsFunctions
+import Napkin.Backmatter.Solutions.AlgebraTopologyLinAlg
+import Napkin.Backmatter.Solutions.AnalysisProbability
+import Napkin.Backmatter.Solutions.GeometryNumberTheory
+import Napkin.Backmatter.Solutions.AlgebraicTopologyCategories
+import Napkin.Backmatter.Solutions.GeometrySetTheory
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -460,3 +465,20 @@ number := false
 {include 2 Napkin.Backmatter.Notation}
 
 {include 2 Napkin.Backmatter.SetsFunctions}
+
+# Hints and Solutions
+
+%%%
+file := "Hints-and-Solutions"
+number := false
+%%%
+
+{include 2 Napkin.Backmatter.Solutions.AlgebraTopologyLinAlg}
+
+{include 2 Napkin.Backmatter.Solutions.AnalysisProbability}
+
+{include 2 Napkin.Backmatter.Solutions.GeometryNumberTheory}
+
+{include 2 Napkin.Backmatter.Solutions.AlgebraicTopologyCategories}
+
+{include 2 Napkin.Backmatter.Solutions.GeometrySetTheory}

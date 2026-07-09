@@ -415,6 +415,7 @@ As $`n \to \infty`, all three terms on the right-hand side tend to zero.
 The proof that $`+ \colon \mathbb{R} \times \mathbb{R} \to \mathbb{R}` is continuous is similar (and easier): one notes for any $`n` that $$`|(x_n + y_n) - (x + y)| \leq |x_n - x| + |y_n - y|` and both terms on the right-hand side tend to zero as $`n \to \infty`.
 :::
 
+A problem at the end of this chapter covers the other two operations, subtraction and division.
 The upshot of this is that, since compositions are also continuous, most of your naturally arising real-valued functions will automatically be continuous as well.
 For example, the function $`\frac{3x}{x^2 + 1}` will be a continuous function from $`\mathbb{R} \to \mathbb{R}`, since it can be obtained by composing $`+`, $`\times`, $`\div`.
 

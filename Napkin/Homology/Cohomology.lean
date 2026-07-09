@@ -229,6 +229,108 @@ After all, the cellular chain complex and the singular chain complex are both fr
 Geometrically, a cocycle modulo coboundary can be "evaluated" on a cycle modulo boundary, so $`H^n(X; G)` is "almost isomorphic" to $`\operatorname{Hom}(H_n(X), G)`.
 The universal coefficient theorem states this precisely, with the "error term" being exactly $`\operatorname{Ext}(H_{n-1}(X), G)`: if the region $`e^k` has a boundary divisible by $`n`, then we care about the value assigned to $`e^k` modulo $`n`, and this is what produces the $`\operatorname{Ext}` contribution.
 
+# Visualization of cohomology groups
+
+We try to make sense of $`C^n(X; G)` and $`H^n(X; G)`, for higher values of $`n`.
+As above, $`C_n(X; G)` is the free abelian group on $`n`-simplices on $`X`, so an element $`f \in C^n(X; G)` is a function that takes each $`n`-simplex to an element of $`G` (and extends linearly to all of $`C_n(X; G)`).
+This assignment of value need not have any nice properties — recall that a $`n`-simplex is simply a (continuous) map $`\sigma \colon \Delta^n \to X`, and different maps $`\sigma_1` and $`\sigma_2` are considered different even though $`\operatorname{img} \sigma_1 = \operatorname{img} \sigma_2`.
+In particular,
+
+- If $`[v_0, v_1, v_2]` is a singular simplex, it need not be the case that $`f([v_0, v_1, v_2]) + f([v_0, v_2, v_1]) = 0`.
+- A singular $`n`-simplex ($`n \geq 1`) with image contained in a point need not be mapped to $`0` by $`f`.
+
+But it _does not matter_ that elements of $`C_n(X)` aren't this nice!
+We will see below why this is the case.
+In the homology case, we defined $$`Z_n(X) \coloneqq \ker\left( C_n(X) \xrightarrow{\partial} C_{n-1}(X) \right), \quad B_n(X) \coloneqq \operatorname{img}\left( C_{n+1}(X) \xrightarrow{\partial} C_n(X) \right), \quad H_n(X) \coloneqq Z_n(X)/B_n(X).`
+Elements of $`Z_n(X)` and $`B_n(X)` are called cycles and boundaries respectively, with the obvious geometrical interpretation.
+So, $$`H_n(X) = \frac{n\text{-cycles}}{n\text{-boundaries}}.`
+For the current section, we will temporarily define $$`Z^n(X; G) \coloneqq \ker\left( C^n(X; G) \xrightarrow{\delta} C^{n+1}(X; G) \right), \quad B^n(X; G) \coloneqq \operatorname{img}\left( C^{n-1}(X; G) \xrightarrow{\delta} C^n(X; G) \right),`
+with $`H^n(X; G) \coloneqq Z^n(X; G)/B^n(X; G)`.
+For this section, we will call elements of $`Z^n(X; G)` the *cocycles* and elements of $`B^n(X; G)` the *coboundaries* respectively.
+Once again, $$`H^n(X; G) = \frac{n\text{-cocycles}}{n\text{-coboundaries}}.`
+
+It's less clear geometrically why the elements are named as above, but if we assume the group $`G` is a _field_ (where the group operation is the addition operation in the field), then we have:
+
+- a $`n`-cocycle is a map that sends every $`n`-boundary to $`0 \in G`;
+- a $`n`-coboundary is a map that sends every $`n`-cycle to $`0 \in G`.
+
+The first statement is clear (definition chasing), the second statement is only generally true in one direction (that a coboundary sends every cycle to $`0`; but a map that sends every cycle to $`0` need not be a coboundary — we will see this later on with the Klein bottle example).
+
+Let us see what a $`n`-cocycle must look like.
+First,
+
+:::MORAL
+Homotopic chains with the same boundary are mapped to the same value by cocycles.
+:::
+
+We defined what it means for two $`k`-simplices to be homotopic when discussing higher homotopy groups — in the current situation, we require in addition that the boundaries are always fixed.
+For instance, two $`1`-simplices from $`p` to $`q` that can be continuously deformed into one another (rel endpoints) are homotopic, while a $`1`-simplex forced to go around a hole in the space is not.
+
+Proof is not difficult — you just need to show that the difference between two homotopic $`k`-simplices is the boundary of something (their interior!), and write the interior as the sum of some $`k+1`-simplices.
+(Hint: the easiest way is actually to write the interior as the difference of two $`k+1`-simplices instead, and be careful of vertex ordering issues.)
+
+:::EXERCISE
+Finish the proof.
+:::
+
+A typical $`1`-cocycle assigns a value to each $`1`-simplex (arrow), subject to the constraint that a cycle must be mapped to $`0`; so the values around any closed loop must cancel.
+
+Now, the next observation is that:
+
+:::MORAL
+If we only consider cocycles modulo coboundaries, we basically only care about values assigned to the cycles.
+:::
+
+Why?
+Remember that a $`k`-coboundary is the $`\delta` of some $`(k-1)`-cochain.
+Given a $`0`-cochain that assigns the value $`1` to a single vertex, its $`\delta` assigns $`\pm 1` to each edge touching that vertex (with sign according to orientation).
+So, roughly speaking,
+
+:::MORAL
+By adding or subtracting a coboundary to a given cochain, we can adjust the value assigned to most chains however we want.
+:::
+
+I said "most chains" because, if the chains form a _cycle_, adding a coboundary won't let us change its assigned value.
+Fortunately,
+
+- Cycles that are _boundaries_ always get assigned the value $`0`.
+- Homotopic cycles get assigned the same value.
+  As a generalization, in fact, cycles that are homologous (i.e. they get mapped to the same value under the map $`Z_k(X) \twoheadrightarrow H_k(X)`) are assigned the same value.
+
+Therefore,
+
+:::MORAL
+Knowing the value of a cocycle on each "cycle modulo boundary" almost determines that cocycle, modulo coboundaries.
+:::
+
+In symbols: $`H^n(X; G)` is "almost isomorphic" to $`\operatorname{Hom}(H_n(X), G)`.
+In other words, a cocycle modulo coboundary can be "evaluated" on a cycle modulo boundary.
+
+This is precisely what the universal coefficient theorem states, although it says something more: the "error term" is exactly $`\operatorname{Ext}(H_{n-1}(X), G)`.
+
+Why would the error term exist?
+We had an example above, computing $`H^2(K; G)` for $`K` the Klein bottle.
+Let us work through it geometrically, assume $`G = \mathbb{Z}` for now.
+
+A typical $`2`-cochain $`f \in C^2(K; \mathbb{Z})` assigns a value to each $`2`-simplex.
+As with the $`0`-cochain above, the value assigned to a particular simplex doesn't matter: we can "transfer" the assigned value between the two triangles of the square by adding a coboundary.
+So, we may just say that the value assigned to the whole surface of the Klein bottle is (say) $`3`; formally, letting $`e^2_K \in C_2(K)` be the sum of the two $`2`-simplices, we can write $`f(e^2_K) = 3`.
+
+However, the boundary of the $`2`-chain corresponding to the whole surface of the Klein bottle is $`2` times the blue edge, so $`\delta` of the $`1`-cochain whose value on the blue edge is $`1` will assign the value $`2` to $`e^2_K`.
+In symbols: let $`e^1_b \in C_1(K)` be the blue edge, pick $`g \in C^1(K; \mathbb{Z})` such that $`g(e^1_b) = 1`, then $`\delta(g)(e^2_K) = 2`.
+Even though $`e^2_K` is not a cycle, we still need to care about its assigned value modulo $`2`!
+Because adding or subtracting the coboundary $`\delta(g)` can only adjust its values in increments of $`2`.
+
+Therefore,
+
+:::MORAL
+If the region $`e^k \in C_k(X)` has a boundary $`\partial e^k \in C_{k-1}(X)` divisible by $`n`, then we care about the value assigned to $`e^k`, modulo $`n`.
+:::
+
+This explains where the error term $`\operatorname{Ext}(H_{n-1}(X), G)` comes from.
+
+We have another comparison with de Rham cohomology in the cohomology-ring chapter — in that case, the group $`G` is a field, $`\mathbb{R}`, so $`\operatorname{Ext}(H_{n-1}(X), G)` is always zero.
+
 # Relative cohomology groups
 
 One can also define relative cohomology groups in the obvious way: dualize the chain complex $`\dots \xrightarrow{\partial} C_1(X, A) \xrightarrow{\partial} C_0(X, A) \to 0` to obtain a cochain complex, and take its cohomology.

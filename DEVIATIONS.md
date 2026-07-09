@@ -39,9 +39,11 @@ lists below.
    them as SVGs is ongoing work, not a settled decision.
 
 5. **Hints and solutions.** Upstream collects `\begin{hint}` /
-   `\begin{sol}` blocks into backmatter appendices. The port inlines
-   short hints as "(Hint: …)" parentheticals in some chapters; a
-   ported hints/solutions appendix does not exist yet.
+   `\begin{sol}` blocks into two backmatter appendices ("Hints to
+   selected problems" and "Sketches of selected solutions"). The port
+   both inlines short hints as "(Hint: …)" parentheticals in chapters
+   *and* gathers the full set into a single "Hints and Solutions"
+   backmatter part (details in its per-chapter note below).
 
 6. **Cross-references.** Upstream's `\Cref` links become descriptive
    phrases ("the basis-completion theorem", "a problem at the end of
@@ -649,9 +651,38 @@ Sets are modeled as sets throughout, per the set-theory exception.
   `Equiv` for bijections, `Set.image`/`Set.preimage`, and
   `Setoid`/`Quotient` with `Setoid.IsPartition`.
 
+### Hints and Solutions
+
+- Upstream's two separate backmatter appendices ("Hints to selected
+  problems" and "Sketches of selected solutions", both flat lists keyed
+  by a global problem number) are **merged into one "Hints and
+  Solutions" part**, organized by chapter, with each problem's hint and
+  solution shown together. The port has no global problem numbering, so
+  entries are keyed by a short problem descriptor (reusing the ported
+  chapter's `:::PROBLEM` title where it has one) instead of a number.
+- For build hygiene the part is split across five files by book area
+  (`Napkin/Backmatter/Solutions/`), covering ~226 problem entries
+  (~228 hints and ~136 solutions in the source). Chapters with no
+  `\begin{hint}`/`\begin{sol}` blocks are simply absent.
+- All hint/solution prose is ported verbatim and rewritten KaTeX-safe
+  (custom macros expanded, kets spelled with `\langle`/`\rangle`,
+  `align*` → `aligned`); `\Cref`s become descriptive phrases, `\url`/
+  `\href` become Markdown links, figures/tikz diagrams are dropped or
+  replaced by a prose sentence, and a few digressive footnotes become
+  `{margin}[…]` notes.
+- The `frobenius` and `artin` source chapters (both ported into
+  `FrobeniusElements.lean`) have their problems collected under one
+  "The Frobenius element" header. Problems sitting after an upstream
+  `\endinput`, and one entirely commented-out problem, are excluded.
+- **Silent typo fix** (per convention 11): in the large-numbers
+  "quantifier hell" solution, the final displayed limit read `= 1` in
+  the source where the almost-sure limit is the random variable's
+  value; corrected to `= 0`.
+
 ## Unported content
 
-Tracked as open work, not deviations: only the hints/solutions
-backmatter appendix, whose hints need Lean-specific rewrites rather
-than a straight prose port. Every content chapter of the book, plus the
-notation and sets-and-functions appendices, is now ported.
+The port is now content-complete: every chapter of the book, the
+notation and sets-and-functions appendices, and the merged hints/
+solutions appendix are all ported and building. The one small piece not
+yet carried over is upstream's per-topic "Pedagogical comments and
+references" prose in the References appendix (noted under Backmatter).

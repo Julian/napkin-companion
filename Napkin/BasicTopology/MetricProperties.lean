@@ -214,10 +214,12 @@ But here are some examples of ways in which relative adjectives require a little
   But if viewed as a sequence in $`\mathbb{Q}`, this sequence does _not_ converge!
   Similarly, the sequence $`0.9, 0.99, 0.999, 0.9999` does not converge in the space $`(0, 1)`, although it does converge in $`[0, 1]`.
 
-  The fact that these sequences fail to converge even though they "ought to" is weird and bad, and was why we defined complete spaces to begin with. - In general, it makes no sense to ask a question like "is $`[0, 1]` open?".
+  The fact that these sequences fail to converge even though they "ought to" is weird and bad, and was why we defined complete spaces to begin with.
+- In general, it makes no sense to ask a question like "is $`[0, 1]` open?".
   The questions "is $`[0, 1]` open in $`\mathbb{R}`?" and "is $`[0, 1]` open in $`[0, 1]`?" do make sense, however.
   The answer to the first question is "no" but the answer to the second question is "yes"; indeed, every space is open in itself.
-  Similarly, $`[0, \tfrac{1}{2})` is an open set in the space $`M = [0, 1]` because it is the ball _in $`M`_ of radius $`\tfrac{1}{2}` centered at $`0`. - Dually, it doesn't make sense to ask "is $`[0, 1]` closed"?
+  Similarly, $`[0, \tfrac{1}{2})` is an open set in the space $`M = [0, 1]` because it is the ball _in $`M`_ of radius $`\tfrac{1}{2}` centered at $`0`.
+- Dually, it doesn't make sense to ask "is $`[0, 1]` closed"?
   It is closed _in $`\mathbb{R}`_ and _in itself_ (but every space is closed in itself, anyways).
 
 To make sure you understand the above, here are two exercises to help you practice relative adjectives.

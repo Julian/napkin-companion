@@ -164,10 +164,10 @@ recall orderOf_pos_iff {G : Type*} [Monoid G] {x : G} :
 For $`M = pq` finite, every unit has finite order, and $`orderOf x` divides $`|(\text{ZMod } M)^\times| = (p - 1)(q - 1)`.
 
 :::EXERCISE "For contest number theory practice"
-Show that for $`M = pq` at least half of the residues in $`\mathbb{Z}/M` are good.
+Show that for $`M = pq` at least half of the residues in $`(\mathbb{Z}/M\mathbb{Z})^\times` are good.
 :::
 
-So if we can find the order of an arbitrary $`x : \mathbb{Z}/M`, then we just keep picking $`x` until we pick a good one (this happens more than half the time); once we do, we compute $`\gcd(x^{r/2} - 1, M)` using the Euclidean algorithm to extract one of the prime factors of $`M`, and we're home free.
+So if we can find the order of an arbitrary $`x : (\mathbb{Z}/M\mathbb{Z})^\times`, then we just keep picking $`x` until we pick a good one (this happens more than half the time); once we do, we compute $`\gcd(x^{r/2} - 1, M)` using the Euclidean algorithm to extract one of the prime factors of $`M`, and we're home free.
 
 Now how do we do this?
 The idea is not so difficult: first we generate a sequence which is periodic modulo $`r`.

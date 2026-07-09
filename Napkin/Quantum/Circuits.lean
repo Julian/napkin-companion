@@ -77,7 +77,7 @@ In particular, such gates must take the same number of input and output gates.
 :::
 
 :::EXAMPLE "The CNOT gate"
-The controlled-NOT gate, or the *CNOT* gate, is a reversible $`2`-bit gate with the following truth table. $$`\begin{array}{|rr|rr|} \hline \multicolumn{2}{|c|}{\text{In}} & \multicolumn{2}{|c|}{\text{Out}} \\ \hline 0 & 0 & 0 & 0 \\ 1 & 0 & 1 & 1 \\ 0 & 1 & 0 & 1 \\ 1 & 1 & 1 & 0 \\ \hline \end{array}`
+The controlled-NOT gate, or the *CNOT* gate, is a reversible $`2`-bit gate with the following truth table. $$`\begin{array}{|rr|rr|} \hline \text{In} & & \text{Out} & \\ \hline 0 & 0 & 0 & 0 \\ 1 & 0 & 1 & 1 \\ 0 & 1 & 0 & 1 \\ 1 & 1 & 1 & 0 \\ \hline \end{array}`
 In other words, this gate XOR's the first bit to the second bit, while leaving the first bit unchanged.
 Pictorially: a single wire $`x` carries through a "control" dot, while a second wire $`y` passes through a $`\oplus`-marked target — the first bit controls whether the second bit gets flipped or not.
 So $`(x, y) \mapsto (x, x + y \bmod 2)`, and a typical application sends $`(1, 0) \mapsto (1, 1)`.
@@ -278,7 +278,7 @@ What is in scope is the finite-state-vector computation itself: each step is a u
 # Problems
 
 :::PROBLEM "Fredkin gate"
-The *Fredkin gate* (also called the controlled swap, or CSWAP gate) is the three-bit gate with the following truth table: $$`\begin{array}{|rrr|rrr|} \hline \multicolumn{3}{|c|}{\text{In}} & \multicolumn{3}{|c|}{\text{Out}} \\ \hline 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 1 & 0 & 0 & 1 \\ 0 & 1 & 0 & 0 & 1 & 0 \\ 0 & 1 & 1 & 0 & 1 & 1 \\ 1 & 0 & 0 & 1 & 0 & 0 \\ 1 & 0 & 1 & 1 & 1 & 0 \\ 1 & 1 & 0 & 1 & 0 & 1 \\ 1 & 1 & 1 & 1 & 1 & 1 \\ \hline \end{array}`
+The *Fredkin gate* (also called the controlled swap, or CSWAP gate) is the three-bit gate with the following truth table: $$`\begin{array}{|rrr|rrr|} \hline \text{In} & & & \text{Out} & & \\ \hline 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 1 & 0 & 0 & 1 \\ 0 & 1 & 0 & 0 & 1 & 0 \\ 0 & 1 & 1 & 0 & 1 & 1 \\ 1 & 0 & 0 & 1 & 0 & 0 \\ 1 & 0 & 1 & 1 & 1 & 0 \\ 1 & 1 & 0 & 1 & 0 & 1 \\ 1 & 1 & 1 & 1 & 1 & 1 \\ \hline \end{array}`
 Thus the gate swaps the last two input bits whenever the first bit is $`1`.
 Show that this gate is also reversible and universal.
 :::
