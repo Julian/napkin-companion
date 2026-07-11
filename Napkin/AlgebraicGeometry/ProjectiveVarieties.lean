@@ -101,6 +101,7 @@ Perhaps $`\mathbb{V}_+(x^2 + y^2 - z^2)`.
 The set of points we choose to work with is $`\mathbb{CP}^n` this time, which for us can be thought of as the set of $`n`-tuples $$`\left( x_0 : x_1 : \dots : x_n \right)`
 not all zero, up to scaling.
 Equivalently, it is the set of lines through the origin in $`\mathbb{C}^{n+1}`.
+Projective space is defined in full in the earlier chapter on topological constructions, and you should refer there if you aren't familiar with projective space.
 
 The right way to think about it is "$`\mathbb{A}^n` plus points at infinity":
 

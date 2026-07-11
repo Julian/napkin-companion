@@ -1,0 +1,15 @@
+% The real part of f(z) = 1/z (red, two branches) with the singularity at the
+% origin "smoothed out" by a dashed blue curve joining the two branches.
+% Source: book/tex/complex-ana/holomorphic.tex
+%   (section: Optional: Proof that holomorphic functions are analytic).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\begin{document}
+\begin{tikzpicture}[scale=0.8]
+  \draw[->, gray] (-3.4,0) -- (3.4,0);
+  \draw[->, gray] (0,-3.4) -- (0,3.4);
+  \draw[red, thick, domain=-3:-0.3334, samples=60] plot (\x, {1/\x});
+  \draw[red, thick, domain=0.3334:3, samples=60] plot (\x, {1/\x});
+  \draw[blue, thick, dashed] (-0.5,-2) .. controls (1.2,-2) and (1.2,2) .. (0.5,2);
+\end{tikzpicture}
+\end{document}

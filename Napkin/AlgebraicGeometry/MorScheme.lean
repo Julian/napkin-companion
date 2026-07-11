@@ -178,11 +178,13 @@ In general, if $`k` and $`k'` are fields, we see that maps $`\operatorname{Spec}
 We analyze scheme morphisms $`X = \operatorname{Spec} \mathbb{R}[x] \xrightarrow{\pi} \operatorname{Spec} \mathbb{R}[y] = Y` which send all points of $`X` to $`\mathfrak{m} = (y - 3) \in Y`.
 Constant maps are continuous no matter how bizarre your topology is, so this lets us just focus our attention on the sections.
 
+This example is simple enough that we can even do it by sections, as much as I think stalks are simpler.
 Let $`U` be any open subset of $`Y`, then we need to specify a map $`\pi^\sharp_U \colon \mathcal{O}_Y(U) \to \mathcal{O}_X(\pi^{-1}(U))`.
 If $`U` does not contain $`(y - 3)`, then $`\pi^{-1}(U) = \varnothing`, so $`\mathcal{O}_X(\varnothing) = 0` is the zero ring and there is nothing to do.
 
 Conversely, if $`U` does contain $`(y - 3)` then $`\pi^{-1}(U) = X`, so this time we want to specify a map $`\pi^\sharp_U \colon \mathcal{O}_Y(U) \to \mathcal{O}_X(X) = \mathbb{R}[x]` which satisfies restriction maps.
 Note that for any $`U`, the element $`y` must be mapped to a unit in $`\mathbb{R}[x]`; since $`1/y` is a section too for a subset of $`U` not containing $`(y)`.
+In more detail, let $`W = U \cap D(y)` so that $`(y) \notin W`, then $$`\pi^\sharp_W(y) = \pi^\sharp_U(y) \quad \text{and} \quad \pi^\sharp_W(y) \pi^\sharp_W(1/y) = 1.`
 Actually for any real number $`c \neq 3`, $`y - c` must be mapped to a unit in $`\mathbb{R}[x]`.
 This can only happen if $`y \mapsto 3 \in \mathbb{R}[x]`.
 
@@ -236,7 +238,8 @@ Put another way, $`f` and $`g` have the same values, so $`f = g`.
 :::REMARK "Generic point stalk overpowered"
 I want to also point out that you can read off the polynomial just from the stalk at the generic point: for example, the previous example has $`\mathbb{C}(y) \cong \mathcal{O}_{\operatorname{Spec} \mathbb{C}[y], (0)} \to \mathcal{O}_{\operatorname{Spec} \mathbb{C}[x], (0)} \cong \mathbb{C}(x)` with $`y \mapsto x^2`.
 This is part of the reason why generic points are so powerful.
-Knowing where each germ at the generic point goes is enough to tell us the whole map.
+We expect that with polynomials, if you know what happens to a "generic" point, you can figure out the entire map.
+This intuition is true: knowing where each germ at the generic point goes is enough to tell us the whole map.
 :::
 
 ## An arithmetic example

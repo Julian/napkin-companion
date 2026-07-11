@@ -235,6 +235,8 @@ Let $`V = \mathbb{A}^1`, $`U = V \setminus \{0\}`. Then $`1/x \in \mathcal{O}_V(
 Let $`V` be an affine variety and let $`\mathbb{C}[V]` be its coordinate ring.
 As mentioned in the start of the chapter, we want to define a variety based on its intrinsic properties only, which is done by studying the collection of algebraic functions on it.
 
+In {cite}`ref:vakil`'s "Motivating example: the sheaf of differentiable functions" section, you can see a comparison of how a differentiable manifold can be studied by studying the differentiable functions on it.
+
 Denote the set of all rational functions on $`V` by $`\mathcal{O}_V` (as will be seen later, this terminology is not quite accurate as we need to allow multiple representations).
 We can view this as a set, however this does not capture the full structure of the rational functions:
 

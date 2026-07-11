@@ -1,0 +1,14 @@
+% A point a sitting just inside a circular contour gamma; the setup for
+% Cauchy's integral formula, where we recover f(a) from the values on gamma.
+% Source: book/tex/complex-ana/holomorphic.tex (section: Cauchy's integral theorem).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, decorations.markings}
+\begin{document}
+\begin{tikzpicture}[scale=1.5,
+    decoration={markings, mark=at position 0.5 with {\arrow{Stealth}}}]
+  \draw[dashed, postaction={decorate}] (0,0) circle (1);
+  \node at (-45:1) [below right] {$\gamma$};
+  \fill (60:0.1) circle (1pt) node[right] {$a$};
+\end{tikzpicture}
+\end{document}

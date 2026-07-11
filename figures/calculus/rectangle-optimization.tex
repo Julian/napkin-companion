@@ -1,0 +1,12 @@
+% A rectangle with side lengths x and 10-x (perimeter 20), whose area is
+% to be optimized.
+% Source: book/tex/calculus/differentiate.tex (§ Rectangle area optimization).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\begin{document}
+\begin{tikzpicture}[scale=0.6]
+  \draw (0,0)--(7,0)--(7,3)--(0,3)--cycle;
+  \node[below] at (3.5,0) {$10-x$};
+  \node[left] at (0,1.5) {$x$};
+\end{tikzpicture}
+\end{document}

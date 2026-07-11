@@ -1,0 +1,23 @@
+% A real number line with a red knife at L = sup s_n and a green knife at
+% L - epsilon, with monotone-increasing terms s_1,...,s_8 approaching L
+% from the left.
+% Source: book/tex/calculus/limits.tex (§ Monotone convergence).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usepackage{amssymb}
+\begin{document}
+\begin{tikzpicture}[scale=0.7]
+  \draw[<->] (-8,0)--(8,0);
+  \node[below] at (8,0) {$\mathbb{R}$};
+  \draw[red] (3.1,1)--(3.1,-1);
+  \draw[green!45!black] (2.4,1.5)--(2.4,-1.5);
+  \node[red, below right] at (3.1,-1) {$L$};
+  \node[green!45!black, above] at (2.4,1.5) {$L-\varepsilon$};
+  \foreach \x/\lbl in {-5/{s_1}, -4/{s_2}, -1.7/{s_3}, -0.2/{s_4}, 0.3/{s_5},
+                       1.3/{s_6}, 2.2/{s_7}, 2.7/{s_8}} {
+    \fill[blue] (\x,0) circle (2.5pt);
+    \node[blue, below] at (\x,0) {$\lbl$};
+  }
+  \foreach \x in {2.8, 2.88, 2.97} \fill[blue] (\x,0) circle (2.5pt);
+\end{tikzpicture}
+\end{document}

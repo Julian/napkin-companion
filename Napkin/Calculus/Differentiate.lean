@@ -63,6 +63,10 @@ We draw a graph of $`f` in the usual way and consider values of $`h`.
 For any nonzero $`h`, what we get is the slope of the *secant* line joining $`(p, f(p))` to $`(p + h, f(p + h))`.
 However, as $`h` gets close to zero, that secant line begins to approach a line which is tangent to the graph of the curve.
 
+:::figure "figures/calculus/tangent-secant.svg"
+The secant through $`(p, f(p))` and $`(p+h, f(p+h))` (dashed green) approaches the tangent (red) as $`h \to 0`.
+:::
+
 So the picture in your head should be that
 
 :::MORAL
@@ -249,6 +253,10 @@ recall IsLocalMax.deriv_eq_zero {f : ℝ → ℝ} {a : ℝ}
 ```
 
 If you draw a picture, this result is not surprising.
+
+:::figure "figures/calculus/local-extremum.svg"
+At an interior local maximum the tangent line is horizontal, so $`f'(p) = 0`.
+:::
 (Note also: the converse is not true.
 Say, $`f(x) = x^{2019}` has $`f'(0) = 0` but $`x = 0` is not a local extrema for $`f`.)
 
@@ -275,6 +283,10 @@ The one is simple, and you probably already know about it, but I want to show yo
 
 :::EXAMPLE "Rectangle area optimization"
 Suppose we consider rectangles with perimeter $`20` and want the rectangle with the smallest or largest area.
+
+:::figure "figures/calculus/rectangle-optimization.svg"
+A rectangle with sides $`x` and $`10 - x`.
+:::
 
 If we choose the legs of the rectangle to be $`x` and $`10 - x`, then we are trying to optimize the function $$`f(x) = x(10 - x) = 10x - x^2 \qquad f \colon [0, 10] \to \mathbb{R}.`
 By compactness, there exists *some* global maximum and *some* global minimum.
@@ -343,6 +355,10 @@ Then there is a point $`c \in (a, b)` such that $$`f'(c) = \frac{f(b) - f(a)}{b 
 :::
 
 Pictorially, there is a $`c` such that the tangent at $`c` has the same slope as the secant joining $`(a, f(a))`, to $`(b, f(b))`; and Rolle's theorem is the special case where that secant is horizontal.
+
+:::figure "figures/calculus/mean-value-theorem.svg"
+A point $`c` where the tangent (red) is parallel to the secant (green) from $`(a, f(a))` to $`(b, f(b))`.
+:::
 
 ```lean
 recall exists_hasDerivAt_eq_slope (f f' : ℝ → ℝ) {a b : ℝ}

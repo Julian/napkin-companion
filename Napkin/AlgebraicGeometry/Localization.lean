@@ -174,6 +174,7 @@ Let $`A = \mathbb{C}[x, y] / (xy)` (which intuitively is the coordinate ring of 
 Suppose we localize at $`x`: equivalently, allowing denominators of $`x`.
 Since $`xy = 0` in $`A`, we now have $`0 = x^{-1} (xy) = y`, so $`y = 0` in $`A`, and thus $`y` just goes away completely.
 From this we get a ring isomorphism $$`A[1/x] \cong \mathbb{C}[x, 1/x].`
+Later, we will be able to use our geometric intuition to "see" this, once we have defined the affine scheme.
 :::
 
 # Localization at a prime ideal
@@ -316,7 +317,7 @@ There are no other prime ideals: if $`p \neq 5` is a rational prime, then $`(p) 
 # Prime ideals of quotients
 
 While we are here, we mention that the prime ideals of quotients $`A/I` can be interpreted in terms of those of $`A` (as in the previous section for localization).
-For our purposes we actually only care about the prime ideals.
+You may remember this from a problem a long time ago, if you did that problem; but for our purposes we actually only care about the prime ideals.
 
 :::PROPOSITION "The prime ideals of $A/I$"
 If $`A` is a ring and $`I` is any ideal (not necessarily prime) then the prime (resp. maximal) ideals of $`A/I` are in bijection with prime (resp. maximal) ideals of $`A` which are *supersets of* $`I`.

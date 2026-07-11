@@ -205,13 +205,15 @@ The stalk is Mathlib's {name}`Localization.AtPrime`, and the isomorphism identif
 :::
 
 :::EXAMPLE "Denominators not divisible by $x$"
-If $`X = \operatorname{Spec} \mathbb{C}[x]` then $$`\mathcal{O}_{X, (x)} = \mathbb{C}[x]_{(x)} = \left\{ \frac fg \mid g(0) \neq 0 \right\}.`
+We have seen this example so many times that I will only write it in the new notation, and make no further comment: if $`X = \operatorname{Spec} \mathbb{C}[x]` then $$`\mathcal{O}_{X, (x)} = \mathbb{C}[x]_{(x)} = \left\{ \frac fg \mid g(0) \neq 0 \right\}.`
 :::
 
 :::EXAMPLE "Denominators not divisible by $x$ or $y$"
 Let $`X = \operatorname{Spec} \mathbb{C}[x, y]` and let $`\mathfrak{m} = (x, y)` be the origin.
 Then $$`\mathbb{C}[x, y]_{(x, y)} = \left\{ \frac{f(x, y)}{g(x, y)} \mid g(0, 0) \neq 0 \right\}.`
 :::
+
+If you want more examples, take any of the ones from the earlier section on localizing at a prime ideal, and try to think about what they mean geometrically.
 
 ## Motivating local rings: germs should package values
 
@@ -272,6 +274,7 @@ The stalks consist of the possible enriched values (germs); the residue field is
 
 :::EXAMPLE "The stalk at the origin of $\\operatorname{Spec} \\mathbb{C}[x, y]$"
 Again set $`A = \mathbb{C}[x, y]`, $`X = \operatorname{Spec} A` and $`\mathfrak{p} = (x, y)` so that $`\mathcal{O}_{X, \mathfrak{p}} = A_\mathfrak{p}`.
+(I switched to $`\mathfrak{p}` for the origin, to avoid confusion with the maximal ideal $`\mathfrak{p} A_\mathfrak{p}` of the local ring $`A_\mathfrak{p}`.)
 As we said many times already, $`A_\mathfrak{p}` consists of rational functions not vanishing at the origin, such as $`f = \frac{1}{xy + 4}`.
 
 What is the unique maximal ideal $`\mathfrak{p} A_\mathfrak{p}`?

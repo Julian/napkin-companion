@@ -78,6 +78,13 @@ Once smoothness is in hand, we want $`X` to actually be a Riemann surface, not j
 We need a complex atlas, and one is suggested directly by the implicit function theorem: on an open set where $`\partial f / \partial x \neq 0`, the map $`(x, y) \mapsto y` is a complex chart; on an open set where $`\partial f / \partial y \neq 0`, the map $`(x, y) \mapsto x` is a complex chart.
 The transition maps between these charts are analytic because the local parametrizations $`g, h` are.
 
+Actually, in the real analytic case, this complex structure agrees with the naive one obtained by unrolling the curve by arc length; you can optionally do the exercise below.
+
+:::EXERCISE
+Show this for the circle above.
+(One possibility is to write down an explicit formula for the arc length and show it is analytic.)
+:::
+
 There is a categorical reason this is the "right" complex structure.
 The set $`X` carries an inclusion $`\iota \colon X \hookrightarrow \mathbb{R}^2`, and $`\mathbb{R}^2` has its own analytic structure.
 The complex structure we put on $`X` is the unique one such that:

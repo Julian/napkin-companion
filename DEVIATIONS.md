@@ -370,6 +370,22 @@ drops the "(TO DO)" from the part, chapter, and sales-pitch titles.
   cyclotomic Galois groups (`IsCyclotomicExtension.autEquivPow`) to
   the Frobenius/Chebotarev story; asides note Chebotarev density is
   absent from Mathlib.
+- **Bonus: A Bit on Artin Reciprocity.** This bonus chapter
+  (`artin.tex`) was overlooked in the first porting pass and restored
+  by the full-book audit; the Frobenius chapter covers only
+  `frobenius.tex`. All eight sections are ported verbatim. Every
+  `tikzcd` diagram (the embedding lift, the Artin-map factoring, the
+  restriction square, the two modulus correspondence lattices, the
+  short-exact-sequence square) is rendered as a prose/inline chain; two
+  footnotes become `{margin}` notes and the LMFDB-diagram footnote is
+  dropped; the ~150-word Emil Artin block quotation is summarized in
+  prose rather than reproduced. Reveals cover `NumberField.InfinitePlace`
+  (with `IsReal`/`IsComplex`) for infinite primes, `ClassGroup` for the
+  trivial-modulus case, and `legendreSym` as the symbol the Artin symbol
+  generalizes; moduli, rays, ray class groups, congruence subgroups, the
+  Artin symbol/map, Artin reciprocity, the conductor, Takagi existence,
+  and the Hilbert class field are honestly flagged as absent from
+  Mathlib.
 
 ### Algebraic Topology I: Homotopy
 

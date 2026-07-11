@@ -57,7 +57,7 @@ A *real inner form*{margin}[Other names include "inner product", "dot product", 
 - The form is *symmetric*: for any $`v, w : V` we have $$`\langle v, w \rangle = \langle w, v \rangle.`
   Of course, one would expect this property from a product.
 - The form is *bilinear*, or *linear in both arguments*, meaning that $`\langle -, v \rangle` and $`\langle v, - \rangle` are linear functions for any fixed $`v`.
-  Spelled explicitly this means that $$`\langle cx, v \rangle = c \langle x, v \rangle` $$`\langle x + y, v \rangle = \langle x, v \rangle + \langle y, v \rangle.` and similarly if $`v` was on the left.
+  Spelled explicitly this means that $$`\begin{aligned} \langle cx, v \rangle &= c \langle x, v \rangle \\ \langle x + y, v \rangle &= \langle x, v \rangle + \langle y, v \rangle \end{aligned}` and similarly if $`v` was on the left.
   This is often summarized by the single equation $`\langle cx + y, z \rangle = c \langle x, z \rangle + \langle y, z \rangle`.
 - The form is *positive definite*, meaning $`\langle v, v \rangle \geq 0` is a nonnegative real number, and equality takes place only if $`v = 0_V`.
 :::
@@ -87,8 +87,8 @@ A *complex inner product* is a function $$`\langle \bullet, \bullet \rangle \col
 - The form has *conjugate symmetry*, which means that for any $`v, w : V` we have $$`\langle v, w \rangle = \overline{\langle w, v \rangle}.`
 - The form is *sesquilinear* (the name means "one-and-a-half linear").
   This means that:
-  - The form is *linear in the first argument*, so again we have $$`\langle x + y, v \rangle = \langle x, v \rangle + \langle y, v \rangle` $$`\langle cx, v \rangle = c \langle x, v \rangle.`
-  - However, it is now *anti-linear in the second argument*: for any complex number $`c` and vectors $`x` and $`y` we have $$`\langle v, x + y \rangle = \langle v, x \rangle + \langle v, y \rangle` $$`\langle v, cx \rangle = \overline{c} \langle v, x \rangle.`
+  - The form is *linear in the first argument*, so again we have $$`\begin{aligned} \langle x + y, v \rangle &= \langle x, v \rangle + \langle y, v \rangle \\ \langle cx, v \rangle &= c \langle x, v \rangle \end{aligned}`
+  - However, it is now *anti-linear in the second argument*: for any complex number $`c` and vectors $`x` and $`y` we have $$`\begin{aligned} \langle v, x + y \rangle &= \langle v, x \rangle + \langle v, y \rangle \\ \langle v, cx \rangle &= \overline{c} \langle v, x \rangle \end{aligned}`
     Note the appearance of the complex conjugate $`\overline{c}`, which is new!
 - The form is *positive definite*, meaning $`\langle v, v \rangle` is a nonnegative real number, and equals zero exactly when $`v = 0_V`.
 :::

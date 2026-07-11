@@ -204,7 +204,7 @@ $$`\operatorname{Wind}(\gamma, p) = \frac{1}{2\pi i} \oint_\gamma \frac{1}{z - p
 :::
 
 For example, by our previous results we see that if $`\gamma` is a circle, we have
-$$`\operatorname{Wind}(\text{circle}, p) = \begin{cases} 1 & \text{$`p` inside the circle} \\ 0 & \text{$`p` outside the circle.} \end{cases}`
+$$`\operatorname{Wind}(\text{circle}, p) = \begin{cases} 1 & \text{$p$ inside the circle} \\ 0 & \text{$p$ outside the circle.} \end{cases}`
 
 If you've read the chapter on fundamental groups, then this is just the fundamental group associated to $`\mathbb{C} \setminus \{p\}`.
 In particular, the winding number is always an integer.
@@ -372,7 +372,13 @@ The quantity $`\frac{1}{2\pi i} \oint_\gamma \frac{f'(z)}{f(z)} \; dz` is equal 
 That is, $`\operatorname{Wind}(f \circ \gamma, 0)`.
 (This is essentially obvious to see, because of all the work we have done to prove $`\oint d \log z = \oint \frac{1}{z} \; dz` equals the winding number.)
 
-Finally, if we look at simple examples like $`z^3`, we can immediately see the relation between the winding number and the multiplicity of a zero:
+Finally, if we look at some simple examples like $`z^3`:
+
+:::figure "figures/complex-analysis/winding-cube.svg"
+As $`z` runs along the red arc, $`z^3` (blue) sweeps around the origin three times as fast.
+:::
+
+We can immediately see the relation between the winding number and the multiplicity of a zero:
 
 :::MORAL
 If $`z` moves around the origin in a circle once, then $`z^n` moves around the origin in a circle $`n` times.

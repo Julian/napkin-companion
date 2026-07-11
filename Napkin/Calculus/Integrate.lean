@@ -132,6 +132,10 @@ Suppose $`\psi \colon S \to N` is a *uniformly* continuous function.
 Then there exists a unique continuous function $`\widetilde{\psi} \colon M \to N` such that $`\widetilde{\psi} \mathbin{\restriction} S = \psi`.
 :::
 
+:::figure "figures/calculus/extension-diagram.svg"
+The extension $`\widetilde\psi` restricts to $`\psi` on the dense subspace $`S`.
+:::
+
 ::::PROOF
 (Outline of proof.)
 As mentioned in the discussion, each $`x : M` can be approximated by a sequence $`x_1, x_2, \dots` in $`S` with $`x_i \to x`.
@@ -168,6 +172,10 @@ The rectangle functions don't have a Mathlib name — Mathlib jumps directly fro
 
 It is irritating that we have to officially assign a single value to each $`t_i`, even though there are naturally two values we want to use, and so we use the convention of letting the left endpoint be closed.
 
+:::figure "figures/calculus/rectangle-function.svg"
+A rectangle function on $`[a, b]`: left-closed, right-open constant pieces.
+:::
+
 :::DEFINITION
 We can impose a metric on $`M([a, b])` by defining
 $$`d(f, g) = \sup_{x \in [a, b]} |f(x) - g(x)|.`
@@ -187,6 +195,10 @@ $$`{\textstyle\int_a^b} \colon M([a, b]) \to \mathbb{R}`
 extending $`\Sigma \colon R([a, b]) \to \mathbb{R}`.
 :::
 
+:::figure "figures/calculus/integral-diagram.svg"
+The integral $`\int_a^b` extends the rectangle-sum functional $`\Sigma` from step functions to all continuous functions.
+:::
+
 :::PROOF
 We want to apply the extension theorem, so we just have to check a few things:
 
@@ -196,6 +208,10 @@ We want to apply the extension theorem, so we just have to check a few things:
   This follows by uniform continuity.
   We know there exists a $`\delta > 0` such that whenever $`|x - y| < \delta` we have $`|f(x) - f(y)| < \varepsilon`.
   So as long as we select a rectangle function whose rectangles have width less than $`\delta`, and such that the upper-left corner of each rectangle lies on the graph of $`f`, then we are all set.
+
+:::figure "figures/calculus/riemann-approx.svg"
+Approximating $`f` by a rectangle function whose rectangles touch the graph at their upper-left corners.
+:::
 - The "add-the-rectangles" map $`\Sigma \colon R([a, b]) \to \mathbb{R}` is *uniformly* continuous.
   Actually this is pretty obvious: if two rectangle functions $`f` and $`g` have $`d(f, g) < \varepsilon`, then $`d(\Sigma f, \Sigma g) < \varepsilon (b - a)`.
 - $`\mathbb{R}` is complete.
@@ -223,6 +239,10 @@ The *mesh* of $`P` is the width of the longest interval, i.e. $`\max_i (t_i - t_
 
 Of course the point of this definition is that we add the rectangles, but the $`\xi_i` are the sample points.
 
+:::figure "figures/calculus/riemann-sum-tagged.svg"
+A tagged Riemann sum, with rectangle heights $`f(\xi_i)` at the sample points.
+:::
+
 :::THEOREM "Riemann integral"
 Let $`f \colon [a, b] \to \mathbb{R}` be continuous.
 Then
@@ -238,6 +258,10 @@ Thus by continuity of the extension $`{\textstyle\int_a^b}` of $`\Sigma`, we get
 
 Combined with the mean value theorem, this can be used to give a short proof of the fundamental theorem of calculus for functions $`f` with a continuous derivative.
 The idea is that for any choice of partition $`a \leq t_0 < t_1 < t_2 < \dots < t_n \leq b`, using the Mean Value Theorem it should be possible to pick $`\xi_i` in each interval to match with the slope of the secant: at which point the areas sum to the total change in $`f`.
+
+:::figure "figures/calculus/ftc-tangents.svg"
+The net change of $`f` decomposes into tangent (derivative) contributions at sample points $`\xi_i` chosen by the mean value theorem.
+:::
 
 `intervalIntegral.integral_eq_sub_of_hasDerivAt` is the FTC in Mathlib, and the proof there is the partition-and-MVT argument above (factoring through `Tendsto`-style limits over the filter of mesh-zero partitions, `intervalIntegral.IntegrableOn.tendsto_riemannSum`).
 

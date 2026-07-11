@@ -67,6 +67,7 @@ import Napkin.AlgebraicNT.Galois
 import Napkin.AlgebraicNT.FiniteFields
 import Napkin.AlgebraicNT.Ramification
 import Napkin.AlgebraicNT.FrobeniusElements
+import Napkin.AlgebraicNT.ArtinReciprocity
 import Napkin.Homotopy.Constructions
 import Napkin.Homotopy.FundamentalGroup
 import Napkin.Homotopy.CoveringSpaces
@@ -349,6 +350,8 @@ file := "Algebraic-Number-Theory-II"
 {include 2 Napkin.AlgebraicNT.Ramification}
 
 {include 2 Napkin.AlgebraicNT.FrobeniusElements}
+
+{include 2 Napkin.AlgebraicNT.ArtinReciprocity}
 
 # Algebraic Topology I: Homotopy
 

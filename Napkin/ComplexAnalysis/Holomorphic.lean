@@ -115,7 +115,10 @@ This function, despite its simple nature, is not holomorphic!
 Indeed, at $`z = 0` we have,
 $$`\frac{f(h) - f(0)}{h} = \frac{\overline{h}}{h}.`
 This does not have a limit as $`h \to 0`, because depending on "which direction" we approach zero from we have different values.
-Approaching along the positive real axis gives $`+1`, along the imaginary axis gives $`-1`, and so on.
+:::
+
+:::figure "figures/complex-analysis/conjugate-diff-quotient.svg"
+The difference quotient $`\overline h / h` depends on the direction of approach: $`+1` along the real axis, $`-1` along the imaginary axis, $`i` along a diagonal.
 :::
 
 If a function $`f \colon U \to \mathbb{C}` is complex differentiable at all the points in its domain it is called *holomorphic*.
@@ -192,6 +195,11 @@ Let me try to explain why this intuitively ought to be true for $`m = 0`.
 In that case we have $`\oint_\gamma 1 \; dz`.
 So as the integral walks around the unit circle, it "sums up" all the tangent vectors at every point (that's the direction it's walking in), multiplied by $`1`.
 And given the nice symmetry of the circle, it should come as no surprise that everything cancels out.
+
+:::figure "figures/complex-analysis/unit-circle-tangents.svg"
+The tangent vectors around the circle cancel in the integral.
+:::
+
 The theorem says that even if we multiply by $`z^m` for $`m \neq -1`, we get the same cancellation.
 
 :::DEFINITION
@@ -215,6 +223,10 @@ But if $`m < 0`, Cauchy's theorem does not apply.
 
 Let $`\Omega \subseteq \mathbb{C}` be simply connected (for example, $`\Omega = \mathbb{C}`), and consider two paths $`\alpha`, $`\beta` with the same start and end points.
 
+:::figure "figures/complex-analysis/two-paths-omega.svg"
+Two paths $`\alpha`, $`\beta` with the same endpoints in a simply connected $`\Omega`.
+:::
+
 What's the relation between $`\oint_\alpha f(z) \; dz` and $`\oint_\beta f(z) \; dz`?
 You might expect there to be some relation between them, considering that the space $`\Omega` is simply connected.
 But you probably wouldn't expect there to be *much* of a relation.
@@ -222,6 +234,10 @@ But you probably wouldn't expect there to be *much* of a relation.
 As a concrete example, let $`\Psi \colon \mathbb{C} \to \mathbb{C}` be the function $`z \mapsto z - \operatorname{Re}[z]` (for example, $`\Psi(2015 + 3i) = 3i`).
 Let's consider two paths from $`-1` to $`1`.
 Thus $`\beta` is walking along the real axis, and $`\alpha` which follows an upper semicircle.
+
+:::figure "figures/complex-analysis/semicircle-vs-diameter.svg"
+The two paths from $`-1` to $`1`: $`\alpha` over the semicircle, $`\beta` along the diameter.
+:::
 
 Obviously $`\oint_\beta \Psi(z) \; dz = 0`.
 But heaven knows what $`\oint_\alpha \Psi(z) \; dz` is supposed to equal.
@@ -295,8 +311,18 @@ Specialized to a fully-differentiable $`f`, it reads exactly as the formula abov
 There are several proofs out there, but I want to give the one that really draws out the power of Cauchy's theorem.
 Here's the picture we have: there's a point $`a` sitting inside a circle $`\gamma`, and we want to get our hands on the value $`f(a)`.
 
+:::figure "figures/complex-analysis/point-in-circle.svg"
+A point $`a` inside a circular contour $`\gamma`.
+:::
+
 We're going to do a trick: construct a *keyhole contour* $`\Gamma_{\delta, \varepsilon}` which has an outer circle $`\gamma`, plus an inner circle $`\overline{\gamma_\varepsilon}`, which is a circle centered at $`a` with radius $`\varepsilon`, running clockwise (so that $`\gamma_\varepsilon` runs counterclockwise).
 The "width" of the corridor is $`\delta`.
+See picture:
+
+:::figure "figures/complex-analysis/keyhole-contour.svg"
+The keyhole contour $`\Gamma_{\delta, \varepsilon}`: outer circle $`\gamma`, corridor, and inner circle $`\overline{\gamma_\varepsilon}` around $`a`.
+:::
+
 Hence $`\Gamma_{\delta, \varepsilon}` consists of four smooth curves.
 
 :::QUESTION
@@ -401,6 +427,133 @@ If $`U = \mathbb{C}` this is no issue, since you can make the disk big enough to
 It's more subtle in the case that $`U` is, for example, a square; you can't cover the entire square with a disk centered at some point without going outside the square.
 However, since $`U` is open we can at any rate at least find some open neighborhood for which the Taylor series is correct — in stark contrast to the real case.
 Indeed, as you'll see in the problems, the existence of a Taylor series is incredibly powerful.
+
+# Optional: Proof that holomorphic functions are analytic
+
+It is recommended to read the next chapter first to understand the origin of the term $`\frac{f(w - p)}{(w - p)^{k+1}}` in Cauchy's differentiation formula above.
+
+Each step of the proof is quite intuitive, if not a bit long.
+The outline is:
+
+- We pretend that the function $`f` is analytic.
+  (Yes, this is not circular reasoning!)
+- We use Cauchy's differentiation formula to write down a power series:{margin}[Assume $`0 \in U`.] $$`c_0 + c_1 z + c_2 z^2 + \cdots`
+- We prove that the power series coincide with $`f` using Cauchy-Goursat theorem.
+- Note that the statement "$`f` is analytic" literally means "for every $`k \geq 0`, then $`f^{(k)}` is differentiable".
+  So, we write down a power series for $`f^{(k)}`, and show that it is differentiable.
+  (We already did this for the real case when we showed that Taylor series are analytic.)
+
+## Proof of Cauchy-Goursat theorem
+
+Suppose $`f` is holomorphic i.e. differentiable.
+We wish to prove $`\oint_\gamma f \; dz = 0`.
+
+How may we attack this problem?
+Looking at the conclusion, we may want to stare at some function where $`\oint_\gamma f \; dz \neq 0`.
+
+We readily got an example from the previous chapter: $`f(z) = \frac{1}{z}`.
+
+:::QUESTION
+What part of the hypothesis does not hold?
+:::
+
+In any case, you see the problem is it's because $`f` has a singularity at $`0` (even though we haven't formally defined what a singularity is yet).
+So, we try to prove the contrapositive:
+
+:::THEOREM
+Suppose $`\oint_\gamma f \; dz \neq 0`.
+Then something weird happens to $`f` somewhere inside $`\gamma`.
+:::
+
+(For arbitrary loops, it gets a bit more difficult, however. What does "inside $`\gamma`" mean?)
+
+Phrasing like this, it isn't that difficult.
+You may want to look at $`f(z) = \frac{1}{z}` a bit and try to figure out how the proof follows before continue reading.
+
+For simplicity, I will prove the statement for $`\gamma` being a rectangle, leaving the case e.g. $`\gamma` is a circle to the reader.
+The case of fully general $`\gamma` will be handled later on.
+
+As you may figured out, for $`f(z) = \frac{1}{z - w}`, you can try to locate where the singularity $`w` is by "binary search": compute $`\oint_\gamma f \; dz`, if it is $`2\pi i`, we know $`w` is inside $`\gamma`.
+We're going to do just that.
+
+What should we search for?
+Let's see:
+
+:::EXERCISE
+Suppose $`\oint_\gamma f \; dz \neq 0`.
+Must there be a point where $`f` blows up to infinity, like the point $`z = 0` in $`\frac{1}{z}`?
+:::
+
+Answer: no, unfortunately.
+You can certainly take the function $`f` above, and "smooth out" the singularity.
+
+:::figure "figures/complex-analysis/smoothed-singularity.svg"
+The singularity of $`1/z` (red) smoothed out by a dashed curve; only the real part is shown.
+:::
+
+(Only real part depicted. You can imagine the imaginary part.)
+
+The best we can hope for, then, is to find a point where $`f` is not holomorphic (complex differentiable).
+
+Construct $`4` paths $`\gamma_a`, $`\gamma_b`, $`\gamma_c` and $`\gamma_d` as follows.
+The margin is only for illustration purpose, in reality the edges directly overlap on each other.
+
+:::figure "figures/complex-analysis/contour-four-subrects.svg"
+The rectangle $`\gamma` split into four sub-rectangles $`\gamma_a, \gamma_b, \gamma_c, \gamma_d`.
+:::
+
+Notice that, because all the inner edges cancel out, $$`\oint_\gamma f \; dz = \oint_{\gamma_a} f \; dz + \oint_{\gamma_b} f \; dz + \oint_{\gamma_c} f \; dz + \oint_{\gamma_d} f \; dz.`
+Which means $`\oint_{\gamma_i} f \; dz \neq 0` for some $`i \in \{ a, b, c, d \}`.
+(Idea: we have more accurately located the singularity, now we know it is inside $`\gamma_i`.
+Of course it's also possible that there are multiple singularities.)
+
+We also have $`|\oint_{\gamma_i} f \; dz| \geq \frac{1}{4} \cdot |\oint_\gamma f \; dz|` for some $`i`.
+The reason why we must carefully keep track of the magnitude (instead of just saying it's $`\neq 0`) will become apparent later.
+
+So, we keep doing that, and get a decreasing sequence of rectangles $`\{ \gamma_j \}`.
+Because the edge length gets halved each time, the rectangles converge to a single point $`p`.
+
+How would the rectangle perimeter decrease?
+Perhaps something like the following:
+
+$$`\begin{array}{ccc} j & \text{Perimeter of } \gamma_j & \left|\oint_{\gamma_j} f \; dz\right| \\ \hline 0 & 1 & 1 \\ 1 & \frac{1}{2} & \geq \frac{1}{4} \\ 2 & \frac{1}{4} & \geq \frac{1}{16} \\ 3 & \frac{1}{8} & \geq \frac{1}{64} \end{array}`
+
+$`\left|\oint_{\gamma_j} f \; dz\right|` decreases quite quickly compared to the perimeter — as expected, we cannot hope for $`f` to blow up at $`p`, but this is sufficient to show $`f` is not holomorphic.
+
+For the sake of contradiction, assume otherwise.
+Then, by definition, $$`\lim_{h \to 0} \frac{f(p + h) - f(p)}{h} = f'(p)`
+where $`p` is the point that the rectangles $`\{ \gamma_j \}` converges to as defined above, and $`f'(p) \in \mathbb{C}` is the derivative.
+In other words, for $`h \in \mathbb{C}` close enough to $`0`, $$`f(p + h) = f(p) + f'(p) \cdot h + \varepsilon(h) \cdot h \text{ for } \varepsilon(h) \in o(1).`
+Why is this a problem?
+Notice that $`f(p)` and $`f'(p) \cdot h` are both polynomials, so $$`\oint_{\gamma_j} f(p) + f'(p) \cdot (z - p) \; dz = 0,`
+which means $$`\oint_{\gamma_j} f(z) \; dz = \oint_{\gamma_j} \varepsilon(h) \cdot (z - p) \; dz.`
+We know the left hand side decreases as $`4^{-j}`, but the integral on the right hand side is over a curve with length decreasing as $`2^{-j}`.
+
+:::EXERCISE
+Finish the proof. (Use the $`ML` estimation lemma.)
+:::
+
+Finally, what to do with arbitrary curve (which may not even have an interior{margin}[A space-filling curve is an example.})?
+
+We construct the antiderivative $`F \colon \Omega \to \mathbb{C}` by integrating $`f` across the side of a rectangle, prove $`F' = f`, and get a "fundamental theorem of calculus", that is $$`\oint_\alpha f(z) \; dz = F(\alpha(b)) - F(\alpha(a))`
+where $`\alpha \colon [a, b] \to \mathbb{C}` is some path.
+Considering $`\alpha = \gamma`, because the starting and ending point for a loop $`\gamma` is the same, of course the integral would be $`0`.
+
+## The rest
+
+Next step, we should show the power series coincide with $`f`, that is $$`f(z) = \oint_\gamma \frac{f(t)}{t} \; dt + \oint_\gamma \frac{f(t)}{t^2} \; dt \cdot z + \oint_\gamma \frac{f(t)}{t^3} \; dt \cdot z^2 + \cdots`
+Here we assume $`\gamma` is the unit circle, the power series is centered at $`0`, and $`t` is inside the unit disk.
+
+:::EXERCISE
+Prove it.
+(You only need to know that you can interchange the infinite sum and the integral in this situation,{margin}[The chapter on swapping sums has some horror stories where you cannot interchange a limit and an integral.] how to sum a geometric series, and Cauchy's integral formula.)
+:::
+
+:::REMARK
+_Wait, where was Cauchy-Goursat theorem used?_ If you forgot, it is used in the proof of Cauchy's integral formula.
+:::
+
+After we have proven that $`f` is a power series, then using the fact that Taylor series are analytic (suitably adapted for the case of complex holomorphic functions), the result follows.
 
 # Problems
 

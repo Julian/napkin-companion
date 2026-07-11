@@ -20,6 +20,8 @@ set_option pp.rawOnError true
 file := "Zermelo-Fraenkel-with-choice"
 %%%
 
+Chapter 3.1 of {cite}`ref:msci` has a nice description of this.
+
 # The ultimate functional equation
 
 In abstract mathematics, we often define structures by what _properties_ they should have; for example, a group is a set and a binary operation satisfying so-and-so axioms, while a metric space is a set and a distance function satisfying so-and-so axioms.

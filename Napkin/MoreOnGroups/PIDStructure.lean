@@ -206,6 +206,10 @@ Deduce that for $`R` a PID, $`R^{\oplus d}` is Noetherian.
 Hence $`K \subseteq R^{\oplus d}` is finitely generated as claimed.
 So we can find another surjective map $`R^{\oplus f} \twoheadrightarrow K`.
 Consequently, we have a composition $$`R^{\oplus f} \xrightarrow{T} R^{\oplus d} \twoheadrightarrow M` where $`T` factors through $`K`.
+
+:::figure "figures/more-on-groups/cokernel-diagram.svg"
+The map $`T` factors through the submodule $`K`, exhibiting $`M` as the cokernel of $`T`.
+:::
 Observe that $`M` is the *cokernel* of the linear map $`T`, i.e. we have that $$`M \cong R^{\oplus d} / \operatorname{img}(T).` So it suffices to understand the map $`T` well.
 
 # Uniqueness of primary form

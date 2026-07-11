@@ -1,0 +1,15 @@
+% Tangent arrows at several points of the unit circle: the picture behind the
+% cancellation of the contour integral of z^m (m != -1) over the circle.
+% Source: book/tex/complex-ana/holomorphic.tex (section: Contour integrals).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\begin{document}
+\begin{tikzpicture}[scale=1.9, >={Stealth[length=2mm]}]
+  \draw[dashed] (0,0) circle (1);
+  \foreach \a in {0,50,140,210,300}{
+    \fill (\a:1) circle (1pt);
+    \draw[->] (\a:1) -- +(\a+90:0.4);
+  }
+\end{tikzpicture}
+\end{document}

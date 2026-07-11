@@ -340,6 +340,23 @@ This is exactly `MultilinearMap.alternatization` in Mathlib (which sends a `Mult
 Here, $`S_k` is the permutation group.
 Notice the similarity with the definition of the determinant.
 
+Thus it makes sense for us to define $`\iota \colon \bigwedge^k(V^\vee) \hookrightarrow T^k(V^\vee)` that takes each element to the alternating tensor in $`T^k(V^\vee)`.
+
+:::EXAMPLE
+With the same example as above, $`V = \mathbb{R}^2`, then we get $$`\iota(\mathbf{e}_1 \wedge \mathbf{e}_2) = \operatorname{Alt}(\mathbf{e}_1 \otimes \mathbf{e}_2) = \frac{\mathbf{e}_2 \otimes \mathbf{e}_1 - \mathbf{e}_1 \otimes \mathbf{e}_2}{2}.`
+:::
+
+Finally,
+
+:::EXERCISE
+Show that $`\operatorname{im}(\phi \circ \iota) = \operatorname{im} q^\vee`, and that $`\iota^\vee \circ \phi \circ \iota` and $`q \circ \phi^{-1} \circ q^\vee` are inverses of each other.
+:::
+
+It is common notation that we want to define the wedge product such that $`\mathbf{e}_1^\vee \wedge \mathbf{e}_2^\vee` takes in $`\mathbf{e}_1 \wedge \mathbf{e}_2` (that is, the square formed by $`\mathbf{e}_1` and $`\mathbf{e}_2`), and returns $`1`.
+However, if we define the wedge product naturally by the method above, we get $$`\iota(\mathbf{e}_1^\vee \wedge \mathbf{e}_2^\vee) = \frac{\mathbf{e}_1^\vee \otimes \mathbf{e}_2^\vee - \mathbf{e}_2^\vee \otimes \mathbf{e}_1^\vee}{2}`
+which means $$`\phi(\iota(\mathbf{e}_1^\vee \wedge \mathbf{e}_2^\vee))(\mathbf{e}_1, \mathbf{e}_2) = \frac{1 \cdot 1 - 0 \cdot 0}{2} = \frac{1}{2}.`
+So, a corrective factor $`k!` is needed.
+
 To see how "difficult" the wedge product will be if we use the second notation, let $`V = \mathbb{R}^3`, $`\alpha = dx \wedge dy \in \bigwedge^2(V^\vee)`, and $`\beta = dz \in \bigwedge^1(V^\vee)`.
 
 Then, we know:

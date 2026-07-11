@@ -1,0 +1,11 @@
+% The module M presented as the cokernel of a map T : R^{⊕f} → R^{⊕d},
+% factoring the surjection onto M through the submodule K.
+% Source: book/tex/H113/structure.tex (§ Existence of primary form).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+  & K \arrow[rd, hook] \\
+  R^{\oplus f} \arrow[ru, twoheadrightarrow] \arrow[rr, "T"'] && R^{\oplus d} \arrow[r, twoheadrightarrow] & M
+\end{tikzcd}
+\end{document}

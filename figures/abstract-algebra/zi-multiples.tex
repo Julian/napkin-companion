@@ -1,0 +1,21 @@
+% In Z[i], the multiples of b = 3+i (red) among the Gaussian integers.
+% A point x+iy is a multiple iff (3x+y) and (3y-x) are both ≡ 0 (mod 10).
+% Source: book/tex/H113/ring-flavors.tex (§ When is a ring a Euclidean domain?).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\begin{document}
+\begin{tikzpicture}[scale=0.42]
+  \foreach \x in {-7,...,7}{
+    \foreach \y in {-7,...,7}{
+      \pgfmathtruncatemacro{\mult}{(mod(3*\x+\y,10)==0 && mod(3*\y-\x,10)==0)?1:0}
+      \ifnum\mult=1
+        \fill[red] (\x,\y) circle (3pt);
+      \else
+        \fill[gray!55] (\x,\y) circle (1.8pt);
+      \fi
+    }
+  }
+  \draw[->] (-7.6,0) -- (7.6,0) node[right] {$x$};
+  \draw[->] (0,-7.6) -- (0,7.6) node[above] {$y$};
+\end{tikzpicture}
+\end{document}

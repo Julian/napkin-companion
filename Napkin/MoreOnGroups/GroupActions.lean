@@ -91,6 +91,10 @@ We usually denote orbits by $`\mathcal{O}`.
 
 As usual, orbits carve out $`X` into equivalence classes.
 
+:::figure "figures/more-on-groups/orbits-partition.svg"
+The orbits of an action partition $`X` into equivalence classes.
+:::
+
 It turns out that a very closely related concept is:
 
 :::DEFINITION
@@ -118,12 +122,16 @@ In particular, $$`|\mathcal{O}| \cdot |S| = |G|.`
 In particular, the stabilizers of each $`x \in \mathcal{O}` have the same size.
 :::
 
-:::PROOF
+::::PROOF
 The point is that every coset $`gS` just specifies an element of $`\mathcal{O}`, namely $`g \cdot x`.
+
+:::figure "figures/more-on-groups/orbit-stabilizer.svg"
+Each coset $`gS` of the stabilizer $`S \subseteq G` picks out the point $`g \cdot x` of the orbit $`\mathcal{O}`.
+:::
 The fact that $`S` is a stabilizer implies that it is irrelevant which representative we pick.
 
 Since the $`|\mathcal{O}|` cosets partition $`G`, each of size $`|S|`, we obtain the second result.
-:::
+::::
 
 ```lean -show
 section

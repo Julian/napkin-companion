@@ -1,0 +1,14 @@
+% The Riemann integral as the unique continuous extension of the
+% rectangle-sum functional Sigma from step functions R([a,b]) to all
+% continuous functions M([a,b]).
+% Source: book/tex/calculus/integrate.tex (§ Defining the Riemann integral).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usepackage{amssymb}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+  M([a,b]) \arrow[r, "\int_a^b"] & \mathbb{R} \\
+  R([a,b]) \arrow[u, hook] \arrow[ru, "\Sigma"'] &
+\end{tikzcd}
+\end{document}

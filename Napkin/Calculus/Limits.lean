@@ -173,6 +173,10 @@ We wish to cut the line with a knife such that only finitely many dots are to th
 The set $`S` represents the places where we could put the knife, and $`M` is "as far right" as we could go.
 Because of the way supremums work, $`M` might not *itself* be a valid knife location, but certainly anything to its left is.
 
+:::figure "figures/calculus/sup-knife-cauchy.svg"
+The knife at the supremum $`M`, with the sequence terms clustering just to its left.
+:::
+
 Let $`\varepsilon > 0` be given; we want to show eventually all terms are within $`\varepsilon` of $`M`.
 Because the sequence is Cauchy, there is an $`N` such that eventually $`|a_m - a_n| < \tfrac{1}{2}\varepsilon` for $`m \geq n \geq N`.
 
@@ -347,6 +351,10 @@ Conversely, if such $`M` exists then we have $`s_1 \leq s_2 \leq \dots < M`.
 Then we contend the sequence $`s_n` converges to $`L \overset{\text{def}}{=} \sup_n s_n < \infty`.
 (If you read the proof that completeness implies Cauchy, the picture is nearly the same here, but simpler.)
 
+:::figure "figures/calculus/sup-knife-monotone.svg"
+A monotone sequence $`s_n` increasing up to its supremum $`L`.
+:::
+
 Indeed, this means for any $`\varepsilon` there are infinitely many terms of the sequence exceeding $`L - \varepsilon`; but since the sequence is monotonic, once $`s_n \geq L - \varepsilon` then $`s_{n'} \geq L - \varepsilon` for all $`n' \geq n`.
 This implies convergence.
 :::
@@ -395,7 +403,7 @@ We will show that the partial sums of $`b_n` are eventually within $`\varepsilon
 The hypothesis means that there is a large $`N` in terms of $`\varepsilon` such that $$`\left|\sum_{k=1}^N a_k - L\right| < \tfrac{1}{2}\varepsilon \quad\text{and}\quad \sum_{k=N+1}^n |a_k| < \tfrac{1}{2}\varepsilon` for every $`n \geq N` (the former from vanilla convergence of $`a_k` and the latter from the fact that $`a_k` converges absolutely, hence its partial sums are Cauchy).
 
 Now suppose $`M` is large enough that $`a_1, \dots, a_N` are contained within the terms $`\{b_1, \dots, b_M\}`.
-Then $$`\begin{aligned} b_1 + \dots + b_M &= (a_1 + \dots + a_N) \\ &\quad + \underbrace{a_{i_1} + a_{i_2} + \dots + a_{i_{M-N}}}_{\text{$`M - N` terms with indices $`> N`}} \end{aligned}`
+Then $$`\begin{aligned} b_1 + \dots + b_M &= (a_1 + \dots + a_N) \\ &\quad + \underbrace{a_{i_1} + a_{i_2} + \dots + a_{i_{M-N}}}_{\text{$M - N$ terms with indices $> N$}} \end{aligned}`
 The terms in the first line sum up to within $`\tfrac{1}{2}\varepsilon` of $`L`, and the terms in the second line have sum at most $`\tfrac{1}{2}\varepsilon` in absolute value, so the total $`b_1 + \dots + b_M` is within $`\tfrac{1}{2}\varepsilon + \tfrac{1}{2}\varepsilon = \varepsilon` of $`L`.
 :::
 

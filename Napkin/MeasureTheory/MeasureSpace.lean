@@ -220,7 +220,7 @@ We now discuss measures on each of the spaces in our previous examples.
   In the latter case, we will often normalize by $`\mu(A) = \frac{|A|}{|\Omega|}` so that $`\Omega` becomes a probability space.
 - Suppose $`\Omega` was uncountable and we took $`\mathcal{A}` to be the countable sets and their complements.
   Then
-  $$`\mu(A) = \begin{cases} 0 & \text{$`A` is countable} \\ 1 & \text{$`\Omega \setminus A` is countable} \end{cases}`
+  $$`\mu(A) = \begin{cases} 0 & \text{$A$ is countable} \\ 1 & \text{$\Omega \setminus A$ is countable} \end{cases}`
   is a measure.
   (Check this.)
 - Elephant in the room: defining a measure on $`\mathcal{B}(\Omega)` is hard even for $`\Omega = \mathbb{R}`, and is done in the next chapter.
@@ -329,7 +329,7 @@ In later chapters we will begin seeing the phrase "almost everywhere" and "almos
 
 :::DEFINITION
 We say that property $`P` occurs *almost everywhere* or *almost surely* if the set
-$$`\{\omega \in \Omega \mid \text{$`P` does not hold for $`\omega`}\}`
+$$`\{\omega \in \Omega \mid \text{$P$ does not hold for $\omega$}\}`
 has measure zero.
 :::
 

@@ -292,6 +292,7 @@ For a sheaf of functions, the axioms are saying that:
   That's why it matters that $`P` is local.
 
 So you can summarize both of these as saying: any two functions on $`U` and $`V` which agree on the overlap glue to a _unique_ function on $`U \cup V`.
+If you like category theory, you might remember we alluded to this earlier, with the pullback-square description of the differentiable-functions sheaf.
 
 :::EXERCISE "For the categorically inclined"
 Show that the square with corners $`\mathcal{F}(U \cup V)`, $`\mathcal{F}(U)`, $`\mathcal{F}(V)`, $`\mathcal{F}(U \cap V)` is a pullback square.

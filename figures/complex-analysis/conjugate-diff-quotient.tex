@@ -1,0 +1,24 @@
+% For f(z) = conjugate(z), the difference quotient (f(0+h)-f(0))/h equals
+% conjugate(h)/h, whose value depends on the direction of approach: 1 along
+% the real axis, -1 along the imaginary axis, i along the diagonal.
+% Source: book/tex/complex-ana/holomorphic.tex (section: Complex differentiation).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\begin{document}
+\begin{tikzpicture}[scale=2.4, >={Stealth[length=2.2mm]}]
+  \draw[->, gray] (-1.15,0) -- (1.15,0) node[right, black] {Re};
+  \draw[->, gray] (0,-1.15) -- (0,1.15) node[above, black] {Im};
+  \fill (0,0) circle (0.35pt) node[below left] {$0$};
+  \draw[blue, thick, ->] (0:0.8) -- (0:0.2);
+  \node[blue, above] at (0:0.5) {$1$};
+  \draw[blue, thick, ->] (180:0.8) -- (180:0.2);
+  \node[blue, above] at (180:0.5) {$1$};
+  \draw[green!45!black, thick, ->] (-45:0.8) -- (-45:0.2);
+  \node[green!45!black, above right] at (-45:0.5) {$i$};
+  \draw[red, thick, ->] (90:0.8) -- (90:0.2);
+  \node[red, right] at (90:0.5) {$-1$};
+  \node at (135:0.95) {$f(z) = \overline z$};
+  \node[below] at (135:0.62) {$\frac{f(0+h)-f(0)}{h}$};
+\end{tikzpicture}
+\end{document}

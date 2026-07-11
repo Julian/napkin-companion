@@ -177,7 +177,33 @@ In still other words, $`H^A(f) = f \circ -`; the $`-` is a slot for the input to
 As another example:
 
 :::QUESTION
-If $`\mathcal{P}` and $`\mathcal{Q}` are posets interpreted as categories, what's a functor from $`\mathcal{P}` to $`\mathcal{Q}`?
+If $`\mathcal{P}` and $`\mathcal{Q}` are posets interpreted as categories, what does a functor from $`\mathcal{P}` to $`\mathcal{Q}` represent?
+:::
+
+Now, let me explain why we might care.
+Consider the following "obvious" fact: if $`G` and $`H` are isomorphic groups, then they have the same size.
+We can formalize it by saying: if $`G \cong H` in $`\mathsf{Grp}` and $`U \colon \mathsf{Grp} \to \mathsf{Set}` is the forgetful functor (mapping each group to its underlying set), then $`U(G) \cong U(H)`.
+The beauty of category theory shows itself: this in fact works _for any functors and categories_, and the proof is done solely through arrows:
+
+:::THEOREM "Functors preserve isomorphism"
+If $`A_1 \cong A_2` are isomorphic objects in $`\mathcal{A}` and $`F \colon \mathcal{A} \to \mathcal{B}` is a functor then $`F(A_1) \cong F(A_2)`.
+:::
+
+:::PROOF
+Try it yourself!
+You'll need to use both key properties of functors: they preserve composition and the identity map.
+:::
+
+This will give us a great intuition in the future, because
+
+1. Almost every operation we do in our lifetime will be a functor, and
+2. We now know that functors take isomorphic objects to isomorphic objects.
+
+Thus, we now automatically know that basically any "reasonable" operation we do will preserve isomorphism (where "reasonable" means that it's a functor).
+This is super convenient in algebraic topology, for example; the functorial interpretation of fundamental groups gives us for free that homotopic spaces have isomorphic fundamental groups.
+
+:::REMARK
+This lets us construct a category $`\mathsf{Cat}` whose objects are categories and arrows are functors.
 :::
 
 # Covariant functors as indexed family of objects

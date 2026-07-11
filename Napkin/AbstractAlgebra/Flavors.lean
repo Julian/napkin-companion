@@ -406,6 +406,10 @@ Indeed, for any elements $`a` and $`b` with $`b \neq 0`, we can compute the rema
 The proof is done by showing $`|\frac{a}{b} - q| < 1` — if we look at the lattice of points contained in $`\mathbb{Z}[i]` embedded in the complex plane, then for any value of $`\frac{a}{b} : \mathbb{C}`, rounding it to the nearest integer will move it by at most $`\frac{\sqrt{2}}{2} < 1`.
 :::
 
+:::figure "figures/abstract-algebra/zi-rounding.svg"
+Rounding a complex number (red) to the nearest Gaussian integer (blue lattice) moves it by at most $`\frac{\sqrt{2}}{2}`.
+:::
+
 :::EXAMPLE "The ring of Eisenstein integers is a Euclidean domain"
 Similarly, let $`\omega = \frac{1 + \sqrt{3}i}{2}` (that is $`\omega^3 = -1`), then $`\mathbb{Z}[\omega]` is a Euclidean domain with the usual norm $$`|a + bi| = a^2 + b^2` or equivalently $$`|a + b\omega| = a^2 + ab + b^2.`
 :::
@@ -423,6 +427,10 @@ Instead of a ball (as in imaginary quadratic fields, that is, $`\mathbb{Q}(\sqrt
 
 As such, rounding to the nearest point is not always the best way — nevertheless, it can be proven (by exhaustive case checking, similar to the case of $`\mathbb{Z}[i]`) that for every value of $`\frac{a}{b} : \mathbb{Q}(\sqrt{11})`, there is some $`q : \mathbb{Z}[\sqrt{11}]` such that $`\operatorname{Norm}(\frac{a}{b} - q) < 1`.
 Thus $`\operatorname{Norm}` is a Euclidean norm.
+:::
+
+:::figure "figures/abstract-algebra/zsqrt11-norm.svg"
+The lattice $`\mathbb{Z}[\sqrt{11}]`, plotting $`a + b\sqrt{11}` at $`(a + b\sqrt{11}, a - b\sqrt{11})`; the red hyperbolas bound the points of norm less than $`1`.
 :::
 
 That having said, sometimes the natural norm of a Euclidean domain need not be Euclidean. $`\mathbb{Z}[\frac{1 + \sqrt{69}}{2}]` is the first example.
@@ -504,10 +512,22 @@ In $`\mathbb{Z}[i]`, consider $`b = 3 + i`.
 The set of numbers $`a` for which $`b \mid a` forms a sublattice; if we add a unit to these values of $`a`, we get the set of numbers $`a` for which $`b` is a side divisor of $`a`, thus giving a picture to the concept of "almost divisor".
 :::
 
+:::figure "figures/abstract-algebra/zi-multiples.svg"
+The multiples of $`b = 3 + i` in $`\mathbb{Z}[i]`, marked in red.
+:::
+
+:::figure "figures/abstract-algebra/zi-side-divisors.svg"
+The points of which $`3 + i` is a side divisor (blue) or an exact divisor (red).
+:::
+
 Finally, we define a *universal side divisor* to be a number $`b` such that $`b` is a side divisor of every element $`a : R`.
 
 :::EXAMPLE
 Checking similarly, in $`\mathbb{Z}[i]`, then $`2 + i` and $`1 + i` are universal side divisors.
+:::
+
+:::figure "figures/abstract-algebra/zi-universal-side.svg"
+The universal side divisor $`2 + i`: every point is at distance $`1` from a multiple $`r(2 + i)` (arrows), or is itself a multiple (red).
 :::
 
 Now, the connection between the two concepts considered above.
