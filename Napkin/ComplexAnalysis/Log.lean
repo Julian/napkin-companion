@@ -147,7 +147,7 @@ $$`\frac{1}{2\pi i} \oint_\gamma \frac{f'}{f} \; dz \in n\mathbb{Z}`
 for every contour $`\gamma` in $`U`.
 :::
 
-Mathlib doesn't have this exact "nth root exists iff" packaged as a single named theorem, but the components are there: the logarithmic-derivative integral side is the argument-principle machinery from the previous chapter, and the lifting side is `IsCoveringMap.exists_lift_of_continuous` for the covering map $`(-)^n \colon \mathbb{C}^* \to \mathbb{C}^*`.
+Mathlib doesn't have this exact "nth root exists iff" packaged as a single named theorem, but the components are there: the logarithmic-derivative integral side is the argument-principle machinery from the previous chapter, and the lifting side is `IsCoveringMap.existsUnique_continuousMap_lifts` for the covering map $`(-)^n \colon \mathbb{C}^* \to \mathbb{C}^*`.
 Composing the two recovers the theorem above as a one-page argument in Lean.
 
 # Complex logarithms
@@ -176,7 +176,8 @@ $$`\frac{1}{2\pi i} \oint_\gamma \frac{f'}{f} \; dz = 0`
 for every contour $`\gamma` in $`U`.
 :::
 
-Mathlib proves the universal-cover side as `Complex.isCoveringMap_exp` and uses it (combined with simple-connectedness of the domain) to conclude the existence of holomorphic logs on simply-connected nonvanishing domains — see `Complex.exists_holomorphic_log_of_simplyConnected` (and its `cexp_log` companion that fires when you actually want the log).
+Mathlib proves the universal-cover side as `Complex.isCoveringMap_exp`, and covering-space lifting (`IsCoveringMap.existsUnique_continuousMap_lifts`) supplies the lift over a simply-connected domain; Mathlib does not, however, package the resulting "holomorphic log exists" conclusion under a single named theorem.
+Once you have such a log, `Complex.exp_log` round-trips it back to the original nonvanishing function.
 
 # Some special cases
 
@@ -218,7 +219,7 @@ recall Complex.log (z : ℂ) : ℂ
 recall Complex.exp_log {z : ℂ} (hz : z ≠ 0) : Complex.exp (Complex.log z) = z
 ```
 
-The branch-cut domain `ℂ \ (-∞, 0]` shows up as `Complex.slitPlane`, with `Complex.differentiableOn_log_slitPlane` registering that the principal log is holomorphic on it (and not at the cut, where the imaginary part jumps from $`\pi` to $`-\pi`).
+The branch-cut domain `ℂ \ (-∞, 0]` shows up as `Complex.slitPlane`, with `Complex.differentiableAt_log` registering that the principal log is holomorphic at every point of it (and not at the cut, where the imaginary part jumps from $`\pi` to $`-\pi`).
 
 # Problems
 

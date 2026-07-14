@@ -205,7 +205,7 @@ For each function $`f \colon \Omega \to [0, +\infty]`, let
 $$`\int_\Omega f \; d\mu \overset{\text{def}}{=} |R(f)|.`
 The integral is well-defined whenever $`R(f)` is measurable.
 
-The product measure on $`\Omega \times \mathbb{R}` is `MeasureTheory.Measure.prod μ ν`, and the "volume under the graph" identity is `MeasureTheory.lintegral_eq_measure_subgraph` (the subgraph being the region $`R(f)`, called `MeasureTheory.subgraph` in Mathlib).
+The product measure on $`\Omega \times \mathbb{R}` is `MeasureTheory.Measure.prod μ ν`, and the "volume under the graph" identity is `volume_regionBetween_eq_lintegral` (the region $`R(f)` being `regionBetween 0 f` in Mathlib).
 
 As promised in the measurable functions section, the definition of measurable function satisfies:
 
@@ -227,7 +227,7 @@ Then $`f` is also Lebesgue integrable and the integrals agree:
 $$`\int_a^b f(x) \; dx = \int_{[a, b]} f \; d\mu.`
 :::
 
-`MeasureTheory.intervalIntegral.integral_eq_lintegral_of_nonneg` is the bridge from the Bochner-via-Lebesgue integral to the interval-integral notation `∫ x in a..b, f x` we'd already met in the calculus chapter, with the matching `intervalIntegrable_iff_integrableOn` for the integrability hypothesis.
+`MeasureTheory.integral_eq_lintegral_of_nonneg_ae` is the bridge from the Bochner integral to the Lebesgue integral `∫⁻` for nonnegative functions, and `intervalIntegrable_iff` connects interval-integrability of `∫ x in a..b, f x` (the notation we'd already met in the calculus chapter) to `IntegrableOn`.
 
 Note that a Riemann integrable function *must be bounded*, which means if you try to construct a function $`f \colon [0, 1] \to \mathbb{R}` along the lines of the improper-integral example by
 $$`f(x) = \begin{cases} \frac{\sin(1/x)}{x} & x > 0 \\ 0 & x = 0 \end{cases}`
@@ -254,7 +254,7 @@ where we allow both sides to be $`+\infty` if $`f` is not absolutely integrable.
 The right-hand side makes sense since $`[a', b'] \subsetneq (a, b)` is a compact interval on which $`f` is continuous.
 This means that improper Riemann integrals of nonnegative functions can just be regarded as Lebesgue ones over the corresponding open intervals.
 
-In Mathlib this is `MeasureTheory.integral_Ioi_eq_lim_atTop` and friends — the limit-of-truncated-integral characterization for various flavors of half-line and full-line.
+In Mathlib this is `MeasureTheory.intervalIntegral_tendsto_integral_Ioi` and friends — the limit-of-truncated-integral characterization for various flavors of half-line and full-line.
 
 It's probably better to just look at an example though.
 
@@ -278,7 +278,7 @@ Take the indicator function $`\mathbf{1}_\mathbb{Q} \colon \mathbb{R} \to \{0, 1
 - Show that $`\int_\mathbb{R} \mathbf{1}_\mathbb{Q}` exists and determine its value — the one you expect!
 :::
 
-In Mathlib, the second part of this problem is essentially `MeasureTheory.integral_indicator_eq_measure` plus the Lebesgue-measure-of-`ℚ` calculation: `Real.volume_iUnion_Ioo`-flavored lemmas combined with countability give `MeasureTheory.measure_countable` to conclude $`\mu(\mathbb{Q}) = 0` directly.
+In Mathlib, the second part of this problem is essentially `MeasureTheory.integral_indicator_one` plus the Lebesgue-measure-of-`ℚ` calculation: since $`\mathbb{Q}` is countable and the Lebesgue measure has no atoms, `Set.Countable.measure_zero` concludes $`\mu(\mathbb{Q}) = 0` directly.
 
 :::PROBLEM "An improper Riemann integral with sign changes"
 Define $`f \colon (1, \infty) \to \mathbb{R}` by $`f(x) = \frac{\sin(x)}{x}`.

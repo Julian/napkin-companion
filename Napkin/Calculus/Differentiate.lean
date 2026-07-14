@@ -235,7 +235,7 @@ A *local minimum* is defined similarly.
 A point $`p` is a *local extrema* if it satisfies either of these.
 :::
 
-`IsLocalMax f p` and `IsLocalMin f p` are the predicates in `Mathlib.Order.LocallyFinite`, defined neighborhood-filter-style: "on a punctured neighborhood of $`p`, $`f(x) \leq f(p)`."
+`IsLocalMax f p` and `IsLocalMin f p` are the predicates in `Mathlib.Topology.Order.LocalExtr`, defined neighborhood-filter-style: "on a punctured neighborhood of $`p`, $`f(x) \leq f(p)`."
 
 The nice thing about derivatives is that they pick up all extrema.
 
@@ -409,7 +409,7 @@ Then the secant joining $`(0, h(0))` to $`(p, h(p))` has negative slope; in othe
 Part (b) is the same.
 :::
 
-The MVT-based monotonicity statements are `StrictMonoOn.of_hasDerivAt_pos` and friends in `Deriv.MeanValue`, building toward the full "$`f' \geq g' \Rightarrow f \geq g + \text{const}`" picture.
+The MVT-based monotonicity statements are `strictMonoOn_of_hasDerivWithinAt_pos` and friends in `Deriv.MeanValue`, building toward the full "$`f' \geq g' \Rightarrow f \geq g + \text{const}`" picture.
 
 Sometimes you will be faced with two functions which you cannot easily decouple; the following form may be more useful in that case.
 

@@ -270,7 +270,7 @@ Then
 $$`\oint_\gamma f(z) \; dz = 0.`
 :::
 
-`Complex.circleIntegral_eq_zero_of_differentiable_on` is the closest single named lemma, but Mathlib's official statement of "loops integrate to zero" is woven into the proof of the Cauchy integral formula in `Mathlib.Analysis.Complex.CauchyIntegral` (since the integral formula immediately implies it for $`f` itself by taking $`a` outside the disk).
+`Complex.circleIntegral_eq_zero_of_differentiable_on_off_countable` is the closest single named lemma, but Mathlib's official statement of "loops integrate to zero" is woven into the proof of the Cauchy integral formula in `Mathlib.Analysis.Complex.CauchyIntegral` (since the integral formula immediately implies it for $`f` itself by taking $`a` outside the disk).
 
 :::REMARK "Sanity check"
 This might look surprising considering that we saw $`\oint_\gamma z^{-1} \; dz = 2 \pi i` earlier.
@@ -407,7 +407,7 @@ Over any disk, a holomorphic function is given exactly by a Taylor series.
 
 This establishes a result we stated at the beginning of the chapter: that a function being complex differentiable once means it is not only infinitely differentiable, but in fact equal to its Taylor series.
 
-Mathlib formalizes this as `DifferentiableOn.analyticOnNhd` (and its whole-space variant `Differentiable.analyticOn`).
+Mathlib formalizes this as `DifferentiableOn.analyticOnNhd` (and its whole-space form `Complex.analyticOnNhd_univ_iff_differentiable`).
 Once you know `DifferentiableOn ℂ f s` for an open set `s`, you get `AnalyticOnNhd ℂ f s` — every point of `s` admits a power-series expansion that converges to `f` on a neighborhood — and from that all the corollaries (smoothness, identity theorem, maximum modulus, Liouville…) cascade.
 
 ```lean
@@ -611,4 +611,4 @@ Suppose $`f` is bounded.
 Show that $`\lim_{z \to p} f(z)` exists, and the extension $`f \colon U \to \mathbb{C}` is holomorphic at $`p`.
 :::
 
-`Complex.differentiableOn_update_limUnder_of_bddAbove_of_differentiableOn` is Mathlib's "Riemann removable singularity": a bounded holomorphic function on the punctured neighborhood extends holomorphically to the puncture, with the extension's value being the limit.
+`Complex.differentiableOn_update_limUnder_of_bddAbove` is Mathlib's "Riemann removable singularity": a bounded holomorphic function on the punctured neighborhood extends holomorphically to the puncture, with the extension's value being the limit.

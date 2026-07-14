@@ -792,7 +792,7 @@ Finish the proof.
 What is the condition on $`F(x)` such that $`x \in S`?)
 :::
 
-This second proof is the one Mathlib's development follows: the pairing $`(x,y) \mapsto \operatorname{Tr}(xy)` is `Algebra.traceForm`, its nondegeneracy (the invertible matrix above) is `Algebra.traceForm_nondegenerate`, and squeezing the integral closure inside the dual basis of the trace form is how `IsIntegralClosure.isNoetherian` — and from it the `Module.Free ℤ (𝓞 K)` instance — gets proved.
+This second proof is the one Mathlib's development follows: the pairing $`(x,y) \mapsto \operatorname{Tr}(xy)` is `Algebra.traceForm`, its nondegeneracy (the invertible matrix above) is `traceForm_nondegenerate`, and squeezing the integral closure inside the dual basis of the trace form is how `IsIntegralClosure.isNoetherian` — and from it the `Module.Free ℤ (𝓞 K)` instance — gets proved.
 
 ## Third proof
 

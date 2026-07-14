@@ -153,7 +153,7 @@ The unfold lemma is `isSolvable_def`.
 So all that remains is showing that $`S_5` is not solvable.
 This is a calculation that isn't relevant to the topology ideas in this chapter, so we defer it to the problem at the end.
 
-The corresponding Mathlib statement for the *alternating* group $`A_5` is `Equiv.Perm.alternatingGroup_isSimpleGroup_five`, which is even stronger: $`A_5` is *simple*.
+The corresponding Mathlib statement for the *alternating* group $`A_5` is `alternatingGroup.isSimpleGroup` (specialized to `Fin 5`), which is even stronger: $`A_5` is *simple*.
 A simple group is solvable iff it's abelian, and $`A_5` is plainly nonabelian, so $`A_5` is not solvable; since solvability descends to subgroups, $`S_5` is not solvable either.
 The latter is `Equiv.Perm.not_solvable` in `Mathlib.GroupTheory.Perm.Cycle.Type`.
 
@@ -172,4 +172,4 @@ It also allows you to broadly understand what people mean when they compare this
 Show that $`A_5` is not solvable.
 :::
 
-This is precisely the content of `Equiv.Perm.alternatingGroup_isSimpleGroup_five` plus the simple-and-nonabelian-implies-not-solvable lemma `IsSimpleGroup.solvable_iff_abelian` (in `Mathlib.GroupTheory.Solvable`).
+This is precisely the content of `alternatingGroup.isSimpleGroup` (specialized to `Fin 5`) plus the simple-group solvable-iff-abelian lemma `IsSimpleGroup.comm_iff_isSolvable` (in `Mathlib.GroupTheory.Solvable`).

@@ -211,7 +211,7 @@ Thus:
   Indeed, $`M` is a single point, which is actually a zero-dimensional manifold.
 :::
 
-The regular value theorem is not yet packaged as a one-liner in Mathlib's manifold library, but its essential ingredients are: `MeasureTheory.MeasurePreserving` and the implicit function theorem `HasStrictFDerivAt.implicitFunction` from `Mathlib.Analysis.Calculus.Implicit` give the chart construction at a regular point, and `ContMDiff.contMDiffOn_inverse` packages the smoothness of the local inverse.
+The regular value theorem is not yet packaged as a one-liner in Mathlib's manifold library, but its essential ingredients are: `MeasureTheory.MeasurePreserving` and the implicit function theorem `HasStrictFDerivAt.implicitFunction` from `Mathlib.Analysis.Calculus.Implicit` give the chart construction at a regular point, and `IsLocalDiffeomorphAt.localInverse_contMDiffOn` packages the smoothness of the local inverse.
 The "rank $`m`" hypothesis becomes surjectivity of the differential, which is Mathlib's `Function.Surjective ((fderiv ℝ f) p)`.
 
 We won't give further examples since I'm only mentioning this in passing in order to increase your capacity to write real concrete examples.
@@ -413,7 +413,7 @@ This definition is even more abstract than the one with derivations above, but h
 - it is coordinate-free, and
 - it's defined only in terms of the smooth functions $`M \to \mathbb{R}`, which will be really helpful later on in algebraic geometry when we have varieties or schemes and can repeat this definition.
 
-The "cotangent space as $`\mathfrak{m}/\mathfrak{m}^2`" picture is the one Mathlib carries on the algebraic-geometry side: `LocalRing.CotangentSpace` and `KaehlerDifferential` in `Mathlib.RingTheory.Kaehler.Basic` are the algebro-geometric incarnations of exactly this construction, and the smooth-manifold cotangent space is the same idea applied to $`R = C^\infty(M; \mathbb{R})`.
+The "cotangent space as $`\mathfrak{m}/\mathfrak{m}^2`" picture is the one Mathlib carries on the algebraic-geometry side: `IsLocalRing.CotangentSpace` and `KaehlerDifferential` in `Mathlib.RingTheory.Kaehler.Basic` are the algebro-geometric incarnations of exactly this construction, and the smooth-manifold cotangent space is the same idea applied to $`R = C^\infty(M; \mathbb{R})`.
 
 ## Sanity check
 

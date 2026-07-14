@@ -82,8 +82,8 @@ Moreover, it is unique up to scaling by a positive constant.
 :::
 
 `MeasureTheory.Measure.haar` is Mathlib's spelling, with the canonical Haar measure on a group `G` registered through the `[MeasureTheory.IsHaarMeasure μ]` typeclass.
-The four properties unpack into Mathlib lemmas: `IsHaarMeasure.smul_invariant` for translation invariance, `IsHaarMeasure.lt_top_of_isCompact` for compact-set finiteness, `MeasureTheory.Measure.OuterRegular`/`InnerRegular` for the regularity halves.
-Existence comes from the Haar-measure construction in `Mathlib.MeasureTheory.Measure.Haar.Basic`; uniqueness up to scaling is `MeasureTheory.haarMeasure_unique`.
+The four properties unpack into Mathlib lemmas: `MeasureTheory.map_mul_left_eq_self` for translation invariance, `IsCompact.measure_lt_top` for compact-set finiteness, `MeasureTheory.Measure.OuterRegular`/`InnerRegular` for the regularity halves.
+Existence comes from the Haar-measure construction in `Mathlib.MeasureTheory.Measure.Haar.Basic`; uniqueness up to scaling is `MeasureTheory.Measure.haarMeasure_unique`.
 
 ```lean
 noncomputable example {G : Type*} [Group G] [TopologicalSpace G]
@@ -147,7 +147,7 @@ For any LCA group $`G`, there is an isomorphism
 $$`G \cong \widehat{\widehat{G}} \qquad \text{by} \qquad x \mapsto (\xi \mapsto \xi(x)).`
 :::
 
-`PontryaginDual.continuousLinearEquivPontryaginDualPontryaginDual` (or, in its cleaner spelling, `PontryaginDual.doubleDualEquiv`) packages the canonical isomorphism in Mathlib.
+Mathlib does not yet package this double-duality isomorphism for a general locally compact abelian group; the finite abelian case is available as `AddChar.doubleDualEquiv`, an isomorphism between a finite abelian group and the characters of its characters.
 
 The compact case is especially nice.
 
@@ -210,7 +210,7 @@ If $`f` is continuous, this holds for all $`x`.
 
 So while we don't have the niceness of a full inner product from before, we can still in some situations at least write $`f` as integral in sort of the same way as before.
 
-`MeasureTheory.Integrable.fourierIntegralInv` and the bidirectional `fourier_inversion` lemmas (in `Mathlib.Analysis.Fourier.Inversion`) give the formal version on `ℝ`; the general LCA-group version is `MeasureTheory.fourier_inversion` in the Pontryagin-duality file.
+The bidirectional lemmas `MeasureTheory.Integrable.fourierInv_fourier_eq` and `MeasureTheory.Integrable.fourier_fourierInv_eq` (in `Mathlib.Analysis.Fourier.Inversion`) give the formal version on finite-dimensional real inner product spaces such as `ℝ`; Mathlib does not yet have the inversion formula for a general locally compact abelian group.
 
 In particular, they have special names for a few special $`G`:
 
@@ -228,7 +228,7 @@ This is part of the reason I got confused as a high school student: every type o
 If it were up to me, we would just use the term "$`G`-Fourier transform", and that would make everyone's lives a lot easier.
 
 :::aside "Mathlib's unified Fourier transform"
-Mathlib essentially follows the "$`G`-Fourier transform" wish: `Mathlib.Analysis.Fourier.FourierTransform` defines a single `MeasureTheory.fourierIntegral` parametrized by an LCA group `G` and a `MeasureTheory.AddCircle`-flavored choice of character, and the named flavors above are all special cases (with `Mathlib.Analysis.Fourier.Inversion` providing the inversion formula in each).
+Mathlib essentially follows the "$`G`-Fourier transform" wish: `Mathlib.Analysis.Fourier.FourierTransform` defines a single `VectorFourier.fourierIntegral` parametrized by an LCA group `G` and an `AddChar`-valued choice of character (landing in the circle group `Circle`), and the named flavors above are all special cases (with `Mathlib.Analysis.Fourier.Inversion` providing the inversion formula in each).
 The price is a bunch of typeclass argument; the payoff is exactly one `fourierIntegral` definition to learn.
 :::
 

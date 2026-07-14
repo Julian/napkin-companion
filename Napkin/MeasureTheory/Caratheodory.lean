@@ -333,7 +333,7 @@ This looks more complicated than it is.
 Intuitively, all we are doing is "completing" the measure by telling $`\overline{\mu}` to regard any subset of a null set as having measure zero, too.
 :::
 
-`MeasureTheory.Measure.completion μ` (in `Mathlib.MeasureTheory.Measure.Completion`) does exactly this.
+`MeasureTheory.Measure.completion μ` (in `Mathlib.MeasureTheory.Measure.NullMeasurable`) does exactly this.
 The resulting measure is `Measure.IsComplete` and agrees with `μ` on the original σ-algebra.
 
 Then, the saving grace:

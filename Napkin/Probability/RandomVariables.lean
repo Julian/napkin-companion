@@ -179,7 +179,7 @@ A random variable $`X` is *Gaussian* (or *normally distributed*) with mean $`m` 
 :::
 
 Discrete distributions such as the Bernoulli live in Mathlib as `PMF` (probability mass functions), e.g. `PMF.bernoulli p` for the coin flip; a `PMF` can be turned into a genuine measure with `PMF.toMeasure`.
-Uniformity is the predicate `ProbabilityTheory.IsUniform X s ℙ`, asserting that the law of `X` is the normalized restriction of the ambient measure to `s`.
+Uniformity is the predicate `MeasureTheory.pdf.IsUniform X s ℙ`, asserting that the law of `X` is the normalized restriction of the ambient measure to `s`.
 And the Gaussian law is the measure `ProbabilityTheory.gaussianReal m v`:
 
 ```lean

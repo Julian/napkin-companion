@@ -214,7 +214,7 @@ $$`(\xi_1 \wedge \dots \wedge \xi_k)(v_1, \dots, v_k) \overset{\text{def}}{=} \d
 You can check that this is well-defined under e.g. $`v \wedge w = -w \wedge v` and so on.
 :::
 
-`AlternatingMap.smul_dotPower` and the determinant-of-evaluation lemmas in `Mathlib.LinearAlgebra.Alternating.Basic` give exactly this evaluation rule.
+The exterior-power machinery in `Mathlib.LinearAlgebra.Alternating.Basic` gives exactly this evaluation rule.
 The cleanest packaging is via `MultilinearMap.alternatization`, which sends an arbitrary multilinear map to its "antisymmetrize-via-determinant" — applying it to the tensor $`\xi_1 \otimes \dots \otimes \xi_k` recovers the determinant formula above.
 
 :::EXAMPLE "Evaluation of a differential form"

@@ -89,7 +89,7 @@ Plugging in the hole at $`\infty` of $`\mathbb{C}` allows us to analytically ext
 :::aside
 In Mathlib, the "meromorphic" side is captured by `MeromorphicAt f x` (resp. `MeromorphicOn f s`) — defined as: there exists a natural number $`n` such that $`(z - x)^n \cdot f(z)` is analytic at $`x`.
 The "holomorphic-to-the-sphere" side is `MDifferentiable (𝓘(ℂ, ℂ)) (𝓘(ℂ, ℂ)) g` for $`g \colon X \to \mathrm{OnePoint}\;\mathbb{C}` (the one-point compactification, which is Mathlib's spelling of the Riemann sphere).
-A formal "extend a meromorphic function to a Riemann-sphere-valued map" lemma is on the active wishlist; the order-of-pole machinery `MeromorphicAt.order` already lets you talk about pole/zero multiplicities.
+A formal "extend a meromorphic function to a Riemann-sphere-valued map" lemma is on the active wishlist; the order-of-pole machinery `meromorphicOrderAt` already lets you talk about pole/zero multiplicities.
 
 ```lean
 recall MeromorphicAt
@@ -198,7 +198,7 @@ Essentially, use the Taylor expansion to determine $`m`, then the selection of $
 The value $`m` above is the *multiplicity* of $`f` at point $`p`, written $`\mathrm{mult}_p(f)`.
 :::
 
-The Mathlib analog is `AnalyticAt.order` (and `MeromorphicAt.order`): given an analytic function $`f` at $`x` that is not identically zero in a neighborhood, `AnalyticAt.order hf : ℕ∞` returns the order of the zero (the unique $`n` such that $`f(z)/(z-x)^n` is analytic and nonzero at $`x`), which is exactly the multiplicity above when working on $`\mathbb{C}` charts.
+The Mathlib analog is `analyticOrderAt` (and `meromorphicOrderAt`): given an analytic function $`f` at $`x` that is not identically zero in a neighborhood, `analyticOrderAt f x : ℕ∞` returns the order of the zero (the unique $`n` such that $`f(z)/(z-x)^n` is analytic and nonzero at $`x`), which is exactly the multiplicity above when working on $`\mathbb{C}` charts.
 Mathlib's `AnalyticAt.exists_eventuallyEq_pow_smul_nonzero_iff` and the order API codify the "looks locally like $`z^m`" intuition.
 
 :::EXAMPLE "Multiplicities of various maps"

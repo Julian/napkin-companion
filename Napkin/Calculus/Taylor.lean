@@ -148,7 +148,7 @@ The same is about to happen with power series: while they were initially thought
 :::
 
 Mathlib keeps the distinction precise: the formal series is `FormalMultilinearSeries 𝕜 E F`, the predicate "this function equals the formal series in a ball around $`x`" is `HasFPowerSeriesAt f p x`, and the maximal radius for which this holds is encoded in `HasFPowerSeriesOnBall`.
-The "function = sum of its series" view is recovered via `HasFPowerSeriesAt.tendsto_locallyUniformlyOn` or just plain `HasSum`.
+The "function = sum of its series" view is recovered via `HasFPowerSeriesOnBall.hasSum_sub`, or just plain `HasSum`.
 
 # Differentiating them
 
@@ -172,7 +172,7 @@ Also omitted.
 The right way to prove it is to define the notion "converges uniformly", and strengthen Cauchy-Hadamard to have this as a conclusion as well.
 :::
 
-Mathlib's term-by-term differentiation lives in `Mathlib.Analysis.Analytic.Within` and friends: `HasFPowerSeriesAt.hasDerivAt` produces the derivative, and `HasFPowerSeriesOnBall.contDiffOn` packages "$`f` is $`C^\infty` on the ball" in one shot.
+Mathlib's term-by-term differentiation lives in `Mathlib.Analysis.Analytic.Within` and friends: `HasFPowerSeriesAt.hasDerivAt` produces the derivative, and `AnalyticOnNhd.contDiffOn` packages "$`f` is $`C^\infty` on the ball" in one shot.
 The smoothness conclusion is exactly the `ContDiff ℝ ⊤` we met at the end of the differentiation chapter — analyticity strictly subsumes smoothness.
 
 :::COROLLARY "A description of power series coefficients"
@@ -185,7 +185,7 @@ $$`a_n = \frac{f^{(n)}(0)}{n!}.`
 Take the $`n`th derivative and plug in $`x = 0`.
 :::
 
-The same identity in Mathlib is `HasFPowerSeriesAt.iteratedFDeriv_eq` (and its scalar specialization for $`E = F = \mathbb{R}`): the $`n`th coefficient is `iteratedDeriv n f 0 / n!`.
+The same identity in Mathlib is `HasFPowerSeriesOnBall.factorial_smul` (and its scalar specialization for $`E = F = \mathbb{R}`): the $`n`th coefficient scaled by $`n!` recovers `iteratedFDeriv n f`.
 
 # Analytic functions
 
@@ -239,7 +239,7 @@ The smooth-but-not-analytic gap (next example) is exactly the difference between
   This Taylor series does *converge*, but not to the right value — as $`f(\varepsilon) > 0` for any $`\varepsilon > 0`, contradiction.
 :::
 
-Each of those positive examples is a one-liner in Mathlib: `Real.analyticAt_exp`, `Real.analyticAt_sin`, `Real.analyticAt_cos`, `Real.analyticAt_log` (the last one only for positive inputs); polynomials get `Polynomial.analyticAt`.
+Each of those positive examples is a one-liner in Mathlib: `analyticAt_rexp`, `Complex.analyticAt_sin`, `Complex.analyticAt_cos`, `analyticAt_log` (the last one only for positive inputs); polynomials get `AnalyticOnNhd.eval_polynomial`.
 
 Example (b) shows that if you have a function $`f \colon \mathbb{R} \to \mathbb{R}`, then even knowing $`f` is smooth and the full Taylor series at $`p`, it's still impossible to recover any other values of $`f` or deduce that $`f` is analytic in any interval containing $`p`.
 
@@ -351,7 +351,7 @@ We now mention that every theorem we referred to above holds equally well if we 
 - Analytic still works great for functions $`f \colon U \to \mathbb{C}`, with $`U \subseteq \mathbb{C}` open.
 
 This is exactly the payoff of Mathlib parameterizing over a normed field `𝕜`: replacing `ℝ` with `ℂ` everywhere we wrote it above gets the complex theory for free.
-`Complex.exp`, `Complex.analyticAt_exp`, `Complex.deriv_exp` — same names with `Real` swapped to `Complex`.
+`Complex.exp`, `analyticAt_cexp`, `Complex.deriv_exp` — the same statements we saw over $`\mathbb{R}`, now over $`\mathbb{C}`.
 
 In particular, we can now even define complex exponentials, giving us a function
 $$`\exp \colon \mathbb{C} \to \mathbb{C}`
@@ -369,7 +369,7 @@ And this is just the beginning of the nearly unbelievable results that hold for 
 But this is the part on real analysis, so you will have to read about this later!
 
 :::aside "Complex differentiability $`\\Rightarrow` analyticity in Mathlib"
-The result above is `DifferentiableOn.analyticOnNhd` (with hypotheses for an open subset of `ℂ`); in the form for whole-`ℂ` functions it's `Differentiable.analyticOnNhd`.
+The result above is `DifferentiableOn.analyticOnNhd` (with hypotheses for an open subset of `ℂ`); in the form for whole-`ℂ` functions it's `Complex.analyticOnNhd_univ_iff_differentiable`.
 The proof rests on Cauchy's integral formula, which requires the complex-analysis machinery in `Mathlib.Analysis.Complex.CauchyIntegral`.
 :::
 

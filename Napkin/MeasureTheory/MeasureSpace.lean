@@ -151,7 +151,7 @@ The first two examples actually say what $`\mathcal{A}` is; the third example (m
   As warned earlier, it is basically impossible to describe what it looks like, and instead you should think of it as saying "we can measure the open sets".
 :::
 
-Mathlib's `Set.univ.MeasurableSpace` (the discrete `σ`-algebra, all subsets measurable) is the first example; the third is `borel : TopologicalSpace Ω → MeasurableSpace Ω`, with the `[BorelSpace Ω]` typeclass packaging the choice "the measurable structure I have on `Ω` is the Borel one".
+Mathlib's `⊤ : MeasurableSpace Ω` (the discrete `σ`-algebra, where `MeasurableSpace.measurableSet_top` makes all subsets measurable) is the first example; the third is `borel : TopologicalSpace Ω → MeasurableSpace Ω`, with the `[BorelSpace Ω]` typeclass packaging the choice "the measurable structure I have on `Ω` is the Borel one".
 Mathlib's convention is that `ℝ`, `ℂ`, `EuclideanSpace`, … all carry their Borel `σ`-algebra by default.
 
 :::QUESTION

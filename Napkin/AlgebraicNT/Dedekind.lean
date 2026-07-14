@@ -96,7 +96,7 @@ Pretty straightforward; just convince yourself that this result is correct.
 In other words, for sums you append the two sets of generators together, and for products you take products of the generators.
 Note that for principal ideals, this coincides with "normal" multiplication, for example $$`(3) \cdot (5) = (15)` in $`\mathbb{Z}`.
 
-Both operations already exist on `Ideal R`: the sum is the lattice join (`Ideal.add_eq_sup : I + J = I ⊔ J` — "smallest ideal containing both", which is the generator description), the product is `Ideal.mul`, and the generator descriptions are `Ideal.span_union` and `Ideal.span_mul_span`.
+Both operations already exist on `Ideal R`: the sum is the lattice join (`Ideal.add_eq_sup : I + J = I ⊔ J` — "smallest ideal containing both", which is the generator description), the product is the `*` from the `Mul (Ideal R)` instance, and the generator descriptions are `Ideal.span_union` and `Ideal.span_mul_span`.
 Principal-times-principal is `Ideal.span_singleton_mul_span_singleton`.
 
 :::REMARK

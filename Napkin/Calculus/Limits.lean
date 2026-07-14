@@ -243,7 +243,7 @@ Then $`\lim_{n \to \infty} a_n` exists.
 :::
 
 For non-decreasing, the limit is $`\sup_n a_n`; for non-increasing, $`\inf_n a_n`.
-Mathlib's lemmas are `Monotone.tendsto_atTop_iSup` and `Antitone.tendsto_atTop_iInf`, each requiring the relevant boundedness.
+Mathlib's lemmas are `tendsto_atTop_ciSup` and `tendsto_atTop_ciInf`, each requiring the relevant boundedness.
 Both implicitly use `ℝ`'s `ConditionallyCompleteLinearOrder` structure to take the sup/inf.
 
 :::EXAMPLE "Silly example of monotonicity"
@@ -472,7 +472,7 @@ Show that a function $`f` is continuous at $`p` if and only if $`\lim_{x \to p} 
 :::
 
 The continuous-at-a-point relation in Mathlib is `ContinuousAt f p`, defined as `Filter.Tendsto f (nhds p) (nhds (f p))`.
-The above question is the bridge `Filter.tendsto_nhdsWithin_iff` plus the observation that on a neighborhood without `{p}` we always have the value $`f(p)` available too.
+The above question is the bridge `tendsto_nhdsWithin_iff` plus the observation that on a neighborhood without `{p}` we always have the value $`f(p)` available too.
 
 :::EXAMPLE "Less trivial example: a rational piecewise function"
 Define the function $`f \colon \mathbb{R} \to \mathbb{R}` as follows: $$`f(x) = \begin{cases} 1 & \text{if } x = 0 \\ \frac{1}{q} & \text{if } x = \frac{p}{q} \text{ where } q > 0 \text{ and } \gcd(p, q) = 1 \\ 0 & \text{if } x \notin \mathbb{Q}. \end{cases}`

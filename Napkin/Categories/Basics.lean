@@ -102,7 +102,7 @@ Let's formalize the motivation we began with.
   There is even a category $`\mathsf{FDVect}_k` of *finite-dimensional* vector spaces.
 - We have a category $`\mathsf{Set}` of sets, where the arrows are *any* maps.
 
-The Mathlib counterparts of these are `CategoryTheory.Grp`, `CategoryTheory.CommRingCat`, and `CategoryTheory.TopCat` — each a bundled type-of-objects with its forgetful functor packaged in.
+The Mathlib counterparts of these are `GrpCat`, `CommRingCat`, and `TopCat` — each a bundled type-of-objects with its forgetful functor packaged in.
 :::
 
 And of course, we can now define what an isomorphism is!
@@ -213,7 +213,7 @@ Finally, here are some examples of categories you can make from other categories
 :::
 
 :::aside "Op and product in Mathlib"
-The opposite category is `CategoryTheory.Opposite`, with the convenient notation `Cᵒᵖ`; its objects share the underlying type but the hom-direction is flipped.
+The opposite category is `Opposite`, with the convenient notation `Cᵒᵖ`; its objects share the underlying type but the hom-direction is flipped.
 The product category is `CategoryTheory.Functor.prod` for functors, and the underlying category-on-pairs is the `instance : Category (C × D)` derived from `Category C` and `Category D`.
 :::
 

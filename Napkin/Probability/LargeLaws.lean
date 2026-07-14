@@ -151,7 +151,7 @@ recall ProbabilityTheory.meas_ge_le_variance_div_sq {Ω : Type*}
     μ {ω | c ≤ |X ω - μ[X]|} ≤ ENNReal.ofReal (variance X μ / c ^ 2)
 ```
 
-There is no standalone `weak_law_of_large_numbers` in Mathlib: the strong law `ProbabilityTheory.strong_law_ae` below implies it, and the glue — almost sure convergence implies convergence in probability — is `tendstoInMeasure_of_tendsto_ae`, giving the packaged corollary `ProbabilityTheory.strong_law_in_measure`.
+There is no standalone `weak_law_of_large_numbers` in Mathlib, nor a packaged in-measure corollary: the strong law `ProbabilityTheory.strong_law_ae` below implies it, and the glue — almost sure convergence implies convergence in probability — is `MeasureTheory.tendstoInMeasure_of_tendsto_ae`.
 
 ## Application: Weierstrass approximation
 

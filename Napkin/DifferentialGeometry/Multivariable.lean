@@ -213,7 +213,7 @@ You can think of it as "$`f'` along $`\mathbf{e}_i`".
 Check that if $`Df` exists, then $`(Df)_p(\mathbf{e}_i) = \frac{\partial f}{\partial \mathbf{e}_i}(p)`.
 :::
 
-`HasFDerivAt.lineDeriv` is the Mathlib lemma: applying the Fréchet derivative to a vector recovers the directional derivative in that direction.
+`HasFDerivAt.hasLineDerivAt` is the Mathlib lemma: applying the Fréchet derivative to a vector recovers the directional derivative in that direction.
 
 :::REMARK
 Of course you can write down a definition of $`\frac{\partial f}{\partial v}` for any $`v` (rather than just the $`\mathbf{e}_i`).
@@ -317,7 +317,7 @@ Then for any point $`p` such that the quantities are defined,
 $$`\frac{\partial}{\partial \mathbf{e}_i} \frac{\partial}{\partial \mathbf{e}_j} f(p) = \frac{\partial}{\partial \mathbf{e}_j} \frac{\partial}{\partial \mathbf{e}_i} f(p).`
 :::
 
-`ContinuousMultilinearMap.IsSymmetric` is the Mathlib formulation; the symmetry of `iteratedFDeriv 𝕜 2 f` is `iteratedFDeriv_succ_apply_left.isSymmetric` (and Clairaut's theorem itself follows by applying to the standard basis).
+`IsSymmSndFDerivAt` is the Mathlib formulation of the symmetry of the second derivative; that it holds for any sufficiently smooth function is `ContDiffAt.isSymmSndFDerivAt` (and Clairaut's theorem itself follows by applying to the standard basis).
 
 # Towards differential forms
 

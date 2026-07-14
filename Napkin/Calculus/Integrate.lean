@@ -145,8 +145,8 @@ Prove that $`\psi(x_1), \psi(x_2), \dots` converges in $`N` by using uniform con
 Hence we define $`\widetilde{\psi}(x)` to be the limit of that sequence; this doesn't depend on the choice of sequence, and one can use sequential continuity to show $`\widetilde{\psi}` is continuous.
 ::::
 
-`DenseInducing.extend` (and its more uniform variant `UniformSpace.extension`) realizes this in Mathlib: given a uniformly continuous map out of a dense uniform inducing subspace into a complete uniform space, you get a unique extension.
-The companion lemma `DenseInducing.extend_eq_at` says the extension agrees with the original on the dense subset, and `DenseInducing.continuous_extend` gives continuity.
+`IsDenseInducing.extend` (and its more uniform variant `UniformSpace.Completion.extension`) realizes this in Mathlib: given a uniformly continuous map out of a dense uniform inducing subspace into a complete uniform space, you get a unique extension.
+The companion lemma `IsDenseInducing.extend_eq_at` says the extension agrees with the original on the dense subset, and `IsDenseInducing.continuous_extend` gives continuity.
 
 # Defining the Riemann integral
 
@@ -260,7 +260,8 @@ The idea is that for any choice of partition $`a \leq t_0 < t_1 < t_2 < \dots < 
 The net change of $`f` decomposes into tangent (derivative) contributions at sample points $`\xi_i` chosen by the mean value theorem.
 :::
 
-`intervalIntegral.integral_eq_sub_of_hasDerivAt` is the FTC in Mathlib, and the proof there is the partition-and-MVT argument above (factoring through `Tendsto`-style limits over the filter of mesh-zero partitions, `intervalIntegral.IntegrableOn.tendsto_riemannSum`).
+`intervalIntegral.integral_eq_sub_of_hasDerivAt` is the FTC in Mathlib, and the proof there is the partition-and-MVT argument above.
+Mathlib does not expose a standalone lemma phrasing the integral as a `Tendsto`-style limit of Riemann sums over the filter of mesh-zero partitions; the FTC is derived directly instead.
 
 ```lean
 example (f F : ℝ → ℝ) (a b : ℝ)

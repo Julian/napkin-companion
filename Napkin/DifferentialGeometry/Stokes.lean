@@ -412,7 +412,7 @@ $$`\mathbf{F}(\mathbf{r}(u, v)) \cdot (\mathbf{r}_u \times \mathbf{r}_v) \; du \
 is now rigged to correspond to the pullback $`c^\ast \alpha`.
 So using this Hodge star, we find that flux is actually the integration of a $`2`-form.
 
-The Mathlib name for the elementary cross product on $`\mathbb{R}^3` is `crossProduct`; the algebraic Hodge-star machinery on exterior powers does not yet have a unified Mathlib home, although `Matrix.crossProduct` and the spectral calculus on $`\mathbb{R}^3` make the $`n = 3` case fully usable.
+The Mathlib name for the elementary cross product on $`\mathbb{R}^3` is `crossProduct`; the algebraic Hodge-star machinery on exterior powers does not yet have a unified Mathlib home, although `crossProduct` and the spectral calculus on $`\mathbb{R}^3` make the $`n = 3` case fully usable.
 
 ## Exterior derivatives
 

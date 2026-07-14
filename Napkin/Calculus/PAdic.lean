@@ -102,7 +102,8 @@ The set $`\mathbb{Z}_p` of $`p`-adic integers forms a ring under component-wise 
 :::
 
 Mathlib doesn't take the inverse-limit construction as the definition of `ℤ_[p]`; instead it defines `Padic p` first, as the Cauchy completion of `ℚ` with respect to `padicNorm`, and then carves out `ℤ_[p]` as the closed unit ball `{x : ℚ_[p] // ‖x‖ ≤ 1}`.
-The two presentations agree, and Mathlib provides the bridge: `PadicInt.toZMod` for the projection to each $`\mathbb{Z}/p^e`, and `PadicInt.ringEquiv_pi` (in `Mathlib.NumberTheory.Padics.RingHoms`) for the full inverse-limit isomorphism.
+The two presentations agree, and Mathlib provides the bridge: `PadicInt.toZModPow n` for the projection to each $`\mathbb{Z}/p^e`.
+Rather than packaging the inverse limit as a single isomorphism, `Mathlib.NumberTheory.Padics.RingHoms` pins down $`\mathbb{Z}_p` by its universal property: `PadicInt.lift` builds a map into $`\mathbb{Z}_p` out of any compatible family of maps to the $`\mathbb{Z}/p^e`, and `PadicInt.ext_of_toZModPow` records that two $`p`-adic integers agreeing modulo every $`p^e` are equal.
 
 ```lean
 example (p : ℕ) [Fact p.Prime] (x : ℤ_[p]) : ℚ_[p] := (x : ℚ_[p])
@@ -119,7 +120,7 @@ So there are more $`p`-adic integers than usual integers.
 
 :::aside "The inverse-limit description"
 For those of you familiar with category theory, the definition above can be written concisely as $$`\mathbb{Z}_p \overset{\text{def}}{=} \varprojlim_e \mathbb{Z}/p^e\mathbb{Z}` where the inverse limit is taken across $`e \geq 1`.
-Mathlib realizes this via `Padic.lift` and the `RingHoms` file mentioned above.
+Mathlib realizes this via `PadicInt.lift` and the `RingHoms` file mentioned above.
 :::
 
 :::EXERCISE
@@ -412,7 +413,7 @@ Conversely, if $`a_n` is any sequence converging to zero, then $`f(x) = \sum_{n 
 
 The $`a_i` are called the *Mahler coefficients* of $`f`.
 
-Mathlib has the full apparatus in `Mathlib.NumberTheory.Padics.MahlerBasis`: `PadicInt.mahler k : C(ℤ_[p], ℤ_[p])` is the basis function $`\binom{x}{k}`, and the Mahler theorem is `PadicInt.hasSum_mahler` — for any continuous $`f \colon \mathbb{Z}_p \to E` (with `E` a normed `ℤ_[p]`-module), the Mahler series with the finite-difference coefficients $`\Delta^n f(0)` sums to $`f` uniformly.
+Mathlib has the full apparatus in `Mathlib.NumberTheory.Padics.MahlerBasis`: `mahler k : C(ℤ_[p], ℤ_[p])` is the basis function $`\binom{x}{k}`, and the Mahler theorem is `PadicInt.hasSum_mahler` — for any continuous $`f \colon \mathbb{Z}_p \to E` (with `E` a normed `ℤ_[p]`-module), the Mahler series with the finite-difference coefficients $`\Delta^n f(0)` sums to $`f` uniformly.
 
 ```lean
 noncomputable example (p : ℕ) [Fact p.Prime] (k : ℕ) :

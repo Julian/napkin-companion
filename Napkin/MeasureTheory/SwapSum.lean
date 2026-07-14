@@ -140,7 +140,7 @@ Here we allow either side to be $`+\infty`.
 
 Notice that there are *no extra hypothesis* on $`f_n` other than nonnegative: which makes this quite surprisingly versatile if you ever are trying to prove some general result.
 
-`MeasureTheory.lintegral_liminf_le` is exactly Fatou's lemma in Mathlib (for `lintegral`, the `ℝ≥0∞`-valued integral); the corresponding statement for the Bochner integral with appropriate dominated hypothesis is `MeasureTheory.integral_liminf_le_liminf_integral_of_dominated`.
+`MeasureTheory.lintegral_liminf_le` is exactly Fatou's lemma in Mathlib (for `lintegral`, the `ℝ≥0∞`-valued integral); the corresponding tool for the Bochner integral, where a dominating hypothesis is needed for the integrals to even converge, is the dominated convergence theorem `MeasureTheory.tendsto_integral_of_dominated_convergence`.
 
 ```lean
 example {α : Type*} [MeasurableSpace α] (μ : MeasureTheory.Measure α)
@@ -264,7 +264,7 @@ $$`f_1|_U, f_2|_U, \dots`
 converges to $`f|_U` uniformly.
 :::
 
-`MeasureTheory.Egorov.exists_tendstoUniformlyOn_compl_subset` packages exactly Egorov in `Mathlib.MeasureTheory.Function.Egorov`.
+`MeasureTheory.tendstoUniformlyOn_of_ae_tendsto'` packages exactly Egorov (for finite measure spaces) in `Mathlib.MeasureTheory.Function.Egorov`.
 
 This is because of the following theorem.
 

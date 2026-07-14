@@ -414,7 +414,8 @@ Let $`X_0`, … be a supermartingale on a probability space $`\Omega` such that 
 Then, there exists a random variable $`X_\infty \colon \Omega \to \mathbb{R}` such that $$`X_n \xrightarrow{\text{a.s.}} X_\infty.`
 :::
 
-The convergence theorem is `MeasureTheory.Submartingale.ae_tendsto_limitProcess` (via the negation trick for the supermartingale version, `Supermartingale.ae_tendsto_limitProcess`): given the uniform $`L^1` bound, the process converges almost everywhere to `ℱ.limitProcess f μ`, Mathlib's name for a choice of the limiting random variable $`X_\infty`.
+The convergence theorem is `MeasureTheory.Submartingale.ae_tendsto_limitProcess`; the supermartingale statement follows by negation, since $`-X_n` is then a submartingale.
+Given the uniform $`L^1` bound, the process converges almost everywhere to `ℱ.limitProcess f μ`, Mathlib's name for a choice of the limiting random variable $`X_\infty`.
 The proof formalized there is the classic upcrossing argument, whose combinatorial heart lives in `Mathlib.Probability.Martingale.Upcrossing`.
 
 # Optional stopping

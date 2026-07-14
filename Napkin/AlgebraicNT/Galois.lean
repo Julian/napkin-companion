@@ -537,7 +537,7 @@ Show that $$`\operatorname{Gal}(K/\mathbb{Q}) \cong (\mathbb{Z}/p\mathbb{Z})^\ti
 (Hint: look at the image of $`\zeta_p`.)
 :::
 
-The cyclotomic Galois group is computed once and for all in Mathlib by `IsPrimitiveRoot.autToPow_bijective`-adjacent machinery; the packaged form is `IsCyclotomicExtension.autEquivPow`, valid for any cyclotomic extension.
+The cyclotomic Galois group is computed once and for all in Mathlib by `IsPrimitiveRoot.autToPow`-adjacent machinery (for instance `IsPrimitiveRoot.autToPow_injective`); the packaged form is `IsCyclotomicExtension.autEquivPow`, valid for any cyclotomic extension.
 
 :::PROBLEM
 Give an example of a degree-three Galois extension of $`\mathbb{Q}`.
