@@ -370,6 +370,58 @@ def subtitle : DirectiveExpanderOf Unit
     ``(Verso.Doc.Block.other Block.subtitle
         #[$[$(← contents.mapM elabBlock)],*])
 
+block_extension Block.leanCompanion where
+  traverse _ _ _ := pure none
+  toTeX :=
+    some <| fun _ goB _ _ content => do
+      content.mapM goB
+  toHtml :=
+    open Verso.Output.Html in
+    some <| fun _ _goB _ _ _content => do
+      -- Fixed banner text lives here (one place to tweak), so the per-chapter
+      -- `:::LEANCOMPANION` marker carries no body and nothing is duplicated.
+      pure {{
+        <div class="lean-companion">
+          <div class="lean-companion-label">
+            <span class="lean-companion-mark">"∎"</span>
+            "Lean companion"
+          </div>
+          <div class="lean-companion-intro">
+            <p>"The same material as the chapter above, rebuilt in Lean and Mathlib — with some steps left as exercises for you to finish."</p>
+          </div>
+        </div>
+      }}
+  extraCss := [r#"
+    div.lean-companion {
+      border: 1px solid #b9a7f0;
+      border-top: 4px solid #7c4dff;
+      background: #f6f3ff;
+      padding: 0.9em 1.15em;
+      margin: 1.75em 0 1.5em;
+      border-radius: 4px;
+    }
+    div.lean-companion > div.lean-companion-label {
+      font-variant: small-caps;
+      letter-spacing: 0.04em;
+      font-weight: 700;
+      font-size: 1.05em;
+      color: #4a2fb0;
+      margin-bottom: 0.3em;
+    }
+    div.lean-companion span.lean-companion-mark {
+      margin-right: 0.45em;
+      color: #7c4dff;
+    }
+    div.lean-companion > div.lean-companion-intro > *:first-child { margin-top: 0; }
+    div.lean-companion > div.lean-companion-intro > *:last-child { margin-bottom: 0; }
+  "#]
+
+@[directive]
+def LEANCOMPANION : DirectiveExpanderOf Unit
+  | (), contents => do
+    ``(Verso.Doc.Block.other Block.leanCompanion
+        #[$[$(← contents.mapM elabBlock)],*])
+
 block_extension Block.example (title : String) where
   data := .str title
   traverse blockId _ _ := do assignCalloutNumber blockId; return none

@@ -536,7 +536,63 @@ By requiring an inverse element to exist, you get rid of this issue.
 Even more abstruse comment: Cayley's theorem (proved later) shows that groups are actually shadows of symmetric groups.
 This makes rigorous the notion that "groups are very symmetric".
 
-# Formalities
+# Problems
+
+::::PROBLEM
+What is the joke in the following figure?
+(Source: {cite}`img:snsd`.)
+
+:::figure "love-proper-isomorphic-subgroup.jpg"
+:::
+::::
+
+:::PROBLEM
+Prove Lagrange's theorem for orders in the special case that $`G` is a finite abelian group.
+:::
+
+:::PROBLEM
+Show that $`D_6 \cong S_3` but $`D_{24} \not\cong S_4`.
+:::
+
+:::PROBLEM
+Let $`p` be a prime.
+Show that if $`G` is a group of order $`p` then $`G \cong \mathbb{Z}/p\mathbb{Z}`.
+:::
+
+:::PROBLEM "A hint for Cayley's theorem"
+Find a subgroup $`H` of $`S_8` which is isomorphic to $`D_8`, and write the isomorphism explicitly.
+:::
+
+:::PROBLEM (chili := 1)
+Let $`G` be a finite group.{margin}[In other words, permutation groups can be arbitrarily weird. I remember being highly unsettled by this theorem when I first heard of it, but in hindsight it is not so surprising.] Show that there exists a positive integer $`n` such that
+
+1. (Cayley's theorem) $`G` is isomorphic to some subgroup of the symmetric group $`S_n`.
+2. (Representation Theory) $`G` is isomorphic to some subgroup of the general linear group $`\mathrm{GL}_n(\mathbb{R})`.
+   (This is the group of invertible $`n \times n` matrices.)
+:::
+
+:::PROBLEM (chili := 1)
+Find the smallest integer $`n` such that the symmetric group $`S_n` has a subgroup isomorphic to the dihedral group $`D_{2018}` of order $`2018`.
+:::
+
+:::PROBLEM "IMO SL 2005 C5" (chili := 2)
+There are $`n` markers, each with one side white and the other side black.
+In the beginning, these $`n` markers are aligned in a row so that their white sides are all up.
+In each step, if possible, we choose a marker whose white side is up (but not one of the outermost markers), remove it, and reverse the closest marker to the left of it and also reverse the closest marker to the right of it.
+
+Prove that if $`n \equiv 1 \pmod 3` it's impossible to reach a state with only two markers remaining.
+(In fact the converse is true as well.)
+:::
+
+:::PROBLEM (chili := 1)
+Let $`p` be a prime and $`F_1 = F_2 = 1`, $`F_{n+2} = F_{n+1} + F_n` be the Fibonacci sequence.
+Show that $`F_{2p(p^2 - 1)}` is divisible by $`p`.
+:::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
 
 ## Multiplicative and additive notation
 
@@ -648,6 +704,19 @@ Composing with `Equiv.symm` recovers multiplication by $`g^{-1}` for free.
 end
 ```
 
+Now try it yourself.
+Fill in each `sorry` — the right-multiplication bijection is the mirror image of the worked proof above, and the second asks you to pin down the inverse.
+
+```lean
+example (G : Type*) [Group G] (g : G) :
+    Function.Bijective (fun x : G => x * g) := by
+  sorry
+
+-- an element's inverse is unique: if `g * h = 1`, then `h` must be `g⁻¹`
+example (G : Type*) [Group G] (g h : G) (hh : g * h = 1) : h = g⁻¹ := by
+  sorry
+```
+
 ## Isomorphisms
 
 A group isomorphism is `MulEquiv G H`, written `G ≃* H`, or `AddEquiv G H` (`G ≃+ H`) for the additive case.
@@ -684,6 +753,19 @@ example (G H : Type*) [Group G] [Group H] :
 ```
 
 The `rfl`s land here because the underlying type-level shuffling is just pair-pattern-matching; for less-symmetric isomorphisms, those fields turn into substantive proofs.
+
+Here's one where they do.
+On a *commutative* group, the inversion map $`g \mapsto g^{-1}` is itself an isomorphism $`G \simeq^* G`; supply the three proof fields.
+(The `map_mul'` field is where commutativity is doing the work — think about why $`(ab)^{-1} = a^{-1} b^{-1}` needs it.)
+
+```lean
+example (G : Type*) [CommGroup G] : G ≃* G where
+  toFun := fun g => g⁻¹
+  invFun := fun g => g⁻¹
+  left_inv := by sorry
+  right_inv := by sorry
+  map_mul' := by sorry
+```
 
 ## Orders and Lagrange
 
@@ -725,6 +807,16 @@ example (n : ℕ) :
     Nat.card (Equiv.Perm (Fin n)) = n.factorial := by
   rw [Nat.card_eq_fintype_card, Fintype.card_perm,
       Fintype.card_fin]
+```
+
+Your turn: compute two element orders in the cyclic group $`\mathbb{Z}/6\mathbb{Z}`.
+Here `addOrderOf` is the additive analogue of `orderOf` (the group is written with `+`).
+The lemmas `ZMod.addOrderOf_one` and `ZMod.addOrderOf_coe` do the work.
+
+```lean
+example : addOrderOf (1 : ZMod 6) = 6 := by sorry
+
+example : addOrderOf (3 : ZMod 6) = 2 := by sorry
 ```
 
 ## Subgroups
@@ -769,55 +861,9 @@ example (G : Type*) [Group G] : Subgroup G where
 
 In practice, you rarely write the closure proofs by hand: Mathlib provides `Subgroup.closure : Set G → Subgroup G` to wrap any subset into "the smallest subgroup containing it", and named subgroups like `Subgroup.zpowers x`, `Subgroup.center G`, and `Subgroup.normalizer H` give you the common ones already constructed.
 
-# Problems
+Your turn: the trivial subgroup $`\bot` really does contain nothing but the identity.
 
-::::PROBLEM
-What is the joke in the following figure?
-(Source: {cite}`img:snsd`.)
-
-:::figure "love-proper-isomorphic-subgroup.jpg"
-:::
-::::
-
-:::PROBLEM
-Prove Lagrange's theorem for orders in the special case that $`G` is a finite abelian group.
-:::
-
-:::PROBLEM
-Show that $`D_6 \cong S_3` but $`D_{24} \not\cong S_4`.
-:::
-
-:::PROBLEM
-Let $`p` be a prime.
-Show that if $`G` is a group of order $`p` then $`G \cong \mathbb{Z}/p\mathbb{Z}`.
-:::
-
-:::PROBLEM "A hint for Cayley's theorem"
-Find a subgroup $`H` of $`S_8` which is isomorphic to $`D_8`, and write the isomorphism explicitly.
-:::
-
-:::PROBLEM (chili := 1)
-Let $`G` be a finite group.{margin}[In other words, permutation groups can be arbitrarily weird. I remember being highly unsettled by this theorem when I first heard of it, but in hindsight it is not so surprising.] Show that there exists a positive integer $`n` such that
-
-1. (Cayley's theorem) $`G` is isomorphic to some subgroup of the symmetric group $`S_n`.
-2. (Representation Theory) $`G` is isomorphic to some subgroup of the general linear group $`\mathrm{GL}_n(\mathbb{R})`.
-   (This is the group of invertible $`n \times n` matrices.)
-:::
-
-:::PROBLEM (chili := 1)
-Find the smallest integer $`n` such that the symmetric group $`S_n` has a subgroup isomorphic to the dihedral group $`D_{2018}` of order $`2018`.
-:::
-
-:::PROBLEM "IMO SL 2005 C5" (chili := 2)
-There are $`n` markers, each with one side white and the other side black.
-In the beginning, these $`n` markers are aligned in a row so that their white sides are all up.
-In each step, if possible, we choose a marker whose white side is up (but not one of the outermost markers), remove it, and reverse the closest marker to the left of it and also reverse the closest marker to the right of it.
-
-Prove that if $`n \equiv 1 \pmod 3` it's impossible to reach a state with only two markers remaining.
-(In fact the converse is true as well.)
-:::
-
-:::PROBLEM (chili := 1)
-Let $`p` be a prime and $`F_1 = F_2 = 1`, $`F_{n+2} = F_{n+1} + F_n` be the Fibonacci sequence.
-Show that $`F_{2p(p^2 - 1)}` is divisible by $`p`.
-:::
+```lean
+example (G : Type*) [Group G] (g : G) (h : g ∈ (⊥ : Subgroup G)) :
+    g = 1 := by sorry
+```
