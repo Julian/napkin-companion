@@ -1,0 +1,16 @@
+% Spec k[x,y]/(xy-1): the hyperbola, with a generic point (0) and a closed point.
+% Source: book/tex/alg-geom/spec-examples.tex (Spec k[x,y]/(xy-1)).
+\documentclass[border=2mm]{standalone}
+\usepackage{amsmath}\usepackage{amssymb}\usepackage{tikz}
+\begin{document}
+\begin{tikzpicture}[scale=0.7]
+  \draw[latex-latex] (-4,0)--(4,0) node[right]{$x$};
+  \draw[latex-latex] (0,-4)--(0,4) node[above]{$y$};
+  \draw[blue,thick] plot[smooth,domain=-4:-0.25,samples=50] (\x,{1/\x});
+  \draw[blue,thick] plot[smooth,domain=0.25:4,samples=50] (\x,{1/\x});
+  \node[blue] at (2.4,2.4){$\operatorname{Spec} k[x,y]/(xy-1)$};
+  \fill[red] (0.4,2) circle (2pt) node[below left,red]{$(0)$};
+  \draw[red,dotted] (0.4,2) circle (0.3);
+  \fill[blue] (-2,-0.5) circle (2pt) node[right,blue]{$(x+2)$};
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,14 @@
+% Commutative diagram from the long-exact-sequence chapter.
+% Source: book/tex/homology/long-exact.tex (lines 171-174).
+\documentclass[border=2mm]{standalone}
+\usepackage{amssymb,amsmath}
+\usepackage{tikz-cd}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\id}{\mathrm{id}}
+\begin{document}
+	\begin{tikzcd}
+		& B_n \ar[r, "g_n", two heads] \ar[d, "\partial_B"'] & C_n \ar[d, "\partial_C"] \\
+		A_{n-1} \ar[r, "f_{n-1}"', hook] & B_{n-1} \ar[r, "g_{n-1}"', two heads] & C_{n-1}
+	\end{tikzcd}
+\end{document}

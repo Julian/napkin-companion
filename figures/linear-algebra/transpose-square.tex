@@ -1,0 +1,12 @@
+% The transpose T-dagger and dual map T-vee agree under V = V-vee.
+% Source: book/tex/linalg/transpose.tex
+\documentclass[border=2mm]{standalone}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+  W \ar[r, "T^\dagger"] \ar[d, "\cong"'] & V \ar[d, "\cong"] \\
+  W^\vee \ar[r, "T^\vee"'] & V^\vee
+\end{tikzcd}
+
+\end{document}

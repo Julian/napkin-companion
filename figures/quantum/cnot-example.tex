@@ -1,0 +1,16 @@
+% A typical application of the CNOT gate.
+% Source: book/tex/quantum/ (Qcircuit diagram, ported to quantikz).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usepackage{amssymb}
+\usepackage{quantikz}
+\providecommand{\ket}[1]{\left\lvert #1\right\rangle}
+\providecommand{\xup}{\ket\rightarrow}
+\providecommand{\xdown}{\ket\leftarrow}
+\begin{document}
+\begin{quantikz}
+\lstick{$1$} & \ctrl{1} & \rstick{$1$}\qw \\
+\lstick{$0$} & \targ{} & \rstick{$1$}\qw
+\end{quantikz}
+
+\end{document}

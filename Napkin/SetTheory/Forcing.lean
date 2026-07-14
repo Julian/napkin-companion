@@ -26,6 +26,10 @@ Then, we are going to construct a bigger universe $`M[G]` which contains both $`
 (This notation is deliberately the same as $`\mathbb{Z}[\sqrt2]`, for example — in the algebra case, we are taking $`\mathbb{Z}` and adding in a new element $`\sqrt 2`, plus everything that can be generated from it.)
 By choosing $`\mathbb{P}` well, we can cause $`M[G]` to have desirable properties.
 
+:::figure "figures/set-theory/forcing-extension.svg"
+Adjoining a generic $`G` widens the model $`M` into $`M[G]`, which shares the same ordinals but may contain new sets.
+:::
+
 The model $`M` sits inside its extension $`M[G]`, and the two share the same ordinals.
 But one issue with this is that forcing may introduce some new bijections between cardinals of $`M` that were not there originally; this leads to the phenomenon called *cardinal collapse*: quite literally, cardinals in $`M` will no longer be cardinals in $`M[G]`, and instead just an ordinal.
 This is because in the process of adjoining $`G`, we may accidentally pick up some bijections which were not in the earlier universe.
@@ -62,13 +66,17 @@ For $`p, q \in \mathbb{P}` we write $`p \parallel q`, saying "$`p` is *compatibl
 Otherwise, we say $`p` and $`q` are *incompatible* and write $`p \perp q`.
 :::
 
-:::EXAMPLE "Infinite binary tree"
+::::EXAMPLE "Infinite binary tree"
 Let $`\mathbb{P} = 2^{<\omega}` be the *infinite binary tree*, whose nodes are finite binary strings ordered by "$`q \le p` when $`q` extends $`p`", extended to infinity in the obvious way.
+
+:::figure "figures/set-theory/binary-tree.svg"
+The infinite binary tree $`2^{<\omega}` of finite binary strings.
+:::
 
 1. The maximum element $`1_\mathbb{P}` is the empty string $`\varnothing`.
 2. $`D = \{\text{all strings ending in } 001\}` is an example of a dense set.
 3. No two elements of $`\mathbb{P}` are compatible unless they are comparable.
-:::
+::::
 
 :::EXAMPLE "Infinite chain"
 Let $`\mathbb{P} = (\mathbb{N}, \geq)`.
@@ -103,7 +111,7 @@ On the infinite binary tree, show that:
 - Specifically, if $`G \in M`, then such a set $`D` can be chosen such that $`D \in M` — in particular, $`G` is not $`M`-generic.
 :::
 
-:::EXAMPLE "Generic filters on the infinite binary tree"
+::::EXAMPLE "Generic filters on the infinite binary tree"
 Let $`\mathbb{P} = 2^{<\omega}`.
 The generic filters on $`\mathbb{P}` are sets of the form $$`\left\{ 0, \; b_1, \; b_1 b_2, \; b_1 b_2 b_3, \; \dots \right\}.`
 So every generic filter on $`\mathbb{P}` corresponds to a binary number $`b = 0.b_1 b_2 b_3 \dots`.{margin}[Note that it may be the case that two distinct filters correspond to the same real number, such as $`0.1000\dots` and $`0.0111\dots`, but such filters are necessarily not generic.]
@@ -112,7 +120,11 @@ It is harder to describe which reals correspond to generic filters, but they sho
 For example, the set of strings ending in $`011` is dense, so one should expect "$`011`" to appear inside $`b`, and more generally that $`b` should contain every binary string.
 So one would expect the binary expansion of $`\pi - 3` might correspond to a generic, but not something like $`0.010101\dots`.
 That's why we call them "generic".
+
+:::figure "figures/set-theory/binary-tree-generic.svg"
+A generic filter $`G` (red) is a branch descending through the tree, encoding a real number.
 :::
+::::
 
 :::EXAMPLE "Generic filters on the infinite chain"
 There's only one generic filter on $`\mathbb{P} = (\mathbb{N}, \geq)`: $`\mathbb{N}` itself.

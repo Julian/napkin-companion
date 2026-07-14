@@ -1,0 +1,13 @@
+% Functoriality of cohomology: a map f: X -> Y induces f^* on H^n.
+% Source: book/tex/homology/cohomology.tex (§ Cohomology of spaces is functorial).
+\documentclass[border=2mm]{standalone}
+\usepackage{amssymb}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}[column sep=large, row sep=large]
+  X \arrow[d, "f"'] \arrow[r, dashed]
+    & H^n(X; G) \\
+  Y \arrow[r, dashed]
+    & H^n(Y; G) \arrow[u, "f^*"']
+\end{tikzcd}
+\end{document}

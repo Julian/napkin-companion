@@ -83,6 +83,10 @@ Now we can port over our metric definitions.
 An *open neighborhood*{margin}[In literature, a "neighborhood" refers to a set which contains some open set around $`x`. We will not use this term, and exclusively refer to "open neighborhoods".] of a point $`x : X` is an open set $`U` which contains $`x`.
 :::
 
+:::figure "figures/topology/open-neighborhood.svg"
+An open neighborhood $`U` of a point $`x` inside a space $`X`.
+:::
+
 :::ABUSE
 Just to be perfectly clear: by an "open neighborhood" I mean _any_ open set containing $`x`.
 But by an "$`r`-neighborhood" I always mean the points with distance less than $`r` from $`x`, and so I can only use this term if my space is a metric space.
@@ -178,6 +182,10 @@ A topological space $`X` is *Hausdorff* if for any two distinct points $`p` and 
 
 In other words, around any two distinct points we should be able to draw disjoint open neighborhoods.
 
+:::figure "figures/topology/hausdorff.svg"
+Two distinct points $`p`, $`q` separated by disjoint open neighborhoods.
+:::
+
 `T2Space X` is the Hausdorff typeclass; `t2_separation` packages the separation property.
 
 ```lean
@@ -208,6 +216,10 @@ This is called the *subspace topology*.
 :::
 
 So for example, if we view $`S^1` as a subspace of $`\mathbb{R}^2`, then any open arc is an open set, because you can view it as the intersection of an open disk with $`S^1`.
+
+:::figure "figures/topology/subspace-arc.svg"
+An open arc of $`S^1` as the intersection of $`S^1` with an open disk of $`\mathbb{R}^2`.
+:::
 
 Needless to say, for metric spaces it doesn't matter which of these definitions I choose.
 (Proving this turns out to be surprisingly annoying, so I won't do so.)
@@ -262,6 +274,10 @@ The short description: "walk around in the space".
 :::DEFINITION
 A *path* in the space $`X` is a continuous function $$`\gamma \colon [0, 1] \to X.`
 Its *endpoints* are the two points $`\gamma(0)` and $`\gamma(1)`.
+:::
+
+:::figure "figures/topology/path.svg"
+A path $`\gamma` travelling from $`\gamma(0)` to $`\gamma(1)` inside a space $`X`.
 :::
 
 You can think of $`[0, 1]` as measuring "time", and so we'll often write $`\gamma(t)` for $`t \in [0, 1]` (with $`t` standing for "time").
@@ -336,6 +352,10 @@ Needless to say, $`\simeq` is an equivalence relation.
 What this definition is doing is taking $`\alpha` and "continuously deforming" it to $`\beta`, while keeping the endpoints fixed.
 Note that for each particular $`s`, $`F_s` is itself a function.
 So $`s` represents time as we deform $`\alpha` to $`\beta`: it goes from $`0` to $`1`, starting at $`\alpha` and ending at $`\beta`.
+
+:::figure "figures/topology/homotopy-deformation.svg"
+The homotopy $`F_s` deforming $`\alpha = F_0` to $`\beta = F_1` with endpoints fixed.
+:::
 
 :::QUESTION
 Convince yourself the above definition is right.

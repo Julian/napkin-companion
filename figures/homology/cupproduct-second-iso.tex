@@ -1,0 +1,15 @@
+% The cocycles / coboundaries lattice showing H^k ≅ H_dR^k as a second-isomorphism
+% setup (D = the group of differential forms).
+% Source: book/tex/homology/cup-product.tex (§ de Rham cohomology).
+\documentclass[border=2mm]{standalone}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}[column sep=tiny]
+  D & & \text{cocycles} \\
+    & \text{cocycles} \cap D \arrow[ul] \arrow[ur]
+    & & \text{coboundaries} \arrow[ul] \\
+    & & \text{coboundaries} \cap D \arrow[ul] \arrow[ur]
+\end{tikzcd}
+\end{document}

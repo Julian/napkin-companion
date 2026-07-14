@@ -1,0 +1,10 @@
+% The setup for the snake lemma: two rows that are exact.
+% Source: book/tex/cats/abelian.tex (§ Breaking a long exact sequence).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+	& A \ar[r, "f"] \ar[d, "a"] & B \ar[r, "g", two heads] \ar[d, "b"] & C \ar[r] \ar[d, "c"] & 0 \\
+	0 \ar[r] & A' \ar[r, hook, "f'"'] & B' \ar[r, "g'"'] & C'
+\end{tikzcd}
+\end{document}

@@ -34,12 +34,25 @@ Given two sets $`X` and $`Y`, and maps $`X \xrightarrow{f, g} Y`, we define thei
 We would like a categorical way of defining this, too.
 
 Consider two objects $`X` and $`Y` with two maps $`f` and $`g` between them.
+
+:::figure "figures/category-theory/equalizer-parallel.svg"
+The parallel pair $`f, g \colon X \to Y` we take the equalizer of.
+:::
+
 A cone over this diagram is an object $`A` and arrows over $`X` and $`Y` which make the diagram commute.
 As per {cite}`ref:msci`, we call this cone a *fork*.
 The name coming from the shape obtained if one writes $`A \to X \rightrightarrows Y` all in the same line; but to emphasize the cone-ness, we have bent the fork in our pictures.
 
 Effectively, the arrow over $`Y` is just forcing $`f \circ q = g \circ q`.
+
+:::figure "figures/category-theory/equalizer-fork.svg"
+A fork: a map $`q` into $`X` with $`f \circ q = g \circ q`.
+:::
 In any case, the *equalizer* of $`f` and $`g` is a "universal fork": it is an object $`E` and a map $`E \xrightarrow{e} X` such that for each $`A \xrightarrow{q} X` (with $`f \circ q = g \circ q`), the map $`q` factors uniquely through $`E`; that is, there is a unique $`A \xrightarrow{h} E` with $`q = e \circ h`.
+
+:::figure "figures/category-theory/equalizer-universal.svg"
+The equalizer $`E` is the universal fork: every fork factors uniquely through it.
+:::
 
 Again, the dotted arrows can be omitted, and as before equalizers may not exist.
 But when they do exist:

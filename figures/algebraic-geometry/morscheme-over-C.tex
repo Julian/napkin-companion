@@ -1,0 +1,10 @@
+% A morphism of C-schemes: psi must fix C, so it is determined by the image of y.
+% Source: book/tex/alg-geom/mor-scheme.tex (§ schemes over a base, example).
+\documentclass[border=2mm]{standalone}
+\usepackage{amsmath}\usepackage{tikz-cd}\usepackage{amssymb}
+\begin{document}
+\begin{tikzcd}
+  \mathbb C[x] & \mathbb C[y] \ar[l, "\psi"'] \\
+  & \mathbb C \ar[lu, hook] \ar[u, hook]
+\end{tikzcd}
+\end{document}

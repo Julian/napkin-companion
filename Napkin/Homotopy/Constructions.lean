@@ -40,6 +40,10 @@ Show that the open ball $`D^n \setminus S^{n-1}` is homeomorphic to $`\mathbb{R}
 
 In particular, $`S^0` consists of two points, while $`D^1` can be thought of as the interval $`[-1, 1]`.
 
+:::figure "figures/homotopy/s0-d1-d2.svg"
+$`S^0` is two points bounding the segment $`D^1`, while $`D^2` is a disk with boundary circle $`S^1`.
+:::
+
 :::aside
 Both of these are just the unit sphere and unit ball of a Euclidean space, and Mathlib names them exactly that way once you fix the ambient type to $`\mathbb{R}^{n+1}`.
 The sphere is the level set $`\{\,x \mid \operatorname{dist}(x, 0) = 1\,\}` and the closed ball is the sublevel set $`\{\,x \mid \operatorname{dist}(x, 0) \le 1\,\}`.
@@ -80,6 +84,10 @@ In that case, we simply recover $`S^1`.
 
 Observe that a small open neighborhood around $`-1 \sim 1` in the quotient space corresponds to two half-intervals at $`-1` and $`1` in the original space $`D^1`.
 This should convince you the definition we gave is the right one.
+:::
+
+:::figure "figures/homotopy/interval-mod-endpoints.svg"
+Identifying the endpoints $`-1` and $`1` of $`D^1 = [-1, 1]` recovers $`S^1`.
 :::
 
 :::aside
@@ -161,6 +169,10 @@ We of course expect this to be the unit square.
 A basic open set of $`X \times X` is a product $`U \times V` of an open subinterval $`U` of the horizontal factor with an open subinterval $`V` of the vertical factor, carving out an open rectangle.
 :::
 
+:::figure "figures/homotopy/product-unit-square.svg"
+A basis open set $`U \times V` of the unit square $`[0, 1] \times [0, 1]`.
+:::
+
 :::EXERCISE
 Convince yourself this basis gives the same topology as the product metric on $`X \times X`.
 So this is the "right" definition.
@@ -222,6 +234,10 @@ Then the *wedge sum* of two spaces is defined as $$`X \vee Y = (X \amalg Y) / {\
 :::EXAMPLE "$S^1 \\vee S^1$ is a figure eight"
 Let $`X = S^1` and $`Y = S^1`, and let $`x_0 \in X` and $`y_0 \in Y` be any points.
 Then $`X \vee Y` is a "figure eight": it is two circles fused together at one point.
+:::
+
+:::figure "figures/homotopy/wedge-figure-eight.svg"
+$`S^1 \vee S^1` is two circles fused at a single point.
 :::
 
 :::ABUSE
@@ -309,6 +325,14 @@ We will not encounter any such spaces in this book.
   Then, one can fit in a copy of $`S^1` as before, giving $`D^2`.
 :::
 
+:::figure "figures/homotopy/cw-disk-221.svg"
+$`D^2` built from $`2 + 2 + 1` cells: two $`0`-cells $`e_a^0, e_b^0`, two $`1`-cells $`e_c^1, e_d^1`, and one $`2`-cell $`e^2`.
+:::
+
+:::figure "figures/homotopy/cw-disk-111.svg"
+The same disk from just $`1 + 1 + 1` cells.
+:::
+
 :::EXAMPLE "$S^n$ as a CW complex"
 - One can obtain $`S^n` (for $`n \ge 1`) with just two cells.
   Namely, take a single point $`e^0` for $`X^0`, and to obtain $`S^n` take $`D^n` and weld its entire boundary into $`e^0`.
@@ -338,10 +362,18 @@ We now present four of the most important examples of CW complexes.
 The *torus* can be formed by taking a square and identifying the opposite edges in the same direction: if you walk off the right edge, you re-appear at the corresponding point in on the left edge.
 (Think _Asteroids_ from Atari!)
 
+:::figure "figures/homotopy/torus-square.svg"
+The torus: opposite edges of the square identified in the same direction.
+:::
+
 Thus the torus is $`(\mathbb{R}/\mathbb{Z})^2 \cong S^1 \times S^1`.
 
 Note that all four corners get identified together to a single point.
 One can realize the torus in $`3`-space by treating the square as a sheet of paper, taping together the left and right edges to form a cylinder, then bending the cylinder and fusing the top and bottom edges to form the torus.
+
+:::figure "Projection_color_torus.jpg"
+Image from {cite}`img:torus`.
+:::
 
 The torus can be realized as a CW complex with
 
@@ -351,6 +383,14 @@ The torus can be realized as a CW complex with
   This means: wrap a quarter of the circumference around $`e^1_a`, then another quarter around $`e^1_b`, then the third quarter around $`e^1_a` but in the opposite direction, and the fourth quarter around $`e^1_b` again in the opposite direction as before.
 
 We say that $`aba^{-1}b^{-1}` is the *attaching word*; this shorthand will be convenient later on.
+
+:::figure "figures/homotopy/torus-1skeleton.svg"
+The torus' $`1`-skeleton: one $`0`-cell $`e^0` with two $`1`-cells $`e^1_a, e^1_b`.
+:::
+
+:::figure "figures/homotopy/torus-2cell.svg"
+The single $`2`-cell, its boundary welded on via $`aba^{-1}b^{-1}`.
+:::
 
 :::aside
 The "$`(\mathbb{R}/\mathbb{Z})^2`" description is one we can write down directly: $`\mathbb{R}/\mathbb{Z}` is the additive circle, and Mathlib abbreviates it {lean}`UnitAddCircle`, so the torus is a product of two copies.
@@ -368,19 +408,42 @@ Unlike the torus one cannot realize this in $`3`-space without self-intersecting
 One can tape together one pair of edges as before to get a cylinder, but to then fuse the resulting circles in opposite directions is not possible in 3D.
 Nevertheless, we often draw a picture in 3-dimensional space in which we tacitly allow the cylinder to intersect itself.
 
+:::figure "klein-fold.png"
+:::
+
+:::figure "KleinBottle-01.png"
+Images from {cite}`img:kleinfold` and {cite}`img:kleinbottle`.
+:::
+
 Like the torus, the Klein bottle is realized as a CW complex with
 
 - One $`0`-cell,
 - Two $`1`-cells $`e^1_a` and $`e^1_b`, and
 - A single $`2`-cell attached this time via the word $`abab^{-1}`.
 
+:::figure "figures/homotopy/klein-square.svg"
+The Klein bottle: one pair of edges is identified with a flip.
+:::
+
 ## Real projective space
 
 Let's start with $`n = 2`.
 The space $`\mathbb{RP}^2` is obtained if we reverse both directions of the square from before.
 
+:::figure "figures/homotopy/rp2-square.svg"
+$`\mathbb{RP}^2`: both pairs of edges of the square are reversed.
+:::
+
 However, once we do this the fact that the original polygon is a square is kind of irrelevant; we can combine a red and blue edge to get a single edge.
 Equivalently, one can think of this as a circle with half its circumference identified with the other half.
+
+:::figure "figures/homotopy/rp2-circle-solid.svg"
+$`\mathbb{RP}^2` as a disk with antipodal boundary points identified.
+:::
+
+:::figure "figures/homotopy/rp2-circle-dashed.svg"
+The same, with the identified half of the boundary drawn dashed.
+:::
 
 The resulting space should be familiar to those of you who do projective (Euclidean) geometry.
 Indeed, there are several possible geometric interpretations:
@@ -430,6 +493,14 @@ In fact, note also that topologically we have $$`\mathbb{RP}^1 \cong S^1`
 since it is the "real line with endpoints fused together".
 :::
 
+:::figure "figures/homotopy/rp1-projection.svg"
+$`\mathbb{RP}^1` as lines through the origin, projected onto the tangent line $`\mathbb{R}`; the horizontal (cyan) line is the point at infinity.
+:::
+
+:::figure "figures/homotopy/rp1-circle.svg"
+Topologically $`\mathbb{RP}^1 \cong S^1`: the real line with $`0` and $`\infty` fused.
+:::
+
 Since $`\mathbb{RP}^n` is just "$`\mathbb{R}^n` (or $`D^n`) with $`\mathbb{RP}^{n-1}` as its boundary", we can construct $`\mathbb{RP}^n` as a CW complex inductively.
 Note that $`\mathbb{RP}^n` thus consists of *one cell in each dimension*.
 
@@ -458,7 +529,7 @@ The *complex projective space* $`\mathbb{CP}^n` is defined like $`\mathbb{RP}^n`
 under scaling; this time $`z_i` are complex.
 As before, $`\mathbb{CP}^n` can be thought of as $`\mathbb{C}^n` augmented with some points at infinity (corresponding to $`\mathbb{CP}^{n-1}`).
 
-:::EXAMPLE "Complex projective space"
+::::EXAMPLE "Complex projective space"
 - $`\mathbb{CP}^0` is a single point.
 - $`\mathbb{CP}^1` is $`\mathbb{C}` plus a single point at infinity ("complex infinity" if you will).
   That means as before we can think of $`\mathbb{CP}^1` as $$`\mathbb{CP}^1 = \mathbb{C} \cup \{\infty\}.`
@@ -466,7 +537,10 @@ As before, $`\mathbb{CP}^n` can be thought of as $`\mathbb{C}^n` augmented with 
   The result is just sphere $`S^2`.
 
 This space $`\mathbb{CP}^1` with its coordinate system is the *Riemann sphere*.
+
+:::figure "figures/topology/constructions-earth.svg"
 :::
+::::
 
 :::REMARK "For Euclidean geometers"
 You may recognize that while $`\mathbb{RP}^2` is the setting for projective geometry, inversion about a circle is done in $`\mathbb{CP}^1` instead.

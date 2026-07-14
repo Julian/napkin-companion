@@ -1,0 +1,16 @@
+% Spec k[x,y]/(xy): the two axes, each with a generic point plus closed points.
+% Source: book/tex/alg-geom/spec-examples.tex (Spec k[x,y]/(xy)).
+\documentclass[border=2mm]{standalone}
+\usepackage{amsmath}\usepackage{amssymb}\usepackage{tikz}
+\begin{document}
+\begin{tikzpicture}[scale=0.6]
+  \draw[blue,latex-latex] (-4,0)--(4,0);
+  \draw[blue,latex-latex] (0,-4)--(0,4);
+  \fill[red!60] (0.3,3) circle (2pt) node[below right]{$(x)$};
+  \fill[red!60] (3,0.3) circle (2pt) node[above left]{$(y)$};
+  \draw[red!60,dotted] (0.3,3.6)--(0.3,2.4);
+  \draw[red!60,dotted] (2.4,0.3)--(3.6,0.3);
+  \fill[blue] (-2,0) circle (2pt) node[below]{$(x+2)$};
+  \fill[blue] (0,-3) circle (2pt) node[right]{$(y+3)$};
+\end{tikzpicture}
+\end{document}

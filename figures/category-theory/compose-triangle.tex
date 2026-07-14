@@ -1,0 +1,11 @@
+% Commutative triangle: composing f and g gives h = g∘f.
+% Source: book/tex/cats/categories.tex (§ Definition and examples).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\newcommand{\id}{\operatorname{id}}
+\begin{document}
+\begin{tikzcd}
+	A_1 \ar[r, "f"] \ar[rd, "h"'] & A_2 \ar[d, "g"] \\
+	& A_3
+\end{tikzcd}
+\end{document}

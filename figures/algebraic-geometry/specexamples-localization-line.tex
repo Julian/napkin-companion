@@ -1,0 +1,15 @@
+% The stalk O_{Spec k[x], (x)} sitting above the point (x) of the affine line.
+% Source: book/tex/alg-geom/spec-examples.tex (Stalks above some points).
+\documentclass[border=2mm]{standalone}
+\usepackage{amsmath}\usepackage{amssymb}\usepackage{tikz}
+\begin{document}
+\begin{tikzpicture}[scale=0.7]
+  \draw[blue,latex-latex] (-5,0)--(5,0);
+  \draw[red,dotted] plot[smooth] coordinates {(-4,0)(-2,0.5)(-1,1)(1,1)(2,0.5)(4,0)};
+  \node[blue] at (-4.6,-0.9){$\operatorname{Spec} k[x]$};
+  \draw[green!50!black,thick] (0,0)--(0,3);
+  \node[green!50!black] at (0,3.3){$\mathcal O_{\operatorname{Spec} k[x],\,(x)}$};
+  \fill[blue] (0,0) circle (2pt) node[below]{$(x)$};
+  \fill[red] (0.25,1) circle (2pt) node[above right]{$(0)$};
+\end{tikzpicture}
+\end{document}

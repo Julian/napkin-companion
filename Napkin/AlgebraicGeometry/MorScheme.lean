@@ -33,6 +33,10 @@ Well, you might remember what we did for baby ringed spaces: any time we had a f
 For baby ringed spaces, this was done by composition, since the elements of the sheaf _were_ really complex valued functions: $`\pi^\sharp\phi` was defined as $`\phi \circ \pi`.
 The upshot was that we got a map $`\mathcal{O}_Y(U) \to \mathcal{O}_X(\pi^{-1}(U))` for every open set $`U`.
 
+:::figure "figures/algebraic-geometry/morscheme-ringed-morphism.svg"
+A morphism $`\pi \colon X \to Y`: an open $`U \subseteq Y` pulls back to $`\pi^{-1}(U) \subseteq X`.
+:::
+
 Now, for general locally ringed spaces, the sections are just random rings, which may not be so well-behaved.
 So the solution is that we _include_ the data of $`\pi^\sharp` as part of the definition of a morphism.
 
@@ -44,6 +48,10 @@ Thus, including the $`\pi^\sharp` is necessary.
 :::DEFINITION
 A *morphism of ringed spaces* $`(X, \mathcal{O}_X) \to (Y, \mathcal{O}_Y)` consists of a pair $`(\pi, \pi^\sharp)` where $`\pi \colon X \to Y` is a continuous map (of topological spaces), and $`\pi^\sharp` consists of a choice of ring homomorphism $$`\pi^\sharp_U \colon \mathcal{O}_Y(U) \to \mathcal{O}_X(\pi^{-1}(U))`
 for every open set $`U \subseteq Y`, such that the restriction diagram relating $`\pi^\sharp_U` and $`\pi^\sharp_V` commutes for $`V \subseteq U`.
+:::
+
+:::figure "figures/algebraic-geometry/morscheme-pullback-square.svg"
+The restriction diagram relating $`\pi^\sharp_U` and $`\pi^\sharp_V` commutes for $`V \subseteq U`.
 :::
 
 :::ABUSE
@@ -62,6 +70,10 @@ Unsurprisingly, the sections are clumsier to work with than the stalks, now that
 So rather than specifying $`\pi^\sharp_U` on every open set $`U`, it seems better if we could do it by stalks (there are fewer stalks than open sets, so this saves us a lot of work!).
 
 We start out by observing that we _do_ get a morphism of stalks.
+
+:::figure "figures/algebraic-geometry/morscheme-stalk-map.svg"
+A morphism $`\pi \colon X \to Y` induces a map on the stalks $`\mathcal{O}_{Y, q} \to \mathcal{O}_{X, p}` above $`q = \pi(p)`.
+:::
 
 :::PROPOSITION "Induced stalk morphisms"
 If $`\pi \colon X \to Y` is a map of ringed spaces sending $`\pi(p) = q`, then we get a map $$`\pi_p^\sharp \colon \mathcal{O}_{Y, q} \to \mathcal{O}_{X, p}`
@@ -308,6 +320,14 @@ The opposite category of rings $`\mathbf{CRing}^{\operatorname{op}}` is "equival
 
 This means for example that $`\operatorname{Spec} A \cong \operatorname{Spec} B`, naturally, whenever $`A \cong B`.
 
+To make sure you realize that this theorem is important, here is an amusing comment I found on MathOverflow while reading about algebraic geometry references{margin}[From [https://mathoverflow.net/q/2446/70654](https://mathoverflow.net/q/2446/70654).]:
+
+:::quote
+He \[Hartshorne\] never mentions that the category of affine schemes is dual to the category of rings, as far as I can see.
+I'd expect to see that in huge letters near the definition of scheme.
+How could you miss that out?
+:::
+
 :::aside
 This equivalence is one of the crown jewels of the Mathlib development: {name}`AlgebraicGeometry.AffineScheme.equivCommRingCat` is the categorical equivalence between $`\mathbf{CRing}^{\operatorname{op}}` and the category of affine schemes, with the functor being {name}`AlgebraicGeometry.Spec`.
 
@@ -329,16 +349,24 @@ A morphism of $`S`-schemes is a scheme morphism $`X \to Y` such that the triangl
 Often, if $`S = \operatorname{Spec} k`, we will refer to $`X` by schemes over $`k` or $`k`-schemes for short.
 :::
 
+:::figure "figures/algebraic-geometry/morscheme-over-S.svg"
+A morphism of $`S`-schemes is a map $`X \to Y` making the triangle over the base $`S` commute.
+:::
+
 :::EXAMPLE "$\\operatorname{Spec} k[\\dots]$"
 If $`X = \operatorname{Spec} k[x_1, \dots, x_n] / I` for some ideal $`I`, then $`X` is a $`k`-scheme in a natural way; since we have an obvious homomorphism $`k \hookrightarrow k[x_1, \dots, x_n] / I` which gives a map $`X \to \operatorname{Spec} k`.
 :::
 
-:::EXAMPLE "$\\operatorname{Spec} \\mathbb{C}[x] \\to \\operatorname{Spec} \\mathbb{C}[y]$"
+::::EXAMPLE "$\\operatorname{Spec} \\mathbb{C}[x] \\to \\operatorname{Spec} \\mathbb{C}[y]$"
 As $`\mathbb{C}`-schemes, maps $`\operatorname{Spec} \mathbb{C}[x] \to \operatorname{Spec} \mathbb{C}[y]` coincide with ring homomorphisms $`\psi \colon \mathbb{C}[y] \to \mathbb{C}[x]` which fix $`\mathbb{C}`.
 We see that the "over $`\mathbb{C}`" condition is eliminating the pathology from before: the $`\psi` is required to preserve $`\mathbb{C}`.
 So the morphism is determined by the image of $`y`, i.e. the choice of a polynomial in $`\mathbb{C}[x]`.
 For example, if $`\psi(y) = x^2` we recover the first example we saw.
+
+:::figure "figures/algebraic-geometry/morscheme-over-C.svg"
+Over $`\mathbb{C}`, the homomorphism $`\psi` must fix $`\mathbb{C}`, so it is determined by the image of $`y`.
 :::
+::::
 
 :::EXAMPLE "$\\operatorname{Spec} \\mathcal{O}_K$"
 This generalizes $`\operatorname{Spec} \mathbb{Z}[i]` from before.
@@ -390,7 +418,7 @@ The punctured plane $`U = (U, \mathcal{O}_U)`, obtained by deleting $`(x, y)` fr
 
 The intuition is that $`\mathcal{O}_U(U) = k[x, y]`, but $`U` is not the plane.
 
-:::PROOF
+::::PROOF
 We already know $`\mathcal{O}_U(U) = k[x, y]` and we have a good handle on it.
 For example, $`y \in \mathcal{O}_U(U)` is a global section which vanishes on what looks like the $`x`-axis.
 Similarly, $`x \in \mathcal{O}_X(X)` is a global section which vanishes on what looks like the $`y`-axis.
@@ -400,11 +428,15 @@ Now assume for contradiction that we have an isomorphism $`\psi \colon \operator
 By taking the map on global sections (part of the definition), $`k[x, y] = \mathcal{O}_U(U) \xrightarrow{\psi^\sharp} \mathcal{O}_{\operatorname{Spec} B}(\operatorname{Spec} B) \cong B`.
 The global sections $`x` and $`y` in $`\mathcal{O}_U(U)` should then have images $`a` and $`b` in $`B`; and it follows we have a ring isomorphism $`B \cong k[a, b]`.
 
+:::figure "figures/algebraic-geometry/morscheme-punctured-plane.svg"
+The punctured plane $`U` (right), with $`\mathcal{O}_U(U) = k[x, y]` and the two axis-divisors $`\mathcal{V}(x)`, $`\mathcal{V}(y)`; beside a hypothetical $`\operatorname{Spec} B` (left) whose divisors $`\mathcal{V}(a)`, $`\mathcal{V}(b)` meet at a point $`(a, b)`.
+:::
+
 Now in $`\operatorname{Spec} B`, $`\mathbb{V}(a) \cap \mathbb{V}(b)` is a closed set containing a single point, the maximal ideal $`\mathfrak{m} = (a, b)`.
 Thus in $`\operatorname{Spec} B` there is exactly one point vanishing at both $`a` and $`b`.
 _Because we required morphisms of schemes to preserve values_ (hence the big fuss about locally ringed spaces), that means there should be a single point of $`U` vanishing at both $`x` and $`y`.
 But there isn't — it was the origin we deleted.
-:::
+::::
 
 # Where to go from here
 

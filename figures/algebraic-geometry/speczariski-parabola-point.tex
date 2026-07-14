@@ -1,0 +1,14 @@
+% Points of Spec C[x,y]: the parabola prime (y - x^2) and the maximal ideal (x+1, y-1).
+% Source: book/tex/alg-geom/spec-zariski.tex (§ points of Spec).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usepackage{amssymb}
+\begin{document}
+\begin{tikzpicture}[scale=0.9]
+  \draw[->] (-2.6,0) -- (2.6,0) node[right] {$x$};
+  \draw[->] (0,-0.6) -- (0,4.4) node[above] {$y$};
+  \draw[red, dotted, thick, ->] plot[smooth, domain=-2:2, samples=40] (\x, {\x*\x});
+  \fill[red] (1.4,1.96) circle (2pt) node[below right, red] {$(y - x^2)$};
+  \fill[blue] (-1,1) circle (2pt) node[below left, blue] {$(x+1, y-1)$};
+\end{tikzpicture}
+\end{document}

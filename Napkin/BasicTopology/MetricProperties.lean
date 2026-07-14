@@ -79,6 +79,10 @@ example (M : Type*) [PseudoMetricSpace M] (s : Set M) : Prop :=
 
 For example, if $`\varepsilon = 1/2`, you can cover $`[0, 1]^2` by $`\varepsilon`-neighborhoods.
 
+:::figure "figures/topology/covering-square.svg"
+Covering the unit square $`[0, 1]^2` by finitely many $`\varepsilon`-neighborhoods.
+:::
+
 :::EXERCISE
 Show that "totally bounded" implies "bounded".
 :::

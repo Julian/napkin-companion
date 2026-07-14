@@ -1,0 +1,9 @@
+% Monic map: f∘g = f∘h forces g = h.
+% Source: book/tex/cats/categories.tex (§ Monic and epic maps).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+	A \ar[r, shift left, "g"] \ar[r, shift right, "h"'] & X \ar[r, "f"] & Y
+\end{tikzcd}
+\end{document}

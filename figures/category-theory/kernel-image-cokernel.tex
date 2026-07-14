@@ -1,0 +1,20 @@
+% The kernel, image, and cokernel of a map f: A → B.
+% Source: book/tex/cats/abelian.tex (§ Images).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\newcommand{\Ker}{\mathrm{Ker}}
+\newcommand{\Img}{\mathrm{Img}}
+\newcommand{\img}{\mathrm{img}}
+\newcommand{\Coker}{\mathrm{Coker}}
+\newcommand{\coker}{\mathrm{coker}}
+\begin{document}
+\begin{tikzcd}
+	\Ker(f) \ar[rd, hook, "\ker(f)"']
+	&&
+	\Img(f) \ar[rd, hook]
+	&&
+	\Coker(f) \\
+	& A \ar[ru, "\img(f)", two heads] \ar[rr, "f"', dashed]
+	&& B \ar[ru, "\coker(f)"', two heads]
+\end{tikzcd}
+\end{document}

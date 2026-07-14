@@ -1,0 +1,17 @@
+% The hyperbola V(xy-1) projecting down onto the affine line X = A^1 minus origin.
+% Source: book/tex/alg-geom/quasi-proj.tex (§ Morphisms of varieties).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}\usepackage{amssymb}
+\begin{document}
+\begin{tikzpicture}[scale=0.7]
+  \draw[->] (-4,0) -- (4,0) node[right] {$x$};
+  \draw[->] (0,-4) -- (0,4) node[above] {$y$};
+  \draw[blue,thick] plot[domain=0.28:4,smooth] (\x,{1/\x});
+  \draw[blue,thick] plot[domain=-4:-0.28,smooth] (\x,{1/\x});
+  \node[blue,above right] at (1,1) {$\mathcal V(xy-1)$};
+  \draw[green!50!black,->] (0,-5) -- (0,-8);
+  \draw[red,<->] (-4,-9) -- (4,-9);
+  \draw[fill=white,red,line width=1pt] (0,-9) circle (3pt);
+  \node[red,below] at (4,-9) {$X$};
+\end{tikzpicture}
+\end{document}

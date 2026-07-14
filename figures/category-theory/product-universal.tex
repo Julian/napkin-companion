@@ -1,0 +1,12 @@
+% Universal property of the product: g,h factor uniquely through X×Y.
+% Source: book/tex/cats/categories.tex (§ Binary products).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+	&&& X \\
+	A \ar[rrru, bend left, "g"'] \ar[rrrd, bend right, "h"] \ar[rr, dotted, "\exists! f"] &&
+		X \times Y \ar[ru, "\pi_X"] \ar[rd, "\pi_Y"] & \\
+	&&& Y
+\end{tikzcd}
+\end{document}

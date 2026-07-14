@@ -71,6 +71,10 @@ You might already recognize it:
 This is absolutely no coincidence.
 The wedge product is designed to interpret signed areas.
 That is, $`v \wedge w` is meant to interpret the area of the parallelogram formed by $`v` and $`w`.
+
+:::figure "figures/linear-algebra/dets-parallelogram.svg"
+The parallelogram spanned by $`v = ae_1 + be_2` and $`w = ce_1 + de_2` has signed area $`ad - bc`.
+:::
 You can see why the condition $`(cv) \wedge w = v \wedge (cw)` would make sense now.
 And now of course you know why $`v \wedge v` ought to be zero: it's an area zero parallelogram!
 
@@ -203,7 +207,7 @@ Let's connect with the theory of eigenvalues.
 Take a map $`T \colon V \to V`, where $`V` is $`n`-dimensional over an algebraically closed field, and suppose its eigenvalues are $`\lambda_1, \lambda_2, \dots, \lambda_n` (with repetition).
 Then the *characteristic polynomial* is given by $$`p_T(X) = (X - \lambda_1)(X - \lambda_2) \dots (X - \lambda_n).`
 
-Note that if we've written $`T` in Jordan form, that is, $$`T = \begin{bmatrix} \lambda_1 & * & 0 & \dots & 0 \\ 0 & \lambda_2 & * & \dots & 0 \\ 0 & 0 & \lambda_3 & \dots & 0 \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & 0 & \dots & \lambda_n \end{bmatrix}` (here each $`*` is either $`0` or $`1`), then we can hack together the definition $$`p_T(X) \coloneqq \det(X \cdot \mathrm{id}_n - T).`
+Note that if we've written $`T` in Jordan form, that is, $$`T = \begin{bmatrix} \lambda_1 & * & 0 & \dots & 0 \\ 0 & \lambda_2 & * & \dots & 0 \\ 0 & 0 & \lambda_3 & \dots & 0 \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & 0 & \dots & \lambda_n \end{bmatrix}` (here each $`*` is either $`0` or $`1`), then we can hack together the definition $$`p_T(X) \coloneqq \det\left( X \cdot \mathrm{id}_n - T \right) = \det \begin{bmatrix} X - \lambda_1 & * & 0 & \dots & 0 \\ 0 & X - \lambda_2 & * & \dots & 0 \\ 0 & 0 & X - \lambda_3 & \dots & 0 \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & 0 & \dots & X - \lambda_n \end{bmatrix}.`
 
 The latter definition is what you'll see in most linear algebra books because it lets you define the characteristic polynomial without mentioning the word "eigenvalue" (i.e. entirely in terms of arrays of numbers).
 I'll admit it does have the merit that it means that given any matrix, it's easy to compute the characteristic polynomial and hence compute the eigenvalues; but I still think the definition should be done in terms of eigenvalues to begin with.

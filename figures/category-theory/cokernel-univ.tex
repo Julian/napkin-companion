@@ -1,0 +1,12 @@
+% The cokernel of f: f composed with coker f is 0.
+% Source: book/tex/cats/abelian.tex (§ Kernels and cokernels).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\newcommand{\Coker}{\mathrm{Coker}}
+\newcommand{\coker}{\mathrm{coker}}
+\begin{document}
+\begin{tikzcd}
+	A \ar[r, "f"] \ar[rd, "0"', dashed] & B \ar[d, "\coker f", two heads] \\
+	& \Coker f
+\end{tikzcd}
+\end{document}

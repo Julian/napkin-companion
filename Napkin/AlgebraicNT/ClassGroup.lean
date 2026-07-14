@@ -257,6 +257,11 @@ $$`\overset\tau\mapsto \left( 9 + \sqrt[3]{2}, \;\; 9 - \frac{1}{2} \sqrt[3]{2},
 :::
 
 Now, the whole point of this is that we want to consider the resulting lattice when we take $`\mathcal{O}_K`.
+
+:::figure "figures/algebraic-nt/classgrp-minkowski-embedding.svg"
+The canonical embedding sends a box $`S` to a region of computed volume, and $`\mathcal{O}_K` to a lattice $`L` — the setup for Minkowski's theorem.
+:::
+
 In fact, we have:
 
 :::LEMMA "Mesh of the integer lattice"

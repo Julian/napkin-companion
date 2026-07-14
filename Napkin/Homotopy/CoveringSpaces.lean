@@ -39,6 +39,12 @@ Let $`U` be an open set of $`B`.
 We call $`U` *evenly covered* (by $`p`) if $`p^{-1}(U)` is a disjoint union of open sets of $`E` (possibly infinite) such that $`p` restricted to any of these sets is a homeomorphism.
 :::
 
+Picture:
+
+:::figure "even-covering.png"
+Image from {cite}`img:even_covering`.
+:::
+
 All we're saying is that $`U` is evenly covered if its pre-image is a bunch of copies of it.
 (Actually, a little more: each of the pancakes is homeomorphic to $`U`, but we also require that $`p` is the homeomorphism.)
 
@@ -83,9 +89,17 @@ Take $`p \colon \mathbb{R} \to S^1` by $`\theta \mapsto e^{2\pi i \theta}`.
 This is essentially wrapping the real line into a single helix and projecting it down.
 :::
 
+:::figure "figures/homotopy/helix.svg"
+$`\mathbb{R}` wrapped into a helix and projected down onto $`S^1`.
+:::
+
 We claim this is a covering projection.
 Indeed, consider the point $`1 \in S^1` (where we view $`S^1` as the unit circle in the complex plane).
 We can draw a small open neighborhood of it whose pre-image is a bunch of copies in $`\mathbb{R}`.
+
+:::figure "figures/homotopy/covering-pancakes.svg"
+A neighborhood of $`1 \in S^1` is evenly covered: its pre-image is a stack of disjoint copies in $`\mathbb{R}`.
+:::
 
 Note that not all open neighborhoods work this time: notably, $`U = S^1` does not work because the pre-image would be the entire $`\mathbb{R}` which is not homeomorphic with $`S^1`.
 
@@ -117,6 +131,10 @@ Let $`\gamma \colon [0, 1] \to B` be a path and $`p \colon E \to B` a covering p
 A *lifting* of $`\gamma` is a path $`\tilde\gamma \colon [0, 1] \to E` such that $`p \circ \tilde\gamma = \gamma`.
 :::
 
+:::figure "figures/homotopy/lifting-diagram.svg"
+A lifting $`\tilde\gamma` of $`\gamma` along the covering projection $`p`.
+:::
+
 :::EXAMPLE "Typical example of lifting"
 Take $`p \colon \mathbb{R} \to S^1 \subseteq \mathbb{C}` by $`\theta \mapsto e^{2 \pi i \theta}` (so $`S^1` is considered again as the unit circle).
 Consider the path $`\gamma` in $`S^1` which starts at $`1 \in \mathbb{C}` and wraps around $`S^1` once, counterclockwise, ending at $`1` again.
@@ -126,6 +144,10 @@ Then one lifting $`\tilde\gamma` is the path which walks from $`0` to $`1`.
 In fact, _for any integer $`n`_, walking from $`n` to $`n + 1` works.
 
 Similarly, the counterclockwise path from $`1 \in S^1` to $`-1 \in S^1` has a lifting: for some integer $`n`, the path from $`n` to $`n + \tfrac12`.
+:::
+
+:::figure "figures/homotopy/lifting-example.svg"
+Lifting the once-around loop $`\gamma` in $`S^1` to a path from $`n` to $`n + 1` in $`\mathbb{R}`.
 :::
 
 The above is the primary example of a lifting.
@@ -180,6 +202,10 @@ example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
 
 The theorem can be generalized to a diagram where a path is replaced by a map out of a sufficiently nice space $`Y`, as follows.
 
+:::figure "figures/homotopy/general-lifting-diagram.svg"
+The general lifting problem: lifting $`f \colon (Y, y_0) \to (B, b_0)` through $`p`.
+:::
+
 :::DEFINITION
 A space $`Y` is *locally path-connected* if, at any point $`x \in Y`, every open neighborhood $`U` of $`x` contains a path-connected open neighborhood $`V \subseteq U`.
 :::
@@ -209,11 +235,16 @@ The locally-path-connected hypothesis is the typeclass {name}`LocPathConnectedSp
 The homotopy-lifting special case of the remark is separately available as {name}`IsCoveringMap.liftHomotopy`.
 :::
 
-:::REMARK "The locally path-connected condition really is necessary"
-Let $`Y` be the *Warsaw circle*, consisting of the graph of $`y = \sin(1/x)` for $`0 < x < 1/\pi`, the segment $`\{0\} \times [-1, 1]`, and a curve to close everything up.
+::::REMARK "The locally path-connected condition really is necessary"
+Let $`Y` be the *Warsaw circle*, depicted below, consisting of the graph of $`y = \sin(1/x)` for $`0 < x < 1/\pi`, the segment $`\{0\} \times [-1, 1]`, and a curve to close everything up.
+
+:::figure "warsaw_circle.png"
+Image from {cite}`ref:hatcher`.
+:::
+
 The space $`Y` is simply connected, thus the lifting criteria is trivially satisfied, but the function $`f \colon Y \to S^1` which collapses the sine curve vertically does not lift to a function $`\tilde f \colon Y \to \mathbb{R}`.
 The lifting theorem does not apply here, because $`Y` is not locally path-connected at the origin.
-:::
+::::
 
 Another nice application of this result appears in the chapter on the complex logarithm.
 
@@ -318,6 +349,10 @@ You can then think of $`X/G` as "real numbers modulo $`1`", with $`[0, 1)` a com
 So we can identify $`X/G` with $`S^1` and the associated regular projection is just our usual $`\exp \colon \theta \mapsto e^{2i\pi \theta}`.
 :::
 
+:::figure "figures/homotopy/rg-to-s1.svg"
+$`\mathbb{R}/\mathbb{Z} = S^1` from the action $`n \cdot x = n + x`; $`[0, 1)` is a complete set of representatives.
+:::
+
 :::EXAMPLE "The torus"
 Let $`G = \mathbb{Z} \times \mathbb{Z}` and $`X = \mathbb{R}^2`, and define the group action of $`G` on $`X` by $`(m, n) \cdot (x, y) = (m + x, n + y)`.
 As $`[0, 1)^2` is a complete set of representatives, you can think of it as a unit square with the edges identified.
@@ -336,6 +371,10 @@ Now if we flatten everything, you can think of the result as a disk with half it
 The resulting space has a name: _real projective $`2`-space_, denoted $`\mathbb{RP}^2`.
 
 This gives us a covering projection $`S^2 \to \mathbb{RP}^2` (note that the pre-image of a sufficiently small patch is just two copies of it on $`S^2`).
+:::
+
+:::figure "figures/homotopy/rp2-cover.svg"
+$`\mathbb{RP}^2` as the flattened quotient $`S^2 \to \mathbb{RP}^2`: a disk with half its boundary.
 :::
 
 :::EXAMPLE "Fundamental group of $\\mathbb{RP}^2$"
@@ -397,6 +436,10 @@ For this statement to make sense I need to tell you what it means for two coveri
 Fix a space $`B`.
 Given two covering projections $`p_1 \colon E_1 \to B` and $`p_2 \colon E_2 \to B` a *map of covering projections* is a continuous function $`f \colon E_1 \to E_2` such that $`p_2 \circ f = p_1`.
 Then two covering projections $`p_1` and $`p_2` are isomorphic if there are $`f \colon E_1 \to E_2` and $`g \colon E_2 \to E_1` such that $`f \circ g = \operatorname{id}_{E_1}` and $`g \circ f = \operatorname{id}_{E_2}`.
+:::
+
+:::figure "figures/homotopy/map-of-coverings.svg"
+A map of covering projections $`f \colon E_1 \to E_2`, satisfying $`p_2 \circ f = p_1`.
 :::
 
 :::REMARK "For category theorists"

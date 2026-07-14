@@ -1,0 +1,11 @@
+% Smaller tower Q < Q(sqrt5) < Q(zeta5) matched with subgroups of (Z/5)^x.
+% Source: book/tex/alg-NT/artin.tex (§ Application: generalization of sum of two squares).
+\documentclass[border=2mm]{standalone}
+\usepackage{amssymb}\usepackage{amsmath}\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+\mathbb{Q}(\zeta_{5}) \ar[r, leftrightarrow] & \{1\} \ar[d] \\
+\mathbb{Q}(\sqrt5) \ar[u] & \{1,4\} \ar[d] \\
+\mathbb{Q} \ar[u] \ar[r, leftrightarrow] & (\mathbb{Z}/5\mathbb{Z})^\times
+\end{tikzcd}
+\end{document}

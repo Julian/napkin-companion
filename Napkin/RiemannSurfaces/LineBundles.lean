@@ -70,9 +70,11 @@ A line bundle is a set with a line bundle structure, consisting of an analytic s
 
 The transition maps is simply to weld the pieces of the line bundle together, just like how they welded pieces of a Riemann surface in the chapter on complex structures.
 
+:::aside
 Everything in the definition except the word "analytic" is in Mathlib.
 A line bundle chart is a `Trivialization ℂ π` — a homeomorphism from `π ⁻¹' U` to `U × ℂ` respecting the projection (note Mathlib sides with the "graph paper" convention, base coordinate first, against {cite}`ref:miranda` and this chapter) — and the requirement that the fiberwise transitions be linear in the fiber is the typeclass `VectorBundle ℂ F E`, whose field `continuousOn_coordChange'` also packages the continuity of the scaling factors, there called `Trivialization.coordChangeL`.
 The gap is the last word of the definition: Mathlib's bundles come in topological and smooth flavors, but there is no _holomorphic_ vector bundle yet, and the difference is precisely where all of this chapter's content lives.
+:::
 
 Another definition, we will explain this one later.
 

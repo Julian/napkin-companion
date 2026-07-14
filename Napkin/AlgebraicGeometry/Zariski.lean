@@ -54,6 +54,10 @@ Since our affine varieties (for now) all live in $`\mathbb{A}^n`, all we have to
 
 However, rather than putting the standard Euclidean topology on $`\mathbb{A}^n`, we put a much more bizarre topology.
 
+:::figure "figures/algebraic-geometry/zariski-parabola-origin.svg"
+An affine variety like the parabola $`\mathbb{V}(y - x^2)`, sitting in the plane $`\mathbb{A}^2` we are about to topologize.
+:::
+
 :::DEFINITION
 In the *Zariski topology* on $`\mathbb{A}^n`, the _closed sets_ are those of the form $$`\mathbb{V}(I) \qquad\text{where}\quad I \subseteq \mathbb{C}[x_1, \dots, x_n].`
 Of course, the open sets are complements of such sets.
@@ -77,6 +81,10 @@ Consequently, the _open_ sets of $`\mathbb{A}^1` are
 :::
 
 Thus, the picture of a "typical" open set of $`\mathbb{A}^1` is everything except a few marked points!
+
+:::figure "figures/algebraic-geometry/zariski-line-open.svg"
+A typical Zariski-open set of $`\mathbb{A}^1`: the whole line minus finitely many points.
+:::
 
 :::EXAMPLE "Zariski topology on the affine plane"
 Similarly, in $`\mathbb{A}^2`, the interesting closed sets are going to consist of finite unions (possibly empty) of
@@ -137,12 +145,16 @@ As we said before, by considering a variety $`V` as a subspace of $`\mathbb{A}^n
 One should think of an open subset of $`V` as "$`V` minus a few Zariski-closed sets".
 For example:
 
-:::EXAMPLE "Open set of a variety"
+::::EXAMPLE "Open set of a variety"
 Let $`V = \mathbb{V}(y - x^2) \subseteq \mathbb{A}^2` be a parabola, and let $`U = V \setminus \{(1, 1)\}`.
 We claim $`U` is open in $`V`.
 Indeed, $`\tilde U = \mathbb{A}^2 \setminus \{(1, 1)\}` is open in $`\mathbb{A}^2` (since it is the complement of the closed set $`\mathbb{V}(x - 1, y - 1)`), so $`U = \tilde U \cap V` is open in $`V`.
 Note that on the other hand the set $`U` is _not_ open in $`\mathbb{A}^2`.
+
+:::figure "figures/algebraic-geometry/zariski-parabola-opendot.svg"
+The open subset $`U = V \setminus \{(1, 1)\}` of the parabola $`V = \mathbb{V}(y - x^2)`.
 :::
+::::
 
 We will go ahead and introduce now a definition that will be very useful later.
 

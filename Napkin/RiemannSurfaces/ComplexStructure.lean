@@ -23,19 +23,21 @@ file := "Riemann-surfaces"
 
 Roughly speaking, the theory of Riemann surfaces is just the generalization of complex analysis using ideas from differential geometry: just like how a $`2`-manifold can be viewed as a collection of patches of the real plane $`\mathbb{R}^2` smoothly welded together to form a more complicated object, we take "pieces" of the complex plane $`\mathbb{C}`, *analytically* welded together.
 
-We already know that the theory of holomorphic functions is very nice — they're all analytic.
+We already know that the theory of holomorphic function is very nice — they're all analytic!
 The same amount of rigidity is to be expected here.
 
-In fact, on *compact* Riemann surfaces, the theories are even nicer than the case of holomorphic functions.
+In fact, on *compact* Riemann surfaces, the theories are even nicer than the case of holomorphic functions!
 For example:
 
 - For two Riemann surfaces $`X` and $`Y` where $`Y` is compact, any meromorphic function $`f \colon X \to Y` must in fact be holomorphic, i.e. defined everywhere.
 - If $`X` is a compact Riemann surface, then a holomorphic function $`f \colon X \to \mathbb{C}` is constant.
-- In the same setting, if $`g \colon X \to \mathbb{C}` is meromorphic, then the number of zeros of $`g` equals the number of poles of $`g`, with multiplicity.
+- In the same setting as above, furthermore we have that if $`g \colon X \to \mathbb{C}` is meromorphic, then the number of zeros of $`g` is equal to the number of poles of $`g`, with multiplicity.
 
+:::aside
 The second of these — sometimes called the "complex Liouville on a compact manifold" theorem — is exactly `MDifferentiable.exists_eq_const_of_compactSpace` in `Mathlib.Geometry.Manifold.Complex`.
 It says that for a compact preconnected complex manifold $`M` with `IsManifold I 1 M` and `I.Boundaryless`, any complex-differentiable map $`f \colon M \to F` into a complex normed space $`F` is the constant function: there exists $`v \in F` with $`f = \mathrm{const}_M v`.
 This generalizes the classical Liouville theorem from $`\mathbb{C}` to any compact connected complex manifold.
+:::
 
 :::REMARK "Why do we have these nice properties?"
 Roughly speaking, $`\mathbb{C}` is not compact — it is isomorphic to the Riemann sphere with a hole removed.
@@ -43,7 +45,7 @@ By filling in the hole, we allow meromorphic functions to be extended taking val
 :::
 
 As an orientable $`2`-manifold, we can define the *genus* of a Riemann surface — it is a purely topological concept, yet it is crucially linked to several algebraic invariants in very surprising ways.
-You may have heard of the *elliptic curve* in cryptography — they also present as Riemann surfaces, and a generalization, *hyperelliptic curve*, forms a family of Riemann surfaces of arbitrary genus $`\geq 2`.
+You may have heard of the *elliptic curve* in cryptography — they also present as a Riemann surface, and a generalization, *hyperelliptic curve*, form a family of Riemann surfaces of arbitrary genus $`\geq 2`!
 
 # Complex structures
 
@@ -83,6 +85,10 @@ and
 $$`\phi_2 \colon (0, 2) \to (0, 1.3), \quad \phi_2(x) = x + 0.35 \cdot (1 - x - |1 - x|).`
 :::
 
+:::figure "figures/riemann-surfaces/complex-structure-charts-linear.svg"
+Two charts $`\phi_1`, $`\phi_2` of $`(0, 2)`, glued over their overlap in $`\mathbb{R}`; the chart $`\phi_2` is a homeomorphism but does not look smooth.
+:::
+
 In the example above, you may notice that, even though the chart $`\phi_2` is a homeomorphism, it doesn't look *smooth*.
 So, you want to define a smooth $`2`-manifold as something like:
 
@@ -113,6 +119,10 @@ $$`\phi_2 \colon (0, 2) \to \left(0, 2 + \tfrac{1}{e}\right)`
 is defined by
 $$`\phi_2(x) = \begin{cases} x & \text{if } x \leq 1 \\ x + e^{-1/(x-1)} & \text{otherwise.} \end{cases}`
 Because all of $`\phi_1`, $`\phi_2`, and their inverses are smooth functions, the transition maps $`\phi_1 \circ \phi_2^{-1}` and $`\phi_2 \circ \phi_1^{-1}` are thus smooth.
+:::
+
+:::figure "figures/riemann-surfaces/complex-structure-charts-smooth.svg"
+Here the chart $`\phi_2` is smooth — flat to infinite order at the overlap edge — so the transition maps are smooth.
 :::
 
 You should take a moment to think through this idea — because smooth functions on $`\mathbb{R}^n` are so natural, it's easy to forget that a smooth manifold carries more structure than just the topology.
@@ -189,8 +199,17 @@ Any connected open subset $`U \subseteq \mathbb{C}` is a Riemann surface, with t
 This is a boring example (the whole thing can be defined without any welding), but let's go on.
 :::
 
-:::EXAMPLE "The Riemann sphere"
+:::figure "figures/riemann-surfaces/complex-structure-open-set.svg"
+Any connected open subset $`U \subseteq \mathbb{C}` is a Riemann surface.
+:::
+
+::::EXAMPLE "The Riemann sphere"
 The Riemann sphere $`\mathbb{C}_\infty`, as a smooth $`2`-manifold, is just a sphere.
+
+:::figure "figures/riemann-surfaces/complex-structure-riemann-sphere.svg"
+The Riemann sphere $`\mathbb{C}_\infty`, a smooth $`2`-manifold.
+:::
+
 Its complex structure is defined as follows.
 
 Embed the sphere in $`\mathbb{R}^3` such that $`N = (0, 0, 1)` and $`S = (0, 0, 0)` are two antipodal points.
@@ -207,14 +226,14 @@ To make $`\mathbb{C}_\infty` into a complex manifold, we must ensure that the co
 This also explains why the minus sign is needed in $`t \mapsto (\Re t, -\Im t, 1)` — otherwise, the projections would be related by $`\phi_1(p) = \frac{1}{\overline{\phi_2(p)}}`, which is not analytic.
 
 We can think of the Riemann sphere as the result of welding two copies of $`\mathbb{C}` together in order to "fill in" the missing point $`\infty`.
-:::
+::::
 
 The Riemann sphere is `OnePoint ℂ` in Mathlib (the one-point compactification of $`\mathbb{C}`); the complex-analytic structure on it comes from the two charts described above, and is captured by `IsManifold (𝓘(ℂ, ℂ)) ω (OnePoint ℂ)`.
 
 In the example above, the local coordinate given by $`\phi_1` is centered at $`S`, and the local coordinate given by $`\phi_2` is centered at $`N`.
 The point $`\phi_1^{-1}(4)` would have local coordinate $`z = 4` under the chart $`\phi_1`, and local coordinate $`t = \frac{1}{4}` under the chart $`\phi_2`.
 
-:::EXAMPLE "The complex torus"
+::::EXAMPLE "The complex torus"
 Let $`L` be the set $`\mathbb{Z}[i]` of complex numbers with both real and imaginary parts integers.
 Then $`L` forms an additive subgroup of $`\mathbb{C}`.
 
@@ -223,11 +242,15 @@ The quotient map $`\mathbb{C} \to \mathbb{C}/L` induces a natural complex struct
 
 Picture $`\mathbb{C}/L` as a unit square; the top and bottom edges, as well as the left and right edges, are smoothly welded together.
 
+:::figure "figures/riemann-surfaces/complex-structure-lattice-quotient.svg"
+The lattice $`L` in $`\mathbb{C}` with its unit-square fundamental domain, and the quotient torus $`\mathbb{C}/L`.
+:::
+
 For each small patch of the torus, we can isomorphically map it to $`\mathbb{C}` by taking a suitable component of the preimage of the quotient map — the different choices of the projection are related by transition functions $`\phi_{ij}(x) = x + a` for $`a \in L`, and this is analytic.
 
 The complex torus is compact, thus any holomorphic function on $`\mathbb{C}/L` is constant.
 Meromorphic functions are more interesting, and also difficult to construct.
-:::
+::::
 
 The "any holomorphic function is constant" fact about the torus follows immediately from the Liouville-style result above: $`\mathbb{C}/L` is compact and connected, the quotient is locally biholomorphic, and so `MDifferentiable.exists_eq_const_of_compactSpace` instantiates to: every entire function on the torus is constant.
 

@@ -46,6 +46,10 @@ Thus, if we specify a finite set $`S` of points in $`U` we can "integrate" over 
 $$`0 + \sqrt{2} + 3 + (-1) = 2 + \sqrt{2}.`
 So, *a $`0`-form $`f` lets us integrate over $`0`-dimensional "cells"*.
 
+:::figure "figures/differential-geometry/forms-scalar-field.svg"
+A $`0`-form assigns a real number to each point of $`U`.
+:::
+
 But this is quite boring, because as we know we like to integrate over things like curves, not single points.
 So, by analogy, we want a $`1`-form to let us integrate over $`1`-dimensional cells: i.e. over curves.
 What information would we need to do that?
@@ -57,6 +61,10 @@ Notice how when we walk along a smooth curve, at every point $`p` we also have s
 So, we can define a $`1`-form $`\alpha` as follows.
 A $`0`-form just took a point and gave a real number, but *a $`1`-form will take both a point and a tangent vector at that point, and spit out a real number.*
 So a $`1`-form $`\alpha` is a smooth function on pairs $`(p, v)`, where $`v` is a tangent vector at $`p`, to $`\mathbb{R}`.
+
+:::figure "figures/differential-geometry/forms-vector-at-point.svg"
+Walking along a curve $`c`, at each point $`p` we have a tangent vector $`v`.
+:::
 Hence
 $$`\alpha \colon U \times V \to \mathbb{R}.`
 
@@ -92,10 +100,18 @@ This time, at points we will look at *pairs* of tangent vectors in $`U`: in the 
 So what should a $`2`-form $`\beta` be?
 As before, it should start by taking a point $`p \in U`, so $`\beta_p` is now a linear functional: but this time, it should be a linear map on two vectors $`v` and $`w`.
 Here $`v` and $`w` are not tangent so much as their span cuts out a small parallelogram.
+
+:::figure "figures/differential-geometry/forms-two-vectors-grid.svg"
+At a point $`p`, a $`2`-form looks at a pair of vectors $`v`, $`w` cutting out a parallelogram.
+:::
 So, the right thing to do is in fact consider
 $$`\beta_p \in V^\vee \wedge V^\vee.`
 That is, to use the wedge product to get a handle on the idea that $`v` and $`w` span a parallelogram.
 Another valid choice would have been $`(V \wedge V)^\vee`; in fact, the two are isomorphic, but it will be more convenient to write it in the former.
+
+:::figure "figures/differential-geometry/forms-two-form-eval.svg"
+A $`2`-form at $`p` eats two vectors $`v_1`, $`v_2` and returns a real number.
+:::
 
 # Pictures of exterior derivatives
 
@@ -112,6 +128,10 @@ In other words, it's just the total derivative $`(Df)_p(v)`.
 
 Thus, $`df` measures "the change in $`f`".
 
+:::figure "figures/differential-geometry/forms-covector-eval.svg"
+$`df` reads off the change in $`f` along a tangent vector $`v` at a point.
+:::
+
 Now, even if I haven't defined integration yet, given a curve $`c` from a point $`a` to $`b`, what do you think
 $$`\int_c df`
 should be equal to?
@@ -126,9 +146,17 @@ Now suppose we have a $`1`-form $`\alpha`.
 Then along each of the edges of a parallelogram, with an appropriate sign convention the $`1`-form $`\alpha` gives us a real number.
 So, given a $`1`-form $`\alpha`, we define $`d\alpha` to be the $`2`-form that takes in a parallelogram spanned by $`v` and $`w`, and returns *the measure of $`\alpha` along the boundary*.
 
+:::figure "figures/differential-geometry/forms-parallelogram.svg"
+$`d\alpha` measures $`\alpha` along the oriented boundary of the parallelogram spanned by $`v` and $`w`.
+:::
+
 Now, what happens if you integrate $`d\alpha` along the entire square $`c`?
 The right picture is that, if we think of each little square as making up the big square, then the adjacent boundaries cancel out, and all we are left is the main boundary.
 This is again just a case of the so-called Stokes' theorem.
+
+:::figure "stokes-patch.png"
+Image from {cite}`img:stokes`.
+:::
 
 # Differential forms
 
@@ -145,6 +173,7 @@ We define a *differential $`k`-form* $`\alpha` on $`U` to be a smooth (infinitel
 (Here $`\bigwedge^k(V^\vee)` is the wedge product.)
 :::
 
+:::aside
 Mathlib's bridge to differential forms is `AlternatingMap` (and its continuous variant `ContinuousAlternatingMap`): given vector spaces, `V [⋀^ι]→ₗ[𝕜] W` is the type of alternating multilinear maps `V^ι → W`.
 A pointwise differential $`k`-form is then a map `U → V [⋀^(Fin k)]→ₗ[ℝ] ℝ`, smooth in the $`U` argument.
 For abstract manifolds, `Mathlib.Geometry.Manifold.Algebra.LeftInvariantDerivation` and the `Mathlib.Geometry.Manifold.MFDeriv.*` files give the manifold-side machinery; the wedge-algebra `Mathlib.LinearAlgebra.ExteriorAlgebra.Basic` carries `ExteriorAlgebra R M` and `ExteriorPower R M k` (`= ⋀^k M`), the algebra-side companions.
@@ -153,6 +182,7 @@ For abstract manifolds, `Mathlib.Geometry.Manifold.Algebra.LeftInvariantDerivati
 example (V : Type*) [AddCommGroup V] [Module ℝ V] (k : ℕ) :
     Type _ := V [⋀^Fin k]→ₗ[ℝ] ℝ
 ```
+:::
 
 Like with $`Df`, we'll use $`\alpha_p` instead of $`\alpha(p)`.
 
@@ -215,7 +245,7 @@ This is what makes differential forms so fit for integration.
 Possibly $`(dx_1)_p = \mathbf{e}_1^\vee`.
 :::
 
-We now define the exterior derivative $`df` that we gave pictures of at the beginning of the chapter.
+We now define the exterior derivative{margin}[The name "exterior derivative" comes from the wedge product $`\wedge` being alternatively called the exterior product.] $`df` that we gave pictures of at the beginning of the chapter.
 It turns out that the exterior derivative is easy to compute given explicit coordinates to work with.
 
 Firstly, we define the exterior derivative of a function $`f \colon U \to \mathbb{R}`, as
@@ -228,7 +258,7 @@ Show that for any $`p \in U`, $`(d(\mathbf{e}_1^\vee))_p = \mathbf{e}_1^\vee`.
 :::
 
 :::ABUSE
-Unfortunately, someone somewhere decided it would be a good idea to use "$`x_1`" to denote $`\mathbf{e}_1^\vee` (because *obviously* $`x_1` means "the function that takes $`(x_1, \dots, x_n) \in \mathbb{R}^n` to $`x_1`") and then decided that $`dx_1 \overset{\text{def}}{=} d(\mathbf{e}_1^\vee)`.
+Unfortunately, someone somewhere decided it would be a good idea to use "$`x_1`" to denote $`\mathbf{e}_1^\vee` (because *obviously*{margin}[Sarcasm.] $`x_1` means "the function that takes $`(x_1, \dots, x_n) \in \mathbb{R}^n` to $`x_1`") and then decided that $`dx_1 \overset{\text{def}}{=} d(\mathbf{e}_1^\vee)`.
 This notation is so entrenched that I have no choice but to grudgingly accept it.
 Note that it's not even right, since technically it's $`(dx_1)_p = \mathbf{e}_1^\vee`; $`dx_1` is a $`1`-form.
 :::
@@ -327,7 +357,8 @@ The map $`q` induces a dual map $`q^\vee \colon (\bigwedge^k(V))^\vee \to (T^k(V
 Convince yourself that a function $`f \in (T^k(V))^\vee` belongs to $`\operatorname{im} q^\vee` if and only if $`f` assigns the same value for every element in each equivalence class, as defined above.
 :::
 
-To find a canonical representative of each equivalence class, we use the alternation operator:
+To check this is indeed an isomorphism, we will construct its inverse map.
+As defined above, each equivalence class in $`T^k(V^\vee)` (fiber of $`g \in \bigwedge^k(V^\vee)`) has multiple elements, but we can find a canonical element by the following:
 
 :::DEFINITION "Alternation"
 For vector space $`V`, and element $`f = f_1 \otimes f_2 \otimes \dots \otimes f_k \in T^k(V)`, we define the alternation of $`f` as follows:
@@ -340,11 +371,28 @@ This is exactly `MultilinearMap.alternatization` in Mathlib (which sends a `Mult
 Here, $`S_k` is the permutation group.
 Notice the similarity with the definition of the determinant.
 
+:::EXAMPLE
+As above, $`V = \mathbb{R}^2`.
+Then we get: $$`\operatorname{Alt}(\mathbf{e}_1 \otimes \mathbf{e}_2) = \frac{\mathbf{e}_1 \otimes \mathbf{e}_2 - \mathbf{e}_2 \otimes \mathbf{e}_1}{2}.`
+Notice that if we swap the first and second component of $`\mathbf{e}_1 \otimes \mathbf{e}_2`, we get $`\mathbf{e}_2 \otimes \mathbf{e}_1` which has little to do with the original tensor.
+However, if we swap the first and second component of $`\frac{\mathbf{e}_1 \otimes \mathbf{e}_2 - \mathbf{e}_2 \otimes \mathbf{e}_1}{2}`, we get $`\frac{\mathbf{e}_2 \otimes \mathbf{e}_1 - \mathbf{e}_1 \otimes \mathbf{e}_2}{2}`, which is exactly the negation of the original tensor!
+:::
+
+We see that $`\operatorname{Alt} f` is a desirable representative of the equivalence class of $`f` because:
+
+- $`\operatorname{Alt}(\operatorname{Alt} f) = \operatorname{Alt} f`;
+- $`q(f) = q(\operatorname{Alt} f)` where $`q` is the quotient map $`T^k(V) \twoheadrightarrow \bigwedge^k(V)`;
+- $`\operatorname{Alt} f` is an *alternating tensor* — that is, if we swap two adjacent components of $`\operatorname{Alt} f` for each pure tensor, then the whole tensor gets negated.
+
 Thus it makes sense for us to define $`\iota \colon \bigwedge^k(V^\vee) \hookrightarrow T^k(V^\vee)` that takes each element to the alternating tensor in $`T^k(V^\vee)`.
 
-:::EXAMPLE
+::::EXAMPLE
 With the same example as above, $`V = \mathbb{R}^2`, then we get $$`\iota(\mathbf{e}_1 \wedge \mathbf{e}_2) = \operatorname{Alt}(\mathbf{e}_1 \otimes \mathbf{e}_2) = \frac{\mathbf{e}_2 \otimes \mathbf{e}_1 - \mathbf{e}_1 \otimes \mathbf{e}_2}{2}.`
+
+:::figure "figures/differential-geometry/forms-alternation-embedding.svg"
+The maps relating $`T^k(V^\vee)`, $`\bigwedge^k(V^\vee)`, and their duals.
 :::
+::::
 
 Finally,
 
@@ -374,7 +422,7 @@ You can see that this is a variant of the alternation operator (or the evaluatio
 
 # Tangential remark: arc length is not a 1-form
 
-As mentioned in a remark earlier, the arc length $`ds` is not a $`1`-form.
+As mentioned in a remark earlier, the arc length $`ds` is not a $`1`-form.{margin}[[A MathOverflow discussion](https://mathoverflow.net/q/90455).]
 
 We said earlier that differential form is something you can integrate.
 You can certainly integrate $`ds`, but it's not considered a $`1`-form!
@@ -433,7 +481,7 @@ For one, if $`\omega` is a differential form, we have:
 
 > Let $`c \colon [0, 1] \to \mathbb{R}^2` be a smooth curve, then for any sequence of smooth curves $`c_k` that converges uniformly to $`c`, then $`\int_{c_k} \omega` converges to $`\int_c \omega`.
 
-You can easily imagine how this can fail for $`ds` — a sequence of piecewise smooth curves that consist of only horizontal and vertical lines can approximate a circle, but the arc length of these jagged curves can never converge to the circumference of the circle.
+You can easily imagine how this can fail for $`ds` — a sequence of piecewise smooth curves that consist of only horizontal and vertical lines can approximate a circle, but the arc length of these jagged curves can never converge to the circumference of the circle.{margin}[In fact, using the same argument, you can also prove that, conversely, any smooth density that satisfies the latter property must in fact be linear!]
 
 # Closed and exact forms
 

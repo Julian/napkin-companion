@@ -1,0 +1,17 @@
+% Klein bottle as a square with edges identified via the word abab^{-1}.
+% Source: book/tex/homology/cellular.tex (§ The cellular boundary formula).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usepackage{amssymb}
+\usetikzlibrary{arrows.meta,decorations.markings}
+\tikzset{midarrow/.style={postaction={decorate},decoration={
+  markings,mark=at position 0.55 with {\arrow{Latex[length=2mm]}}}}}
+\begin{document}
+\begin{tikzpicture}[scale=2.2]
+  \fill[yellow!20] (0,0) rectangle (1,1);
+  \draw[red, midarrow]  (1,1) -- (1,0); % A--B
+  \draw[blue, midarrow] (0,0) -- (1,0); % C--B
+  \draw[red, midarrow]  (0,1) -- (0,0); % D--C
+  \draw[blue, midarrow] (1,1) -- (0,1); % A--D
+\end{tikzpicture}
+\end{document}

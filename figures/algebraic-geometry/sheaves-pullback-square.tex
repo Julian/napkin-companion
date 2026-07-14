@@ -1,0 +1,11 @@
+% The sheaf-gluing square is a pullback square.
+% Source: book/tex/alg-geom/sheaves.tex (§ the gluing axiom, exercise).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\usepackage{amssymb}
+\begin{document}
+\begin{tikzcd}
+  \mathcal F(U \cup V) \ar[r] \ar[d] & \mathcal F(U) \ar[d] \\
+  \mathcal F(V) \ar[r] & \mathcal F(U \cap V)
+\end{tikzcd}
+\end{document}

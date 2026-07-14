@@ -31,13 +31,18 @@ A mapping $`f \colon X \to Y` is *holomorphic* at $`p \in X` if and only if ther
 We say $`f` is a *morphism between Riemann surfaces* if and only if it is holomorphic at all points of $`X`.
 :::
 
-In other words: $`f` is holomorphic if and only if it is holomorphic as a function mapping between local coordinates.
+In other words: $`f` is holomorphic if and only if it is holomorphic as function mapping between local coordinates.
 
+:::aside
 This "compose with charts on both sides" definition is exactly what `MDifferentiable I I' f` packages on the Mathlib side.
 For Riemann surfaces, both source and target carry the trivial complex model, so the relevant typeclass is `MDifferentiable (𝓘(ℂ, ℂ)) (𝓘(ℂ, ℂ)) f`; the manifold-differentiability machinery then automatically reduces, around each point, to ordinary holomorphy of $`\phi_2 \circ f \circ \phi_1^{-1}` on its open set of definition.
+:::
 
-:::EXAMPLE "Some morphisms"
+:::EXAMPLE
+Some examples follows.
+
 - The function $`f \colon \mathbb{C} \to \mathbb{C}` by $`f(x) = x^3` is a morphism.
+
   Note that this function is not bijective.
   At each point $`p \neq 0`, there is an open neighborhood on which $`f` has an inverse, but $`f` has no inverse at $`0`.
 - The embedding of the complex plane into the Riemann sphere, $`\mathbb{C} \hookrightarrow \mathbb{C}_\infty`, is a morphism.
@@ -81,6 +86,7 @@ Or, more informally:
 Plugging in the hole at $`\infty` of $`\mathbb{C}` allows us to analytically extend meromorphic functions to $`\mathbb{C} \cup \{\infty\}`-maps which are holomorphic everywhere.
 :::
 
+:::aside
 In Mathlib, the "meromorphic" side is captured by `MeromorphicAt f x` (resp. `MeromorphicOn f s`) — defined as: there exists a natural number $`n` such that $`(z - x)^n \cdot f(z)` is analytic at $`x`.
 The "holomorphic-to-the-sphere" side is `MDifferentiable (𝓘(ℂ, ℂ)) (𝓘(ℂ, ℂ)) g` for $`g \colon X \to \mathrm{OnePoint}\;\mathbb{C}` (the one-point compactification, which is Mathlib's spelling of the Riemann sphere).
 A formal "extend a meromorphic function to a Riemann-sphere-valued map" lemma is on the active wishlist; the order-of-pole machinery `MeromorphicAt.order` already lets you talk about pole/zero multiplicities.
@@ -91,6 +97,7 @@ recall MeromorphicAt
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     (f : 𝕜 → E) (x : 𝕜) : Prop
 ```
+:::
 
 # Some other nice properties
 
@@ -105,13 +112,23 @@ Then $`d_y` is well-defined and constant.
 
 You can see why this proposition is surprising:
 
-:::EXAMPLE "Smooth-manifold counterexample"
-The proposition does not hold for smooth compact manifolds.
-Consider a smooth $`f \colon X \to Y` between two compact smooth real $`1`-manifolds, both isomorphic to the unit circle, where the graph of $`f` over $`Y` looks like an irregular wave: there are points $`y \in Y` whose fiber is empty, points whose fiber is a single point, points whose fiber has two points, and a region where the fiber is infinite.
-
+::::EXAMPLE "The proposition does not hold for smooth compact manifolds"
+Consider the following function $`f \colon X \to Y` between compact smooth real $`1`-manifold, depicted as a plot with $`x` and $`y`-axis.
 (Note that a compact $`1`-manifold cannot be embedded into $`\mathbb{R}`, because compact subsets of $`\mathbb{R}` are closed and bounded, thus necessarily have a boundary.
-A proper graph would live in a $`4`-dimensional space, which is rather difficult to visualize.)
+A proper graph would live in a $`4`-dimensional space, which is rather difficult to visualize, so we settle with an approximate representation.)
+
+:::figure "figures/riemann-surfaces/morphism-counterexample.svg"
 :::
+
+Here, $`X` and $`Y` are both isomorphic to the unit circle.
+
+We count the number of points in the fiber above each point in $`Y`:
+
+- Above point $`A`, there are infinitely many points.
+- Above point $`B`, there is only one point. (You can argue that this point has "multiplicity $`2`" however)
+- Above point $`C`, there are two points.
+- Above point $`D`, the fiber is empty.
+::::
 
 :::DEFINITION "Degree of a map"
 The value $`d_y` above is called the *degree* of the map $`f`, written $`\deg(f)`.

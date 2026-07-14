@@ -36,6 +36,7 @@ The only difference is, as you can observe, $`f(z)` and $`g(z)` returns complex 
 
 The reason why we want to do what we did is simply for convenience — by abuse of notation, let $`z` be the function $`z \mapsto z`, then we want $`dz` to be a $`1`-form that returns the change in $`z`.
 
+:::aside
 Concretely, a $`1`-form in this sense is a smooth assignment, to each point of $`U`, of an $`\mathbb{R}`-linear map from tangent vectors to values — that is, a smooth map `U → ℂ →L[ℝ] ℂ`, with `ℂ →L[ℝ] ℂ` the type of continuous $`\mathbb{R}`-linear maps.
 The two building blocks $`d\operatorname{Re}` and $`d\operatorname{Im}` are `Complex.reCLM` and `Complex.imCLM`, the real and imaginary parts bundled as $`\mathbb{R}`-linear maps:
 
@@ -45,6 +46,7 @@ recall Complex.imCLM : ℂ →L[ℝ] ℝ
 ```
 
 (To match the definition above, compose with the inclusion `Complex.ofRealCLM : ℝ →L[ℝ] ℂ` so that the values land back in $`\mathbb{C}`; then $`\omega_p = f(p) \cdot d\operatorname{Re} + g(p) \cdot d\operatorname{Im}` is literally a linear combination in the normed space `ℂ →L[ℝ] ℂ`.)
+:::
 
 # Visualization of differential forms
 

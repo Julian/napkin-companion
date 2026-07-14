@@ -3,11 +3,16 @@ import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.Topology.Homotopy.Equiv
+import Mathlib.Topology.Homotopy.Contractible
+import Mathlib.Algebra.Homology.HomologySequence
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+
+open CategoryTheory
+open scoped ContinuousMap
 
 set_option pp.rawOnError true
 
@@ -23,6 +28,15 @@ This allowed us to algebraically make computations on $`H_n(X)`.
 
 In this chapter, we turn our attention to the long exact sequence associated to the chain complex $$`0 \to C_n(A) \hookrightarrow C_n(X) \twoheadrightarrow C_n(X, A) \to 0.`
 The setup will look a lot like the previous two chapters, except in addition to $`H_n \colon \mathbf{hTop} \to \mathbf{Grp}` we will have a functor $`H_n \colon \mathbf{hPairTop} \to \mathbf{Grp}` which takes a pair $`(X, A)` to $`H_n(X, A)`.
+
+A three-term sequence like the one above is short exact exactly when the left map is injective, the right map is surjective, and the composite kernel-image data is exact in the middle; this is packaged as {name}`CategoryTheory.ShortComplex.ShortExact`, whose three fields are precisely exactness together with $`\mathsf{f}` a monomorphism and $`\mathsf{g}` an epimorphism.
+
+```lean (name := shortExact)
+example {C : Type*} [Category C] [Limits.HasZeroMorphisms C]
+    (S : ShortComplex C) (h : S.ShortExact) :
+    S.Exact ∧ Mono S.f ∧ Epi S.g :=
+  ⟨h.exact, h.mono_f, h.epi_g⟩
+```
 Then, we state (again without proof) the key geometric result, and use this to make deductions.
 
 # Motivation
@@ -60,10 +74,18 @@ However, if $`A = X \setminus \{0\}` where $`0` is the center of $`X`, then $`H_
 
 Even when $`A` is closed in $`X`, problems can still happen.
 
-:::EXAMPLE "The shrinking wedge of circles"
+::::EXAMPLE "The shrinking wedge of circles"
 Let $`X` be the interval $`[0, 1]`, and $`A \subseteq X` be $`A = \{\tfrac{1}{n} \mid n \in \mathbb{Z}^+\} \cup \{0\}`.
 In this case, the quotient $`X/A` would be isomorphic to the shrinking wedge of circles.
 Note that in $`X/A`, any open neighborhood of the red dot $`A/A` must contains all but finitely many circles.
+
+:::figure "figures/homology/excision-quotient-nasty.svg"
+Collapsing $`A = \{1/n\} \cup \{0\} \subseteq [0, 1]` to a point yields the shrinking wedge of circles $`X/A`.
+:::
+
+:::figure "figures/homology/excision-quotient-good.svg"
+The alternating decomposition used to compare $`H_1(X, A)` with $`\widetilde H_1(X/A)`.
+:::
 
 We claim that $`H_1(X, A) \not\cong \widetilde H_1(X/A)`.
 
@@ -72,7 +94,7 @@ Generally speaking, when you work algebraically then everything are finite, whil
 Every element of $`H(X, A)` has a representative in $`C(X)` as a $`1`-cycle, which comprises of finitely many $`1`-simplices, so intuitively every element of $`H(X, A)` can only cover "finitely many circles" (or all but finitely many).
 
 Formally speaking, the quotient maps $`q \colon X \to X/A` and $`q \colon A \to A/A` induce $`q_\ast \colon H_1(X, A) \to H_1(X/A, A/A)`, and $`q_\ast` is not injective.
-:::
+::::
 
 Regardless, for nice spaces $`A \subseteq X` such that $`H_n(X, A) \cong \widetilde H_n(X/A)`, we would be able to compute $`H_n(X)` based on $`H_n(A)` and $`\widetilde H_n(X/A)` — note that $`A` and $`X/A` is, in some sense, smaller and simpler than $`X`.
 
@@ -81,6 +103,23 @@ Regardless, for nice spaces $`A \subseteq X` such that $`H_n(X, A) \cong \wideti
 Recall that the sequences $$`\dots \to H_n(A) \to H_n(X) \to H_n(X, A) \to H_{n-1}(A) \to \dots.`
 and $$`\dots \to \widetilde H_n(A) \to \widetilde H_n(X) \to H_n(X, A) \to \widetilde H_{n-1}(A) \to \dots`
 are long exact.
+
+Purely algebraically, any short exact sequence of chain complexes produces a connecting map $`\partial \colon H_n(\text{third}) \to H_{n-1}(\text{first})` lowering degree, and the resulting long sequence is exact at every term.
+The connecting map is {name}`CategoryTheory.ShortComplex.ShortExact.δ`, and its exactness at the third term is recorded by {name}`CategoryTheory.ShortComplex.ShortExact.homology_exact₃`.
+
+```lean (name := connecting)
+noncomputable example {C ι : Type*} [Category C] [Abelian C]
+    {c : ComplexShape ι} {S : ShortComplex (HomologicalComplex C c)}
+    (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j) :
+    S.X₃.homology i ⟶ S.X₁.homology j :=
+  hS.δ i j hij
+
+example {C ι : Type*} [Category C] [Abelian C]
+    {c : ComplexShape ι} {S : ShortComplex (HomologicalComplex C c)}
+    (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j) :
+    (ShortComplex.mk _ _ (ShortComplex.ShortExact.comp_δ hS i j hij)).Exact :=
+  hS.homology_exact₃ i j hij
+```
 By the triple long exact sequence problem we even have a long exact sequence $$`\dots \to H_n(B, A) \to H_n(X, A) \to H_n(X, B) \to H_{n-1}(B, A) \to \dots.`
 for $`A \subseteq B \subseteq X`.
 
@@ -100,6 +139,19 @@ Since $`A` is contractible, we have $`\widetilde H_n(A) = 0` for every $`n`.
 For each $`n` there's a segment of the long exact sequence given by $$`\dots \to \underbrace{\widetilde H_n(A)}_{= 0} \to \widetilde H_n(X) \to H_n(X, A) \to \underbrace{\widetilde H_{n-1}(A)}_{= 0} \to \dots.`
 So since $`0 \to \widetilde H_n(X) \to H_n(X, A) \to 0` is exact, this means $`H_n(X, A) \cong \widetilde H_n(X)`.
 :::
+
+The hypothesis on $`A` here is contractibility, meaning $`A` is homotopy equivalent to a one-point space; this is exactly {name}`ContractibleSpace`, which asserts a homotopy equivalence $`A \simeq \ast` valued in $`\mathsf{Unit}` via {name}`ContractibleSpace.hequiv_unit`.
+Contractibility also transports across a homotopy equivalence $`X \simeq Y`, recorded by {name}`ContinuousMap.HomotopyEquiv.contractibleSpace`.
+
+```lean (name := contractible)
+example (X : Type) [TopologicalSpace X] [ContractibleSpace X] :
+    Nonempty (X ≃ₕ Unit) :=
+  ContractibleSpace.hequiv_unit X
+
+example {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
+    [ContractibleSpace Y] (e : X ≃ₕ Y) : ContractibleSpace X :=
+  e.contractibleSpace
+```
 
 In particular, the theorem applies if $`A` is a single point.
 The case $`A = \varnothing` is also worth noting.
@@ -123,6 +175,13 @@ We say $`f` is a *map of pairs*, between the pairs $`(X, A)` and $`(Y, B)`.
 :::DEFINITION
 We say that $`f, g \colon (X, A) \to (Y, B)` are *pair-homotopic* if they are "homotopic through maps of pairs".
 More formally, a *pair-homotopy* $`f, g \colon (X, A) \to (Y, B)` is a map $`F \colon [0, 1] \times X \to Y`, which we'll write as $`F_t(X)`, such that $`F` is a homotopy of the maps $`f, g \colon X \to Y` and each $`F_t` is itself a map of pairs.
+:::
+
+A typical $`f, g \colon (X, A) \to (Y, B)` that are pair-homotopic might look like this.
+Note that for all $`t \in [0, 1]`, we must have $`F_t(A) \subseteq B`.
+
+:::figure "figures/homology/excision-good-pair.svg"
+A typical pair-homotopy $`f \simeq g \colon (X, A) \to (Y, B)`: each $`F_t` maps $`A` into $`B`, with $`f(X)` and $`g(X)` shown.
 :::
 
 Thus, we naturally arrive at two categories:
@@ -184,6 +243,10 @@ Let $`Z \subseteq A \subseteq X` be subspaces such that the closure of $`Z` is c
 Then the inclusion $`\iota \colon (X \setminus Z, A \setminus Z) \hookrightarrow (X, A)` (viewed as a map of pairs) induces an isomorphism of relative homology groups $$`H_n(X \setminus Z, A \setminus Z) \cong H_n(X, A).`
 :::
 
+:::figure "figures/homology/excision-Z-neighborhood.svg"
+Excising $`Z \subseteq A` (with $`\overline Z` inside the interior of $`A`) does not change $`H_n(X, A)`.
+:::
+
 This means we can *excise* (delete) a subset $`Z` of $`A` in computing the relative homology groups $`H_n(X, A)`.
 This should intuitively make sense: since we are "modding out by points in $`A`", the internals of the set $`A` should not matter so much.
 
@@ -210,6 +273,18 @@ Considering the long exact sequence of a triple we find that the map $`f \colon 
 
 Now, in the commutative diagram relating $`q_\ast`, $`f`, $`g`, and $`\widehat q_\ast` through the two excision isomorphisms, the arrow $`\widehat q_\ast` is an isomorphism because outside of $`A` the map $`\widehat q` is the identity.
 Since $`f` and $`g` are isomorphisms, as are the two "excise" arrows, we conclude that $`q_\ast` is an isomorphism.
+:::
+
+:::figure "figures/homology/excision-relative-square.svg"
+The commutative square of relative chain groups underlying the excision argument.
+:::
+
+:::figure "figures/homology/excision-good-pair-les.svg"
+The long exact sequence of the good pair used in the excision argument.
+:::
+
+:::figure "figures/homology/excision-triple-square.svg"
+The corner of the long exact sequence of a triple $`(X, V, A)`.
 :::
 
 # Some applications

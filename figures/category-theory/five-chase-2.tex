@@ -1,0 +1,10 @@
+% Diagram chase: producing a' ∈ A' from a ∈ A.
+% Source: book/tex/cats/abelian.tex (§ The short five lemma).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+	a \in A \ar[d, mapsto] & b \in B \\
+	a' \in A' \ar[r, mapsto] & b' - \beta(b) \in B' \ar[r, mapsto] & 0 \in C
+\end{tikzcd}
+\end{document}

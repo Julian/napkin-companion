@@ -83,6 +83,10 @@ I'll prove they're compact in just a moment; for now just convince yourself they
 4. The *Hawaiian earring* living in $`\mathbb{R}^2` is compact: it consists of mutually tangent circles of radius $`\tfrac{1}{n}` for each $`n`.
 :::
 
+:::figure "figures/topology/hawaiian-earring.svg"
+The Hawaiian earring: circles of radius $`\tfrac{1}{n}` all tangent at a common point.
+:::
+
 To aid in generating more examples, we remark:
 
 :::PROPOSITION "Closed subsets of compacts"
@@ -164,6 +168,10 @@ An *open cover* of a topological space $`X` is a collection of open sets $`\{U_\
 A *subcover* is exactly what it sounds like: it takes only some of the $`U_\alpha`, while ensuring that $`X` remains covered.
 :::
 
+:::figure "figures/topology/open-cover.svg"
+An open cover $`X = \bigcup_\alpha U_\alpha` by several overlapping open sets.
+:::
+
 :::DEFINITION
 A topological space $`X` is *quasicompact* if _every_ open cover has a finite subcover.
 It is *compact* if it is also Hausdorff.
@@ -191,6 +199,10 @@ This is clearly an open cover because, well, every point lies in _many_ of the o
 
 But this is way overkill — we only need about four of these circles to cover the whole square.
 That's what is meant by a "finite subcover".
+:::
+
+:::figure "figures/topology/covering-square.svg"
+Four disks already suffice to cover the unit square — a finite subcover.
 :::
 
 Why do we care?

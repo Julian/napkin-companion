@@ -1,0 +1,13 @@
+% A natural transformation gives an arrow αₐ: F(A)→G(A) for each A.
+% Source: book/tex/cats/functors.tex (§ Natural transformations).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\renewcommand{\AA}{\mathcal A}
+\newcommand{\BB}{\mathcal B}
+\begin{document}
+\begin{tikzcd}
+	& F(A) \in \BB \ar[dd, "\alpha_A"] \\
+	\AA \ni A \ar[ru, dashed, "F"] \ar[rd, dashed, "G"'] & \\
+	& G(A) \in \BB
+\end{tikzcd}
+\end{document}

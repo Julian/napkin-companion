@@ -1,0 +1,15 @@
+% A one-form probes a vector v tangent to the scalar field at a point.
+% Source: book/tex/diffgeo/forms.tex (§ Zero- and one-forms).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}\usetikzlibrary{arrows.meta}\usepackage{amssymb}
+\begin{document}
+\begin{tikzpicture}
+  \draw[gray,fill=gray!8] plot[smooth cycle] coordinates {(-3.6,-3.2)(0.2,-3.9)(3.7,-2.9)(4.1,0.6)(2.4,3.1)(-1.1,3.5)(-3.9,2)(-4.1,-1)}; \node at (3.2,3) {$U$};
+  \fill[red] (-2,1) circle (2pt) node[above]{$3$};
+  \fill[red] (-1,-1) circle (2pt) node[above]{$\sqrt2$};
+  \fill[red] (2,2) circle (2pt) node[above]{$-1$};
+  \fill[red] (-3,-3) circle (2pt) node[above]{$0$};
+  \draw[blue,-{Latex}] (-1,-1)--(0,1) node[above,blue]{$\sqrt2+\varepsilon$};
+  \node[blue,right] at (-0.5,0) {$v$};
+\end{tikzpicture}
+\end{document}

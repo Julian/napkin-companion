@@ -1,0 +1,13 @@
+% The four lemma ladder.
+% Source: book/tex/cats/abelian.tex (§ The four and five lemmas).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+	A \ar[r, "p"] \ar[d, "\alpha"', two heads]
+		& B \ar[r, "q"] \ar[d, "\beta"', hook]
+		& C \ar[r, "r"] \ar[d, "\gamma"']
+		& D \ar[d, "\delta"', hook] \\
+	A' \ar[r, "p'"'] & B' \ar[r, "q'"'] & C' \ar[r, "r'"'] & D'
+\end{tikzcd}
+\end{document}

@@ -1,0 +1,12 @@
+% Sheaf pullback square computing O_X(U) for the punctured plane U = D(x) cup D(y).
+% Source: book/tex/alg-geom/spec-sheaf.tex (§ a non-distinguished open set).
+\documentclass[border=2mm]{standalone}
+\usepackage{amsmath}
+\usepackage{tikz-cd}
+\usepackage{amssymb}
+\begin{document}
+\begin{tikzcd}
+  \mathcal O_X(U) \ar[r] \ar[d] & \mathcal O_X(D(x)) = \mathbb C[x,y,x^{-1}] \ar[d] \\
+  \mathcal O_X(D(y)) = \mathbb C[x,y,y^{-1}] \ar[r] & \mathcal O_X(D(xy)) = \mathbb C[x,y,x^{-1},y^{-1}]
+\end{tikzcd}
+\end{document}

@@ -34,9 +34,6 @@ The reason is that the Lebesgue integral is basically better, so we will define 
 $`f(x) = x^2` is not uniformly continuous on $`\mathbb{R}`, but functions on compact sets are always uniformly continuous.
 :::
 
-Recall that we earlier defined what it meant for a map between metric spaces to be *continuous*.
-There is a stronger notion called *uniformly continuous*.
-
 :::DEFINITION
 Let $`f \colon M \to N` be a continuous map between two metric spaces.
 We say that $`f` is *uniformly continuous* if for all $`\varepsilon > 0` there exists a $`\delta > 0` such that
@@ -199,7 +196,7 @@ extending $`\Sigma \colon R([a, b]) \to \mathbb{R}`.
 The integral $`\int_a^b` extends the rectangle-sum functional $`\Sigma` from step functions to all continuous functions.
 :::
 
-:::PROOF
+::::PROOF
 We want to apply the extension theorem, so we just have to check a few things:
 
 - We claim $`R([a, b])` is a dense subset of $`M([a, b])`.
@@ -215,7 +212,7 @@ Approximating $`f` by a rectangle function whose rectangles touch the graph at t
 - The "add-the-rectangles" map $`\Sigma \colon R([a, b]) \to \mathbb{R}` is *uniformly* continuous.
   Actually this is pretty obvious: if two rectangle functions $`f` and $`g` have $`d(f, g) < \varepsilon`, then $`d(\Sigma f, \Sigma g) < \varepsilon (b - a)`.
 - $`\mathbb{R}` is complete.
-:::
+::::
 
 :::aside "Mathlib's chosen integral"
 Mathlib's `intervalIntegral` (notation `∫ x in a..b, f x`) is built on the *Bochner* integral, the strict generalization of the Lebesgue integral to Banach-valued functions.
@@ -309,7 +306,7 @@ $$`\int_a^b f'(x) \; dx = f(b) - f(a).`
 :::
 
 :::PROBLEM "Improper integrals"
-For each real number $`r > 0`, evaluate the limit
+For each real number $`r > 0`, evaluate the limit{margin}[If you are not familiar with the notation $`\varepsilon \to 0^+`, you can replace $`\varepsilon` with $`1/M` for $`M > 0`, and let $`M \to \infty` instead.]
 $$`\lim_{\varepsilon \to 0^+} \int_\varepsilon^1 \frac{1}{x^r} \; dx`
 or show it does not exist.
 

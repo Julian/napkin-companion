@@ -150,10 +150,13 @@ It's trivial to verify that homogeneous polynomials do exactly what we want; hen
 A *projective variety* in $`\mathbb{CP}^n` is the common zero locus of an arbitrary collection of homogeneous polynomials in $`n + 1` variables.
 :::
 
-:::EXAMPLE "A conic in $\\mathbb{CP}^2$, or a cone in $\\mathbb{C}^3$"
+::::EXAMPLE "A conic in $\\mathbb{CP}^2$, or a cone in $\\mathbb{C}^3$"
 Let's try to picture the variety $$`\mathbb{V}_+(x^2 + y^2 - z^2) \subseteq \mathbb{CP}^2`
 which consists of the points $`[x : y : z]` such that $`x^2 + y^2 = z^2`.
 If we view this as subspace of $`\mathbb{C}^3` (i.e. by thinking of $`\mathbb{CP}^2` as the set of lines through the origin), then we get a "cone".
+
+:::figure "figures/algebraic-geometry/proj-var-cone.svg"
+:::
 
 If we take the standard affine charts now, we obtain:
 
@@ -162,7 +165,7 @@ If we take the standard affine charts now, we obtain:
 - At $`z = 1`, we get a circle $`\mathbb{V}(x^2 + y^2 - 1)`.
 
 That said, over $`\mathbb{C}` a hyperbola and circle are the same thing; I'm cheating a little by drawing $`\mathbb{C}` as one-dimensional, just like last chapter.
-:::
+::::
 
 :::QUESTION
 Draw the intersection of the cone above with the $`z = 1` plane, and check that you do in fact get a circle.

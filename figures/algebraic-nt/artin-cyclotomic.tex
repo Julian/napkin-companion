@@ -1,0 +1,10 @@
+% The cyclotomic Artin symbol sends p to the p-th power map, i.e. p mod m.
+% Source: book/tex/alg-NT/artin.tex (§ Frobenius element and Artin symbol).
+\documentclass[border=2mm]{standalone}
+\usepackage{amssymb}\usepackage{amsmath}\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+I_\mathbb{Q}(\mathfrak{m}) \ar[r, "\left( \frac{\mathbb{Q}(\zeta)/\mathbb{Q}}{\bullet} \right)"] & \operatorname{Gal}(\mathbb{Q}(\zeta)/\mathbb{Q}) \ar[r, "\cong"] & (\mathbb{Z}/m\mathbb{Z})^\times \\
+p \ar[r, mapsto] & (x \mapsto x^p) \ar[r, mapsto] & p \bmod m.
+\end{tikzcd}
+\end{document}

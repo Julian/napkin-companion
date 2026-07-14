@@ -1,0 +1,16 @@
+% A continuous nonzero tangent vector field on the circle S^1.
+% Source: book/tex/homology/cellular.tex (§ Degrees).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usepackage{amssymb}
+\usetikzlibrary{arrows.meta}
+\begin{document}
+\begin{tikzpicture}[scale=1.4]
+  \draw[blue, thick] (0,0) circle (1);
+  \node[blue] at (110:1.25) {$S^1$};
+  \foreach \t in {0,50,140,210,300} {
+    \fill (\t:1) circle (1.2pt);
+    \draw[-{Latex[length=2mm]}] (\t:1) -- ++(\t+90:0.6);
+  }
+\end{tikzpicture}
+\end{document}

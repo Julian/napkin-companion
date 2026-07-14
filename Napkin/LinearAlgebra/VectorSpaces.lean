@@ -482,6 +482,10 @@ We then say $`V` and $`W` are *isomorphic* vector spaces and write $`V \cong W`.
    This map is an isomorphism, because it has an inverse "multiply by $`1/\sqrt{2}`".
 :::
 
+:::figure "figures/linear-algebra/vs-rank-nullity.svg"
+A linear map $`T \colon V \to W` is determined by where it sends a basis: some basis vectors map onto vectors spanning the image $`\operatorname{im} T`, while the rest collapse to $`0`, spanning the kernel $`\ker T`.
+:::
+
 In the expression $`T(a \cdot v) = a \cdot T(v)`, note that the first $`\cdot` is the multiplication of $`V` and the second $`\cdot` is the multiplication of $`W`.
 
 Note that this notion of isomorphism really only cares about the size of the basis:

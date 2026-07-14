@@ -1,0 +1,16 @@
+% Graph of f(x)=3-2/(x+2.5) with its tangent line at p, illustrating f'(p).
+% Source: book/tex/diffgeo/multivar.tex (§ The total derivative).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}\usepackage{amssymb}
+\begin{document}
+\begin{tikzpicture}[scale=1.15]
+  \draw[->] (-2.3,0)--(2.5,0) node[right]{$x$};
+  \draw[->] (0,-0.4)--(0,3.1);
+  \draw[blue,thick,domain=-2:2,samples=120,smooth] plot (\x,{3-2/(\x+2.5)});
+  \draw[red] (-1.9,{1.6667-0.889*0.9})--(-0.1,{1.6667+0.889*0.9});
+  \draw[dashed] (-1,1.6667)--(-1,0);
+  \fill[red] (-1,1.6667) circle (1.6pt);
+  \node[below] at (-1,0) {$p$};
+  \node[red,above left] at (-0.5,2.15) {$f'(p)$};
+\end{tikzpicture}
+\end{document}

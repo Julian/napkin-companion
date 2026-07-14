@@ -755,7 +755,25 @@ def config : Config where
                  ("media/chili.png", "chili.png"),
                  ("media/love-proper-isomorphic-subgroup.jpg",
                   "love-proper-isomorphic-subgroup.jpg"),
-                 ("media/matrix-mult.jpg", "matrix-mult.jpg")]
+                 ("media/matrix-mult.jpg", "matrix-mult.jpg"),
+                 ("media/three-apples.jpg", "three-apples.jpg"),
+                 ("media/velociraptor.jpg", "velociraptor.jpg"),
+                 ("media/500px-Omega-exp-omega-labeled.png",
+                  "500px-Omega-exp-omega-labeled.png"),
+                 ("media/zornaholic.png", "zornaholic.png"),
+                 ("media/calvin-hobbes-fly.png", "calvin-hobbes-fly.png"),
+                 ("media/mumforddrawing.jpg", "mumforddrawing.jpg"),
+                 ("media/cantor-thirds.png", "cantor-thirds.png"),
+                 ("media/weierstrass-pubdomain.png", "weierstrass-pubdomain.png"),
+                 ("media/S2-simply.png", "S2-simply.png"),
+                 ("media/even-covering.png", "even-covering.png"),
+                 ("media/warsaw_circle.png", "warsaw_circle.png"),
+                 ("media/Projection_color_torus.jpg", "Projection_color_torus.jpg"),
+                 ("media/KleinBottle-01.png", "KleinBottle-01.png"),
+                 ("media/klein-fold.png", "klein-fold.png"),
+                 ("media/stokes-patch.png", "stokes-patch.png"),
+                 ("media/xkcd-rolles.png", "xkcd-rolles.png"),
+                 ("media/IMO-2003-logo.png", "IMO-2003-logo.png")]
 
 -- `ExtraStep` now runs in `BuildLogT IO` and no longer receives a
 -- logging callback; recover one from the ambient `Logger` so

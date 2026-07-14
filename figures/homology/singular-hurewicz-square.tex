@@ -1,0 +1,10 @@
+% Naturality square making the Hurewicz map phi a natural transformation.
+% Source: book/tex/homology/singular.tex (§ The singular homology groups).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+  \pi_1(X, x_0) \rar["h_\sharp"] \dar["\phi"'] & \pi_1(Y, y_0) \dar["\phi"] \\
+  H_1(X) \rar["h_\ast"] & H_1(Y)
+\end{tikzcd}
+\end{document}

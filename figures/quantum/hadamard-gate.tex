@@ -1,0 +1,15 @@
+% The Hadamard gate, depicted by an H box.
+% Source: book/tex/quantum/ (Qcircuit diagram, ported to quantikz).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usepackage{amssymb}
+\usepackage{quantikz}
+\providecommand{\ket}[1]{\left\lvert #1\right\rangle}
+\providecommand{\xup}{\ket\rightarrow}
+\providecommand{\xdown}{\ket\leftarrow}
+\begin{document}
+\begin{quantikz}
+\lstick{$\ket0$} & \gate{H} & \rstick{$\xup$}\qw
+\end{quantikz}
+
+\end{document}

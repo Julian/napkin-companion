@@ -163,9 +163,17 @@ Let $`X = \operatorname{Spec} \mathbb{C}[x, y]`, and consider the origin, i.e. t
 This ideal is maximal, so it corresponds to a closed point, and we can consider the open set $`U` consisting of all the points other than $`\mathfrak{m}`.
 We wish to compute $`\mathcal{O}_X(U)`.
 
+:::figure "figures/algebraic-geometry/specsheaf-punctured-plane.svg"
+The open set $`U` is the plane $`\operatorname{Spec} \mathbb{C}[x, y]` with the origin $`\mathfrak{m} = (x, y)` removed.
+:::
+
 Unfortunately, $`U` is not distinguished open.
 But, we can compute it anyways by writing $`U = D(x) \cup D(y)`: conveniently, $`D(x) \cap D(y) = D(xy)`.
 By the sheaf axioms, we have a pullback square whose corners are $`\mathcal{O}_X(U)`, $`\mathcal{O}_X(D(x)) = \mathbb{C}[x, y, x^{-1}]`, $`\mathcal{O}_X(D(y)) = \mathbb{C}[x, y, y^{-1}]`, and $`\mathcal{O}_X(D(xy)) = \mathbb{C}[x, y, x^{-1}, y^{-1}]`.
+
+:::figure "figures/algebraic-geometry/specsheaf-pullback-Ox-U.svg"
+The pullback square computing $`\mathcal{O}_X(U)` from the distinguished opens $`D(x)`, $`D(y)`, $`D(xy)`.
+:::
 In other words, $`\mathcal{O}_X(U)` consists of pairs $`f \in \mathbb{C}[x, y, x^{-1}]` and $`g \in \mathbb{C}[x, y, y^{-1}]` which agree on the overlap: $`f = g` on $`D(x) \cap D(y)`.
 Well, we can describe $`f` as a polynomial with some $`x`'s in the denominator, and $`g` as a polynomial with some $`y`'s in the denominator.
 If they match, the denominator is actually constant.
@@ -340,11 +348,15 @@ We let the quotient $`A_\mathfrak{p} / \mathfrak{p} A_\mathfrak{p}`, i.e. the *r
 
 Then the following is a special case of the fact that localization commutes with quotients:
 
-:::THEOREM "The germ-to-value square"
+::::THEOREM "The germ-to-value square"
 Let $`A` be a ring and $`\mathfrak{p}` a prime ideal.
 The square formed by $`A \to A_\mathfrak{p}` (localize), $`A \to A/\mathfrak{p}` ($`\bmod \mathfrak{p}`), $`A_\mathfrak{p} \to \kappa(\mathfrak{p})` ($`\bmod \mathfrak{p}`), and $`A/\mathfrak{p} \to \kappa(\mathfrak{p})` ($`\operatorname{Frac}`) commutes.
 In particular, $`\kappa(\mathfrak{p})` can also be described as $`\operatorname{Frac}(A/\mathfrak{p})`.
+
+:::figure "figures/algebraic-geometry/specsheaf-residue-field.svg"
+The residue field $`\kappa(\mathfrak{p})` is reached either as $`A_\mathfrak{p} \bmod \mathfrak{p}` or as $`\operatorname{Frac}(A/\mathfrak{p})`.
 :::
+::::
 
 So for example, if $`A = \mathbb{C}[x, y]` and $`\mathfrak{p} = (x, y)`, then $`A/\mathfrak{p} = \mathbb{C}` and $`\operatorname{Frac}(A/\mathfrak{p}) = \operatorname{Frac}(\mathbb{C}) = \mathbb{C}`, as we expected.
 In practice, $`\operatorname{Frac}(A/\mathfrak{p})` is probably the easier way to compute $`\kappa(\mathfrak{p})` for any prime ideal $`\mathfrak{p}`.

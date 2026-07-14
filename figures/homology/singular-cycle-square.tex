@@ -1,0 +1,10 @@
+% A chain map sends cycles to cycles because this square commutes.
+% Source: book/tex/homology/singular.tex (§ Algebra of chain complexes).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+  A_n \ar[r, "\partial_A"] \ar[d, "f_n"'] & A_{n-1} \ar[d, "f_{n-1}"] \\
+  B_n \ar[r, "\partial_B"'] & B_{n-1}
+\end{tikzcd}
+\end{document}

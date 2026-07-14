@@ -32,6 +32,8 @@ If you like this book and want to support Evan, please consider buying him a cof
 
 [https://ko-fi.com/evanchen/](https://ko-fi.com/evanchen/)
 
+*For Brian and Lisa, who finally got me to write it*.
+
 © 2026 Evan Chen.
 Text licensed under [CC-by-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/).
 Source files licensed under [GNU GPL v3](https://choosealicense.com/licenses/gpl-3.0/).

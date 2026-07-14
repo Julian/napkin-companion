@@ -52,6 +52,10 @@ Given a topological space $`X`, a *singular $`n`-simplex* is a map $`\sigma \col
 One usually decorates the edges with arrows, to help keep track of the "order" of the vertices; this will be useful in just a moment.
 :::
 
+:::figure "figures/homology/singular-simplices.svg"
+The singular simplices $`\sigma^0`, $`\sigma^1`, $`\sigma^2` drawn in a space $`X`.
+:::
+
 :::aside
 The standard topological $`n`-simplex is Mathlib's {name}`SimplexCategory.toTop`, the geometric-realization functor sending the abstract simplex $`[n]` to the space $`\Delta^n`.
 Bundling all of the singular simplices of a space into one object is exactly the *singular simplicial set* {name}`TopCat.toSSet`: its $`n`-simplices are precisely the maps $`\Delta^n \to X`.
@@ -119,6 +123,11 @@ We'll call this the *singular chain complex*.
 
 Now, how does this let us detect holes in the space?
 To see why, let's consider an annulus, with a $`1`-chain $`c` drawn on it consisting of three arcs $`v_0 \to v_1 \to v_2 \to v_0` that circle the central hole.
+
+:::figure "figures/homology/singular-annulus-chain.svg"
+A $`1`-chain $`c` circling the central hole of an annulus $`X`.
+:::
+
 Notice that $$`\partial c = ([v_1] - [v_0]) - ([v_2] - [v_0]) + ([v_2] - [v_1]) = 0`
 and so we can say this $`1`-chain $`c` is a "cycle", because it has trivial boundary.
 However, $`c` is not itself the boundary of any $`2`-chain, because of the hole in the center of the space — it's impossible to "fill in" the interior of $`c`!
@@ -131,7 +140,7 @@ For example, let $`T` be a torus.
 Then, every map $`S^2 \to T` is nulhomotopic so $`\pi_2(T)` is trivial, but, as we will see, $`H_2(T) \cong \mathbb{Z}`.
 
 At least in the case of $`n = 1`, then the Hurewicz theorem states that for any path-connected space $`X` and $`x_0 \in X`, then $`H_1(X)` is the abelianization of $`\pi_1(X, x_0)`, which is pretty much the best result you can expect — $`H_1(X)` must be abelian, while $`\pi_1(X, x_0)` need not be abelian.
-Nevertheless, it is still possible that $`\pi_1(X, x_0)` is nontrivial and $`H_1(X)` is trivial.
+Nevertheless, it is still possible that $`\pi_1(X, x_0)` is nontrivial and $`H_1(X)` is trivial — see [this example](https://math.stackexchange.com/q/1052414).
 :::
 
 We can capture this idea in any dimension, as follows.
@@ -205,6 +214,10 @@ Another way to say this is: we have families of groups $`\{ \pi_1(X, x_0) \}` an
 Of course, the fact that $`\pi_1` is a functor means $`\{ \pi_1(X, x_0) \}` is a lot more than a family of groups indexed by pointed spaces.
 :::
 
+:::figure "figures/homology/singular-hurewicz-square.svg"
+Naturality of the Hurewicz map $`\phi`: this square commutes for every pointed map $`h`.
+:::
+
 :::EXAMPLE "The first homology group of the annulus"
 To give a concrete example, consider the annulus $`X` above.
 We found a chain $`c` that wrapped once around the hole of $`X`.
@@ -225,6 +238,10 @@ The picture is somewhat metaphorical: in reality $`v_0 = v_1 = a`, and the entir
 This is why singular homology is so-called: the images of the simplex can sometimes look quite "singular".
 :::
 
+:::figure "figures/homology/singular-s1-cd.svg"
+In $`S^1`, the loop $`\gamma = c - d` bounds a $`2`-simplex, drawn metaphorically since really $`v_0 = v_1 = a`.
+:::
+
 :::EXAMPLE "The first homology group of the figure eight"
 Consider the figure eight $`X_8`.
 Both homology and homotopy see the two loops in $`X_8`, call them $`a` and $`b`.
@@ -239,7 +256,7 @@ Since it's path connected, we have $`H_0(S^2) = \mathbb{Z}`.
 We also have $`H_1(S^2) = 0`, for the same reason that $`\pi_1(S^2)` is trivial as well.
 On the other hand we claim that $$`H_2(S^2) \cong \mathbb{Z}.`
 The elements of $`H_2(S^2)` correspond to wrapping $`S^2` in a tetrahedral bag (or two bags, or three bags, etc.).
-Thus, the second homology group lets us detect the spherical cavity of $`S^2`.
+Thus, the second homology group lets us detect the spherical cavity of $`S^2`.{margin}[As remarked above, unlike $`\pi_2`, $`H_2` also detects other kinds of cavities, not just spherical.]
 :::
 
 Actually, more generally it turns out that we will have $$`H_n(S^m) \cong \begin{cases} \mathbb{Z} & n = m \text{ or } n = 0 \\ 0 & \text{otherwise}. \end{cases}`
@@ -320,8 +337,17 @@ A *morphism of chain complexes* (or chain map) $`f \colon A_\bullet \to B_\bulle
 Under this definition, the set of chain complexes becomes a category, which we denote $`\mathbf{Cmplx}`.
 :::
 
+:::figure "figures/homology/singular-chain-map.svg"
+A chain map $`f \colon A_\bullet \to B_\bullet`: each square commutes with the boundary maps.
+:::
+
 Note that given a morphism of chain complexes $`f \colon A_\bullet \to B_\bullet`, every cycle in $`A_n` gets sent to a cycle in $`B_n`, since the relevant square commutes.
 Similarly, every boundary in $`A_n` gets sent to a boundary in $`B_n`.
+
+:::figure "figures/homology/singular-cycle-square.svg"
+A chain map sends cycles to cycles because this square commutes.
+:::
+
 Thus,
 
 :::MORAL
@@ -342,6 +368,10 @@ Then $`P` is a *chain homotopy* from $`f` to $`g` and $`f` and $`g` are *chain h
 :::
 
 We can draw a picture to illustrate this: the maps $`P_n` are diagonal arrows going up-and-left one degree, and the definition asks that in each slanted "parallelogram", the $`g - f` arrow is the sum of the two compositions along the sides.
+
+:::figure "figures/homology/singular-chain-homotopy.svg"
+The chain homotopy $`P`, whose slanted parallelograms yield $`g - f`; the dotted diagonals do not commute with the other arrows.
+:::
 
 :::aside
 This is precisely Mathlib's {name}`Homotopy`, whose data is exactly a family of degree-raising maps satisfying the displayed identity.
@@ -398,6 +428,10 @@ We can make this formal by taking $`\Delta^1 \times [0, 1]` (which _is_ a square
 Then, if we apply $`\sigma \times \operatorname{id}`, we'll get an $`2`-chain in $`X \times [0, 1]`, and then finally applying $`F` will map everything into our space $`Y`.
 In our example, the final image is the $`2`-chain, consisting of two triangles, which can be written as $`[v_0, w_0, w_1] - [v_0, v_1, w_1]`.
 
+:::figure "figures/homology/singular-prism.svg"
+Pushing $`\Delta^1 \times [0, 1]` through $`\sigma \times \operatorname{id}` and then $`F` yields a $`2`-chain in $`Y`.
+:::
+
 More generally, for an $`n`-simplex $`\phi = [x_0, \dots, x_n]` we define the so-called _prism operator_ $`P_n` as follows.
 Set $`v_i = f(x_i)` and $`w_i = g(x_i)` for each $`i`.
 Then, we let $$`P_n(\phi) \coloneqq \sum_{i=0}^n (-1)^i (F \circ (\phi \times \operatorname{id})) \left[ v_0, \dots, v_i, w_i, \dots, w_n \right].`
@@ -407,6 +441,10 @@ The $`(-1)^i` makes sure that the "diagonal" faces all cancel off with each othe
 We now claim that for every $`\sigma`, $$`\partial_Y(P_n(\sigma)) = g(\sigma) - f(\sigma) - P_{n-1}(\partial_X\sigma).`
 Here $`\partial_Y \circ P_n` is the boundary of the entire prism, the $`g - f` is the top face minus the bottom face, and the $`P_{n-1} \circ \partial_X` represents the side edges of the prism.
 Indeed, one can check (just by writing down several $`\sum` signs) that the above identity holds.
+
+:::figure "figures/homology/singular-prism-identity.svg"
+The prism identity $`g(\sigma) - f(\sigma) = \partial_Y(P_n\sigma) + P_{n-1}(\partial_X\sigma)`.
+:::
 
 So that gives the chain homotopy from $`f` to $`g`, completing the proof that $`H_n` is a functor.
 
@@ -437,7 +475,7 @@ Thus, the $`(-1)`st chain group $`C_{-1}(X)` is the free abelian group generated
 What about boundaries?
 To take the boundary of a simplex $`[v_0, \ldots, v_n]`, we remove each vertex one-by-one, and take the alternating sum.
 Therefore, $`\partial([v]) = []`.
-Extending it linearly to complexes yields $`\partial(\sum n_i p_i) = \sum n_i \cdot 1` — so $`\varepsilon` really is just the boundary operator, generalized to the case $`\widetilde C_0(X) \xrightarrow{\partial} \widetilde C_{-1}(X)`.
+Extending it linearly to complexes yields $`\partial(\sum n_i p_i) = \sum n_i \cdot 1` — so $`\varepsilon` really is just the boundary operator, generalized to the case $`\widetilde C_0(X) \xrightarrow{\partial} \widetilde C_{-1}(X)`.{margin}[What about $`n \leq -2`? An $`n`-simplex comes from a list of vertices of length $`(n+1)`, so a $`(-2)`-simplex would require a list of vertices length $`(-1)` — but there aren't any such lists. So while there is one $`(-1)`-simplex, there are zero $`(-2)`-simplices (ditto for $`n < -2`). The free abelian group on zero elements is the trivial group, so $`\widetilde C_{-2} \cong \mathbf{0}`. In particular, $`\partial([]) = 0`.]
 :::
 
 :::QUESTION

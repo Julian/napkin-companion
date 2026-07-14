@@ -1,0 +1,10 @@
+% The embedding of the alternating forms into the tensor powers.
+% Source: book/tex/diffgeo/forms.tex (§ The wedge product).
+\documentclass[border=2mm]{standalone}
+\usepackage{amsmath,amssymb}\usepackage{tikz}\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+  T^k(V^\vee) \arrow[r, hook, "\phi"] \arrow[d, twoheadrightarrow, "q", shift left] & (T^k(V))^\vee \\
+  \bigwedge^k(V^\vee) \arrow[u, hook, "\iota", shift left] & (\bigwedge^k(V))^\vee \arrow[u, hook, "q^\vee"']
+\end{tikzcd}
+\end{document}

@@ -1,0 +1,27 @@
+% The infinite binary tree with a generic branch G (red) descending through it,
+% encoding a real number as a total function ω → 2.
+% Source: book/tex/set-theory/CH.tex and forcing.tex (§ generic filters).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usepackage{amssymb}
+\begin{document}
+\begin{tikzpicture}[scale=0.5, every node/.style={font=\small}]
+  \node[red] (P) at (0,4) {$\varnothing$};
+  \node[red] (P0) at (-5,2) {$0$};   \node (P1) at (5,2) {$1$};
+  \node (P00) at (-7,0) {$00$}; \node[red] (P01) at (-3,0) {$01$};
+  \node (P10) at (3,0) {$10$};  \node (P11) at (7,0) {$11$};
+  \node (P000) at (-8,-3) {$000$}; \node (P001) at (-6,-3) {$001$};
+  \node[red] (P010) at (-4,-3) {$010$}; \node (P011) at (-2,-3) {$011$};
+  \node (P100) at (2,-3) {$100$};  \node (P101) at (4,-3) {$101$};
+  \node (P110) at (6,-3) {$110$};  \node (P111) at (8,-3) {$111$};
+  \draw (P00) -- (P0) -- (P01);
+  \draw (P10) -- (P1) -- (P11);
+  \draw (P0) -- (P) -- (P1);
+  \draw (P000) -- (P00) -- (P001);
+  \draw (P100) -- (P10) -- (P101);
+  \draw (P010) -- (P01) -- (P011);
+  \draw (P110) -- (P11) -- (P111);
+  \draw[red, very thick] (P.center) -- (P0.center) -- (P01.center) -- (P010.center) -- ++(0,-2)
+      node[below, red] {$G$};
+\end{tikzpicture}
+\end{document}

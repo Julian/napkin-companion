@@ -1,0 +1,10 @@
+% The Artin symbol for M/K restricts to the one for L/K.
+% Source: book/tex/alg-NT/artin.tex (§ Artin reciprocity).
+\documentclass[border=2mm]{standalone}
+\usepackage{amssymb}\usepackage{amsmath}\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+I_K(\mathfrak{m}) \ar[r, "\left( \frac{M/K}{\bullet} \right)"] \ar[rd, "\left( \frac{L/K}{\bullet} \right)"', swap] & \operatorname{Gal}(M/K) \ar[d, two heads] \\
+& \operatorname{Gal}(L/K)
+\end{tikzcd}
+\end{document}

@@ -56,6 +56,10 @@ Suppose we have a map of chain complexes $$`0 \to A_\bullet \xrightarrow{f} B_\b
 It is said to be *short exact* if _each row_ $`0 \to A_n \hookrightarrow B_n \twoheadrightarrow C_n \to 0` of the corresponding diagram is short exact.
 :::
 
+:::figure "figures/homology/longexact-ses-double-ladder.svg"
+A short exact sequence of chain complexes: every row $`0 \to A_n \hookrightarrow B_n \twoheadrightarrow C_n \to 0` is short exact.
+:::
+
 :::MORAL
 This basically means $`C_\bullet = B_\bullet / A_\bullet`, for suitable definition of $`/` on chain complexes.
 :::
@@ -69,10 +73,18 @@ One can easily see (by taking a suitable basis) that the kernel of the latter ma
 This generates a short exact sequence $$`0 \to C_\bullet(U \cap V) \hookrightarrow C_\bullet(U) \oplus C_\bullet(V) \twoheadrightarrow C_\bullet(U + V) \to 0.`
 :::
 
+:::figure "figures/homology/longexact-uv-splitting.svg"
+The Mayer–Vietoris maps $`c \mapsto (c, -c)` and $`(c, d) \mapsto c + d`.
+:::
+
 :::EXAMPLE "Augmented Mayer–Vietoris sequence"
 We can _augment_ each of the chain complexes in the Mayer–Vietoris sequence as well, by appending a bottom row $`0 \to \mathbb{Z} \to \mathbb{Z} \oplus \mathbb{Z} \to \mathbb{Z} \to 0` via the maps $`\varepsilon`.
 In other words we modify the above into $$`0 \to \widetilde C_\bullet(U \cap V) \hookrightarrow \widetilde C_\bullet(U) \oplus \widetilde C_\bullet(V) \twoheadrightarrow \widetilde C_\bullet(U + V) \to 0`
 where $`\widetilde C_\bullet` is the augmented chain complex.
+:::
+
+:::figure "figures/homology/longexact-uv-augmented.svg"
+Augmenting the Mayer–Vietoris sequence with the bottom row $`0 \to \mathbb{Z} \to \mathbb{Z} \oplus \mathbb{Z} \to \mathbb{Z} \to 0`.
 :::
 
 :::EXAMPLE "Relative chain short exact sequence"
@@ -82,16 +94,28 @@ This can be augmented: we get $$`0 \to \widetilde C_\bullet(A) \hookrightarrow \
 by adding a final row with the identity $`\mathbb{Z} \xrightarrow{\operatorname{id}} \mathbb{Z}`.
 :::
 
+:::figure "figures/homology/longexact-relative-augmented.svg"
+The augmented relative short exact sequence, with bottom row $`\mathbb{Z} \xrightarrow{\operatorname{id}} \mathbb{Z}`.
+:::
+
 # The long exact sequence of homology groups
 
 Consider a short exact sequence $`0 \to A_\bullet \xrightarrow{f} B_\bullet \xrightarrow{g} C_\bullet \to 0`.
 Now, we know that we get induced maps of homology groups, i.e. we have maps $`f_\ast \colon H_n(A_\bullet) \to H_n(B_\bullet)` and $`g_\ast \colon H_n(B_\bullet) \to H_n(C_\bullet)` for every $`n`.
 But the theorem is that we can string these all together, taking each $`H_{n+1}(C_\bullet)` to $`H_n(A_\bullet)`.
 
+:::figure "figures/homology/longexact-h-grid.svg"
+The induced maps $`f_\ast`, $`g_\ast` arranged in a grid, before stringing them together.
+:::
+
 :::THEOREM "Short exact implies long exact"
 Let $`0 \to A_\bullet \xrightarrow{f} B_\bullet \xrightarrow{g} C_\bullet \to 0` be _any_ short exact sequence of chain complexes we like.
 Then there is an _exact_ sequence $$`\dots \to H_{n+1}(C_\bullet) \xrightarrow{\partial} H_n(A_\bullet) \xrightarrow{f_\ast} H_n(B_\bullet) \xrightarrow{g_\ast} H_n(C_\bullet) \xrightarrow{\partial} H_{n-1}(A_\bullet) \to \dots.`
 This is called a *long exact sequence* of homology groups.
+:::
+
+:::figure "figures/homology/longexact-les-zigzag.svg"
+The connecting maps $`\partial` weave the grid into a single zigzag long exact sequence.
 :::
 
 :::PROOF
@@ -111,6 +135,14 @@ Suppose $`c \in C_n` is a cycle (so $`\partial_C(c) = 0`).
 By surjectivity, there is a $`b \in B_n` with $`g_n(b) = c`, which maps down to $`\partial_B(b)`.
 Now, the image of $`\partial_B(b)` under $`g_{n-1}` is zero by commutativity of the square, and so we can pull back under $`f_{n-1}` to get a unique element of $`A_{n-1}` (by exactness at $`B_{n-1}`).
 In summary: we go "_left, down, left_" to go from $`c` to $`a`.
+:::
+
+:::figure "figures/homology/longexact-connecting-square.svg"
+The connecting map $`\partial`: from a cycle $`c \in C_n`, chase left–down–left to a cycle $`a \in A_{n-1}`.
+:::
+
+:::figure "figures/homology/longexact-diagram-chase.svg"
+The same chase on elements: $`b \mapsto c`, $`a \mapsto \partial_B(b)`, using $`g_{n-1}(\partial_B b) = 0`.
 :::
 
 :::EXERCISE
@@ -181,9 +213,14 @@ For integers $`m` and $`n`, $$`\widetilde H_n(S^m) \cong \begin{cases} \mathbb{Z
 The generator $`\widetilde H_n(S^n)` is an $`n`-cell which covers $`S^n` exactly once (for example, the generator for $`\widetilde H_1(S^1)` is a loop which wraps around $`S^1` once).
 :::
 
-:::PROOF
+::::PROOF
 This one's fun, so I'll only spoil the case $`m = 1`, and leave the rest to you.
 Decompose the circle $`S^1` into two arcs $`U` and $`V`.
+
+:::figure "figures/homology/longexact-mv-cover-s1.svg"
+The circle $`S^1` covered by two arcs, $`U` (blue) and $`V` (red).
+:::
+
 Each of $`U` and $`V` is contractible, so all their reduced homology groups vanish.
 Moreover, $`U \cap V` is homotopy equivalent to two points, hence $$`\widetilde H_n(U \cap V) \cong \begin{cases} \mathbb{Z} & n = 0 \\ 0 & \text{otherwise}. \end{cases}`
 Now consider again the segment of the long exact sequence $$`\dots \to \underbrace{\widetilde H_n(U) \oplus \widetilde H_n(V)}_{= 0} \to \widetilde H_n(S^1) \xrightarrow{\partial} \underbrace{\widetilde H_{n-1}(U \cap V)}_{\cong \mathbb{Z} \text{ or } 0} \to \underbrace{\widetilde H_{n-1}(U) \oplus \widetilde H_{n-1}(V)}_{= 0} \to \dots.`
@@ -193,7 +230,19 @@ It remains to analyze the generators of $`\widetilde H_1(S^1)`.
 The isomorphism was given by the connecting homomorphism $`\partial`, which is given by a "left, down, left" procedure.
 Marking points $`a` and $`b` in the two disjoint paths of $`U \cap V`, the cycle $`a - b` represents a generator of $`H_0(U \cap V)`, and letting $`c` and $`d` be the chains joining $`a` and $`b` with $`c` contained in $`U` and $`d` contained in $`V`, one finds $`\partial(c - d) = a - b`, so $`c - d` is a generator.
 Thus $`c - d` is (in $`H^1(S^1)`) equivalent to the loop $`\gamma` wrapping around $`S^1` once, counterclockwise.
+
+:::figure "figures/homology/longexact-mv-s1-cd.svg"
+The chains $`c` and $`d` join $`a` to $`b` inside $`U` and $`V`; the cycle $`c - d` generates $`\widetilde H_1(S^1)`.
 :::
+
+:::figure "figures/homology/longexact-mv-square1.svg"
+The relevant corner of the Mayer–Vietoris diagram used to compute $`\partial`.
+:::
+
+:::figure "figures/homology/longexact-mv-cd-map.svg"
+Chasing $`(c, d) \mapsto c - d` and $`a - b \mapsto (a - b, a - b)` through the diagram.
+:::
+::::
 
 Thus, the key idea in Mayer–Vietoris is that
 
@@ -209,14 +258,18 @@ Then $$`\widetilde H_n(X) \cong \begin{cases} \mathbb{Z}^{\oplus 2} & n = 1 \\ 0
 The generators for $`\widetilde H_1(X)` are the two loops of the figure eight.
 :::
 
-:::PROOF
+::::PROOF
 Again, for simplicity we work with reduced homology groups.
 Let $`U` be the "left" half of the figure eight plus a little bit of the right, and $`V` symmetrically.
+
+:::figure "figures/homology/longexact-fig8-cover.svg"
+The figure eight covered by $`U` (the left loop plus a bit of the right) and, symmetrically, $`V`.
+:::
 In this case $`U \cap V` is contractible, while each of $`U` and $`V` is homotopic to $`S^1`.
 Thus, we can read a segment of the long exact sequence as $$`\dots \to \underbrace{\widetilde H_n(U \cap V)}_{= 0} \to \widetilde H_n(U) \oplus \widetilde H_n(V) \to \widetilde H_n(X) \to \underbrace{\widetilde H_{n-1}(U \cap V)}_{= 0} \to \dots.`
 So we get that $`\widetilde H_n(X) \cong \widetilde H_n(S^1) \oplus \widetilde H_n(S^1)`.
 The claim about the generators follows from the fact that the generators of $`\widetilde H_n(X)` are the generators of $`\widetilde H_n(U)` and $`\widetilde H_n(V)`.
-:::
+::::
 
 Up until now, we have been very fortunate that we have always been able to make certain parts of the space contractible.
 This is not always the case, and in the next example we will have to actually understand the maps in question to complete the solution.
@@ -226,10 +279,14 @@ Let $`X = S^1 \times S^1` be the torus.
 Then $$`\widetilde H_n(X) = \begin{cases} \mathbb{Z}^{\oplus 2} & n = 1 \\ \mathbb{Z} & n = 2 \\ 0 & \text{otherwise}. \end{cases}`
 :::
 
-:::PROOF
+::::PROOF
 We represent the torus as a square with its edges identified.
 Consider $`U` and $`V` as two overlapping vertical bands; note that $`V` is connected due to the identification of the left and right edges.
 In the three dimensional picture, $`U` and $`V` are two cylinders which together give the torus.
+
+:::figure "figures/homology/longexact-excision-square.svg"
+The torus as a square, covered by a middle band $`U` and the (wrap-around) side band $`V`.
+:::
 This time, $`U` and $`V` are each homotopic to $`S^1`, and the intersection $`U \cap V` is the disjoint union of two circles: thus $`\widetilde H_1(U \cap V) \cong \mathbb{Z} \oplus \mathbb{Z}`, and $`\widetilde H_0(U \cap V) \cong \mathbb{Z}`.
 
 For $`n \ge 3`, both neighbours in the sequence vanish, so $`H_n(X) \cong 0`.
@@ -239,13 +296,27 @@ So it remains to compute $`H_2(X)` and $`H_1(X)`.
 For $`H_2(X)`, consider the segment $$`\underbrace{\widetilde H_2(U) \oplus \widetilde H_2(V)}_{= 0} \to \widetilde H_2(X) \xrightarrow{\partial} \underbrace{\widetilde H_1(U \cap V)}_{\cong \mathbb{Z}^2} \xrightarrow{\phi} \underbrace{\widetilde H_1(U) \oplus \widetilde H_1(V)}_{\cong \mathbb{Z}^2}.`
 The presence of the zero term makes $`\partial` injective, so $`\widetilde H_2(X) \cong \ker\phi`.
 Recalling that the map $`C_\bullet(U \cap V) \to C_\bullet(U) \oplus C_\bullet(V)` was $`c \mapsto (c, -c)`, the two generators $`z_1, z_2` of $`\widetilde H_1(U \cap V)` are sent to $`(\alpha_U, -\alpha_V)` each, giving the matrix $$`\phi = \begin{bmatrix} 1 & 1 \\ -1 & -1 \end{bmatrix}.`
+(The signs may differ on which direction you pick for the generators; note that $`\mathbb{Z}` has two possible generators.)
+Note that $`z_1`, $`z_2`, $`\alpha_U`, $`\alpha_V` are elements of the homology group, so you can move the paths around a bit — for instance, as elements of $`\widetilde H_1(U)`, the chain drawn as $`z_1` and $`\alpha_U` represents the same element.
+
+:::figure "figures/homology/longexact-excision-chains.svg"
+The generators $`z_1, z_2` of $`\widetilde H_1(U \cap V)` and the loops $`\alpha_U, \alpha_V`.
+:::
+
+:::figure "figures/homology/longexact-mv-torus-les.svg"
+The segment of the Mayer–Vietoris sequence computing $`\widetilde H_2(X) \cong \mathbb{Z}`.
+:::
+
+:::figure "figures/homology/longexact-mv-square2.svg"
+The diagram corner witnessing the map $`\phi` above.
+:::
 So $`\ker\phi = \left< z_1 - z_2 \right> \cong \mathbb{Z}`, and $`\widetilde H_2(X) \cong \mathbb{Z}`.
 We also note $`\operatorname{img}\phi \cong \mathbb{Z}` and the quotient by it is $`\mathbb{Z}` too.
 
 For $`\widetilde H_1(X)` we have the segment $$`\xrightarrow{\phi} \underbrace{\widetilde H_1(U) \oplus \widetilde H_1(V)}_{\cong \mathbb{Z}^2} \xrightarrow{\psi} \widetilde H_1(X) \xrightarrow{\partial} \underbrace{\widetilde H_0(U \cap V)}_{\cong \mathbb{Z}} \to \underbrace{\widetilde H_0(U) \oplus \widetilde H_0(V)}_{= 0}.`
 So the connecting map $`\partial` is surjective, hence $`\operatorname{img}\partial \cong \mathbb{Z}`, while $`\ker\partial \cong \operatorname{img}\psi \cong \mathbb{Z}` by what we knew about $`\operatorname{img}\phi`.
 The splitting lemma below then gives a short exact sequence $`0 \to \mathbb{Z} \to \widetilde H_1(X) \to \mathbb{Z} \to 0`, whose only possibility is $`\widetilde H_1(X) \cong \mathbb{Z} \oplus \mathbb{Z}`.
-:::
+::::
 
 :::REMARK
 Earlier, we remarked (without proof) that $`\pi_2(X)` is trivial — that is, homotopy does not find any "$`2`-dimensional holes" in the torus.
@@ -259,6 +330,9 @@ Which emphasizes the point:
 A "hole" detected by homology need not look like the interior of $`S^n`.
 :::
 
+Note that the previous example is of a different attitude than the previous ones, because we had to figure out what the maps in the long exact sequence actually were to even compute the groups.
+In principle, you could also figure out all the isomorphisms in the previous proof and explicitly compute the generators of $`\widetilde H_1(S^1 \times S^1)`, but to avoid getting bogged down in detail I won't do so here.
+
 Finally, to fully justify the last step, we present:
 
 :::LEMMA "Splitting lemma"
@@ -269,6 +343,10 @@ For a short exact sequence $`0 \to A \xrightarrow{f} B \xrightarrow{g} C \to 0` 
 3. There is an isomorphism from $`B` to $`A \oplus C` compatible with the obvious maps.
 
 In particular, (b) holds anytime $`C` is free.
+:::
+
+:::figure "figures/homology/longexact-splitting-biproduct.svg"
+A split short exact sequence exhibits $`B \cong A \oplus C`.
 :::
 
 In these cases we say the short exact sequence *splits*.
@@ -322,13 +400,18 @@ Compute $`H_k(\mathbb{R}^n, \mathbb{R}^n \setminus \{0\})`.
 Note that $`\mathbb{R}^n \setminus \{0\}` is homotopy equivalent to $`S^{n-1}`.)
 :::
 
-:::PROBLEM "Nine lemma"
+::::PROBLEM "Nine lemma"
 Consider a commutative $`3 \times 3` diagram in which all rows are exact and two of the columns are exact.
+
+:::figure "figures/homology/longexact-nine-lemma.svg"
+A commutative $`3 \times 3` diagram with exact rows and columns.
+:::
+
 Show that the third column is exact as well.
 (Hint: $`0 \to A_\bullet \to B_\bullet \to C_\bullet \to 0` is a short exact sequence of chain complexes.
 Write out the corresponding long exact sequence.
 Nearly all terms will vanish.)
-:::
+::::
 
 :::PROBLEM "Klein bottle"
 Show that the reduced homology groups of the Klein bottle $`K` are given by $$`\widetilde H_n(K) = \begin{cases} \mathbb{Z} \oplus \mathbb{Z}/2 & n = 1 \\ 0 & \text{otherwise}. \end{cases}`

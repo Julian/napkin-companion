@@ -1,0 +1,14 @@
+% Commutative diagram from the excision chapter.
+% Source: book/tex/homology/excision.tex (lines 446-450).
+\documentclass[border=2mm]{standalone}
+\usepackage{amssymb,amsmath}
+\usepackage{tikz-cd}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\wt}{\widetilde}
+\begin{document}
+	\begin{tikzcd}
+		\wt H_2(S^1) \ar[r] & \underbrace{\wt H_2(D^2)}_{=0} \ar[r] & \wt H_2(S^2) \ar[lld] \\
+		\wt H_1(S^1) \ar[r] & \underbrace{\wt H_1(D^2)}_{=0} \ar[r] & \wt H_1(S^2) \ar[lld] \\
+		\wt H_0(S^1) \ar[r] & \underbrace{\wt H_0(D^2)}_{=0} \ar[r] & \underbrace{\wt H_0(S^2)}_{=0}
+	\end{tikzcd}
+\end{document}

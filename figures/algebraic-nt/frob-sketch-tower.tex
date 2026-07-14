@@ -1,0 +1,29 @@
+% The Sketch-of-Proof tower for "Frobenius controls polynomial
+% factorization": K over E = ℚ(α) over ℚ, matched with {1} ⊆ H ⊆ G,
+% and the primes 𝔓, 𝔭, (p).
+% Source: book/tex/alg-NT/frobenius.tex (§ Frobenius elements control
+% factorization, second Sketch of Proof) — tikzcd.
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\begin{document}
+\begin{tikzpicture}[>=latex]
+  \node (K)  at (0,3.0)   {$K$};
+  \node (E)  at (0,1.5)   {$E = \mathbb{Q}(\alpha)$};
+  \node (Q)  at (0,0)     {$\mathbb{Q}$};
+  \node (e)  at (3.0,3.0) {$\{1\}$};
+  \node (H)  at (3.0,1.5) {$H$};
+  \node (G)  at (3.0,0)   {$G$};
+  \node (PP) at (5.2,3.0) {$\mathfrak{P}$};
+  \node (pp) at (5.2,1.5) {$\mathfrak{p}$};
+  \node (p)  at (5.2,0)   {$(p)$};
+  \draw (K) -- (E);
+  \draw (E) -- (Q);
+  \draw (e) -- (H);
+  \draw (H) -- (G);
+  \draw (PP) -- (pp);
+  \draw (pp) -- (p);
+\end{tikzpicture}
+\end{document}

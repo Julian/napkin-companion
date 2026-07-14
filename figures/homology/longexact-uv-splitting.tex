@@ -1,0 +1,15 @@
+% Commutative diagram from the long-exact-sequence chapter.
+% Source: book/tex/homology/long-exact.tex (lines 61-65).
+\documentclass[border=2mm]{standalone}
+\usepackage{amssymb,amsmath}
+\usepackage{tikz-cd}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\id}{\mathrm{id}}
+\begin{document}
+	\begin{tikzcd}[row sep=tiny]
+		C_n(U \cap V) \ar[r, hook] & C_n(U) \oplus C_n(V) \ar[r, two heads] & C_n(U + V) \\
+		c \ar[r, mapsto] & (c, -c) \\
+		& (c, d) \ar[r, mapsto] & c + d
+	\end{tikzcd}
+\end{document}

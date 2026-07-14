@@ -43,16 +43,31 @@ such that $`2\alpha \equiv \theta \pmod{2\pi}`; there are two choices for $`\alp
 For complex numbers, we don't have an obvious way to pick $`\alpha`.
 Nonetheless, perhaps we can also get away with an arbitrary distinction: let's see what happens if we just choose the $`\alpha` with $`-\tfrac{1}{2}\pi < \alpha \leq \tfrac{1}{2}\pi`.
 
-If we run a small loop of red points $`z_i` not enclosing the origin, mapping each to a $`w_i` with $`-\tfrac{\pi}{2} < \arg w_i \leq \tfrac{\pi}{2}`, all is well — except when one of the $`z_i` is on the negative real axis.
-There the choice $`\arg w_i = \pi/2` and the choice $`\arg w_i = -\pi/2` agree on the boundary $`\alpha = \pi/2` but disagree on which side they sit, so the blue $`w_i` jumps across the imaginary axis.
+Pictured below are some points (in red) and their images (in blue) under this "upper-half" square root.
+The condition on $`\alpha` means we are forcing the blue points to lie on the right-half plane.
+
+:::figure "figures/complex-analysis/log-sqrt-1.svg"
+:::
+
+Here, $`w_i^2 = z_i` for each $`i`, and we are constraining the $`w_i` to lie in the right half of the complex plane.
+We see there is an obvious issue: there is a big discontinuity near the points $`w_5` and $`w_7`!
+The nearby point $`w_6` has been mapped very far away.
+This discontinuity occurs since the points on the negative real axis are at the "boundary".
+For example, given $`-4`, we send it to $`-2i`, but we have hit the boundary: in our interval $`-\tfrac{1}{2}\pi \le \alpha < \tfrac{1}{2}\pi`, we are at the very left edge.
 
 The negative real axis that we must not touch is what we will later call a *branch cut*, but for now I call it a *ray of death*.
 It is a warning to the red points: if you cross this line, you will die!
 However, if we move the red circle just a little upwards (so that it misses the negative real axis) this issue is avoided entirely, and we get what seems to be a "nice" square root.
 
+:::figure "figures/complex-analysis/log-sqrt-2.svg"
+:::
+
 In fact, the ray of death is fairly arbitrary: it is the set of "boundary issues" that arose when we picked $`-\tfrac{1}{2}\pi < \alpha \leq \tfrac{1}{2}\pi`.
 Suppose we instead insisted on the interval $`0 \leq \alpha < \pi`; then the ray of death would be the *positive* real axis instead.
 The earlier circle we had now works just fine.
+
+:::figure "figures/complex-analysis/log-sqrt-3.svg"
+:::
 
 What we see is that picking a particular $`\alpha`-interval leads to a different set of edge cases, and hence a different ray of death.
 The only thing these rays have in common is their starting point of zero.
@@ -81,8 +96,13 @@ Unless we are highly unlucky, this should tell us which choice of $`w_1` to pick
 
 There are two possible ways we could get unlucky in the scheme above: first, if $`w_0 = 0`, then we're sunk.
 But even if we avoid that, we have to worry that if we run a full loop in the complex plane, we might end up in a different place from where we started.
-For concreteness, consider the following situation, again with $`f = \operatorname{id}`: walk a red circle once counterclockwise around $`0`, while letting $`w` evolve continuously as a square root.
-You'll find that the blue arc has rotated by $`\pi` over a full red revolution, so it does not close up — you started at $`w_0` and ended at $`-w_0`.
+For concreteness, consider the following situation, again with $`f = \operatorname{id}`:
+
+:::figure "figures/complex-analysis/log-sqrt-4.svg"
+:::
+
+We started at the point $`z_0`, with one of its square roots as $`w_0`.
+We then wound a full red circle around the origin, only to find that at the end of it, the blue arc is at a different place where it started!
 
 The interval construction from earlier doesn't work either: no matter how we pick the interval for $`\alpha`, any ray of death must hit our red circle.
 The problem somehow lies with the fact that we have enclosed the very special point $`0`.

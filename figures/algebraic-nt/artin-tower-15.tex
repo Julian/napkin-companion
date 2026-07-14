@@ -1,0 +1,12 @@
+% Field tower Q < Q(sqrt5) < Q(zeta5) < Q(zeta15) matched with subgroups of (Z/15)^x.
+% Source: book/tex/alg-NT/artin.tex (§ Application: generalization of sum of two squares).
+\documentclass[border=2mm]{standalone}
+\usepackage{amssymb}\usepackage{amsmath}\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+\mathbb{Q}(\zeta_{15}) \ar[r, leftrightarrow] & \{1\} \ar[d] \\
+\mathbb{Q}(\zeta_{5}) \ar[u] & \{1,11\} \ar[d] \\
+\mathbb{Q}(\sqrt5) \ar[u] & \{1,11,4,14\} \ar[d] \\
+\mathbb{Q} \ar[u] \ar[r, leftrightarrow] & (\mathbb{Z}/15\mathbb{Z})^\times
+\end{tikzcd}
+\end{document}

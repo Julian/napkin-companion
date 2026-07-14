@@ -56,6 +56,10 @@ Thus, it's a map $`\ker f \colon \mathrm{Ker}\, f \hookrightarrow A` such that $
 Since the equalizer of any diagram is monic, $`\ker f` is a monic morphism, which justifies the use of "$`\hookrightarrow`".
 :::
 
+:::figure "figures/category-theory/kernel-univ.svg"
+The kernel: $`\ker f` is universal among maps into $`A` whose composite with $`f` is $`0`.
+:::
+
 Notice that we're using $`\ker f` to represent the map and $`\mathrm{Ker}\, f` to represent the object.
 Similarly, we define the cokernel, the dual notion:
 
@@ -64,6 +68,10 @@ Consider a map $`A \xrightarrow{f} B`.
 The *cokernel* of $`f` is a map $`\mathrm{coker}\, f \colon B \twoheadrightarrow \mathrm{Coker}\, f` such that $`\mathrm{coker}\, f \circ f = 0`, and moreover any other map with the same property factors uniquely through $`\mathrm{Coker}\, f` (so it is universal with this property).
 Thus it is the "coequalizer" of this map and the map $`A \xrightarrow{0} B`.
 Dually, $`\mathrm{coker}\, f` is an epic morphism, which justifies the use of "$`\twoheadrightarrow`".
+:::
+
+:::figure "figures/category-theory/cokernel-univ.svg"
+The cokernel, dual to the kernel: $`\mathrm{coker}\, f` is universal among maps out of $`B` killing $`f`.
 :::
 
 Think of the cokernel of a map $`A \xrightarrow{f} B` as "$`B` modulo the image of $`f`".
@@ -84,6 +92,14 @@ This gives a unique map $`\mathrm{img}\, f \colon A \to \mathrm{Img}\, f`.
 
 When it exists, this coincides with our concrete notion of "image".
 By universality of $`\mathrm{Img}\, f`, we find that there is a unique map $`\mathrm{img}\, f \colon A \to \mathrm{Img}\, f` that makes the entire diagram commute.
+
+:::figure "figures/category-theory/image-factor.svg"
+The image $`\mathrm{Img}\, f = \mathrm{Ker}(\mathrm{coker}\, f)`, through which $`f` factors.
+:::
+
+:::figure "figures/category-theory/kernel-image-cokernel.svg"
+The kernel, image, and cokernel of a single map $`f \colon A \to B`.
+:::
 
 :::aside "Zero objects, kernels, cokernels in Mathlib"
 The three ingredients are typeclasses on a category: {name}`CategoryTheory.Limits.HasZeroObject` for the object $`0`, {name}`CategoryTheory.Limits.HasZeroMorphisms` for the distinguished $`0 \colon A \to B`, and then {name}`CategoryTheory.Limits.kernel` and {name}`CategoryTheory.Limits.cokernel` for the (co)equalizers against that zero morphism.
@@ -154,7 +170,15 @@ Of course, since kernels are unique up to isomorphism, monic implies $`0` kernel
 On the other hand, assume that $`0 \to A` is a kernel of $`A \xrightarrow{f} B`.
 For this we can exploit the group structure of the underlying homomorphisms now.
 Assume $`Z \xrightarrow{g, h} A` with $`f \circ g = f \circ h`.
+
+:::figure "figures/category-theory/preadditive-parallel.svg"
+A parallel pair $`g, h \colon Z \to A` with $`f \circ g = f \circ h`.
+:::
 Then $`(g - h) \circ f = g \circ f - h \circ f = 0`, so $`g - h` factors through the kernel $`0 \to A`, giving $`g - h = 0`, i.e. $`g = h`.
+
+:::figure "figures/category-theory/preadditive-diff.svg"
+Replacing the parallel pair by the single map $`g - h`, which factors through the kernel.
+:::
 This is to say that $`f` is monic.
 ::::
 
@@ -220,6 +244,10 @@ The entire sequence is exact if it is exact at each $`A_i`.
 (For finite sequences we don't impose the condition on the very first and very last object.)
 :::
 
+:::figure "figures/category-theory/exact-def.svg"
+Exactness at $`B`: the canonical map $`\mathrm{Img}\, f \to \mathrm{Ker}\, g` is an isomorphism.
+:::
+
 :::EXERCISE
 Show that, as before, $`0 \to A \to B` is exact $`\iff` $`A \to B` is monic.
 :::
@@ -263,21 +291,38 @@ In an abelian category, consider a commutative diagram whose top and bottom rows
 If $`\alpha` and $`\gamma` are isomorphisms, then so is $`\beta`.
 :::
 
-:::PROOF
+:::figure "figures/category-theory/short-five-ladder.svg"
+A morphism of short exact sequences, with $`\alpha` and $`\gamma` isomorphisms.
+:::
+
+::::PROOF
 We prove that $`\beta` is epic (with a similar proof to get monic).
 By the embedding theorem we can treat the category as $`R`-modules over some $`R`.
 This lets us do a so-called "diagram chase" where we move elements around the picture, using the concrete interpretation of our category as $`R`-modules.
 
 Let $`b'` be an element of $`B'`.
 Then $`q'(b') \in C'`, and since $`\gamma` is surjective, we have a $`c` such that $`\gamma(c) = q'(b')`, and finally a $`b \in B` such that $`q(b) = c`.
+
+:::figure "figures/category-theory/five-chase-1.svg"
+Chasing $`b \in B` to $`c \in C` and across to $`b' \in B'`.
+:::
 Now, it is not necessarily the case that $`\beta(b) = b'`.
 However, since the diagram commutes we at least have that $`q'(b') = q'(\beta(b))`, so $`b' - \beta(b) \in \mathrm{Ker}\, q' = \mathrm{Img}\, p'`, and there is an $`a' \in A'` such that $`p'(a') = b' - \beta(b)`; use $`\alpha` now to lift it to $`a \in A`.
+
+:::figure "figures/category-theory/five-chase-2.svg"
+Producing $`a \in A` whose image corrects $`\beta(b)` to hit $`b'`.
+:::
 Then, we have $$`\beta(b + p(a)) = \beta b + \beta p a = \beta b + p' \alpha a = \beta b + (b' - \beta b) = b'`
 so $`b' \in \mathrm{Img}\, \beta`, which completes the proof that $`\beta` is surjective.
-:::
+::::
 
 In general, proofs in the style above (whether or not they use the embedding theorem) are sometimes referred to by the name *diagram chasing*.
-There isn't really an exact definition for this term; as Aluffi memorably puts it, such verifications are best executed at a blackboard by pointing at parts of a diagram and naming the elements one is manipulating, and are notoriously tedious to write out in full even though each step is essentially obvious.
+I'm not sure there's an exact definition for this term, but the following quote is due to Aluffi:
+
+:::quote
+Proving the snake lemma (a problem at the end of this chapter) is something that should not be done in public, and it is notoriously useless to write down the details of the verification for others to read: the details are all essentially obvious, but they lead quickly to a notational quagmire.
+Such proofs are collectively known as the sport of diagram chase, best executed by pointing several fingers at different parts of a diagram on a blackboard, while enunciating the elements one is manipulating and stating their fate.
+:::
 
 :::aside "Diagram chasing in Mathlib"
 Mathlib does not (yet) have the full Freyd–Mitchell embedding theorem, but it recovers the tool the theorem exists to justify: {name}`CategoryTheory.Abelian.Pseudoelement` lets you chase "elements" of objects in _any_ abelian category, so that arguments like the one above go through directly.
@@ -307,11 +352,19 @@ Let's analyze this theorem in our two examples of abelian categories:
 
 Thus, any exact sequence can be broken into short exact sequences, by splicing at the objects $`C_k = \mathrm{img}\, f_{k-1} = \ker f_k` for every $`k`; each three-term stretch $`0 \to C_k \to A_k \to C_{k+1} \to 0` is then short exact.
 
+:::figure "figures/category-theory/les-woven.svg"
+A long exact sequence woven from the short exact sequences $`0 \to C_k \to A_k \to C_{k+1} \to 0`.
+:::
+
 # Problems
 
 :::PROBLEM "Four lemma"
 In an abelian category, consider a commutative diagram with exact rows $`A \xrightarrow{p} B \xrightarrow{q} C \xrightarrow{r} D` (top) and $`A' \xrightarrow{p'} B' \xrightarrow{q'} C' \xrightarrow{r'} D'` (bottom), joined by vertical maps $`\alpha, \beta, \gamma, \delta`.
 Prove that if $`\alpha` is epic, and $`\beta` and $`\delta` are monic, then $`\gamma` is monic.
+:::
+
+:::figure "figures/category-theory/four-lemma.svg"
+The four lemma: exact rows joined by $`\alpha, \beta, \gamma, \delta`.
 :::
 
 :::PROBLEM "Five lemma"
@@ -320,9 +373,17 @@ Suppose $`\beta` and $`\delta` are isomorphisms, $`\alpha` is epic, and $`\varep
 Prove that $`\gamma` is an isomorphism.
 :::
 
+:::figure "figures/category-theory/five-lemma.svg"
+The five lemma: exact rows joined by $`\alpha, \beta, \gamma, \delta, \varepsilon`.
+:::
+
 :::PROBLEM "Snake lemma"
 In an abelian category, consider a commutative diagram with exact rows $`A \xrightarrow{f} B \xrightarrow{g} C \to 0` (top) and $`0 \to A' \xrightarrow{f'} B' \xrightarrow{g'} C'` (bottom), joined by vertical maps $`a, b, c`.
 Prove that there is an exact sequence $$`\mathrm{Ker}\, a \to \mathrm{Ker}\, b \to \mathrm{Ker}\, c \to \mathrm{Coker}\, a \to \mathrm{Coker}\, b \to \mathrm{Coker}\, c.`
+:::
+
+:::figure "figures/category-theory/snake-setup.svg"
+The snake lemma setup: two exact rows joined by $`a, b, c`.
 :::
 
 :::PROBLEM "An additive category that is not abelian"

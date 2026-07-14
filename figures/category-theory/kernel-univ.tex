@@ -1,0 +1,11 @@
+% The kernel of f: the map ker f into A composes with f to give 0.
+% Source: book/tex/cats/abelian.tex (§ Kernels and cokernels).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\newcommand{\Ker}{\mathrm{Ker}}
+\begin{document}
+\begin{tikzcd}
+	\Ker f \ar[rd, "0", dashed] \ar[d, "\ker f"', hook] \\
+	A \ar[r, "f"'] & B
+\end{tikzcd}
+\end{document}

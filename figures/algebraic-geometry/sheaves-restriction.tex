@@ -1,0 +1,20 @@
+% Restricting a section s on U to the smaller open set V keeps just a chunk.
+% Source: book/tex/alg-geom/sheaves.tex (§ picturing sections).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usepackage{amssymb}
+\begin{document}
+\begin{tikzpicture}[scale=0.4]
+  \filldraw[blue!20, draw=black] (0,0) ellipse (8 and 1.5);
+  \node at (8,-1.5) [right] {$X$};
+  \filldraw[cyan!20, draw=cyan!60!black] (-1,0) ellipse (5 and 1);
+  \node[cyan!60!black] at (4,-1) [above right] {$U$};
+  \filldraw[green!50!black, opacity=0.2, draw=green!50!black] (-1,0) ellipse (3 and 0.8);
+  \node[green!50!black] at (2,-0.8) [above right] {$V$};
+  \draw[red] plot[smooth] coordinates {(-6,3)(-4,5)(-2,8)(-1,7)(0,5)(2,7)(4,9)};
+  \draw[green!50!black, line width=1.2pt] plot[smooth] coordinates {(-4,5)(-2,8)(-1,7)(0,5)(2,7)};
+  \node[green!50!black] at (-1,7.2) [above] {$s|_V$};
+  \draw[red,dashed] (-6,3) -- (-6,0);
+  \draw[red,dashed] (4,9) -- (4,0);
+\end{tikzpicture}
+\end{document}

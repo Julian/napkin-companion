@@ -1,0 +1,10 @@
+% The Artin map factors the Artin symbol through the ray class group.
+% Source: book/tex/alg-NT/artin.tex (§ Artin reciprocity).
+\documentclass[border=2mm]{standalone}
+\usepackage{amssymb}\usepackage{amsmath}\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+I_K(\mathfrak{f}) \ar[r, two heads] & C_K(\mathfrak{f}) \ar[rd, two heads] \ar[rr, "\left( \frac{L/K}{\bullet} \right)", two heads] && \operatorname{Gal}(L/K) \\
+&& I_K(\mathfrak{f})/H(L/K,\mathfrak{f}) \ar[ru, "\cong"', swap] &
+\end{tikzcd}
+\end{document}

@@ -1,0 +1,29 @@
+% Commutative diagram from the long-exact-sequence chapter.
+% Source: book/tex/homology/long-exact.tex (lines 27-45).
+\documentclass[border=2mm]{standalone}
+\usepackage{amssymb,amsmath}
+\usepackage{tikz-cd}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\id}{\mathrm{id}}
+\begin{document}
+\begin{tikzcd}[column sep=huge]
+	& \vdots \ar[d, "\partial_A"] & \vdots \ar[d, "\partial_B"] & \vdots \ar[d, "\partial_C"] & \\
+	0 \ar[r]
+		& A_{n+1} \ar[hook, r, "f_{n+1}"] \ar[d, "\partial_A"]
+		& B_{n+1} \ar[r, two heads, "g_{n+1}"] \ar[d, "\partial_B"]
+		& C_{n+1} \ar[r] \ar[d, "\partial_C"]
+		& 0 \\
+	0 \ar[r]
+		& A_n \ar[hook, r, "f_n"] \ar[d, "\partial_A"]
+		& B_n \ar[r, two heads, "g_n"] \ar[d, "\partial_B"]
+		& C_n \ar[r] \ar[d, "\partial_C"]
+		& 0 \\
+	0 \ar[r]
+		& A_{n-1} \ar[hook, r, "f_{n-1}"] \ar[d, "\partial_A"]
+		& B_{n-1} \ar[r, two heads, "g_{n-1}"] \ar[d, "\partial_B"]
+		& C_{n-1} \ar[r] \ar[d, "\partial_C"]
+		& 0 \\
+	& \vdots & \vdots & \vdots
+\end{tikzcd}
+\end{document}

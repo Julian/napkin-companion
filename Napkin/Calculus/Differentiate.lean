@@ -32,7 +32,7 @@ $`x^3` has derivative $`3x^2`.
 I suspect most of you have seen this before, but:
 
 :::DEFINITION
-Let $`U` be an open subset of $`\mathbb{R}` and let $`f \colon U \to \mathbb{R}` be a function.
+Let $`U` be an open subset{margin}[We will almost always use $`U = (a, b)` or $`U = \mathbb{R}`, and you will not lose much by restricting the definition to those.] of $`\mathbb{R}` and let $`f \colon U \to \mathbb{R}` be a function.
 Let $`p \in U`.
 We say $`f` is *differentiable* at $`p` if the limit $$`\lim_{h \to 0} \frac{f(p + h) - f(p)}{h}` exists.
 If so, we denote its value by $`f'(p)` and refer to this as the *derivative* of $`f` at $`p`.
@@ -194,7 +194,7 @@ The function $`\log \colon \mathbb{R}_{>0} \to \mathbb{R}` has derivative $`(\lo
 
 :::PROOF
 We have that $`x = e^{\log x}`.
-Differentiate both sides, and again use the chain rule $$`1 = e^{\log x} \cdot (\log x)'.`
+Differentiate both sides, and again use the chain rule{margin}[There is actually a small subtlety here: we are taking for granted that $`\log` is differentiable.] $$`1 = e^{\log x} \cdot (\log x)'.`
 Thus $`(\log x)' = \frac{1}{e^{\log x}} = 1/x`.
 :::
 
@@ -281,7 +281,7 @@ The "compact + continuous ⇒ attains max/min" backbone is `IsCompact.exists_isM
 Let's see two extended examples.
 The one is simple, and you probably already know about it, but I want to show you how to use compactness to argue thoroughly, and how the "boundary" points naturally show up.
 
-:::EXAMPLE "Rectangle area optimization"
+::::EXAMPLE "Rectangle area optimization"
 Suppose we consider rectangles with perimeter $`20` and want the rectangle with the smallest or largest area.
 
 :::figure "figures/calculus/rectangle-optimization.svg"
@@ -297,7 +297,7 @@ Therefore the global extrema (in addition to existing) must be among the three s
 
 We finally check $`f(0) = 0`, $`f(5) = 25`, $`f(10) = 0`.
 So the $`5 \times 5` square has the largest area and the degenerate rectangles have the smallest (zero) area.
-:::
+::::
 
 Here is a non-elementary example.
 
@@ -342,6 +342,12 @@ Then there is a point $`c \in (a, b)` such that $`f'(c) = 0`.
 Assume $`f` is nonconstant (otherwise any $`c` works).
 By compactness, there exists both a global maximum and minimum.
 As $`f(a) = f(b)`, either the global maximum or the global minimum must lie inside the open interval $`(a, b)`, and then Fermat's theorem on stationary points finishes.
+:::
+
+I was going to draw a picture until I realized xkcd #2042 has one already.
+
+:::figure "xkcd-rolles.png"
+Image from {cite}`img:xkcd_rolles`.
 :::
 
 Mathlib has Rolle as `exists_deriv_eq_zero` (in `Deriv.MeanValue`) and several variants for different smoothness hypotheses.

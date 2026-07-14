@@ -1,0 +1,12 @@
+% The Minkowski embedding K -> R^{r1} x C^{r2} -> R^n, sending a box S to a
+% region of computed volume and the ring of integers O_K to a lattice L.
+% Source: book/tex/alg-NT/classgrp.tex (§ Minkowski bound).
+\documentclass[border=2mm]{standalone}
+\usepackage{amssymb}\usepackage{amsmath}\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+K \ar[r, "\iota", hook] & \mathbb{R}^{r_1} \times \mathbb{C}^{r_2} \ar[r, "\tau"] & \mathbb{R}^n \\
+& \text{box } S \ar[r, mapsto] & \tau(S) & \text{with volume } 2^{r_1}\!\left(\tfrac{\pi}{2}\right)^{r_2}\!\tfrac{M^n}{n!} \\
+\mathcal{O}_K \ar[rr, mapsto] & & \text{Lattice } L &
+\end{tikzcd}
+\end{document}

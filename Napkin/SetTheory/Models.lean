@@ -477,6 +477,10 @@ Put another way, cardinalities in $`M` can look vastly different from those in t
 
 # Picturing inner models
 
+:::figure "figures/set-theory/inner-model.svg"
+A countable transitive model $`M` inside $`V`: its cardinals $`\aleph_1^M, \aleph_2^M` sit below $`\aleph_1^V`, collapsed by a function $`f` living in $`V`.
+:::
+
 Note that $`M` and $`V` must agree on finite sets, since every finite set has a formula that can express it.
 However, past $`V_\omega` the model and the true universe start to diverge.
 

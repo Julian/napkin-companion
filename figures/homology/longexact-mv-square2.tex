@@ -1,0 +1,14 @@
+% Commutative diagram from the long-exact-sequence chapter.
+% Source: book/tex/homology/long-exact.tex (lines 608-611).
+\documentclass[border=2mm]{standalone}
+\usepackage{amssymb,amsmath}
+\usepackage{tikz-cd}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\id}{\mathrm{id}}
+\begin{document}
+	\begin{tikzcd}
+		& C_2(U) \oplus C_2(V) \ar[r, two heads] \ar[d] & C_2(X) \\
+		C_1(U \cap V) \ar[r, hook] & C_1(U) \oplus C_1(V)
+	\end{tikzcd}
+\end{document}

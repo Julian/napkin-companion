@@ -23,7 +23,11 @@ Each entry names its problem and gives whichever of a hint and a solution the so
 
 # Groups
 
-*What is the joke in the following figure.*
+*What is the joke in the following figure?*
+(Source: {cite}`img:snsd`.)
+
+:::figure "love-proper-isomorphic-subgroup.jpg"
+:::
 
 _Hint._ Orders.
 

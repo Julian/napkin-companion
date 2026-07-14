@@ -1,0 +1,11 @@
+% RP^1 is homeomorphic to S^1: the real line with its endpoints (0 and infinity) fused.
+% Source: book/tex/topology/constructions.tex (§ Real projective space).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\begin{document}
+\begin{tikzpicture}[scale=1.4]
+  \draw[red] (0,0) circle (1);
+  \fill[cyan!60!black] (0,1) circle (1.8pt) node[above,cyan!60!black] {$\infty$};
+  \fill[red] (0,-1) circle (1.8pt) node[below,red] {$0$};
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,26 @@
+% The regular covering R -> R/Z = S^1 from the action n . x = n + x.
+% Source: book/tex/topology/cover-project.tex (§ Regular coverings).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usepackage{amssymb}
+\usetikzlibrary{arrows.meta}
+\begin{document}
+\begin{tikzpicture}[scale=1.4]
+  % fundamental domain [0,1]
+  \draw (0,0) -- (2,0);
+  \fill (0,0) circle (1.6pt) node[above] {$0$};
+  \draw[fill=white] (2,0) circle (1.6pt) node[above] {$1$};
+  \fill (0.67,0) circle (1.3pt) node[above] {$\frac13$};
+  \fill (1.33,0) circle (1.3pt) node[above] {$\frac23$};
+  \node[below] at (1,-0.15) {$\mathbb{R}/G$};
+  \draw[-{Latex}] (2.6,0) -- (3.4,0);
+  % S^1
+  \begin{scope}[xshift=4.6cm]
+    \draw (0,0) circle (0.8);
+    \node at (0,0) {$S^1$};
+    \fill (0:0.8) circle (1.3pt) node[right] {$0=1$};
+    \fill (120:0.8) circle (1.3pt) node[above left] {$\frac13$};
+    \fill (240:0.8) circle (1.3pt) node[below left] {$\frac23$};
+  \end{scope}
+\end{tikzpicture}
+\end{document}

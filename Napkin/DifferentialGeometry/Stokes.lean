@@ -26,13 +26,14 @@ In this chapter, all vector spaces are finite-dimensional and real.
 
 # Motivation: line integrals
 
-Given a function $`g \colon [a,b] \to \mathbb{R}`, the fundamental theorem of calculus tells us that
+Given a function $`g \colon [a,b] \to \mathbb{R}`, we know by the fundamental theorem of calculus that
 $$`\int_{[a,b]} g(t) \; dt = f(b) - f(a)`
 where $`f` is a function such that $`g = df/dt`.
 Equivalently, for $`f \colon [a,b] \to \mathbb{R}`,
 $$`\int_{[a,b]} g \; dt = \int_{[a,b]} df = f(b) - f(a)`
 where $`df` is the exterior derivative we defined earlier.
 
+:::aside
 The Mathlib statement closest to this elementary form sits in `Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus`:
 `intervalIntegral.integral_eq_sub_of_hasDerivAt` says that if $`f` has derivative $`f'` everywhere on $`[a,b]` and $`f'` is interval-integrable, then $`\int_a^b f'(t) \; dt = f(b) - f(a)`.
 This is the prototype for the much more general Stokes' theorem we are about to build toward.
@@ -45,6 +46,7 @@ recall intervalIntegral.integral_eq_sub_of_hasDerivAt
     (hint : IntervalIntegrable f' MeasureTheory.volume a b) :
     ∫ y in a..b, f' y = f b - f a
 ```
+:::
 
 Cool, so we can integrate over $`[a,b]`.
 Now suppose more generally, we have $`U` an open subset of our real vector space $`V` and a $`1`-form $`\alpha \colon U \to V^\vee`.
@@ -77,6 +79,10 @@ $$`(c^\ast \alpha)_t (\varepsilon) = \alpha_{c(t)} \cdot (Dc)_t (\varepsilon)`
 Thus, we can more succinctly write
 $$`\int_c \alpha \overset{\text{def}}{=} \int_{[a,b]} c^\ast \alpha.`
 
+:::figure "figures/differential-geometry/stokes-pullback-curve.svg"
+Pulling a $`1`-form $`\alpha` back along a curve $`c` to a form $`c^\ast \alpha` on $`[a, b]`.
+:::
+
 This is a special case of a *pullback*: roughly, if $`\phi \colon U \to U'` (where $`U \subseteq V`, $`U' \subseteq V'`), we can change any differential $`k`-form $`\alpha` on $`U'` to a $`k`-form on $`U`.
 In particular, if $`U = [a,b]`, we can resort to our old definition of an integral.
 (Strictly speaking $`[a,b]` is not open; pretend we have replaced it by $`(a - \varepsilon, b + \varepsilon)`.)
@@ -96,11 +102,16 @@ Clearly we give the point $`q = \phi(p)`.
 As for the tangent vectors, since we are interested in volume, we take the derivative of $`\phi` at $`p`, $`(D\phi)_p`, which will scale each of our vectors $`v_i` into some vector in the target $`V'`.
 To cut a long story short:
 
-:::DEFINITION
+::::DEFINITION
 Given $`\phi \colon U \to U'` and $`\alpha` a $`k`-form, we define the *pullback*
 $$`(\phi^\ast \alpha)_p(v_1, \dots, v_k) \overset{\text{def}}{=} \alpha_{\phi(p)} \left( (D\phi)_p(v_1), \dots, (D\phi)_p(v_k) \right).`
-:::
 
+:::figure "figures/differential-geometry/stokes-pullback-phi.svg"
+Pulling a form $`\alpha` back along a map $`\phi \colon U \to U'`.
+:::
+::::
+
+:::aside
 The single-point version of this construction lives in `Mathlib.LinearAlgebra.Alternating.Basic` as `AlternatingMap.compLinearMap`: given an alternating $`k`-form $`f \colon M^k \to N` and a linear map $`g \colon M_2 \to M`, it produces the alternating $`k`-form $`(v_1, \dots, v_k) \mapsto f(g v_1, \dots, g v_k)` on $`M_2^k`.
 For continuous alternating maps the analog is `ContinuousAlternatingMap.compContinuousLinearMapCLM`.
 The pullback of a smooth differential form is then the pointwise application $`p \mapsto \alpha_{\phi(p)} \circ (D\phi)_p`, where $`(D\phi)_p` comes from `fderiv` (or `mfderiv` in the manifold setting).
@@ -115,6 +126,7 @@ recall AlternatingMap.compLinearMap_apply
     (f : M [⋀^ι]→ₗ[R] N) (g : M₂ →ₗ[R] M) (v : ι → M₂) :
     f.compLinearMap g v = f fun i => g (v i) := rfl
 ```
+:::
 
 There is a more concrete way to define the pullback using bases.
 Suppose $`w_1, \dots, w_n` is a basis of $`V'` and $`e_1, \dots, e_m` is a basis of $`V`.
@@ -146,9 +158,13 @@ but I won't take the time to check these here (one can verify them all by expand
 
 # Cells
 
-:::PROTOTYPE
+::::PROTOTYPE
 A disk in $`\mathbb{R}^2` can be thought of as the cell $`[0, R] \times [0, 2\pi] \to \mathbb{R}^2` by $`(r, \theta) \mapsto (r \cos \theta) \mathbf{e}_1 + (r \sin \theta) \mathbf{e}_2`.
+
+:::figure "figures/differential-geometry/stokes-square-to-disk.svg"
+The $`(r, \theta)` square maps to a disk; the four oriented edges become its boundary.
 :::
+::::
 
 Now that we have the notion of a pullback, we can define the notion of an integral for more general spaces.
 Specifically, to generalize the notion of integrals we had before:
@@ -265,16 +281,20 @@ That is, $`\partial(\sum a_i c_i) = \sum a_i \partial c_i`.
 Satisfy yourself that one can extend this definition to a $`k`-cell $`c` defined on $`c \colon [a_1, b_1] \times \dots \times [a_k, b_k] \to V` (rather than from $`[0, 1]^k \to V`).
 :::
 
-:::EXAMPLE "Examples of boundaries"
+::::EXAMPLE "Examples of boundaries"
 Consider a $`2`-cell $`c \colon [0, 1]^2 \to \mathbb{R}^2` whose image is a (possibly skewed) quadrilateral with corners $`p_1, p_2, p_3, p_4` corresponding to $`(0, 0), (0, 1), (1, 1), (1, 0)`.
 Formally, $`\partial c` is given by
 $$`\partial c = (t \mapsto c(1, t)) - (t \mapsto c(0, t)) - (t \mapsto c(t, 1)) + (t \mapsto c(t, 0)).`
 Apologies for the eyesore notation caused by inline functions; let's just write
 $$`\partial c = [p_2, p_3] - [p_1, p_4] - [p_4, p_3] + [p_1, p_2]`
 where each "interval" represents the corresponding edge $`1`-cell, after accounting for the minus signs.
+
+:::figure "figures/differential-geometry/stokes-square-to-cell.svg"
+A $`2`-cell $`c` is a map from the unit square; its oriented edges become the boundary $`\partial c`.
+:::
 We can take the boundary of this as well, and obtain an empty chain as
 $$`\partial(\partial c) = \sum_{i=1}^4 \{p_{i+1}\} - \{p_i\} = 0.`
-:::
+::::
 
 :::EXAMPLE "Boundary of a unit disk"
 Consider the unit disk given by
@@ -315,6 +335,10 @@ The version `BoxIntegral.hasIntegral_GP_divergence_of_forall_hasDerivWithinAt` i
 Now that we've done everything abstractly, let's compare what we've learned to what you might see in $`\mathbb{R}^3` if you're doing a vector calculus course at a typical university.
 The standard chart that shows up in such courses tabulates, for each pair $`0 \leq d \leq n \leq 3` (besides $`d = n = 0`), the integral that shows up when you do a $`d`-dimensional integral of a function whose domain is $`\mathbb{R}^n`.
 Every integral in this picture is real-valued.
+
+:::figure "figures/differential-geometry/stokes-integral-zoo.svg"
+The vector-calculus "zoo" of integrals organized by dimension, with grad, curl, div, and scalar curl relating them.
+:::
 
 For the rest of this section we use the notation that is actually used in such courses (similar to what you see on Wikipedia and elsewhere); the goal of the section is to provide a translation from that "18.02 notation" to Napkin notation.
 (Throughout the whole section, $`\mathbb{R}^n` is thought of as a normed vector space, so the identification $`\mathbf{e}_i \mapsto \mathbf{e}_i^\vee` is canonical.)

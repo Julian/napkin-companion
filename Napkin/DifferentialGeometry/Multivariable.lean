@@ -37,6 +37,10 @@ If $`f(x, y) = x^2 + y^2`, then $`(Df)_{(x, y)} = 2x \mathbf{e}_1^\vee + 2y \mat
 First, let $`f \colon [a, b] \to \mathbb{R}`.
 You might recall from high school calculus that for every point $`p \in \mathbb{R}`, we defined $`f'(p)` as the derivative at the point $`p` (if it existed), which we interpreted as the *slope* of the "tangent line".
 
+:::figure "figures/differential-geometry/multivar-tangent.svg"
+The derivative $`f'(p)` as the slope of the tangent line to $`f` at $`p`.
+:::
+
 That's fine, but I claim that the "better" way to interpret the derivative at that point is as a *linear map*, that is, as a *function*.
 If $`f'(p) = 1.5`, then the derivative tells me that if I move $`\varepsilon` away from $`p` then I should expect $`f` to change by about $`1.5\varepsilon`.
 In other words,
@@ -58,6 +62,10 @@ Even more generally, if $`f \colon U \to W` with $`U \subseteq V` open (in the $
 $$`f(p + v) \approx f(p) + T(v) \in W.`
 (We need $`U` open so that for small enough $`v`, $`p + v \in U` as well.)
 In fact this is exactly what we were doing earlier with $`f'(p)` in high school.
+
+:::figure "figures/differential-geometry/multivar-tangent-plane.svg"
+Image derived from {cite}`img:tangentplane`.
+:::
 
 The only difference is that, by an unfortunate coincidence, a linear map $`\mathbb{R} \to \mathbb{R}` can be represented by just its slope.
 And in the unending quest to make everything a number so that it can be AP tested, we immediately forgot all about what we were trying to do in the first place and just defined the derivative of $`f` to be a *number* instead of a *function*.
@@ -300,7 +308,7 @@ If $`(D^2 f)_p` exists at some $`p \in U`, then it is symmetric, meaning
 $$`(D^2 f)_p(v_1, v_2) = (D^2 f)_p(v_2, v_1).`
 :::
 
-I'll just quote this without proof, because double derivatives make my head spin.
+I'll just quote this without proof (see e.g. {cite}`ref:pugh`, §5, theorem 16), because double derivatives make my head spin.
 An important corollary of this theorem:
 
 :::COROLLARY "Clairaut's theorem: mixed partials are symmetric"

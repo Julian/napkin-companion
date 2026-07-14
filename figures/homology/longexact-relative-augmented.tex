@@ -1,0 +1,18 @@
+% Commutative diagram from the long-exact-sequence chapter.
+% Source: book/tex/homology/long-exact.tex (lines 113-120).
+\documentclass[border=2mm]{standalone}
+\usepackage{amssymb,amsmath}
+\usepackage{tikz-cd}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\id}{\mathrm{id}}
+\begin{document}
+	\begin{tikzcd}
+		0 \ar[r]
+		& C_0(A) \ar[r, hook] \ar[d, "\eps", two heads]
+			& C_0(X) \ar[r, two heads] \ar[d, "\eps", two heads]
+			& C_0(X,A) \ar[r]
+			& 0 \\
+		0 \ar[r] & \ZZ \ar[r, "\id"'] & \ZZ \ar[r] & 0 \ar[r] & 0.
+	\end{tikzcd}
+\end{document}

@@ -484,10 +484,15 @@ The three claimed objects now all have shape $`2+1`:
 3. We saw before that $`\operatorname{Frob}_{\mathfrak{P}} = (\bullet)(\bullet \; \bullet)`.
 ::::
 
-:::PROOF
+::::PROOF
 (Sketch of Proof)
 Letting $`n = \deg f`.
 Let $`H` be the subgroup of $`G = \operatorname{Gal}(K/\mathbb{Q})` corresponding to $`E`, so $`|G/H| = n`.
+Pictorially, we have
+
+:::figure "figures/algebraic-nt/frob-sketch-tower.svg"
+:::
+
 We claim that (i), (ii), (iii) are all equivalent to
 
 (iv) The pattern of the action of $`\operatorname{Frob}_{\mathfrak{P}}` on the $`G/H`.
@@ -499,7 +504,7 @@ So there is a natural bijection from (iii) to (iv).
 
 The fact that (i) is in bijection to (iv) was the previous theorem, on Frobenius elements controlling decomposition.
 The correspondence (i) $`\iff` (ii) is a fact of Galois theory, so we omit the proof here.
-:::
+::::
 
 All this can be done in general with $`\mathbb{Q}` replaced by $`F`; for example, in Lenstra's notes _The Chebotarev Density Theorem_.
 
@@ -510,6 +515,9 @@ The equivalence of the three patterns has no Mathlib incarnation yet.
 
 As an example of the power we now have at our disposal, let's prove:
 
+:::figure "IMO-2003-logo.png"
+:::
+
 :::quote
 *Problem 6.*
 Let $`p` be a prime number.
@@ -518,13 +526,16 @@ Prove that there exists a prime number $`q` such that for every integer $`n`, th
 
 We will show, much more strongly, that there exist infinitely many primes $`q` such that $`X^p-p` is irreducible modulo $`q`.
 
-:::PROOF
+::::PROOF
 (Solution)
 Okay! First, we draw the tower of fields $$`\mathbb{Q} \subseteq \mathbb{Q}(\sqrt[p]{p}) \subseteq K` where $`K` is the splitting field of $`f(x) = x^p-p`.
 Let $`E = \mathbb{Q}(\sqrt[p]{p})` for brevity and note it has degree $`[E:\mathbb{Q}] = p`.
 Let $`G = \operatorname{Gal}(K/\mathbb{Q})`.
 
-To start, notice that $`p` divides the order of $`G` (look at $`E`).
+:::QUESTION
+Show that $`p` divides the order of $`G`. (Look at $`E`.)
+:::
+
 Hence by Cauchy's theorem (from the group actions chapter, a purely group-theoretic fact) we can find a $`\sigma \in G` of order $`p`.
 By Chebotarev, there exist infinitely many rational (unramified) primes $`q \neq p` and primes $`\mathfrak{Q} \subseteq \mathcal{O}_K` above $`q` such that $`\operatorname{Frob}_\mathfrak{Q} = \sigma`.
 (Yes, that's an uppercase Gothic $`Q`.
@@ -539,7 +550,7 @@ Thus the possible factorization patterns of $`f` are $$`p = \underbrace{1 + 1 + 
 So we just need to rule out the $`p = 1 + \dots + 1` case now: this only happens if $`f` breaks into linear factors mod $`q`.
 Intuitively this edge case seems highly unlikely (are we really so unlucky that $`f` factors into _linear_ factors when we want it to be irreducible?).
 And indeed this is easy to see: this means that $`\sigma` fixes all of the roots of $`f` in $`K`, but that means $`\sigma` fixes $`K` altogether, and hence is the identity of $`G`, contradiction.
-:::
+::::
 
 :::REMARK
 In fact $`K = \mathbb{Q}(\sqrt[p]{p}, \zeta_p)`, and $`\left\lvert G \right\rvert = p(p-1)`.

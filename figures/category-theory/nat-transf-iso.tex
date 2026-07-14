@@ -1,0 +1,13 @@
+% A natural isomorphism: each αₐ is an isomorphism, with inverse βₐ.
+% Source: book/tex/cats/functors.tex (§ Natural transformations).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\renewcommand{\AA}{\mathcal A}
+\newcommand{\BB}{\mathcal B}
+\begin{document}
+\begin{tikzcd}
+	& F(A) \in \BB \ar[dd, "\alpha_A"', shift right] \\
+	\AA \ni A \ar[ru, dashed, "F"] \ar[rd, dashed, "G"'] & \\
+	& G(A) \in \BB \ar[uu, "\beta_A"', shift right]
+\end{tikzcd}
+\end{document}

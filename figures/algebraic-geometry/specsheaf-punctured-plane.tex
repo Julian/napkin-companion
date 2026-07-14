@@ -1,0 +1,14 @@
+% The punctured plane U = Spec C[x,y] with the maximal ideal m=(x,y) removed.
+% Source: book/tex/alg-geom/spec-sheaf.tex (§ a non-distinguished open set).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usepackage{amssymb}
+\begin{document}
+\begin{tikzpicture}[scale=0.5]
+  \fill[cyan!20] (-3,-3) rectangle (3,3);
+  \draw[red,->] (-3.6,0) -- (3.6,0) node[right] {$\mathcal V(y)$};
+  \draw[red,->] (0,-3.6) -- (0,3.6) node[above] {$\mathcal V(x)$};
+  \draw[blue, fill=white, thick] (0,0) circle (3pt);
+  \node[blue] at (0.3,0.5) [above right] {$\mathfrak m = (x,y)$};
+\end{tikzpicture}
+\end{document}

@@ -89,6 +89,12 @@ and eventually a number called $`\omega \cdot 2`.
 
 The list goes on: $$`\begin{aligned} 0, & 1, 2, 3, \dots, \omega \\ & \omega + 1, \omega + 2, \dots, \omega + \omega \\ & \omega \cdot 2 + 1, \omega \cdot 2 + 2, \dots, \omega \cdot 3 \\ & \vdots \\ & \omega^2 + 1, \omega^2 + 2, \dots \\ & \vdots \\ & \omega^3, \dots, \omega^4, \dots, \omega^\omega \dots, \omega^{\omega^{\omega^{\dots}}} \end{aligned}`
 
+Pictorially, it kind of looks like this:
+
+:::figure "500px-Omega-exp-omega-labeled.png"
+Image from {cite}`img:omega500`.
+:::
+
 Anyways, in the same way that natural numbers "dominate" all finite sets, the ordinals dominate _all the sets_, in the following sense.
 Essentially, assuming the Axiom of Choice, it follows that for every set $`S` there's some ordinal $`\alpha` which is larger than $`S` (in a sense I won't make precise until later chapters).
 
@@ -245,6 +251,10 @@ Then $`S` must be spanning, because otherwise we could add an element to it.
 
 So really, Zorn's lemma is encoding all of the work of climbing that I argued earlier.
 It's a neat little package that captures all the boilerplate, and tells you exactly what you need to check.
+
+:::figure "zornaholic.png"
+Image from {cite}`img:zornaholic`.
+:::
 
 One last thing you might ask: where is the Axiom of Choice used?
 Well, the idea is that for any chain there could be lots of $`\tilde p`'s, and you need to pick one of them.

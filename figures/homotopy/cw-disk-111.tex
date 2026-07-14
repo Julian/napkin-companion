@@ -1,0 +1,13 @@
+% D^2 as a CW complex with 1+1+1 cells: one 0-cell, one 1-cell, one 2-cell.
+% Source: book/tex/topology/constructions.tex (§ CW complexes).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\begin{document}
+\begin{tikzpicture}[scale=2]
+  \fill[yellow!25] (0,0) circle (1);
+  \draw[green!50!black] (0,0) circle (1);
+  \fill[blue] (0,1) circle (1.6pt) node[above,blue] {$e^0$};
+  \node[green!50!black,below] at (0,-1) {$e^1$};
+  \node at (0,0) {$e^2$};
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,23 @@
+% Lifting the once-around loop gamma in S^1 to a path from n to n+1 in R.
+% Source: book/tex/topology/cover-project.tex (§ Lifting theorem).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usepackage{amssymb}
+\usetikzlibrary{arrows.meta,decorations.markings}
+\begin{document}
+\begin{tikzpicture}[scale=1]
+  \draw[{Latex}-{Latex}] (-2,0) -- (3,0);
+  \foreach \x in {-1,0,1,2} { \draw (\x,0.08) -- (\x,-0.08) node[below] {$\x$}; }
+  \node[above right] at (2.5,0) {$\mathbb{R}$};
+  \draw[blue,-{Latex}] (0,0.3) -- (1,0.3) node[midway,above,blue] {$\tilde\gamma$};
+  \draw[-{Latex}] (0,2.7) -- (0,1.7) node[midway,right] {$p$};
+  \begin{scope}[yshift=3.2cm]
+    \draw (0,0) circle (0.8);
+    \node at (0.6,0.6) {$S^1$};
+    \fill (0.8,0) circle (1.3pt) node[right] {$1$};
+    \draw[red,decoration={markings,mark=at position 0.5 with {\arrow{Latex}}},
+      postaction={decorate}] (0:0.8) arc (0:355:0.8);
+    \node[red] at (-1.1,0.5) {$\gamma$};
+  \end{scope}
+\end{tikzpicture}
+\end{document}

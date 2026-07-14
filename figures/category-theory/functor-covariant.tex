@@ -1,0 +1,13 @@
+% A covariant functor preserves the direction of arrows.
+% Source: book/tex/cats/functors.tex (§ Covariant functors).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\renewcommand{\AA}{\mathcal A}
+\newcommand{\BB}{\mathcal B}
+\begin{document}
+\begin{tikzcd}
+	& A_1 \ar[dd, "f"', shift right, near start] && B_1 = F(A_1) \ar[dd, "F(f)"', near start, shift right] \\
+	\AA \ni & \quad \ar[rr, "F", dashed] & & \quad & \in \BB \\
+	& A_2 \ar[uu, "g"', shift right, near start] && B_2 = F(A_2) \ar[uu, "F(g)"', near start, shift right]
+\end{tikzcd}
+\end{document}

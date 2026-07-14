@@ -1,0 +1,10 @@
+% Diagram chase: an element b ∈ B mapping to c ∈ C.
+% Source: book/tex/cats/abelian.tex (§ The short five lemma).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+	b \in B \ar[r, "q", mapsto] \ar[d, "\beta"', dashed] & c \in C \ar[d, "\gamma", "\cong"', mapsto] \\
+	b' \in B' \ar[r, mapsto, "q'"] & c' \in C'
+\end{tikzcd}
+\end{document}

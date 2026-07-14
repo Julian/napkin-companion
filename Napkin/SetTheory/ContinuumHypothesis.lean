@@ -4,11 +4,14 @@ import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 import Mathlib.SetTheory.Cardinal.Regular
+import Mathlib.SetTheory.Cardinal.Continuum
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+
+open Cardinal
 
 set_option pp.rawOnError true
 
@@ -28,6 +31,20 @@ What _is_ formalized is the cardinal-arithmetic backdrop: the aleph function {na
 So the combinatorial cardinal facts this chapter leans on have Lean counterparts even though the forcing argument that uses them does not.
 :::
 
+The size of the continuum $`\mathfrak{c} = 2^{\aleph_0}` is {name}`Cardinal.continuum`, and that it really is $`2^{\aleph_0}` is {name}`Cardinal.two_power_aleph0`; the first two aleph numbers $`\aleph_0` and $`\aleph_1` are {lean}`aleph 0` and {lean}`aleph 1`, with {name}`Cardinal.aleph_zero` identifying $`\aleph_0` with $`\omega`.
+
+```lean
+example : (2 : Cardinal) ^ ℵ₀ = 𝔠 := two_power_aleph0
+example : aleph 0 = ℵ₀ := aleph_zero
+example : ℵ₀ < ℵ₁ := aleph0_lt_aleph_one
+```
+
+The Continuum Hypothesis is the assertion $`\mathfrak{c} = \aleph_1`, which we can name as a proposition even though it is provable neither in ZFC nor its negation:
+
+```lean
+def ContinuumHypothesis : Prop := continuum.{0} = aleph 1
+```
+
 # Adding in reals
 
 Starting with a _countable_ transitive model $`M`.
@@ -36,6 +53,10 @@ We want to choose $`\mathbb{P} \in M` such that $`(\aleph_2)^M` many real number
 
 Recall the earlier situation where we set $`\mathbb{P}` to be the infinite complete binary tree; its nodes can be thought of as partial functions $`n \to 2` where $`n < \omega`.
 Then $`G` itself is a path down this tree; i.e. it can be encoded as a total function $`G \colon \omega \to 2`, and corresponds to a real number.
+
+:::figure "figures/set-theory/binary-tree-generic.svg"
+A single generic branch $`G` down the binary tree encodes one real number $`G \colon \omega \to 2`.
+:::
 
 We want to do something similar, but with $`\omega_2` many real numbers instead of just one.
 In light of this, consider in $`M` the poset $$`\mathbb{P} = \operatorname{Add}(\omega, \omega_2) \coloneqq \left( \left\{ p \colon \omega_2 \times \omega \to 2, \operatorname{dom}(p) \text{ is finite} \right\}, \supseteq \right).`
@@ -149,6 +170,15 @@ Similarly we say $`\mathbb{P}` *preserves regular cardinals* if $`M` and $`M[G]`
 Intuition: in a model $`M`, it's possible that two cardinals which are in bijection in $`V` are no longer in bijection in $`M`.
 Similarly, it might be the case that some cardinal $`\kappa \in M` is regular, but stops being regular in $`V` because some function $`f \colon \overline\kappa \to \kappa` is cofinal but happened to only exist in $`V`.
 In still other words, "$`\kappa` is a regular cardinal" turns out to be a $`\Pi_1` statement too.
+
+Regularity of a cardinal is {name}`Cardinal.IsRegular`, and both $`\aleph_0` and $`\aleph_1` are regular — the latter is {name}`Cardinal.isRegular_aleph_one` — as is every successor aleph $`\aleph_{o+1}`:
+
+```lean
+example : Cardinal.IsRegular ℵ₀ := isRegular_aleph0
+example : Cardinal.IsRegular ℵ₁ := isRegular_aleph_one
+example (o : Ordinal) : Cardinal.IsRegular (aleph (o + 1)) :=
+  isRegular_aleph_add_one o
+```
 
 Fortunately, each implies the other.
 We quote the following without proof.

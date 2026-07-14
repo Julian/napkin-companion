@@ -1,0 +1,23 @@
+% A product as a universal cone over X₁,…,X₄.
+% Source: book/tex/cats/categories.tex (§ Binary products).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+	&& A
+		\ar[dd, dotted, "\exists! f"]
+		\ar[llddd, bend right]
+		\ar[lddd, bend right]
+		\ar[rddd, bend left]
+		\ar[rrddd, bend left]
+		&& \\
+	&&&& \\
+	&& P
+		\ar[lld]
+		\ar[ld]
+		\ar[rd]
+		\ar[rrd]
+		&& \\
+	X_1 & X_2 && X_3 & X_4
+\end{tikzcd}
+\end{document}

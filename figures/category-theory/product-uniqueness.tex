@@ -1,0 +1,15 @@
+% Two products P₁, P₂ of X and Y are uniquely isomorphic.
+% Source: book/tex/cats/categories.tex (§ Binary products, uniqueness proof).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+	& & X & & \\
+	\\
+	P_1 \ar[rrdd, "\pi_Y^1"'] \ar[rruu, "\pi_X^1"] \ar[rr, "f"]
+		&& P_2 \ar[rr, "g"] \ar[uu, "\pi_X^2"'] \ar[dd, "\pi_Y^2"]
+		&& P_1 \ar[lluu, "\pi_X^1"'] \ar[lldd, "\pi_Y^1"'] \\
+	\\
+	&& Y  &&
+\end{tikzcd}
+\end{document}

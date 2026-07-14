@@ -199,6 +199,10 @@ After this point we are going to consider extensions $`L/K` but it is important 
 Now take a _Galois_ extension $`L/K` of degree $`m`.
 We already know prime ideals $`\mathfrak p` of $`K` break into a product of prime ideals $`\mathfrak P` of $`L` in a nice way, so we want to do the same thing with infinite primes.
 This is straightforward: each of the $`n` infinite primes $`\sigma \colon K \to \mathbb C` lifts to $`m` infinite primes $`\tau \colon L \to \mathbb C`, by which I mean that each $`\tau` restricts to $`\sigma` on $`K`.
+
+:::figure "figures/algebraic-nt/artin-embedding-lift.svg"
+An embedding $`\sigma \colon K \to \mathbb{C}` lifts to an embedding $`\tau \colon L \to \mathbb{C}` restricting to $`\sigma`.
+:::
 Hence like before, each infinite prime $`\sigma` of $`K` has $`m` infinite primes $`\tau` of $`L` which lie above it.
 
 For a real prime $`\sigma` of $`K`, if any of the resulting $`\tau` above it are complex, we say that the prime $`\sigma` *ramifies* in the extension $`L/K`.
@@ -335,6 +339,10 @@ So the conductor $`\mathfrak f` plays a similar role to the discriminant (divisi
 Here's the reason this is called a "reciprocity" theorem.
 The above theorem applies on $`\mathfrak m = \mathfrak f` tells us $`P_K(\mathfrak f) \subseteq H(L/K, \mathfrak f)`, so the Artin map factors through the quotient map $`I_K(\mathfrak f) \twoheadrightarrow I_K(\mathfrak f) / P_K(\mathfrak f)`.
 Recalling that $`C_K(\mathfrak f) = I_K(\mathfrak f) / P_K(\mathfrak f)`, we get a chain of surjections $`I_K(\mathfrak f) \twoheadrightarrow C_K(\mathfrak f) \twoheadrightarrow I_K(\mathfrak f) / H(L/K, \mathfrak f) \cong \operatorname{Gal}(L/K)`, through which the Artin symbol factors.
+
+:::figure "figures/algebraic-nt/artin-map-factoring.svg"
+The Artin symbol factors through the ray class group $`C_K(\mathfrak f)`.
+:::
 Consequently:
 
 :::MORAL
@@ -355,7 +363,7 @@ Thus, Artin reciprocity tells us that there is a conductor $`\mathfrak f = \math
 
 Here is an example along the same lines.
 
-:::EXAMPLE "Cyclotomic field"
+::::EXAMPLE "Cyclotomic field"
 Let $`\zeta` be a primitive $`m`th root of unity.
 For primes $`p`, we know that $`\operatorname{Frob}_p \in \operatorname{Gal}(\mathbb Q(\zeta)/\mathbb Q)` is "exactly" $`p \pmod m`.
 Let's translate this idea into the notation of Artin reciprocity.
@@ -366,9 +374,13 @@ It also implies that $`\mathfrak f(\mathbb Q(\zeta)/\mathbb Q) \mid m\infty`.
 
 It's well-known $`\mathbb Q(\zeta)/\mathbb Q` is unramified outside finite primes dividing $`m`, so that the Artin symbol is defined on $`I_K(\mathfrak m)`.
 Now the Artin map sends a prime $`p` to the automorphism $`x \mapsto x^p`, which under the isomorphism $`\operatorname{Gal}(\mathbb Q(\zeta)/\mathbb Q) \cong (\mathbb Z/m\mathbb Z)^\times` is exactly $`p \pmod m`.
+
+:::figure "figures/algebraic-nt/artin-cyclotomic.svg"
+For a cyclotomic field, the Artin symbol sends $`p` to the $`p`th-power map, i.e. to $`p \bmod m`.
+:::
 So we see that the kernel of this map is trivial, i.e. it is given by the identity of the Galois group, corresponding to $`1 \pmod m`.
 On the other hand, we've also computed $`P_{\mathbb Q}(m\infty)` already, so we have the desired equality.
-:::
+::::
 
 In fact, we also have the following "existence theorem": every congruence subgroup appears uniquely once we fix $`\mathfrak m`.
 
@@ -388,13 +400,17 @@ Then $$`L \subseteq M \quad\text{if and only if}\quad H(M/K, \mathfrak m) \subse
 
 Here by $`L \subseteq M` we mean that $`L` is isomorphic to some subfield of $`M`.
 
-:::PROOF
+::::PROOF
 _Sketch of proof._
 Let us first prove the equivalence with $`\mathfrak m` fixed.
 In one direction, assume $`L \subseteq M`; one can check from the definitions that the two Artin maps $`\left( \frac{M/K}{\bullet} \right)` and $`\left( \frac{L/K}{\bullet} \right)` are compatible with the restriction surjection $`\operatorname{Gal}(M/K) \twoheadrightarrow \operatorname{Gal}(L/K)`, because it suffices to verify this for prime powers, which is just saying that Frobenius elements behave well with respect to restriction.
+
+:::figure "figures/algebraic-nt/artin-restriction.svg"
+The Artin symbol for $`M/K` restricts to the one for $`L/K` along $`\operatorname{Gal}(M/K) \twoheadrightarrow \operatorname{Gal}(L/K)`.
+:::
 Then the inclusion of kernels follows directly.
 The reverse direction is essentially the Takagi existence theorem.
-:::
+::::
 
 Note that we can always take $`\mathfrak m` to be the product of conductors here.
 
@@ -404,8 +420,23 @@ Now if you are given a field $`K` and want to list all (finite) abelian field ex
 (Of course, the question of how to compute the field $`L` given a modulus and a congruence subgroup is still difficult.
 At least when $`K = \mathbb Q`, the Kronecker–Weber problem below gives the answer: all finite abelian field extensions $`L/\mathbb Q` are contained in some cyclotomic field.)
 
-To finish, Emil Artin liked to tell the story of how he found the reciprocity law: after defining $`L`-series for non-abelian extensions, he realized a certain isomorphism had to hold for them to agree with the abelian $`L`-series, and that this "General Reciprocity Law" implied all the standard reciprocity laws.
-He tried to prove it for three years without success — even Hasse doubted it could be true — until one afternoon in the garden he realized he had been using the cyclotomic fields the wrong way all along, and had it within half an hour.
+To finish, here is a quote from Emil Artin on his reciprocity law:
+
+:::quote
+I will tell you a story about the Reciprocity Law.
+After my thesis, I had the idea to define $`L`-series for non-abelian extensions.
+But for them to agree with the $`L`-series for abelian extensions, a certain isomorphism had to be true.
+I could show it implied all the standard reciprocity laws.
+So I called it the General Reciprocity Law and tried to prove it but couldn't, even after many tries.
+Then I showed it to the other number theorists, but they all laughed at it, and I remember Hasse in particular telling me it couldn't possibly be true.
+
+Still, I kept at it, but nothing I tried worked.
+Not a week went by — _for three years!_ — that I did not try to prove the Reciprocity Law.
+It was discouraging, and meanwhile I turned to other things.
+Then one afternoon I had nothing special to do, so I said, 'Well, I try to prove the Reciprocity Law again.'
+So I went out and sat down in the garden.
+You see, from the very beginning I had the idea to use the cyclotomic fields, but they never worked, and now I suddenly saw that all this time I had been using them in the wrong way — and in half an hour I had it.
+:::
 
 # Application: Generalization of sum of two squares
 
@@ -498,7 +529,7 @@ Check that the algebra above works out.
 We have seen one example above, the cyclotomic field example, where the congruence subgroup $`H(\mathbb Q(\zeta_m)/\mathbb Q, m \infty)` is equal to the lower bound $`P_{\mathbb Q}(m \infty)`.
 We will see one more example below.
 
-:::EXAMPLE "Varying the modulus and the extension"
+::::EXAMPLE "Varying the modulus and the extension"
 In the example above, we can vary both the modulus $`\mathfrak m` and the abelian field extension $`L` over $`K` to get different congruence subgroups.
 This can be confusing, so let us take an example.
 
@@ -507,11 +538,15 @@ Let the modulus in $`\mathbb Q` be $`\mathfrak m = 15 \infty`.
 
 The ray class group $`C_K(\mathfrak m)` is of course isomorphic to $`(\mathbb Z/15\mathbb Z)^\times \cong (\mathbb Z/3\mathbb Z)^\times \times (\mathbb Z/5\mathbb Z)^\times \cong \mathbb Z/2\mathbb Z \times \mathbb Z/4\mathbb Z`.
 
-As small as this group is (with only 8 elements), it has 8 subgroups.
+As small as this group is (with only 8 elements), it has 8 subgroups.{margin}[The LMFDB has a diagram of its subgroup lattice at `https://beta.lmfdb.org/Groups/Abstract/diagram/8.2`.]
 Nevertheless, we will only focus on the relevant parts of the subgroup lattice.
 
 By Artin reciprocity and Takagi existence theorem, each congruence subgroup corresponds to some abelian extension over $`L/\mathbb Q`.
 Depicted using the fact that $`H(L/\mathbb Q, 15 \infty)/P_{\mathbb Q}(15 \infty)` is a subgroup of $`C_{\mathbb Q}(15 \infty) \cong (\mathbb Z/15\mathbb Z)^\times`, the correspondence runs through the tower $`\mathbb Q \subseteq \mathbb Q(\sqrt 5) \subseteq \mathbb Q(\zeta_5) \subseteq \mathbb Q(\zeta_{15})`, matched respectively with the descending subgroups $`(\mathbb Z/15\mathbb Z)^\times \supseteq \{1, 11, 4, 14\} \supseteq \{1, 11\} \supseteq \{1\}`.
+
+:::figure "figures/algebraic-nt/artin-tower-15.svg"
+The tower of abelian extensions for modulus $`15\infty`, matched with subgroups of $`(\mathbb{Z}/15\mathbb{Z})^\times`.
+:::
 (Where does this come from? Well, if the base field is $`\mathbb Q`, the Kronecker–Weber problem below gives a way.)
 
 Interested readers may want to try to work out the canonical isomorphism between the Galois group $`\operatorname{Gal}(L/K)` and the ray class group $`C_K(\mathfrak f(L/K))` in the general case of an abelian extension.
@@ -519,9 +554,17 @@ Interested readers may want to try to work out the canonical isomorphism between
 Next, how does this relate to the abelian extensions that corresponds to different modulus, let's say $`5 \infty`?
 Intuitively speaking, if we know the value of an ideal mod $`15 \infty`, we would know its value mod $`5 \infty`.
 Formally, the inclusions $`P_K(15\infty) \subseteq I_K(15\infty)` and $`P_K(5\infty) \subseteq I_K(5\infty)` fit into a morphism of short exact sequences, inducing a surjection $`C_K(15 \infty) \twoheadrightarrow C_K(5 \infty)`, or equivalently $`(\mathbb Z/15\mathbb Z)^\times \twoheadrightarrow (\mathbb Z/5\mathbb Z)^\times`.
+
+:::figure "figures/algebraic-nt/artin-modulus-ses.svg"
+The ray/ideal/class-group sequences for the moduli $`15\infty` and $`5\infty` form a morphism of short exact sequences.
+:::
 (If you have read the category theory chapter: morphisms of short exact sequences appear everywhere! You just have to look for it.)
 This time around, the abelian field extensions that corresponds to the modulus $`5 \infty` are the tower $`\mathbb Q \subseteq \mathbb Q(\sqrt 5) \subseteq \mathbb Q(\zeta_5)`, matched with $`(\mathbb Z/5\mathbb Z)^\times \supseteq \{1, 4\} \supseteq \{1\}`.
+
+:::figure "figures/algebraic-nt/artin-tower-5.svg"
+The smaller tower for modulus $`5\infty`, matched with subgroups of $`(\mathbb{Z}/5\mathbb{Z})^\times`.
 :::
+::::
 
 In our case, given $`p \in \mathbb Q` be a prime factors as $`(p) = \mathfrak p_1 \mathfrak p_2` when lifted to $`K = \mathbb Q(\sqrt{-5})`, we want to determine if $`\mathfrak p_1` is principal — in other words, we want to compute "$`\mathfrak p_1 \pmod{1}`".
 With the insight above, we will rephrase the condition in terms of the Artin symbol.

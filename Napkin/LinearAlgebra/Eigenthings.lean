@@ -156,6 +156,8 @@ Such a matrix is said to be in *Jordan form*.
 This form is unique up to rearranging the order of the blocks.
 :::
 
+As an example, this means the matrix should look something like: $$`\begin{bmatrix} \lambda_1 & 1 & & & & & & & \\ 0 & \lambda_1 & & & & & & & \\ & & \lambda_2 & & & & & & \\ & & & \lambda_3 & 1 & 0 & & & \\ & & & 0 & \lambda_3 & 1 & & & \\ & & & 0 & 0 & \lambda_3 & & & \\ & & & & & & \ddots & & \\ & & & & & & & \lambda_m & 1 \\ & & & & & & & 0 & \lambda_m \end{bmatrix}`
+
 :::QUESTION
 Check that diagonal matrices are the special case when each block is $`1 \times 1`.
 :::
@@ -251,6 +253,8 @@ Now I'm going to be cheap, and define:
 :::DEFINITION
 A map $`T \colon V \to V` is called *indecomposable* if it's impossible to write $`V = W_1 \oplus W_2` where both $`W_1` and $`W_2` are nontrivial $`T`-invariant spaces.
 :::
+
+Picture of a _decomposable_ map, block-diagonal with the two invariant blocks $`W_1` and $`W_2`: $$`\begin{bmatrix} W_1 & 0 \\ 0 & W_2 \end{bmatrix}`
 
 As you might expect, we can break a space apart into "indecomposable" parts.
 

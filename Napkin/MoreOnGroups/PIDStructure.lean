@@ -2,11 +2,19 @@ import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
+import Mathlib.Algebra.Module.PID
+import Mathlib.GroupTheory.FiniteAbelian.Basic
+import Mathlib.Data.ZMod.Basic
+import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.LinearAlgebra.Dimension.Finrank
+import Mathlib.LinearAlgebra.Basis.Defs
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+
+open scoped DirectSum
 
 set_option pp.rawOnError true
 
@@ -64,6 +72,15 @@ Then there exists an integer $`r`, prime powers $`q_1, \dots, q_m` (not necessar
 The *rank* of a finitely generated abelian group $`G` is the integer $`r` above.
 :::
 
+This classification is exactly `AddCommGroup.equiv_free_prod_directSum_zmod`: a finitely generated abelian group (the finite-generation hypothesis is `AddGroup.FG`) splits as a power of $`\mathbb{Z}` times a direct sum of cyclic groups `ZMod (p i ^ e i)` of prime-power order.
+
+```lean
+example (G : Type*) [AddCommGroup G] [AddGroup.FG G] :
+    ∃ (n : ℕ) (ι : Type) (_ : Fintype ι) (p : ι → ℕ) (_ : ∀ i, (p i).Prime) (e : ι → ℕ),
+      Nonempty (G ≃+ (Fin n →₀ ℤ) × ⨁ i : ι, ZMod (p i ^ e i)) :=
+  AddCommGroup.equiv_free_prod_directSum_zmod G
+```
+
 Now, we could prove this theorem, but it is more interesting to go for the gold and state and prove the entire structure theorem.
 
 # Some ring theory prerequisites
@@ -113,6 +130,16 @@ The fact that $`R` is Noetherian is obvious.
 For $`R` to be a UFD we essentially repeat the proof for $`\mathbb{Z}`, using the fact that $`(a, b)` is principal in order to extract $`\gcd(a, b)`.
 :::
 
+Both halves are available by instance search from `IsPrincipalIdealRing`: the Noetherian half is `PrincipalIdealRing.isNoetherianRing`, and the unique-factorization half is the `UniqueFactorizationMonoid` instance on a principal ideal domain.
+
+```lean
+example (R : Type*) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] :
+    IsNoetherianRing R := inferInstance
+
+example (R : Type*) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] :
+    UniqueFactorizationMonoid R := inferInstance
+```
+
 In this case, we have a Chinese remainder theorem for elements.
 
 :::THEOREM "Chinese remainder theorem for rings"
@@ -127,6 +154,13 @@ Then we have a map $$`R/(m) \times R/(n) \to R/(mn) \quad \text{by} \quad (r, s)
 (Diligent readers invited to do so.)
 :::
 
+For the integers, this coprime splitting is `ZMod.chineseRemainder`, packaged as a ring isomorphism; the general statement for coprime ideals in any commutative ring is `Ideal.quotientInfRingEquivPiQuotient`.
+
+```lean
+example (m n : ℕ) (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m × ZMod n :=
+  ZMod.chineseRemainder h
+```
+
 Finally, we need to introduce the concept of a Noetherian $`R`-module.
 
 :::DEFINITION
@@ -135,6 +169,14 @@ An $`R`-module $`M` is *Noetherian* if it satisfies one of the two equivalent co
 - Its submodules obey the ascending chain condition: there is no infinite sequence of modules $`M_1 \subsetneq M_2 \subsetneq \dots`.
 - All submodules of $`M` (including $`M` itself) are finitely generated.
 :::
+
+`IsNoetherian R M` is the Mathlib predicate; `isNoetherian_def` is the equivalence to the "every submodule is finitely generated" condition, and `isNoetherian_iff_fg_wellFounded` is the equivalence to the ascending chain condition.
+
+```lean
+example (R : Type*) [Semiring R] (M : Type*) [AddCommMonoid M] [Module R M] :
+    IsNoetherian R M ↔ ∀ s : Submodule R M, s.FG :=
+  isNoetherian_def
+```
 
 This generalizes the notion of a Noetherian ring: a Noetherian ring $`R` is one for which $`R` is Noetherian as an $`R`-module.
 
@@ -164,6 +206,15 @@ Factor each $`s_i` into prime factors (since $`R` is a UFD), then use the Chines
 :::REMARK
 In both theorems the decomposition is unique up to permutations of the summands.
 :::
+
+The primary form is `Module.equiv_free_prod_directSum`: a finitely generated module (`Module.Finite R M`) over a PID is isomorphic to a free part `Fin n →₀ R` times a direct sum of quotients `R ⧸ R ∙ p i ^ e i` by prime-power ideals.
+Its torsion-only special case is `Module.equiv_directSum_of_isTorsion`.
+
+```lean
+example (R : Type*) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
+    (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M] :=
+  Module.equiv_free_prod_directSum R M
+```
 
 # Reduction to maps of free R-modules
 
@@ -224,6 +275,15 @@ For a commutative integral domain $`R`, if a free module $`M` has a finite basis
 
 The strategy of the proof is to pass to the field case.
 Indeed, we're going to pass to the field $`F` being the fraction field of $`R`, then directly apply the dimension theorem for vector spaces.
+
+Mathlib records this rank as `Module.finrank R M`, defined without reference to any particular basis; `Module.finrank_eq_card_basis` then says any finite basis has exactly that many elements, so two finite bases of the same module have the same size.
+
+```lean
+example (R : Type*) [CommRing R] [Nontrivial R] (M : Type*) [AddCommGroup M] [Module R M]
+    {ι : Type*} [Fintype ι] (b : Module.Basis ι R M) :
+    Module.finrank R M = Fintype.card ι :=
+  Module.finrank_eq_card_basis b
+```
 
 :::PROOF
 As before, but we prove by contradiction this time.
@@ -368,6 +428,17 @@ Then we can select a pair of new bases for $`M` and $`N` such that $`T` has only
 
 So if $`m > n`, the matrix should take the form $$`\begin{bmatrix} s_1 & 0 & 0 & 0 & \dots & 0 \\ 0 & s_2 & 0 & 0 & \dots & 0 \\ \vdots & \vdots & \ddots & \vdots & \dots & \vdots \\ 0 & 0 & 0 & s_n & \dots & 0 \end{bmatrix}`
 and similarly when $`m \leq n`.
+
+Mathlib phrases this for the inclusion of a submodule $`N` into a finite free module $`M`: `Submodule.smithNormalForm` produces a basis of $`M` and a basis of $`N` that are *aligned*, related entry-by-entry by diagonal coefficients $`a_i` (the packaged data is a `Module.Basis.SmithNormalForm`).
+Applying this to the image submodule is exactly how the diagonalization above is obtained.
+
+```lean
+noncomputable example (R : Type*) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
+    (M : Type*) [AddCommGroup M] [Module R M] {ι : Type*} [Finite ι]
+    (b : Module.Basis ι R M) (N : Submodule R M) :
+    Σ n : ℕ, Module.Basis.SmithNormalForm N ι n :=
+  N.smithNormalForm b
+```
 
 :::QUESTION
 Show that Smith normal form implies the structure theorem.

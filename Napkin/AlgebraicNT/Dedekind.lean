@@ -281,7 +281,7 @@ If we temporarily forget about the Noetherian and integrally closed condition, w
 Notice the similarity — in either case, the Noetherian condition is "merely" to ensure that, if you keep extracting prime factors, you will terminate in a finite time.
 :::
 
-:::EXAMPLE "What went wrong without integral closure"
+:::EXAMPLE "What went wrong if $`\\mathcal A` is not integrally closed?"
 Consider $`\mathcal A = 2\mathbb{Z}`, which is an ideal of $`\mathbb{Z}`.
 Clearly, every nonzero prime ideal is maximal.
 
@@ -474,7 +474,7 @@ The analogy is that when we looked at $`\mathcal{O}_K`, we found that we only ne
 Similarly here, it will turn out that we only need to look at $`\frac1x \cdot \mathfrak{a}` rather than $`\frac{\mathfrak{a}}{\mathfrak{b}}`, and so we define it this way from the beginning.
 See the problems for a different equivalent definition.
 
-:::EXAMPLE "A fractional ideal of ℤ"
+:::EXAMPLE "$`\\tfrac52\\mathbb{Z}` is a fractional ideal"
 The set $$`\frac52 \mathbb{Z} = \left\{ \frac52n \mid n \in \mathbb{Z} \right\} = \frac{1}{2} (5)` is a fractional ideal of $`\mathbb{Z}`.
 :::
 
@@ -496,7 +496,7 @@ This *ideal group* is denoted $`J_K`.
 The type is `FractionalIdeal A⁰ K` — the `A⁰` records that denominators are taken from the nonzero elements of `A` (the "non-zero-divisors") — defined for any domain, with the equivalent finitely-generated-submodule description from the problems as the actual underlying definition.
 The theorem is then the instance `FractionalIdeal.semifield`, available exactly when `A` is a Dedekind domain: nonzero fractional ideals are invertible, so `J⁻¹` and division notation just work, and $`J_K` is the unit group `(FractionalIdeal A⁰ K)ˣ`.
 
-:::EXAMPLE "The inverse of the ideal (3) of ℤ"
+:::EXAMPLE "$`(3)^{-1}` in $`\\mathbb{Z}`"
 Please check that in $`\mathbb{Z}` we have $$`(3)^{-1} = \left\{ \frac 13 n \mid n \in \mathbb{Z} \right\} = \frac 13 \mathbb{Z}.`
 :::
 

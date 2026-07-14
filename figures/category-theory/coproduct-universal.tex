@@ -1,0 +1,11 @@
+% Universal property of the coproduct X+Y.
+% Source: book/tex/cats/categories.tex (§ Binary products).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+	X \ar[rd, "\iota_X"'] \ar[rrd, "g", bend left] \\
+	& X+Y \ar[r, dotted, "\exists! f"] & A \\
+	Y \ar[ru, "\iota_Y"] \ar[rru, "h"', bend right]
+\end{tikzcd}
+\end{document}

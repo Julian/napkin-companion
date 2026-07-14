@@ -342,7 +342,7 @@ Let $`\sum_k a_k` be a series of *nonnegative* real numbers.
 Then $`\sum_k a_k` converges to some limit if and only if there is a constant $`M` such that $$`a_1 + \dots + a_n < M` for every positive integer $`n`.
 :::
 
-:::PROOF
+::::PROOF
 This is actually just "monotonic bounded sequences converge" in disguise, but since we left the proof as an exercise back then, we'll write it out this time.
 
 Obviously if no such $`M` exists then convergence will not happen, since this means the sequence $`s_n` of partial sums is unbounded.
@@ -357,7 +357,7 @@ A monotone sequence $`s_n` increasing up to its supremum $`L`.
 
 Indeed, this means for any $`\varepsilon` there are infinitely many terms of the sequence exceeding $`L - \varepsilon`; but since the sequence is monotonic, once $`s_n \geq L - \varepsilon` then $`s_{n'} \geq L - \varepsilon` for all $`n' \geq n`.
 This implies convergence.
-:::
+::::
 
 The Mathlib repackaging is `summable_iff_cauchySeq_finset` for the general criterion, and for nonnegative reals indexed by `ℕ`, `summable_iff_not_tendsto_nat_atTop` cleanly says: a nonnegative series is summable iff its partial sums don't diverge to `⊤`.
 

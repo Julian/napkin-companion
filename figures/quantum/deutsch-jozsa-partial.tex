@@ -1,0 +1,16 @@
+% The Deutsch-Jozsa circuit before the final Hadamard and measurement.
+% Source: book/tex/quantum/ (Qcircuit diagram, ported to quantikz).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usepackage{amssymb}
+\usepackage{quantikz}
+\providecommand{\ket}[1]{\left\lvert #1\right\rangle}
+\providecommand{\xup}{\ket\rightarrow}
+\providecommand{\xdown}{\ket\leftarrow}
+\begin{document}
+\begin{quantikz}
+\lstick{$\ket0$} & \gate{H} & \gate[2]{U_f} & \rstick{$\frac{1}{\sqrt2}\Big((-1)^{f(0)}\ket0+(-1)^{f(1)}\ket1\Big)$}\qw \\
+\lstick{$\ket1$} & \gate{H} & & \rstick{$\frac{1}{\sqrt2}(\ket0-\ket1)$}\qw
+\end{quantikz}
+
+\end{document}

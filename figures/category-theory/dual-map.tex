@@ -1,0 +1,11 @@
+% The dual map T^∨: V₂^∨→V₁^∨ is contravariant in T.
+% Source: book/tex/cats/functors.tex (§ Contravariant functors).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+	V_1 \ar[dd, "T"'] && V_1^\vee  \\
+	\quad \ar[rr, "\bullet^\vee", dashed] & & \quad \\
+	V_2 && V_2^\vee \ar[uu, "T^\vee"']
+\end{tikzcd}
+\end{document}

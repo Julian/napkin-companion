@@ -1,0 +1,19 @@
+% A long exact sequence woven from short exact sequences at each Cₙ.
+% Source: book/tex/cats/abelian.tex (§ Breaking a long exact sequence).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\usepackage{xcolor}
+\begin{document}
+\begin{tikzcd}[sep=0.8em]
+	&& 0 \ar[rd] && 0 && 0 \ar[rd] && 0 \\
+	&&& C_{n} \ar[rd] \ar[ru] &&&& C_{n+2} \ar[ru] \ar[rd] \\
+	{\color{red}\dots} \ar[rr, red] \ar[rd]
+		&& {\color{red}A_{n-1}} \ar[rr, "f_{n-1}"', red] \ar[ru]
+		&& {\color{red}A_n} \ar[rr, "f_n", red] \ar[rd]
+		&& {\color{red}A_{n+1}} \ar[rr, "f_{n+1}"', red] \ar[ru]
+		&& \dots
+	\\
+	& C_{n-1} \ar[ru] \ar[rd] &&&& C_{n+1} \ar[ru] \ar[rd] \\
+	0 \ar[ru] && 0 && 0 \ar[ru] && 0
+\end{tikzcd}
+\end{document}

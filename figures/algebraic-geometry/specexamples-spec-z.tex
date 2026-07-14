@@ -1,0 +1,14 @@
+% Spec Z: a closed point for each prime, plus the generic point (0).
+% Source: book/tex/alg-geom/spec-examples.tex (Spec Z).
+\documentclass[border=2mm]{standalone}
+\usepackage{amsmath}\usepackage{amssymb}\usepackage{tikz}
+\begin{document}
+\begin{tikzpicture}[scale=0.7]
+  \draw[thick,-latex] (-5.2,0) -- (5.2,0);
+  \fill[blue] (0,0) circle (2pt) node[below] {$(7)$};
+  \fill[blue] (3,0) circle (2pt) node[below] {$(3)$};
+  \fill[blue] (-4,0) circle (2pt) node[below] {$(19)$};
+  \fill[red] (0,1) circle (2pt) node[above] {$(0)$};
+  \node[blue] at (4.4,-0.7) {$\operatorname{Spec}\mathbb{Z}$};
+\end{tikzpicture}
+\end{document}

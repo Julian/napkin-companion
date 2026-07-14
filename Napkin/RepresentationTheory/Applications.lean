@@ -2,11 +2,18 @@ import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
+import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+import Mathlib.RingTheory.Polynomial.RationalRoot
+import Mathlib.RepresentationTheory.FDRep
+import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+
+open CategoryTheory
+open scoped Classical
 
 set_option pp.rawOnError true
 
@@ -29,6 +36,12 @@ Then $`\dim V` divides $`|G|`.
 The proof of this will require algebraic integers (developed in the algebraic number theory chapter).
 Recall that an *algebraic integer* is a complex number which is the root of a monic polynomial with integer coefficients, and that these algebraic integers form a ring $`\overline{\mathbb{Z}}` under addition and multiplication, and that $`\overline{\mathbb{Z}} \cap \mathbb{Q} = \mathbb{Z}`.
 
+Being an algebraic integer over a base ring is `IsIntegral`; the last fact $`\overline{\mathbb{Z}} \cap \mathbb{Q} = \mathbb{Z}` is the statement that $`\mathbb{Z}` is integrally closed, `IsIntegrallyClosed ℤ`, which holds for any unique factorization domain (a consequence of the rational root theorem).
+
+```lean
+example : IsIntegrallyClosed ℤ := inferInstance
+```
+
 First, we prove:
 
 :::LEMMA "Elements of $`\\mathbb{Z}[G]` are integral"
@@ -40,6 +53,15 @@ Then there exists a monic polynomial $`P` with integer coefficients such that $`
 Let $`A_k` be the $`\mathbb{Z}`-span of $`1, \alpha^1, \dots, \alpha^k`.
 Since $`\mathbb{Z}[G]` is Noetherian, the inclusions $`A_0 \subseteq A_1 \subseteq A_2 \subseteq \dots` cannot all be strict, hence $`A_k = A_{k+1}` for some $`k`, which means $`\alpha^{k+1}` can be expressed in terms of lower powers of $`\alpha`.
 :::
+
+This is exactly the general fact `IsIntegral.of_finite`: every element of an algebra that is module-finite over the base (such as $`\mathbb{Z}[G]`, which is free of rank $`|G|` over $`\mathbb{Z}`) is integral.
+The Noetherian phrasing of the same argument is `isIntegral_of_noetherian`.
+
+```lean
+example (R : Type*) [CommRing R] (B : Type*) [CommRing B] [Algebra R B]
+    [Module.Finite R B] (x : B) : IsIntegral R x :=
+  IsIntegral.of_finite R x
+```
 
 *Proof of Frobenius divisibility.*
 
@@ -55,6 +77,16 @@ By the lemma above, $`\lambda_i : \overline{\mathbb{Z}}`, as desired.
 
 Now we are done, since $`\overline{\chi_V(C_i)} : \overline{\mathbb{Z}}` too (it is the sum of conjugates of roots of unity), so $`\frac{|G|}{\dim V}` is the sum of products of algebraic integers, hence itself an algebraic integer.
 :::
+
+The Schur's lemma step — that an intertwining operator between irreps is a scalar — is `FDRep.finrank_hom_simple_simple` for finite-dimensional representations over an algebraically closed field: the space of morphisms between two simple objects `V ⟶ W` is one-dimensional when they are isomorphic and zero otherwise.
+A one-dimensional endomorphism space forces every self-intertwiner $`V \to V` to be a scalar multiple of the identity.
+
+```lean
+example {k : Type*} [Field k] [IsAlgClosed k] {G : Type*} [Group G]
+    (V W : FDRep k G) [Simple V] [Simple W] :
+    Module.finrank k (V ⟶ W) = if Nonempty (V ≅ W) then 1 else 0 :=
+  FDRep.finrank_hom_simple_simple V W
+```
 
 # Burnside's theorem
 

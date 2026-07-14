@@ -1,0 +1,12 @@
+% Vertical composition of natural transformations α, β.
+% Source: book/tex/cats/functors.tex (§ Natural transformations).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\renewcommand{\AA}{\mathcal A}
+\begin{document}
+\begin{tikzcd}
+	& F(A) \ar[d, "\alpha_A"] \\
+	\AA \ni A \ar[ru, dashed, "F"] \ar[r, dashed, "G"] \ar[rd, dashed, "H"'] & G(A) \ar[d, "\beta_A"] \\
+	& H(A)
+\end{tikzcd}
+\end{document}

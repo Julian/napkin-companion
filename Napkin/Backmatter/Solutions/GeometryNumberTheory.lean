@@ -153,7 +153,7 @@ Let $`\mathfrak{p}` be any prime ideal above $`p` in the ring of integers of $`K
 Show that there exist indices $`i` and $`j` such that $`2025 - \omega^i` and $`2026 - \omega^j` are in $`\mathfrak{p}`.
 Then show that $`1 + \omega^i - \omega^j` is nonzero with norm at most $`3^k`.
 
-_Solution._ Set $`\omega \coloneqq e^{\frac{2i\pi}{k}}`.
+_Solution._ As before, set $`\omega \coloneqq e^{\frac{2i\pi}{k}}`.
 Let $`K = \mathbb{Q}(\omega)` and choose any prime ideal $`\mathfrak{p}` of $`\mathcal{O}_K` lying over $`p\mathbb{Z}`.
 We know that $$`\prod_{i=0}^{k-1} (2025 - \omega^i) = 2025^k - 1 \in (p) \subseteq \mathfrak{p}`
 and since $`\mathfrak{p}` is a prime ideal, we know $`2025 - \omega^i \in \mathfrak{p}` for some $`i`.
@@ -347,6 +347,8 @@ We claim this works:
 - We have $`\operatorname{Gal}(E/K) \cong I_K(1) / P_K(1) = C_K(1)`, the class group.
 - The isomorphism in the previous part is given by the Artin symbol.
   So $`\mathfrak{p}` splits completely if and only if $`\left( \frac{E/K}{\mathfrak{p}} \right) = \operatorname{id}`, if and only if $`\mathfrak{p}` is principal (trivial in $`C_K(1)`).
+
+This completes the proof.
 
 *Representing primes as $`x^2 + 23y^2`.*
 

@@ -110,22 +110,19 @@ In short, expand everything.
 So by using mixed states, the quantum Fourier transform can use this "multiplication by tensor product" trick that isn't possible classically.
 
 Now, without further ado, here's the circuit.
-Define the rotation matrices $$`R_k = \begin{bmatrix} 1 & 0 \\ 0 & \exp(2\pi i / 2^k) \end{bmatrix}.` For $`n = 3` the circuit applies, in order:
+Define the rotation matrices $$`R_k = \begin{bmatrix} 1 & 0 \\ 0 & \exp(2\pi i / 2^k) \end{bmatrix}.` Then, for $`n = 3` the circuit is given by using controlled $`R_k`'s as follows:
 
-- a Hadamard $`H` on wire $`x_3`;
-- $`R_2` on wire $`x_3` controlled by wire $`x_2`;
-- a Hadamard $`H` on wire $`x_2`;
-- $`R_3` on wire $`x_3` controlled by wire $`x_1`;
-- $`R_2` on wire $`x_2` controlled by wire $`x_1`;
-- a Hadamard $`H` on wire $`x_1`.
-
-The output wires read out as $`|y_1\rangle, |y_2\rangle, |y_3\rangle` from top to bottom (note the reversal — wire $`x_3` carries $`y_1`, etc.).
+:::figure "figures/quantum/shor-qft.svg"
+:::
 
 :::EXERCISE
 Show that in this circuit, the image of $`|x_3 x_2 x_1\rangle` is $$`\Big(|0\rangle + \exp(2\pi i \cdot 0.x_1)\, |1\rangle\Big) \otimes \Big(|0\rangle + \exp(2\pi i \cdot 0.x_2 x_1)\, |1\rangle\Big) \otimes \Big(|0\rangle + \exp(2\pi i \cdot 0.x_3 x_2 x_1)\, |1\rangle\Big)` as claimed.
 :::
 
-For general $`n`, the circuit is built inductively: apply a $`\text{QFT}_{n-1}` on the top $`n - 1` wires (carrying $`x_n, x_{n-1}, \dots, x_2`), then for each $`i \in \{n, n-1, \dots, 2\}` apply $`R_i` on wire $`x_i` controlled by the bottom wire $`x_1`, and finally a Hadamard on wire $`x_1`.
+For general $`n`, we can write this as inductively as
+
+:::figure "figures/quantum/shor-qft-general.svg"
+:::
 
 :::QUESTION
 Convince yourself that when $`n = 3` the two circuits described are equivalent.
@@ -198,11 +195,11 @@ Unfortunately, this doesn't quite work out, since $`N` is a power of two, but we
 Nevertheless, consider a state $$`|\phi\rangle = |k_0\rangle + |k_0 + r\rangle + \dots` so for example previously we had $`k_0 = 7` if we measured $`128` on $`x = 2`.
 Applying the quantum Fourier transform, we see that the coefficient of $`|j\rangle` in the transformed image is equal to $$`\omega_N^{k_0 j} \cdot \left(\omega_N^{0} + \omega_N^{jr} + \omega_N^{2jr} + \omega_N^{3jr} + \dots\right).`
 As this is a sum of roots of unity, we realize we have destructive interference unless $`\omega_N^{jr} = 1` (since $`N` is large).
-In other words, we approximately have $$`U_{\text{QFT}}(|\phi\rangle) \approx \sum_{\substack{0 \leq j < N \\ jr/N : \mathbb{Z}}} |j\rangle` up to scaling as usual.
+In other words, we approximately have $$`U_{\text{QFT}}(|\phi\rangle) \approx \sum_{\substack{0 \leq j < N \\ jr/N \in \mathbb{Z}}} |j\rangle` up to scaling as usual.
 The bottom line is that
 
 :::MORAL
-If we measure $`U_{\text{QFT}}|\phi\rangle` we obtain a $`|j\rangle` such that $`\frac{jr}{N}` is close to an $`s : \mathbb{Z}`.
+If we measure $`U_{\text{QFT}}|\phi\rangle` we obtain a $`|j\rangle` such that $`\frac{jr}{N}` is close to an $`s \in \mathbb{Z}`.
 :::
 
 And thus given sufficient luck we can use continued fractions to extract the value of $`r`.

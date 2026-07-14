@@ -1,0 +1,12 @@
+% The residue field kappa(p), reachable as A_p mod p or as Frac(A/p).
+% Source: book/tex/alg-geom/spec-sheaf.tex (§ residue fields).
+\documentclass[border=2mm]{standalone}
+\usepackage{amsmath}
+\usepackage{tikz-cd}
+\usepackage{amssymb}
+\begin{document}
+\begin{tikzcd}
+  A \ar[r, "\text{localize}"] \ar[d, "\bmod \mathfrak p"'] & A_{\mathfrak p} \ar[d, "\bmod \mathfrak p"] \\
+  A/\mathfrak p \ar[r, "\operatorname{Frac}(-)"] & \kappa(\mathfrak p)
+\end{tikzcd}
+\end{document}

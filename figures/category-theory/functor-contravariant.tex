@@ -1,0 +1,13 @@
+% A contravariant functor reverses the direction of arrows.
+% Source: book/tex/cats/functors.tex (§ Contravariant functors).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\renewcommand{\AA}{\mathcal A}
+\newcommand{\BB}{\mathcal B}
+\begin{document}
+\begin{tikzcd}
+	& A_1 \ar[dd, "f"'] && B_1 = F(A_1)  \\
+	\AA \ni & \quad \ar[rr, "F", dashed] & & \quad & \in \BB \\
+	& A_2 && B_2 = F(A_2) \ar[uu, "F(f)"']
+\end{tikzcd}
+\end{document}

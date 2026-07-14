@@ -27,8 +27,16 @@ Then the teacher would hold up three apples and say:
 
 > "One … two … three! There are three apples."
 
+:::figure "three-apples.jpg"
+Image from {cite}`img:apples`.
+:::
+
 The implicit definition is that the _last_ number said is the final answer.
-This raises some obvious problems if we try to count infinite sets, but even in the finite world, this method of counting fails for the simplest set of all: how many apples are in an empty pile?
+This raises some obvious problems if we try to count infinite sets, but even in the finite world, this method of counting fails for the simplest set of all: how many apples are in the following picture?
+
+:::figure "velociraptor.jpg"
+Image from {cite}`img:velociraptor`.
+:::
 
 Answer: $`0`.
 There is nothing to say, and our method of counting has failed for the simplest set of all: the empty set.
@@ -53,6 +61,11 @@ The next ordinal, $`\omega`,{margin}[As mentioned in the last chapter, it's not 
 Then comes $$`\begin{aligned} \omega + 1 &= \left\{ 0, 1, 2, \dots, \omega \right\} \\ \omega + 2 &= \left\{ 0, 1, 2, \dots, \omega, \omega + 1 \right\} \\ \omega + 3 &= \left\{ 0, 1, 2, \dots, \omega, \omega + 1, \omega + 2 \right\} \end{aligned}`
 and in this way we define $`\omega + n`, and eventually reach $$`\begin{aligned} \omega \cdot 2 = \omega + \omega &= \left\{ 0, 1, 2, \dots, \omega, \omega + 1, \omega + 2, \dots \right\} \\ \omega \cdot 2 + 1 &= \left\{ 0, 1, 2, \dots, \omega, \omega + 1, \dots, \omega \cdot 2 \right\}. \end{aligned}`
 In this way we obtain $$`0, 1, 2, 3, \dots, \omega, \; \omega + 1, \dots, \omega + \omega, \; \omega \cdot 2 + 1, \dots, \omega \cdot 3, \; \dots, \omega^2, \dots, \omega^3, \dots, \omega^\omega, \dots, \omega^{\omega^{\omega^{\dots}}}.`
+
+The first several ordinals can be illustrated in a nice spiral.
+
+:::figure "500px-Omega-exp-omega-labeled.png"
+:::
 
 :::REMARK
 You may think, well, why don't we define the ordinals like this instead?
@@ -378,6 +391,10 @@ So there is some large ordinal $`\alpha` such that $`y \in V_\alpha` for all $`y
 
 :::aside
 The hierarchy is {name}`ZFSet.vonNeumann` (with notation `V_`), and the rank function is {name}`ZFSet.rank`; the completeness theorem — that every set has a rank — is the fact making `rank` total.
+:::
+
+:::figure "figures/set-theory/vonneumann-universe.svg"
+The von Neumann hierarchy: $`V` is built in layers $`V_0 = \varnothing \subseteq V_1 \subseteq V_2 \subseteq \dots` indexed by the ordinals.
 :::
 
 We can imagine the universe $`V` as a triangle, built in several stages or layers, $`V_0 \subsetneq V_1 \subsetneq V_2 \subsetneq \dots`.

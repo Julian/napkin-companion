@@ -1,0 +1,18 @@
+% Two spaces X, Y with their stalks above chosen points p, q.
+% Source: book/tex/alg-geom/mor-scheme.tex (§ stalks of a morphism).
+\documentclass[border=2mm]{standalone}
+\usepackage{amsmath}\usepackage{amssymb}\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\begin{document}
+\begin{tikzpicture}[scale=0.5]
+  \draw[fill=cyan!12] (-4,0) ellipse (2 and 1);
+  \node[blue] at (-4,-1.6) {$X$};
+  \draw[fill=cyan!12] (4,0) ellipse (2 and 1);
+  \node[blue] at (4,-1.6) {$Y$};
+  \draw[red] (-4,0)--(-4,3.5); \node[red] at (-4,3.5) [above] {$\mathcal O_{X,p}$};
+  \draw[red] (4,0)--(4,4.3); \node[red] at (4,4.3) [above] {$\mathcal O_{Y,q}$};
+  \fill[blue] (-4,0) circle (3pt) node[below] {$p$};
+  \fill[blue] (4,0) circle (3pt) node[below] {$q$};
+  \draw[-{Latex}] (-1.8,0.2) -- (1.8,0.2) node[midway,above] {$\pi$};
+\end{tikzpicture}
+\end{document}

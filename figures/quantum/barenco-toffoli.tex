@@ -1,0 +1,17 @@
+% Implementing the Toffoli gate from controlled rotations (Barenco et al.).
+% Source: book/tex/quantum/ (Qcircuit diagram, ported to quantikz).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usepackage{amssymb}
+\usepackage{quantikz}
+\providecommand{\ket}[1]{\left\lvert #1\right\rangle}
+\providecommand{\xup}{\ket\rightarrow}
+\providecommand{\xdown}{\ket\leftarrow}
+\begin{document}
+\begin{quantikz}
+\lstick{$\ket{x_1}$} & \qw & \ctrl{2} & \ctrl{1} & \ctrl{1} & \qw & \ctrl{1} & \qw \\
+\lstick{$\ket{x_2}$} & \ctrl{1} & \qw & \gate{P} & \targ{} & \ctrl{1} & \targ{} & \qw \\
+\lstick{$\ket{x_3}$} & \gate{Q} & \gate{Q} & \qw & \qw & \gate{Q^\dagger} & \qw & \qw
+\end{quantikz}
+
+\end{document}

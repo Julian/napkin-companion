@@ -274,16 +274,21 @@ Of course, now that we've gotten all the way here, if we actually want to *compu
 The hard part was to showing that there *is* a way to assign measures consistently; actually figuring out what that measure's value is *given that it exists* is often much easier.
 Here is an example.
 
-:::EXAMPLE "The Cantor set has measure zero"
+::::EXAMPLE "The Cantor set has measure zero"
 The standard *middle-thirds Cantor set* is the subset $`[0, 1]` obtained as follows: we first delete the open interval $`(1/3, 2/3)`.
 This leaves two intervals $`[0, 1/3]` and $`[2/3, 1]` from which we delete the middle thirds again from both, i.e. deleting $`(1/9, 2/9)` and $`(7/9, 8/9)`.
 We repeat this procedure indefinitely and let $`C` denote the result.
+An illustration is shown below.
+
+:::figure "cantor-thirds.png"
+Image from {cite}`img:cantor`.
+:::
 
 It is a classic fact that $`C` is uncountable (it consists of ternary expansions omitting the digit $`1`).
 But it is measurable (it is an intersection of closed sets!) and we contend it has measure zero.
 Indeed, at the $`n`th step, the result has measure $`(2/3)^n` leftover.
 So $`\mu(C) \leq (2/3)^n` for every $`n`, forcing $`\mu(C) = 0`.
-:::
+::::
 
 This is fantastic, but there is one elephant in the room: how are the Lebesgue $`\sigma`-algebra and the Borel $`\sigma`-algebra related?
 To answer this question briefly, I will state two results (but another answer is given in the next section).

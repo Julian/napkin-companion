@@ -80,6 +80,10 @@ The map satisfies two axioms:
 - Whenever we have nested subsets $`U_{\text{small}} \subseteq U_{\text{med}} \subseteq U_{\text{big}}` the two ways of restricting from $`\mathcal{F}(U_{\text{big}})` down to $`\mathcal{F}(U_{\text{small}})` — directly, or via $`\mathcal{F}(U_{\text{med}})` — agree.
 :::
 
+:::figure "figures/algebraic-geometry/sheaves-restriction-triangle.svg"
+The two ways of restricting $`\mathcal{F}(U_{\text{big}})` down to $`\mathcal{F}(U_{\text{small}})` agree.
+:::
+
 :::DEFINITION
 An element of $`\mathcal{F}(X)` is called a *global section*.
 :::
@@ -98,6 +102,16 @@ This is abuse of notation because the section $`s` is just an element of some ri
 3. Similarly, if $`X \subseteq \mathbb{C}` is open, we can construct a sheaf of holomorphic functions on $`X`.
 
 In all these examples, the sections $`s \in \mathcal{F}(U)` are really functions on the space, but in general they need not be.
+:::
+
+We can picture a section $`s \in \mathcal{F}(U)` by drawing an $`xy`-plot of a curve above $`U`, the way functions are drawn in grade school; restriction then corresponds to keeping just a chunk of that curve.
+
+:::figure "figures/algebraic-geometry/sheaves-section.svg"
+A section $`s \in \mathcal{F}(U)`, pictured as a function drawn above the open set $`U`.
+:::
+
+:::figure "figures/algebraic-geometry/sheaves-restriction.svg"
+Restricting $`s` to a smaller open set $`V` keeps just the chunk of the curve above $`V`.
 :::
 
 In practice, thinking about the restriction maps might be more confusing than helpful; it is better to say:
@@ -162,6 +176,11 @@ We denote this by $`[s]_p`.
 
 It is rarely useful to think of a germ as an ordered pair, since the set $`U` can get arbitrarily small.
 Instead, one should think of a germ as a "shred" of some section near $`p`.
+
+:::figure "figures/algebraic-geometry/sheaves-stalk.svg"
+The stalk $`\mathcal{F}_p` sits above the point $`p`, collecting the germs of sections there.
+:::
+
 A nice summary for the right mindset might be:
 
 :::MORAL
@@ -169,6 +188,10 @@ A germ is an "enriched value"; the stalk is the set of possible germs.
 :::
 
 Before going on, we might as well note that the stalks are themselves rings, not just sets: we can certainly add or subtract enriched values.
+
+:::figure "figures/algebraic-geometry/sheaves-stalks-germs.svg"
+A sheaf pictured through several stalks, each carrying the germ of $`s` above its point.
+:::
 
 :::DEFINITION
 The stalk $`\mathcal{F}_p` can itself be regarded as a ring: for example, addition is done by $$`\left( s_1, U_1 \right) + \left( s_2, U_2 \right) = \left( s_1 \restriction_{U_1 \cap U_2} + s_2 \restriction_{U_1 \cap U_2}, U_1 \cap U_2 \right).`
@@ -284,6 +307,11 @@ This is not worth worrying about until you actually need it, so you can forget I
 
 This is best illustrated in the case of just two open sets: consider two open sets $`U` and $`V`.
 Then the sheaf axioms are saying something about $`\mathcal{F}(U \cup V)`, $`\mathcal{F}(U \cap V)`, $`\mathcal{F}(U)` and $`\mathcal{F}(V)`.
+
+:::figure "figures/algebraic-geometry/sheaves-glue-circles.svg"
+Two overlapping open sets $`U` and $`V`.
+:::
+
 For a sheaf of functions, the axioms are saying that:
 
 - If $`s` and $`t` are functions (with property $`P`) on $`U \cup V` and $`s \restriction_{U} = t \restriction_{U}`, $`s \restriction_{V} = t \restriction_{V}`, then $`s = t` on the entire union.
@@ -296,6 +324,10 @@ If you like category theory, you might remember we alluded to this earlier, with
 
 :::EXERCISE "For the categorically inclined"
 Show that the square with corners $`\mathcal{F}(U \cup V)`, $`\mathcal{F}(U)`, $`\mathcal{F}(V)`, $`\mathcal{F}(U \cap V)` is a pullback square.
+:::
+
+:::figure "figures/algebraic-geometry/sheaves-pullback-square.svg"
+The gluing square is a pullback square.
 :::
 
 :::aside

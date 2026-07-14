@@ -104,6 +104,10 @@ The non-closed points are the ones you are not used to: there is one for each no
 I like to visualize them in my head like a fly: you can hear it, so you know it is floating _somewhere_ in the room, but as it always moving, you never know exactly where.
 So the generic point of $`\operatorname{Spec} \mathbb{C}[x, y]` corresponding to the prime ideal $`(0)` is floating everywhere in the plane, the one for the ideal $`(y - x^2)` floats along the parabola, etc.
 
+:::figure "calvin-hobbes-fly.png"
+Image from {cite}`img:calvin_hobbes_fly`.
+:::
+
 :::REMARK "Why don't the prime non-maximal ideals correspond to the whole parabola?"
 We have already seen a geometric reason: localizing a ring at a prime non-maximal ideal gives the functions that may blow up somewhere in the parabola, but not _generically_.
 :::
@@ -182,7 +186,7 @@ example {A : Type*} [CommRing A] (x : PrimeSpectrum A) :
 ```
 :::
 
-:::EXAMPLE "Non-closed points, continued"
+::::EXAMPLE "Non-closed points, continued"
 Let $`A = \mathbb{C}[x, y]` and let $`\mathfrak{p} = (y - x^2) \in \operatorname{Spec} A`; this is the "generic point" on a parabola.
 It is not closed, but we can compute its closure: $$`\overline{\{\mathfrak{p}\}} = \mathbb{V}(\mathfrak{p}) = \left\{ \mathfrak{q} \in \operatorname{Spec} A \mid \mathfrak{q} \supseteq \mathfrak{p} \right\}.`
 This closure contains the point $`\mathfrak{p}` as well as several maximal ideals $`\mathfrak{q}`, such as $`(x - 2, y - 4)` and $`(x - 3, y - 9)`.
@@ -190,7 +194,11 @@ In other words, the closure of the "generic point" of the parabola is literally 
 
 That means the way to picture $`\mathfrak{p}` is a point that is floating "somewhere on the parabola", but nowhere in particular.
 It makes sense then that if we take the closure, we get the entire parabola, since $`\mathfrak{p}` "could have been" any of those points.
+
+:::figure "figures/algebraic-geometry/speczariski-parabola-point.svg"
+The generic point $`(y - x^2)` floats along the parabola; a maximal ideal like $`(x+1, y-1)` is an ordinary closed point.
 :::
+::::
 
 :::EXAMPLE "The generic point of the $y$-axis isn't on the $x$-axis"
 Let $`A = \mathbb{C}[x, y]` again.

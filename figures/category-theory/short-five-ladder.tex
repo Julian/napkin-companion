@@ -1,0 +1,14 @@
+% A morphism of short exact sequences (setup for the short five lemma).
+% Source: book/tex/cats/abelian.tex (§ The short five lemma).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+	0 \ar[r]
+	& A \ar[r, hook, "p"] \ar[d, "\alpha", "\cong"']
+		& B \ar[r, two heads, "q"] \ar[d, "\beta"]
+		& C \ar[r] \ar[d, "\gamma", "\cong"']
+		& 0 \\
+	0 \ar[r] & A' \ar[r, hook, "p'"'] & B' \ar[r, two heads, "q'"'] & C' \ar[r] & 0
+\end{tikzcd}
+\end{document}

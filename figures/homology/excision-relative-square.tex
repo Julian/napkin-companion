@@ -1,0 +1,16 @@
+% Commutative diagram from the excision chapter.
+% Source: book/tex/homology/excision.tex (lines 360-366).
+\documentclass[border=2mm]{standalone}
+\usepackage{amssymb,amsmath}
+\usepackage{tikz-cd}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\wt}{\widetilde}
+\begin{document}
+		\begin{tikzcd}[row sep=huge]
+		H_n(V,A) \ar[r] \ar[d, "\cong"', "r"]
+			& H_n(X,A) \ar["f", r]
+			& H_n(X, V) \ar[r]
+			& H_{n-1}(V,A) \ar[d, "\cong"', "r"] \\
+		\underbrace{H_n(A,A)}_{=0} & & & \underbrace{H_{n-1}(A,A)}_{=0}
+	\end{tikzcd}
+\end{document}

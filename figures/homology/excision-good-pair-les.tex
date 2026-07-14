@@ -1,0 +1,18 @@
+% Commutative diagram from the excision chapter.
+% Source: book/tex/homology/excision.tex (lines 376-384).
+\documentclass[border=2mm]{standalone}
+\usepackage{amssymb,amsmath}
+\usepackage{tikz-cd}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\wt}{\widetilde}
+\begin{document}
+		\begin{tikzcd}[sep=huge]
+		H_n(X,A) \ar[r, "f"] \ar[d, "q_\ast"']
+			& H_n(X,V)
+			& H_n(X-A, V-A) \ar[l, "\text{Excise}"'] \ar[d, "\widehat{q}_\ast", "\cong"']
+			\\
+		H_n(X/A,A/A) \ar[r, "g"']
+			& H_n(X/A,V/A)
+			& \ar["\text{Excise}"', l] H_n(X/A-A/A, V/A-A/A)
+	\end{tikzcd}
+\end{document}

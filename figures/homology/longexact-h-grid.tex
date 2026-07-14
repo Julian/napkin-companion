@@ -1,0 +1,17 @@
+% Commutative diagram from the long-exact-sequence chapter.
+% Source: book/tex/homology/long-exact.tex (lines 128-134).
+\documentclass[border=2mm]{standalone}
+\usepackage{amssymb,amsmath}
+\usepackage{tikz-cd}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\id}{\mathrm{id}}
+\begin{document}
+\begin{tikzcd}
+	\vdots & \vdots & \vdots  \\
+	H_{n+1}(A_\bullet) \ar[r, "f_\ast"] & H_{n+1}(B_\bullet) \ar[r, "g_\ast"] & H_{n+1}(C_\bullet) \\
+	H_{n}(A_\bullet) \ar[r, "f_\ast"] & H_{n}(B_\bullet) \ar[r, "g_\ast"] & H_{n}(C_\bullet) \\
+	H_{n-1}(A_\bullet) \ar[r, "f_\ast"] & H_{n-1}(B_\bullet) \ar[r, "g_\ast"] & H_{n-1}(C_\bullet) \\
+	\vdots & \vdots & \vdots \\
+\end{tikzcd}
+\end{document}

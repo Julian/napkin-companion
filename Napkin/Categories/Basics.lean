@@ -64,6 +64,10 @@ A *category* $`\mathcal{A}` consists of:
 This bundle of data — objects, hom-sets, composition, identities — is `CategoryTheory.Category` in Mathlib, declared as a typeclass on the carrier type so we can write `[Category C]`.
 :::
 
+:::figure "figures/category-theory/compose-triangle.svg"
+Composing $`f` and $`g` in a commutative diagram, with $`h = g \circ f`.
+:::
+
 :::ABUSE
 From now on, by $`A \in \mathcal{A}` we'll mean $`A \in \mathrm{ob}(\mathcal{A})`.
 :::
@@ -148,6 +152,10 @@ Composition is transitivity; the identity is reflexivity.
 
 For example, for the poset $`\mathcal{P}` on four objects $`\{a,b,c,d\}` with $`a \le b` and $`a \le c \le d`, we get a diagram with arrows $`a \to b`, $`a \to c`, $`a \to d`, $`c \to d` (plus an identity loop at every object).
 
+:::figure "figures/category-theory/poset-square.svg"
+The poset $`\{a, b, c, d\}` viewed as a category.
+:::
+
 This illustrates the point that
 
 :::MORAL
@@ -164,6 +172,10 @@ Here's a second quite important example of a non-concrete category.
 
 ::::EXAMPLE "Important: groups are one-object categories"
 A group $`G` can be interpreted as a category $`\mathcal{G}` with one object $`\ast`, all of whose arrows are isomorphisms.
+
+:::figure "figures/category-theory/group-one-object.svg"
+A group as a one-object category: its elements are the arrows $`\ast \to \ast`.
+:::
 The arrows are the elements of $`G` (each rendered as a self-loop on $`\ast`); composition of arrows is the group operation; the identity arrow is the group identity.
 
 As {cite}`ref:msci` says:
@@ -301,11 +313,19 @@ A function $`A \xrightarrow{f} X \times Y` amounts to a pair of functions $`(A \
 :::
 
 Put another way, there is a natural projection map $`X \times Y \to X` and $`X \times Y \to Y`, and this is what we should think of when constructing the product.
+
+:::figure "figures/category-theory/product-projections.svg"
+The two projections $`\pi_X, \pi_Y` out of the product $`X \times Y`.
+:::
 Now how do I add $`A` to this diagram?
 The point is that there is a bijection between functions $`A \xrightarrow{f} X \times Y` and pairs $`(g, h)` of functions.
 Thus for every pair $`A \xrightarrow{g} X` and $`A \xrightarrow{h} Y` there is a *unique* function $`A \xrightarrow{f} X \times Y`.
 
 But $`X \times Y` is special in that it is "universal": for *any* set $`A`, if you give me functions $`A \to X` and $`A \to Y`, I can use it to build a *unique* function $`A \to X \times Y`.
+
+:::figure "figures/category-theory/product-universal.svg"
+The universal property: any $`g \colon A \to X` and $`h \colon A \to Y` factor uniquely through $`X \times Y`.
+:::
 
 We can do this in any general category, defining a so-called product.
 
@@ -327,17 +347,21 @@ Nonetheless:
 When they exist, products are unique up to isomorphism: given two products $`P_1` and $`P_2` of $`X` and $`Y` there is an isomorphism between the two objects.
 :::
 
-:::PROOF
+::::PROOF
 This is very similar to the proof that initial objects are unique up to unique isomorphism.
 Consider two such objects $`P_1` and $`P_2`, and the associated projection maps.
 There are unique morphisms $`f \colon P_1 \to P_2` and $`g \colon P_2 \to P_1` between them that make every projection diagram commute, according to the universal property.
+
+:::figure "figures/category-theory/product-uniqueness.svg"
+Two products $`P_1, P_2` of $`X` and $`Y` are uniquely isomorphic.
+:::
 
 On the other hand, look at $`g \circ f` as a map $`P_1 \to P_1`.
 It makes the relevant diagram commute, so by the universal property of $`P_1` it is the only such map.
 But $`\mathrm{id}_{P_1}` works as well.
 Thus $`\mathrm{id}_{P_1} = g \circ f`.
 Similarly, $`f \circ g = \mathrm{id}_{P_2}`, so $`f` and $`g` are isomorphisms.
-:::
+::::
 
 :::ABUSE
 Actually, this is not really the morally correct theorem; we've only shown the objects $`P_1` and $`P_2` are isomorphic and have not made any assertion about the projection maps.
@@ -377,7 +401,15 @@ We define a *cone* on the $`X_i` to be an object $`A` with some "projection" map
 Then the *product* is a cone $`P` which is "universal" in the same sense as before: given any other cone $`A` there is a unique map $`A \to P` making the diagram commute.
 In short, a product is a "universal cone".
 
+:::figure "figures/category-theory/product-cone.svg"
+A product $`P` of $`X_1, \dots, X_4` as a universal cone.
+:::
+
 One can also do the dual construction to get a *coproduct*: given $`X` and $`Y`, it's the object $`X+Y` together with maps $`X \xrightarrow{\iota_X} X+Y` and $`Y \xrightarrow{\iota_Y} X+Y` (that's Greek iota, think inclusion) such that for any object $`A` and maps $`X \xrightarrow{g} A`, $`Y \xrightarrow{h} A` there is a unique $`f \colon X+Y \to A` for which $`f \circ \iota_X = g` and $`f \circ \iota_Y = h`.
+
+:::figure "figures/category-theory/coproduct-universal.svg"
+The coproduct $`X + Y`, dual to the product.
+:::
 
 We'll leave some of the concrete examples as an exercise this time, for example:
 
@@ -396,6 +428,10 @@ The correct categorical notion is:
 
 :::DEFINITION
 A map $`X \xrightarrow{f} Y` is *monic* (or a monomorphism) if for any pair of arrows $`A \xrightarrow{g} X`, $`A \xrightarrow{h} X` with $`f \circ g = f \circ h`, we must have $`g = h`.
+:::
+
+:::figure "figures/category-theory/monic.svg"
+$`f` is monic: $`f \circ g = f \circ h` forces $`g = h`.
 :::
 
 :::QUESTION
@@ -430,6 +466,10 @@ Of course, we can also take the dual notion.
 
 :::DEFINITION
 A map $`X \xrightarrow{f} Y` is *epic* (or an epimorphism) if for any pair of arrows $`Y \xrightarrow{g} A`, $`Y \xrightarrow{h} A` with $`g \circ f = h \circ f`, we must have $`g = h`.
+:::
+
+:::figure "figures/category-theory/epic.svg"
+$`f` is epic: $`g \circ f = h \circ f` forces $`g = h`.
 :::
 
 This is kind of like surjectivity, although it's a little farther than last time.

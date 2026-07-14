@@ -1,0 +1,18 @@
+% A chain homotopy P: diagonal maps P_n whose slanted parallelograms give g-f.
+% Source: book/tex/homology/singular.tex (§ Algebra of chain complexes).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}[sep=large]
+  \dots \ar[r, "\partial_A"]
+    & A_{n+1} \ar[r, "\partial_A"] \ar[d, "g-f"']
+    & A_n \ar[r, "\partial_A"] \ar[d, "g-f"'] \ar[ld, dotted, "P_n"']
+    & A_{n-1} \ar[r, "\partial_A"] \ar[d, "g-f"'] \ar[ld, dotted, "P_{n-1}"']
+    & \dots \\
+  \dots \ar[r, "\partial_B"]
+    & B_{n+1} \ar[r, "\partial_B"]
+    & B_n \ar[r, "\partial_B"]
+    & B_{n-1} \ar[r, "\partial_B"]
+    & \dots
+\end{tikzcd}
+\end{document}

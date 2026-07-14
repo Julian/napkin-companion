@@ -1,0 +1,12 @@
+% Restriction maps of a presheaf commute: big open set to medium to small.
+% Source: book/tex/alg-geom/sheaves.tex (§ Definition of a presheaf).
+\documentclass[border=2mm]{standalone}
+\usepackage{amsmath}
+\usepackage{tikz-cd}
+\usepackage{amssymb}
+\begin{document}
+\begin{tikzcd}
+  \mathcal F(U_{\text{big}}) \ar[r, "\text{res}"] \ar[rd, "\text{res}"'] & \mathcal F(U_{\text{med}}) \ar[d, "\text{res}"] \\
+  & \mathcal F(U_{\text{small}})
+\end{tikzcd}
+\end{document}

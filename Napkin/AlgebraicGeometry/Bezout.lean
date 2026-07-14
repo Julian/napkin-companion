@@ -37,7 +37,15 @@ For a first example, suppose we intersect $`y = x^2` with the line $`y = 1`; or 
 The ideal of the intersection is $$`(zy - x^2, y - z) = (x^2 - z^2, y - z) \subseteq \mathbb{C}[x, y, z].`
 So this corresponds to having two points; this gives two intersection points: $`(1 : 1 : 1)` and $`(-1 : 1 : 1)`.
 
+:::figure "figures/algebraic-geometry/bezout-conic-hyperbola.svg"
+The conic $`\mathbb{V}(zy - x^2)` meets the line $`\mathbb{V}(y - z)` at two points.
+:::
+
 That's fine, but now suppose we intersect $`zy = x^2` with the line $`y = 0` instead.
+
+:::figure "figures/algebraic-geometry/bezout-conic-parabola.svg"
+The conic $`\mathbb{V}(zy - x^2)` is tangent to the line $`\mathbb{V}(y)`, meeting it at a single (doubled) point.
+:::
 Then we instead get a "double point".
 The corresponding ideal is this time $$`(zy - x^2, y) = (x^2, y) \subseteq \mathbb{C}[x, y, z].`
 This ideal is _not_ radical, and when we take $`\sqrt{(x^2, y)} = (x, y)` we get the ideal which corresponds to a single projective point $`(0 : 0 : 1)` of $`\mathbb{CP}^2`.
@@ -307,6 +315,10 @@ For any two curves $`X` and $`Y` in $`\mathbb{CP}^2` without a common irreducibl
 :::
 
 Now, we use this to prove Pascal's theorem.
+
+:::figure "figures/algebraic-geometry/bezout-pascal.svg"
+A hexagon $`ABCDEF` inscribed in a conic; the three points $`AB \cap DE`, $`BC \cap EF`, $`CD \cap FA` lie on a line (the Pascal line).
+:::
 
 :::THEOREM "Pascal's theorem"
 Let $`A`, $`B`, $`C`, $`D`, $`E`, $`F` be six distinct points which lie on a conic $`\mathscr{C}` in $`\mathbb{CP}^2`.

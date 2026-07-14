@@ -52,6 +52,10 @@ For simplicity, let all the roots be distinct.
 Suppose that initially $`R` outputs $`z_1`.
 Consider what happens we smoothly swap the roots $`z_1` and $`z_2` along two non-intersecting paths that doesn't go through other roots.
 
+:::figure "figures/complex-analysis/quintic-swap-two-paths.svg"
+The two red roots $`z_1` and $`z_2` are swapped along two non-intersecting paths, while the blue roots $`z_3`, $`z_4`, $`z_5` stay fixed.
+:::
+
 Since $`R` is continuous, it must be tracking the same root.
 However, once we finish swapping $`z_1` and $`z_2`, the coefficients of $`P` are the same as they were initially.
 But this means that $`R` has been tricked into changing the root it outputs, contradiction!
@@ -87,6 +91,10 @@ Let's consider another operation of swapping the roots $`z_2` and $`z_3`.
 Taking a commutator of the two operations, we keep all the phases the same, but end up with a permutation $`(1\,2)(2\,3)(1\,2)^{-1}(2\,3)^{-1}`.
 
 If we mark the second operation's path with $`\beta`, this corresponds to $`\alpha \beta \alpha^{-1} \beta^{-1}`.
+
+:::figure "figures/complex-analysis/quintic-commutator-loops.svg"
+The path $`\alpha` winds once around the origin while $`\beta` is a small loop; their commutator $`\alpha \beta \alpha^{-1} \beta^{-1}` leaves every phase unchanged but permutes the roots nontrivially.
+:::
 
 :::EXERCISE
 Show that this permutation operation is nontrivial.

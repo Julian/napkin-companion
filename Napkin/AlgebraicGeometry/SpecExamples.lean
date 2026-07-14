@@ -3,11 +3,13 @@ import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.RingTheory.Spectrum.Prime.Topology
+import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open PrimeSpectrum Topology
 
 set_option pp.rawOnError true
 
@@ -47,7 +49,19 @@ As for the sheaf, $`\mathcal{O}_X(X) = \mathcal{O}_{X, (0)} = k`.
 So the space is remembering what field it wants to be over.
 If we are complex analysts, the set of functions on a single point is $`\mathbb{C}`; if we are number theorists, maybe the set of functions on a single point is $`\mathbb{Q}`.
 
+:::aside
+That $`\operatorname{Spec} k` is a single point is recorded as the {name}`Unique` instance on `PrimeSpectrum K` for a field $`K`: there is exactly one prime ideal.
+
+```lean
+example (K : Type) [Field K] : Unique (PrimeSpectrum K) := inferInstance
+```
+:::
+
 # Spec ℂ\[x\], a one-dimensional line
+
+:::figure "figures/algebraic-geometry/specexamples-spec-cx.svg"
+$`\operatorname{Spec} \mathbb{C}[x]`: a closed point $`(x-a)` for each $`a \in \mathbb{C}`, plus the generic point $`(0)`.
+:::
 
 The scheme $`X = \operatorname{Spec} \mathbb{C}[x]` is our beloved one-dimensional line.
 It consists of two types of points:
@@ -57,6 +71,17 @@ It consists of two types of points:
 
 As for the Zariski topology, every open set contains $`(0)`, which captures the idea it is close to everywhere: no matter where you stand, you can still hear the buzzing of the fly!
 True to the irreducibility of this space, the open sets are huge: the proper _closed sets_ consist of finitely many closed points.
+
+:::aside
+The closed sets are the vanishing loci {name}`PrimeSpectrum.zeroLocus`, and each distinguished open $`D(r)` is its complement, packaged as {name}`PrimeSpectrum.basicOpen`.
+
+```lean
+example (R : Type) [CommRing R] (r : R) :
+    (PrimeSpectrum.basicOpen r : Set (PrimeSpectrum R))
+      = (PrimeSpectrum.zeroLocus {r})ᶜ :=
+  PrimeSpectrum.basicOpen_eq_zeroLocus_compl r
+```
+:::
 
 The notion of "value at $`\mathfrak{p}`" works as expected.
 For example, $`f = x^2 + 5` is a global section of $`\mathbb{C}[x]`.
@@ -81,6 +106,10 @@ Fitting, it means that if you want to be able to evaluate a polynomial $`f` at a
 We can think of this in terms of the residue field being $`\mathbb{C}(x)`: $$`\kappa( (0) ) = \operatorname{Frac} \left( \mathbb{C}[x] / (0) \right) \cong \operatorname{Frac} \mathbb{C}[x] = \mathbb{C}(x).`
 
 # Spec ℝ\[x\], a line with complex conjugates glued
+
+:::figure "figures/algebraic-geometry/specexamples-spec-rx.svg"
+$`\operatorname{Spec} \mathbb{R}[x]`: real points, one point $`(x^2+1)` for each conjugate pair, and the generic point.
+:::
 
 Despite appearances, this actually looks almost exactly like $`\operatorname{Spec} \mathbb{C}[x]`, even more than you expect.
 The main thing to keep in mind is that now $`(x^2 + 1)` is a point, which you can loosely think of as $`\pm i`.
@@ -114,6 +143,10 @@ So we will almost never need "algebraically closed" hypotheses anymore: we're wo
 
 # Spec ℤ, a one-dimensional scheme
 
+:::figure "figures/algebraic-geometry/specexamples-spec-z.svg"
+$`\operatorname{Spec} \mathbb{Z}`: a closed point for each prime, plus the generic point $`(0)`.
+:::
+
 The great thing about $`\operatorname{Spec} \mathbb{Z}` is that it basically looks like $`\operatorname{Spec} k[x]`, too, being a one-dimensional scheme.
 It has two types of prime ideals:
 
@@ -130,6 +163,10 @@ The stalk is bigger than the residue field at the closed points: for example $`\
 The stalk at the generic point is $`\mathbb{Z}_{(0)} \cong \operatorname{Frac} \mathbb{Z} = \mathbb{Q}`.
 
 # Spec k\[x\] / (x²-7x+12), two points
+
+:::figure "figures/algebraic-geometry/specexamples-two-points.svg"
+$`\operatorname{Spec} k[x]/(x^2-7x+12)`: two reduced points $`(x-3)` and $`(x-4)`.
+:::
 
 If we were working with affine varieties, you would already know what the answer is: $`x^2 - 7x + 12 = 0` has solutions $`x = 3` and $`x = 4`, so this should be a scheme with two points.
 
@@ -159,6 +196,10 @@ Thus the set of _values_ is still just $`k` (leading to the "nilpotent" discussi
 
 # Spec k\[x\]/(x³-5x²), a double point and a single point
 
+:::figure "figures/algebraic-geometry/specexamples-double-point.svg"
+$`\operatorname{Spec} k[x]/(x^3-5x^2)`: a doubled (fat) point at $`(x)` and a reduced point $`(x-5)`.
+:::
+
 There is no problem putting the previous two examples side by side: the scheme $`X = \operatorname{Spec} k[x] / (x^3 - 5x^2)` consists of a double point next to a single point.
 Note that the stalks are different: the one above the double point is larger.
 This time, we implicitly have the ring isomorphism $$`k[x] / (x^3 - 5x^2) \cong k[x] / (x^2) \times k`
@@ -166,6 +207,10 @@ by $`f \mapsto \left( f(0) + f'(0) x, f(5) \right)`.
 The derivative is meant formally here!
 
 # Spec ℤ/60ℤ, a scheme with three points
+
+:::figure "figures/algebraic-geometry/specexamples-spec-z60.svg"
+$`\operatorname{Spec} \mathbb{Z}/60\mathbb{Z}`: the primes $`(2)` (doubled), $`(3)`, and $`(5)`.
+:::
 
 We've being seeing geometric examples of ring products coming up, but actually the Chinese remainder theorem you are used to with integers is no different.
 (This example $`X = \operatorname{Spec} \mathbb{Z}/60\mathbb{Z}` is taken from {cite}`ref:vakil`.)
@@ -182,6 +227,10 @@ Indeed, $`\operatorname{Spec} \mathbb{Z}/60\mathbb{Z}[1/5]` is supposed to look 
 That leaves us with $`\mathbb{Z}/12\mathbb{Z}`.
 
 # Spec k\[x,y\], the two-dimensional plane
+
+:::figure "figures/algebraic-geometry/specexamples-spec-cxy.svg"
+Three kinds of point of $`\operatorname{Spec} \mathbb{C}[x, y]`: a curve prime $`(y-x^2)`, a closed point, and the generic point $`(0)`.
+:::
 
 We have seen this scheme already: it is visualized as a plane.
 There are three types of points:
@@ -209,7 +258,13 @@ Let's consider the global section $`f = x^2 + y^2` and also take the value at ea
 
 We saw $`\operatorname{Spec} \mathbb{Z}` looked a lot like $`\operatorname{Spec} k[x]`, and we will now see that $`\operatorname{Spec} \mathbb{Z}[x]` looks a lot like $`\operatorname{Spec} k[x, y]`.
 
-There is a famous picture of this scheme in Mumford's "red book", in which the non-closed points are illustrated as balls of fuzz.
+There is a famous picture of this scheme in Mumford's "red book", which I will produce here for culture-preservation reasons, even though there are some discrepancies between the pictures that we previously drew.
+
+:::figure "mumforddrawing.jpg"
+:::
+
+Mumford uses $`[\mathfrak{p}]` to denote the point $`\mathfrak{p}`, which we don't, so you can ignore the square brackets that appear everywhere.
+The non-closed points are illustrated as balls of fuzz.
 
 As before, there are three types of prime ideals, but they will look somewhat more different:
 
@@ -225,6 +280,10 @@ But the reason it might be thought of as "doubled" is that $`\mathbb{Z}[x] / (3,
 
 # Spec k\[x,y\]/(y-x²), the parabola
 
+:::figure "figures/algebraic-geometry/specexamples-parabola.svg"
+$`\operatorname{Spec} k[x, y]/(y-x^2)`: the parabola as a one-dimensional variety.
+:::
+
 The prime ideals of $`k[x, y] / (y - x^2)` correspond to the prime ideals of $`k[x, y]` which are supersets of $`(y - x^2)`, or equivalently the points of $`\operatorname{Spec} k[x, y]` contained inside the closed set $`\mathbb{V}(y - x^2)`.
 Moreover, the subspace topology on $`\mathbb{V}(y - x^2)` coincides with the topology on $`\operatorname{Spec} k[x, y] / (y - x^2)`.
 
@@ -232,6 +291,20 @@ This holds much more generally:
 
 :::EXERCISE "Boring check"
 Show that if $`I` is an ideal of a ring $`A`, then $`\operatorname{Spec} A/I` is homeomorphic as a topological space to the closed subset $`\mathbb{V}(I)` of $`\operatorname{Spec} A`.
+:::
+
+:::aside
+The map on spectra induced by the quotient $`A \twoheadrightarrow A/I` is {name}`PrimeSpectrum.comap`, and since it comes from a surjection it is a closed embedding {name}`PrimeSpectrum.isClosedEmbedding_comap_of_surjective` whose image is exactly $`\mathbb{V}(I)`.
+
+```lean
+example (A : Type) [CommRing A] (I : Ideal A) :
+    IsClosedEmbedding (comap (Ideal.Quotient.mk I)) :=
+  isClosedEmbedding_comap_of_surjective _ _ Ideal.Quotient.mk_surjective
+
+example (A : Type) [CommRing A] (I : Ideal A) :
+    Set.range (comap (Ideal.Quotient.mk I)) = zeroLocus I := by
+  rw [range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective, Ideal.mk_ker]
+```
 :::
 
 So this is the notion of "closed embedding": the parabola, which was a closed subset of $`\operatorname{Spec} k[x, y]`, is itself a scheme.
@@ -262,6 +335,10 @@ This is going to be our first example of a non-irreducible scheme.
 
 ## Picture
 
+:::figure "figures/algebraic-geometry/specexamples-spec-kxy-generic.svg"
+$`\operatorname{Spec} k[x, y]/(xy)`: the two axes, each carrying a generic point $`(x)`, $`(y)` and closed points.
+:::
+
 Like before, topologically it looks like the closed set $`\mathbb{V}(xy)` of $`\operatorname{Spec} k[x, y]`: the union of the two coordinate axes.
 
 :::QUESTION
@@ -282,6 +359,22 @@ Therefore we expect that $`D(x)` "is" just $`\operatorname{Spec} k[x]` with the 
 Indeed, $$`\mathcal{O}_{\operatorname{Spec} k[x, y]/(xy)} (D(x)) \cong (k[x, y]/(xy))[1/x] \cong k[x, x^{-1}, y] / (y) \cong k[x, x^{-1}]`
 where $`(xy) = (y)` follows from $`x` being a unit.
 Everything as planned.
+
+:::aside
+Localizing away from $`r` realizes $`\operatorname{Spec} A[1/r]` as the distinguished open $`D(r)`: the induced {name}`PrimeSpectrum.comap` is an open embedding {name}`PrimeSpectrum.localization_away_isOpenEmbedding` with image the {name}`PrimeSpectrum.basicOpen` of $`r`.
+
+```lean
+example (A : Type) [CommRing A] (r : A) (S : Type) [CommRing S] [Algebra A S]
+    [IsLocalization.Away r S] :
+    Set.range (comap (algebraMap A S)) = PrimeSpectrum.basicOpen r :=
+  localization_away_comap_range S r
+
+example (A : Type) [CommRing A] (r : A) (S : Type) [CommRing S] [Algebra A S]
+    [IsLocalization.Away r S] :
+    IsOpenEmbedding (comap (algebraMap A S)) :=
+  localization_away_isOpenEmbedding S r
+```
+:::
 
 ## Stalks above some points
 
@@ -328,6 +421,14 @@ The key claim that makes this general is that "localization commutes with _limit
 
 # Spec k\[x,x⁻¹\], the punctured line (or hyperbola)
 
+:::figure "figures/algebraic-geometry/specexamples-punctured-line.svg"
+$`\operatorname{Spec} k[x, x^{-1}]`: the affine line with the origin $`(x)` removed.
+:::
+
+:::figure "figures/algebraic-geometry/specexamples-hyperbola.svg"
+The same scheme realized as the hyperbola $`\operatorname{Spec} k[x, y]/(xy-1)`.
+:::
+
 This is supposed to look like $`D(x)` of $`\operatorname{Spec} k[x]`, or the line with the origin deleted.
 Alternatively, we could also write $`k[x, x^{-1}] \cong k[x, y] / (xy - 1)` so that the scheme could also be drawn as a hyperbola.
 
@@ -339,6 +440,10 @@ Since $`k[x, x^{-1}]` is isomorphic to $`k[x, y] / (xy - 1)`, another way to vis
 There is one generic point $`(0)` since $`k[x, y]/(xy - 1)` really is an integral domain, as well as points like $`(x + 2, y + 1/2) = (x + 2) = (y + 1/2)`.
 
 # Spec k\[x\]\_(x), zooming in to the origin of the line
+
+:::figure "figures/algebraic-geometry/specexamples-localization-line.svg"
+The stalk $`\mathcal{O}_{\operatorname{Spec} k[x],\,(x)}` sitting above the point $`(x)` of the line.
+:::
 
 We know already that $`\mathcal{O}_{\operatorname{Spec} A, \mathfrak{p}} \cong A_\mathfrak{p}`: so $`A_\mathfrak{p}` should be the stalk at $`\mathfrak{p}`.
 In this example we will see that $`\operatorname{Spec} A_\mathfrak{p}` should be drawn sort of as this stalk, too.
@@ -366,6 +471,10 @@ Check that $`A_\mathfrak{q} \cong (A_\mathfrak{p})_\mathfrak{q}`, where we view 
 So when we zoom in like this, all the stalks stay the same, even above the non-closed points.
 
 # Spec k\[x,y\]\_(x,y), zooming in to the origin of the plane
+
+:::figure "figures/algebraic-geometry/specexamples-local-ring-origin.svg"
+$`\operatorname{Spec} k[x, y]_{(x,y)}`: the local ring at the origin sees only the primes passing through $`(x, y)`.
+:::
 
 The situation is more surprising if we pluck the stalk above the origin of $`\operatorname{Spec} k[x, y]`, the two-dimensional plane.
 The points of $`\operatorname{Spec} k[x, y]_{(x, y)}` are supposed to be the prime ideals of $`k[x, y]` which are contained in $`(x, y)`; geometrically these are $`(x, y)` and the generic points passing through the origin.

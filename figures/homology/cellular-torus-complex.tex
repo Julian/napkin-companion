@@ -1,0 +1,14 @@
+% The cellular chain complex of the torus.
+% Source: book/tex/homology/cellular.tex (§ Cellular homology of a torus).
+\documentclass[border=2mm]{standalone}
+\usepackage{amssymb}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+  0 \arrow[r]
+    & \mathbb{Z} e^2 \arrow[r, "d_2"]
+    & \mathbb{Z} e^1_a \oplus \mathbb{Z} e^1_b \arrow[r, "d_1"]
+    & \mathbb{Z} e^0 \arrow[r, "d_0"]
+    & 0
+\end{tikzcd}
+\end{document}

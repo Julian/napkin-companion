@@ -1,0 +1,13 @@
+% The parabola V(y-x^2) drawn in the affine plane A^2.
+% Source: book/tex/alg-geom/affine-var.tex (§ Affine varieties).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}\usepackage{amssymb}
+\begin{document}
+\begin{tikzpicture}[scale=0.85]
+  \draw[->] (-2.4,0) -- (2.6,0) node[right] {$x$};
+  \draw[->] (0,-0.4) -- (0,4.4) node[above] {$y$};
+  \draw[blue,thick,<->] plot[domain=-2:2,smooth] (\x,{\x*\x});
+  \node[blue,below right] at (0.8,0.64) {$\mathcal V(y-x^2)$};
+  \node at (2,3) {$\mathbb A^2$};
+\end{tikzpicture}
+\end{document}

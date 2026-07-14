@@ -416,7 +416,7 @@ Similarly, let $`\omega = \frac{1 + \sqrt{3}i}{2}` (that is $`\omega^3 = -1`), t
 
 :::EXAMPLE "The ring ℤ[√11] is a Euclidean domain"
 As before.
-This time, the natural norm will be: $$`\operatorname{Norm}_{\mathbb{Q}(\sqrt{11})/\mathbb{Q}}(a + b\sqrt{11}) = (a + b\sqrt{11})(a - b\sqrt{11}) = a^2 - 11b^2.`
+This time, the natural norm{margin}[See the later discussion of norms and traces for the explanation why this norm is the natural one.] will be: $$`\operatorname{Norm}_{\mathbb{Q}(\sqrt{11})/\mathbb{Q}}(a + b\sqrt{11}) = (a + b\sqrt{11})(a - b\sqrt{11}) = a^2 - 11b^2.`
 Since we need a Euclidean norm, we will take $`\operatorname{Norm}(a + b\sqrt{11}) = |a^2 - 11b^2|`.
 
 Given two elements $`a` and $`b` in $`\mathbb{Z}[\sqrt{11}]` with $`b \neq 0`, we will try to compute $`r` such that $`\operatorname{Norm}(r) < \operatorname{Norm}(b)` as $`r = a - qb` as before.

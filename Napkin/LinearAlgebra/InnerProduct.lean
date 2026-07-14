@@ -88,8 +88,10 @@ A *complex inner product* is a function $$`\langle \bullet, \bullet \rangle \col
 - The form is *sesquilinear* (the name means "one-and-a-half linear").
   This means that:
   - The form is *linear in the first argument*, so again we have $$`\begin{aligned} \langle x + y, v \rangle &= \langle x, v \rangle + \langle y, v \rangle \\ \langle cx, v \rangle &= c \langle x, v \rangle \end{aligned}`
+    Again this is often abbreviated to the single line $`\langle cx + y, v \rangle = c \langle x, v \rangle + \langle y, v \rangle` in the literature.
   - However, it is now *anti-linear in the second argument*: for any complex number $`c` and vectors $`x` and $`y` we have $$`\begin{aligned} \langle v, x + y \rangle &= \langle v, x \rangle + \langle v, y \rangle \\ \langle v, cx \rangle &= \overline{c} \langle v, x \rangle \end{aligned}`
     Note the appearance of the complex conjugate $`\overline{c}`, which is new!
+    Again, we can abbreviate this to just $`\langle v, cx + y \rangle = \overline{c} \langle v, x \rangle + \langle v, y \rangle` if we only want to write one equation.
 - The form is *positive definite*, meaning $`\langle v, v \rangle` is a nonnegative real number, and equals zero exactly when $`v = 0_V`.
 :::
 
@@ -195,7 +197,7 @@ It is also immediate if $`\|v\| \|w\| = 0`, since then one of $`v` or $`w` is th
 So henceforth we assume all these quantities are nonzero (as we need to divide by them later).
 
 The key to the proof is to think about the equality case: we'll use the inequality $`\langle cv - w, cv - w \rangle \geq 0`.
-Deferring the choice of $`c` until later, we compute $$`0 \leq \langle cv - w, cv - w \rangle` $$`= |c|^2 \|v\|^2 + \|w\|^2 - c \langle v, w \rangle - \overline{c \langle v, w \rangle}` At this point, a good choice of $`c` is $`c = \frac{\|w\|}{\|v\|} \cdot \frac{|\langle v, w \rangle|}{\langle v, w \rangle}` since then $`c \langle v, w \rangle = \frac{\|w\|}{\|v\|} |\langle v, w \rangle| : \mathbb{R}` and $`|c| = \frac{\|w\|}{\|v\|}`, whence the inequality becomes $$`2 \frac{\|w\|}{\|v\|} |\langle v, w \rangle| \leq 2 \|w\|^2` $$`|\langle v, w \rangle| \leq \|v\| \|w\|.`
+Deferring the choice of $`c` until later, we compute $$`\begin{aligned} 0 &\leq \langle cv - w, cv - w \rangle \\ &= \langle cv, cv \rangle - \langle cv, w \rangle - \langle w, cv \rangle + \langle w, w \rangle \\ &= |c|^2 \langle v, v \rangle - c \langle v, w \rangle - \overline{c} \langle w, v \rangle + \langle w, w \rangle \\ &= |c|^2 \|v\|^2 + \|w\|^2 - c \langle v, w \rangle - \overline{c \langle v, w \rangle} \\ 2 \operatorname{Re}\left[ c \langle v, w \rangle \right] &\leq |c|^2 \|v\|^2 + \|w\|^2 \end{aligned}` At this point, a good choice of $`c` is $`c = \frac{\|w\|}{\|v\|} \cdot \frac{|\langle v, w \rangle|}{\langle v, w \rangle}` since then $`c \langle v, w \rangle = \frac{\|w\|}{\|v\|} |\langle v, w \rangle| : \mathbb{R}` and $`|c| = \frac{\|w\|}{\|v\|}`, whence the inequality becomes $$`2 \frac{\|w\|}{\|v\|} |\langle v, w \rangle| \leq 2 \|w\|^2` $$`|\langle v, w \rangle| \leq \|v\| \|w\|.`
 :::
 
 Thus:

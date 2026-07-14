@@ -62,6 +62,10 @@ Given a map $`f \colon X \to Y` and a regular function $`\phi \in \mathcal{O}_Y(
 
 The use of the word "pullback" is the same as in our study of differential forms.
 
+:::figure "figures/algebraic-geometry/quasiproj-ringed-pullback.svg"
+Pulling a regular function $`\phi \in \mathcal{O}_Y(U)` back along $`f \colon X \to Y` to $`f^\sharp\phi \in \mathcal{O}_X(f^{-1}(U))`.
+:::
+
 :::DEFINITION
 Let $`(X, \mathcal{O}_X)` and $`(Y, \mathcal{O}_Y)` be baby ringed spaces.
 A continuous map of topological spaces $`f \colon X \to Y` is a *morphism* if every pullback of a regular function on $`Y` is a regular function on $`X`.
@@ -242,6 +246,10 @@ The maps are $`t \mapsto (t, 1/t)` and $`(x, y) \mapsto x`.
 :::
 
 Intuitively, the "hyperbola $`y = 1/x`" in $`\mathbb{A}^2` can be projected onto the $`x`-axis.
+
+:::figure "figures/algebraic-geometry/quasiproj-hyperbola.svg"
+The hyperbola $`\mathbb{V}(xy - 1)` projects isomorphically onto the punctured line $`X = \mathbb{A}^1 \setminus \{0\}`.
+:::
 
 Actually, deleting any number of points from $`\mathbb{A}^1` fails.
 If we delete $`\{1, 2, 3\}`, the resulting open set is isomorphic as a baby ringed space to $`\mathbb{V}(y(x - 1)(x - 2)(x - 3) - 1)`, which colloquially might be called $`y = \frac{1}{(x - 1)(x - 2)(x - 3)}`.

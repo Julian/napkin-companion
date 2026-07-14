@@ -1,0 +1,16 @@
+% An exact row from the cellular diagram used for the Euler characteristic.
+% Source: book/tex/homology/cellular.tex (§ Euler characteristic via Betti numbers).
+\documentclass[border=2mm]{standalone}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}[column sep=small]
+  \underbrace{H_2(X^1)}_{=0} \arrow[r, "0"]
+    & H_2(X^2) \arrow[r, hook]
+    & H_2(X^2, X^1) \arrow[r, "\partial_2"]
+    & H_1(X^1) \arrow[r, two heads]
+    & \underbrace{H_1(X^2)}_{\cong H_1(X)} \arrow[r, "0"]
+    & \underbrace{H_1(X^2, X^1)}_{=0}
+\end{tikzcd}
+\end{document}

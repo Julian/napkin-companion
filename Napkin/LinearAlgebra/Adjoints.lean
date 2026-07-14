@@ -209,6 +209,10 @@ Some immediate remarks about this definition:
 - This map $`T^\dagger` is indeed a linear map (why?).
 - The niceness of this definition is that it doesn't make reference to any basis or even $`V^\vee`, so it is the "right" definition for an inner product space.
 
+:::figure "figures/linear-algebra/transpose-square.svg"
+The adjoint $`T^\dagger` corresponds to the dual map $`T^\vee` under the identifications $`W \cong W^\vee` and $`V \cong V^\vee`.
+:::
+
 :::EXAMPLE "Example of an adjoint map"
 We'll work over $`\mathbb{C}`, so the conjugates are more visible.
 Let's consider $`V` with orthonormal basis $`e_1, e_2, e_3` and $`W` with orthonormal basis $`f_1, f_2`.
@@ -265,6 +269,44 @@ A linear map $`T \colon V \to V` is normal if and only if one can pick an orthon
 Show that if there exists such an orthonormal basis then $`T \colon V \to V` is normal, by writing $`T` as a diagonal matrix in that basis.
 :::
 
+:::PROOF
+This is long, and maybe should be omitted on a first reading.
+If $`T` has an orthonormal basis of eigenvectors, this result is immediate.
+
+Now assume $`T` is normal.
+We first prove $`T` is diagonalizable; this is the hard part.
+
+*Claim.*
+If $`T` is normal, then $`\ker T = \ker T^r = \ker T^\dagger` for $`r \geq 1`.
+(Here $`T^r` is $`T` applied $`r` times.)
+
+_Proof of Claim._
+Let $`S = T^\dagger \circ T`, which is self-adjoint.
+We first note that $`S` is Hermitian and $`\ker S = \ker T`.
+To see it's Hermitian, note $`\langle Sv, w \rangle = \langle Tv, Tw \rangle = \langle v, Sw \rangle`.
+Taking $`v = w` also implies $`\ker S \subseteq \ker T` (and hence equality since obviously $`\ker T \subseteq \ker S`).
+
+First, since we have $`\langle S^r(v), S^{r-2}(v) \rangle = \langle S^{r-1}(v), S^{r-1}(v) \rangle`, an induction shows that $`\ker S = \ker S^r` for $`r \geq 1`.
+Now, since $`T` is normal, we have $`S^r = (T^\dagger)^r \circ T^r`, and thus we have the inclusion $$`\ker T \subseteq \ker T^r \subseteq \ker S^r = \ker S = \ker T`
+where the last equality follows from the first claim.
+Thus in fact $`\ker T = \ker T^r`.
+
+Finally, to show equality with $`\ker T^\dagger` we compute $$`\begin{aligned} \langle Tv, Tv \rangle &= \langle v, T^\dagger T v \rangle \\ &= \langle v, T T^\dagger v \rangle \\ &= \langle T^\dagger v, T^\dagger v \rangle. \end{aligned}`
+
+Now consider the given $`T`, and any $`\lambda`.
+(Check that $`(T - \lambda\mathrm{id})^\dagger = T^\dagger - \overline{\lambda}\,\mathrm{id}`; thus if $`T` is normal, so is $`T - \lambda\mathrm{id}`.)
+In particular, for any eigenvalue $`\lambda` of $`T`, we find that $`\ker(T - \lambda\mathrm{id}) = \ker(T - \lambda\mathrm{id})^r`.
+This implies that all the Jordan blocks of $`T` have size $`1`; i.e. that $`T` is in fact diagonalizable.
+Finally, we conclude that the eigenvectors of $`T` and $`T^\dagger` match, and the eigenvalues are complex conjugates.
+
+So, diagonalize $`T`.
+We just need to show that if $`v` and $`w` are eigenvectors of $`T` with distinct eigenvalues, then they are orthogonal.
+(We can use Gram-Schmidt on any eigenvalue that appears multiple times.)
+To do this, suppose $`T(v) = \lambda v` and $`T(w) = \mu w` (thus $`T^\dagger(w) = \overline{\mu} w`).
+Then $$`\lambda \langle v, w \rangle = \langle \lambda v, w \rangle = \langle Tv, w \rangle = \langle v, T^\dagger(w) \rangle = \langle v, \overline{\mu} w \rangle = \mu \langle v, w \rangle.`
+Since $`\lambda \neq \mu`, we conclude $`\langle v, w \rangle = 0`.
+:::
+
 This means that not only can we write $$`T = \begin{bmatrix} \lambda_1 & 0 & \dots & 0 \\ 0 & \lambda_2 & \dots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \dots & \lambda_n \end{bmatrix}` but moreover that the basis associated with this matrix happens to be orthonormal vectors.
 
 As a corollary:
@@ -312,7 +354,7 @@ Show that under the identifications $`V \cong V^\vee` and $`W \cong W^\vee` (via
 
 :::PROBLEM "Polynomial criteria for normality"
 Let $`V` be a finite-dimensional complex inner product space and let $`T \colon V \to V` be a linear map.
-Show that $`T` is normal if and only if there is a polynomial $`p : \mathbb{C}[t]` such that $$`T^\dagger = p(T).`
+Show that $`T` is normal if and only if there is a polynomial{margin}[Here, we mean $`p(T)` in the same composition sense as in Cayley-Hamilton.] $`p : \mathbb{C}[t]` such that $$`T^\dagger = p(T).`
 :::
 
 :::PROBLEM "Kronecker product of matrices" (chili := 1)

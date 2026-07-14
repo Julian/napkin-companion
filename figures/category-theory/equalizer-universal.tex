@@ -1,0 +1,12 @@
+% Universal property of the equalizer E of f, g.
+% Source: book/tex/cats/limits.tex (§ Equalizers).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+	& A \ar[dd, "\exists! h"] \ar[lddd, "q"'] \ar[rddd, dashed, bend left] \\
+	\\
+	& E \ar[ld, "e"', near start] \ar[rd, dashed] & \\
+	X \ar[rr, "f", shift left] \ar[rr, "g"', shift right] && Y
+\end{tikzcd}
+\end{document}

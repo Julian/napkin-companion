@@ -1,0 +1,19 @@
+% The quantum Fourier transform circuit for general n, built inductively.
+% Source: book/tex/quantum/shor.tex (Qcircuit diagram, ported to quantikz).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{quantikz}
+\providecommand{\ket}[1]{\left\lvert #1\right\rangle}
+\begin{document}
+\begin{quantikz}
+\lstick{$\ket{x_n}$}     & \gate[6]{\text{QFT}_{n-1}} & \gate{R_n} & \qw            & \ \cdots\ & & \qw        & \ \cdots\ & & \qw        & \rstick{$\ket{y_1}$}\qw \\
+\lstick{$\ket{x_{n-1}}$} &                            & \qw        & \gate{R_{n-1}} & \ \cdots\ & & \qw        & \ \cdots\ & & \qw        & \rstick{$\ket{y_2}$}\qw \\
+\lstick{$\vdots\ \ $}    &                            &            &                &           & &            &           & &            & \rstick{$\ \ \vdots$} \\
+\lstick{$\ket{x_i}$}     &                            & \qw        & \qw            & \ \cdots\ & & \gate{R_i} & \ \cdots\ & & \qw        & \rstick{$\ket{y_{n-i+1}}$}\qw \\
+\lstick{$\vdots\ \ $}    &                            &            &                &           & &            &           & &            & \rstick{$\ \ \vdots$} \\
+\lstick{$\ket{x_2}$}     &                            & \qw        & \qw            & \ \cdots\ & & \qw        & \ \cdots\ & & \gate{R_2} & \rstick{$\ket{y_{n-1}}$}\qw \\
+\lstick{$\ket{x_1}$}     & \qw & \ctrl{-6} & \ctrl{-5} & \ \cdots\ & & \ctrl{-3} & \ \cdots\ & & \ctrl{-1} & \gate{H} & \rstick{$\ket{y_n}$}\qw
+\end{quantikz}
+\end{document}

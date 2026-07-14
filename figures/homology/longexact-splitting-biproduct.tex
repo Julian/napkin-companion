@@ -1,0 +1,15 @@
+% Commutative diagram from the long-exact-sequence chapter.
+% Source: book/tex/homology/long-exact.tex (lines 640-644).
+\documentclass[border=2mm]{standalone}
+\usepackage{amssymb,amsmath}
+\usepackage{tikz-cd}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\id}{\mathrm{id}}
+\begin{document}
+		\begin{tikzcd}
+			&& B \ar[rd, "g", two heads] \ar[dd, leftrightarrow, "\cong"] \\
+			0 \ar[r] & A \ar[ru, hook, "f"] \ar[rd, hook] && C \ar[r] & 0 \\
+			&& A \oplus C \ar[ru, two heads]
+		\end{tikzcd}
+\end{document}

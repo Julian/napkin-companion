@@ -1,0 +1,10 @@
+% A map q into X that equalizes f and g: f∘q = g∘q.
+% Source: book/tex/cats/limits.tex (§ Equalizers).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+	A \ar[d, "q"'] \ar[rd, "f \circ q = g \circ q"] & \\
+	X \ar[r, "f", shift left, near start] \ar[r, "g"', shift right, near start] & Y
+\end{tikzcd}
+\end{document}

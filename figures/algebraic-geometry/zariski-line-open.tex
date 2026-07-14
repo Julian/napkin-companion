@@ -1,0 +1,13 @@
+% A typical Zariski-open set of A^1: everything except finitely many points.
+% Source: book/tex/alg-geom/zariski.tex (§ The Zariski topology on affine varieties).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}\usepackage{amssymb}
+\begin{document}
+\begin{tikzpicture}[scale=0.35]
+  \draw[blue,line width=1.4pt,<->] (-9,0) -- (9,0);
+  \draw[fill=white,blue,line width=1.2pt] (-3,0) circle (5pt);
+  \draw[fill=white,blue,line width=1.2pt] (-1,0) circle (5pt);
+  \draw[fill=white,blue,line width=1.2pt] (4,0) circle (5pt);
+  \node[above] at (7,0) {$\mathbb A^1$};
+\end{tikzpicture}
+\end{document}

@@ -124,6 +124,10 @@ Then in exact analog to our result that $`H_n \colon \mathbf{hTop} \to \mathbf{G
 For every $`n`, $`H^n(-; G)` is a contravariant functor from $`\mathbf{hTop}^{\mathrm{op}}` to $`\mathbf{Grp}`.
 :::
 
+:::figure "figures/homology/cohomology-functorial.svg"
+A map $`f \colon X \to Y` induces $`f^* \colon H^n(Y; G) \to H^n(X; G)`, reversing direction.
+:::
+
 :::PROOF
 The idea is to leverage the work we already did in constructing the prism operator earlier.
 So as before all we have to show is that if $`f \simeq g`, then $`f^\ast = g^\ast`.
@@ -216,8 +220,15 @@ But for $`n = 2`, we have our first interesting $`\operatorname{Ext}` group, giv
 In summary: $$`H^n(K; G) \cong \begin{cases} G & n = 0 \\ G \oplus \operatorname{Hom}(\mathbb{Z}/2, G) & n = 1 \\ G/2G & n = 2 \\ 0 & n \ge 3. \end{cases}`
 :::
 
-# Interpreting the universal coefficient theorem
+# Explanation for universal coefficient theorem
 
+There is so much unexplained symbols and formulas in the previous chapter that may make you scream:
+
+:::quote
+I don't care if $`\mathbb{CP}^2` and $`S^2 \vee S^4` are distinct anymore! What are these spaces anyway?
+:::
+
+Nevertheless, it is not all that difficult.
 There are two key points to be read from the theorem:
 
 - Even though $`H_n(A_\bullet) = 0`, it is still possible for $`H^n(A_\bullet; G) \neq 0` if $`\operatorname{Ext}(H_{n-1}(A_\bullet), G) \neq 0`.
@@ -266,6 +277,10 @@ Homotopic chains with the same boundary are mapped to the same value by cocycles
 We defined what it means for two $`k`-simplices to be homotopic when discussing higher homotopy groups — in the current situation, we require in addition that the boundaries are always fixed.
 For instance, two $`1`-simplices from $`p` to $`q` that can be continuously deformed into one another (rel endpoints) are homotopic, while a $`1`-simplex forced to go around a hole in the space is not.
 
+:::figure "figures/homology/cohomology-homotopic-simplices.svg"
+The blue and orange $`1`-simplices from $`p` to $`q` are homotopic; the red one, going around the hole, is not.
+:::
+
 Proof is not difficult — you just need to show that the difference between two homotopic $`k`-simplices is the boundary of something (their interior!), and write the interior as the sum of some $`k+1`-simplices.
 (Hint: the easiest way is actually to write the interior as the difference of two $`k+1`-simplices instead, and be careful of vertex ordering issues.)
 
@@ -275,6 +290,10 @@ Finish the proof.
 
 A typical $`1`-cocycle assigns a value to each $`1`-simplex (arrow), subject to the constraint that a cycle must be mapped to $`0`; so the values around any closed loop must cancel.
 
+:::figure "figures/homology/cohomology-one-cocycle.svg"
+A typical $`1`-cocycle: each arrow carries its assigned value, and every cycle sums to $`0`.
+:::
+
 Now, the next observation is that:
 
 :::MORAL
@@ -283,7 +302,17 @@ If we only consider cocycles modulo coboundaries, we basically only care about v
 
 Why?
 Remember that a $`k`-coboundary is the $`\delta` of some $`(k-1)`-cochain.
-Given a $`0`-cochain that assigns the value $`1` to a single vertex, its $`\delta` assigns $`\pm 1` to each edge touching that vertex (with sign according to orientation).
+Given a $`0`-cochain that assigns the value $`1` to a single vertex,
+
+:::figure "figures/homology/cohomology-zero-cochain.svg"
+A $`0`-cochain assigning the value $`1` to one vertex.
+:::
+
+its $`\delta` assigns $`\pm 1` to each edge touching that vertex (with sign according to orientation).
+
+:::figure "figures/homology/cohomology-delta-cochain.svg"
+The coboundary $`\delta` of that $`0`-cochain, spreading $`\pm 1` along the incident edges.
+:::
 So, roughly speaking,
 
 :::MORAL
@@ -313,11 +342,24 @@ We had an example above, computing $`H^2(K; G)` for $`K` the Klein bottle.
 Let us work through it geometrically, assume $`G = \mathbb{Z}` for now.
 
 A typical $`2`-cochain $`f \in C^2(K; \mathbb{Z})` assigns a value to each $`2`-simplex.
+
+:::figure "figures/homology/cohomology-klein-2cochain.svg"
+A $`2`-cochain $`f` on the Klein bottle, assigning values to the two triangles of the square.
+:::
+
 As with the $`0`-cochain above, the value assigned to a particular simplex doesn't matter: we can "transfer" the assigned value between the two triangles of the square by adding a coboundary.
+
+:::figure "figures/homology/cohomology-klein-coboundary.svg"
+Adding a coboundary $`\delta` transfers value between the two triangles without changing the total.
+:::
 So, we may just say that the value assigned to the whole surface of the Klein bottle is (say) $`3`; formally, letting $`e^2_K \in C_2(K)` be the sum of the two $`2`-simplices, we can write $`f(e^2_K) = 3`.
 
 However, the boundary of the $`2`-chain corresponding to the whole surface of the Klein bottle is $`2` times the blue edge, so $`\delta` of the $`1`-cochain whose value on the blue edge is $`1` will assign the value $`2` to $`e^2_K`.
 In symbols: let $`e^1_b \in C_1(K)` be the blue edge, pick $`g \in C^1(K; \mathbb{Z})` such that $`g(e^1_b) = 1`, then $`\delta(g)(e^2_K) = 2`.
+
+:::figure "figures/homology/cohomology-klein-g-cochain.svg"
+The $`1`-cochain $`g` with value $`1` on the blue edge; its coboundary assigns $`2` to the whole surface $`e^2_K`.
+:::
 Even though $`e^2_K` is not a cycle, we still need to care about its assigned value modulo $`2`!
 Because adding or subtracting the coboundary $`\delta(g)` can only adjust its values in increments of $`2`.
 

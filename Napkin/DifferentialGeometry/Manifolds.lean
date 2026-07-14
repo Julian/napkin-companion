@@ -32,8 +32,8 @@ Unfortunately, the definition of a smooth manifold is *complete garbage*, and so
 $`S^2`: "the Earth looks flat".
 :::
 
-Long ago, people thought the Earth was flat, i.e. homeomorphic to a plane.
-But in fact, as most of us know, the Earth is actually a sphere, which is not contractible.
+Long ago, people thought the Earth was flat, i.e. homeomorphic to a plane, and in particular they thought that $`\pi_2(\text{Earth}) = 0`.
+But in fact, as most of us know, the Earth is actually a sphere, which is not contractible and in particular $`\pi_2(\text{Earth}) \cong \mathbb{Z}`.
 This observation underlies the definition of a manifold:
 
 :::MORAL
@@ -60,6 +60,12 @@ where each $`E_i` is an open subset of $`\mathbb{R}^n`.
 Each $`\phi_i \colon U_i \to E_i` is called a *chart*, and together they form a so-called *atlas*.
 :::
 
+:::REMARK
+Here "$`E`" stands for "Euclidean".
+I think this notation is not standard; usually people just write $`\phi_i(U_i)` instead.
+:::
+
+:::aside
 Mathlib formalizes the atlas data as a `ChartedSpace`: a topological space $`M` together with a "model" topological space $`H` and, at every point of $`M`, a partial homeomorphism into $`H`.
 The `chartAt` field picks out a chart through any given point and `mem_chart_source` ensures every point lies in the source of its chart.
 
@@ -71,16 +77,21 @@ recall ChartedSpace.chartAt
 ```
 
 For a "concrete" topological $`n`-manifold one would take $`H = \mathbb{R}^n`, but the abstract setup `ChartedSpace H M` is more flexible: we can model on $`H = \mathbb{R}^n`, on a half-space (for manifolds with boundary), or on a Banach space (for the infinite-dimensional case).
+:::
 
 :::REMARK
 This definition is nice because it doesn't depend on embeddings: a manifold is an *intrinsic* space $`M`, rather than a subset of $`\mathbb{R}^N` for some $`N`.
 Analogy: an abstract group $`G` is an intrinsic object rather than a subgroup of $`S_n`.
 :::
 
-:::EXAMPLE "An atlas on the circle"
+::::EXAMPLE "An atlas on the circle"
 Take $`M = S^1`.
 Two open arcs covering the circle, each missing one antipodal point and each homeomorphic to an open interval in $`\mathbb{R}`, give an atlas with two charts.
+
+:::figure "figures/differential-geometry/manifolds-s1-charts.svg"
+Two chart arcs $`U_1`, $`U_2` cover $`S^1`, each mapped to an interval by a chart $`\phi_i`.
 :::
+::::
 
 :::QUESTION
 Where do you think the words "chart" and "atlas" come from?
@@ -115,6 +126,10 @@ Sorry for the dense notation, let me explain.
 The intersection with the image $`\phi_i(U_i \cap U_j)` and the image $`\phi_j(U_i \cap U_j)` is a notational annoyance to make the map well-defined and a homeomorphism.
 The transition map is just the natural way to go from $`E_i \to E_j`, restricted to overlaps.
 
+:::figure "figures/differential-geometry/manifolds-s1-transition.svg"
+On the overlap $`U_1 \cap U_2`, the transition map $`\phi_{12}` passes between the two charts.
+:::
+
 We want to add enough structure so that we can use differential forms.
 
 :::DEFINITION
@@ -123,6 +138,7 @@ We say $`M` is a *smooth manifold* if all its transition maps are smooth.
 
 This definition makes sense because we know what it means for a map between two open sets of $`\mathbb{R}^n` to be differentiable.
 
+:::aside
 Mathlib bundles "the topological manifold structure plus a smoothness compatibility" into the typeclass `IsManifold I n M`, where `I` is a *model with corners* — packaging the choice of model space (typically $`\mathbb{R}^n`) and any boundary structure — and `n : WithTop ℕ∞` records the smoothness order ($`C^k`, $`C^\infty`, or analytic).
 
 ```lean
@@ -134,6 +150,7 @@ recall IsManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 ```
 
 The "transition maps are smooth" condition becomes the field `compatible` saying that for any pair of charts in the atlas, the change-of-coordinates partial homeomorphism is in the $`C^n`-groupoid, which is exactly the Mathlib-side incarnation of the requirement above.
+:::
 
 With smooth manifolds we can try to port over definitions that we built for $`\mathbb{R}^n` onto our manifolds.
 So in general, all definitions involving smooth manifolds will reduce to something on each of the coordinate charts, with a compatibility condition.
@@ -172,7 +189,7 @@ has rank $`m`, for every point $`p \in M`.
 Then $`M` is a manifold of dimension $`n - m`.
 :::
 
-For a proof, see {cite}`ref:manifolds`.
+For a proof, see {cite}`ref:manifolds`, Theorem 6.3.
 
 One very common special case is to take $`m = 1` above.
 
@@ -198,6 +215,7 @@ The regular value theorem is not yet packaged as a one-liner in Mathlib's manifo
 The "rank $`m`" hypothesis becomes surjectivity of the differential, which is Mathlib's `Function.Surjective ((fderiv ℝ f) p)`.
 
 We won't give further examples since I'm only mentioning this in passing in order to increase your capacity to write real concrete examples.
+(But {cite}`ref:manifolds`, Chapter 6.2 has some more examples, beautifully illustrated.)
 
 # Differential forms on manifolds
 
@@ -307,12 +325,16 @@ As I said, geometrically we know what this *should* look like for our usual exam
 For example, if $`M = S^1` is a circle embedded in $`\mathbb{R}^2`, then the tangent vector at a point $`p` should just look like a vector running off tangent to the circle.
 Similarly, given a sphere $`M = S^2`, the tangent space at a point $`p` along the sphere would look like a plane tangent to $`M` at $`p`.
 
-However, one of the points of all this manifold stuff is that we really want to see the manifold as an *intrinsic object*, in its own right, rather than as embedded in $`\mathbb{R}^n`.
+However, one of the points of all this manifold stuff is that we really want to see the manifold as an *intrinsic object*, in its own right, rather than as embedded in $`\mathbb{R}^n`.{margin}[This can be thought of as analogous to the way that we think of a group as an abstract object in its own right, even though Cayley's Theorem tells us that any group is a subgroup of the permutation group. Note this wasn't always the case! During the 19th century, a group was literally defined as a subset of $`\operatorname{GL}(n)` or of $`S_n`. In fact Sylow developed his theorems without the word "group". Only much later was the abstract definition of a group given, an abstract set $`G` which was independent of any *embedding* into $`S_n`, and an object in its own right.]
 So we would like our notion of a tangent vector to not refer to an ambient space, but only to intrinsic properties of the manifold $`M` in question.
 
 ## Tangent space
 
 To motivate this construction, let us start with an embedded case for which we know the answer already: a sphere.
+
+:::figure "figures/differential-geometry/manifolds-s1-vector-field.svg"
+A field of tangent vectors along the circle $`S^1`.
+:::
 
 Suppose $`f \colon S^2 \to \mathbb{R}` is a function on a sphere, and take a point $`p`.
 Near the point $`p`, $`f` looks like a function on some open neighborhood of the origin.
@@ -344,6 +366,11 @@ A *tangent vector* is just a derivation at $`p`, and the *tangent space* $`T_p(M
 
 In this way we have constructed the tangent space.
 
+:::figure "figures/differential-geometry/manifolds-tangent-space.svg"
+The tangent space $`T_p(M)` at a point $`p` of $`S^1`, with a tangent vector $`\vec v`.
+:::
+
+:::aside
 Mathlib carries two complementary tangent-space constructions.
 The fiber-bundle version is `TangentSpace I x`, defined as the model vector space $`E` itself (the abstract tangent vector lives in the fiber of the tangent bundle); manipulating tangent vectors algebraically goes through `Bundle.TotalSpace` and `mfderiv`.
 The derivation-based version, exactly the one defined above, is `PointDerivation I x` in `Mathlib.Geometry.Manifold.DerivationBundle`.
@@ -359,6 +386,7 @@ recall PointDerivation
 
 Underneath the hood, `PointDerivation` is a special case of the algebraic `Derivation R A M` from `Mathlib.RingTheory.Derivation.Basic`: an $`R`-linear map $`A \to M` satisfying the Leibniz rule, where here $`R = 𝕜`, $`A = C^\infty(M; 𝕜)`, and $`M = 𝕜` viewed as a module over $`A` via evaluation at $`x`.
 That the two flavors agree (derivation-based and fiber-bundle-based) is morally Mathlib's `mdfderiv_eq` lemmas in the manifold library.
+:::
 
 ## The cotangent space
 

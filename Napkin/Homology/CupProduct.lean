@@ -22,6 +22,12 @@ For an actual treatise on the cup product, see {cite}`ref:hatcher`.
 
 As mentioned in the previous chapter, you can put all the cohomology groups $`H^\bullet(X)` together to form the _cohomology ring_, which gives more structure than the case of homology — enough structure to allow distinguishing between $`\mathbb{CP}^2` and $`S^2 \vee S^4`, or between $`\mathbb{CP}^3` and $`S^2 \times S^4`.
 
+Even though the description above is completely non-descriptive (it doesn't give you insight into _what_ the structure is about), and actually, some people would say:
+
+:::quote
+It does not matter what homology measures intuitively, as it is a convenient tool that takes something very difficult (topology) and turns it into something simple (abelian group).
+:::
+
 Nevertheless, it is interesting that the cup product _is actually visualizable_!
 At least when the dimension does not exceed $`3`.
 
@@ -83,6 +89,12 @@ So the failure of $`\alpha` to be exact is signaling that $`H_1(S^1) \cong \math
 
 As another piece of intuition, note that each $`k`-differential form $`\omega` can be interpreted as a function that takes each $`k`-smooth submanifold $`S \subseteq M`, and returns a real number $`\int_S \omega`.
 Comparing with the description of cochains, cocycles, and coboundaries, we see the differential forms are a nicer subclass satisfying linearity and smoothness properties; and both the numerator and denominator get bigger in a way that _cancels out_: $$`H^k(M; \mathbb{R}) = \frac{\text{cocycles}}{\text{coboundaries}} \cong \frac{\text{cocycles} \cap \text{forms}}{\text{coboundaries} \cap \text{forms}} = H_{\mathrm{dR}}^k(M).`
+
+Or, as a figure (for space reasons, the group of differential forms is denoted $`D`):
+
+:::figure "figures/homology/cupproduct-second-iso.svg"
+The forms $`D` and the cocycles share a "second isomorphism theorem" configuration, so the two quotients agree.
+:::
 
 # Graded rings
 
@@ -153,11 +165,27 @@ where the multiplication is in $`R`.
 Assuming $`R` has a $`1`, which $`0`-cochain is the identity for $`\smile`?
 :::
 
-:::REMARK "Warning"
+::::REMARK "Warning"
 While you can interpret a $`n`-differential form as a $`n`-cochain the obvious way, the cup product is _not_ directly a generalization of the wedge product!
-This is because we are not applying the alternation operator.
-Nevertheless, the differences nicely cancel out, and the corresponding element in the cohomology group equals the element interpreted by the wedge product — this is what we mean by $`H^\bullet(M; \mathbb{R}) \cong H_{\mathrm{dR}}^\bullet(M)`.
+For example, let $`X = \mathbb{R}^2`, and try to evaluate $`dx \smile dy` on $`[v_0, v_1, v_2]` and $`[v_2, v_1, v_0]` where $`v_0 = (1, 0)`, $`v_1 = (0, 0)`, $`v_2 = (0, 1)`, assume all of the edges are straight lines.
+
+This is because we are not having the alternation operator.
+Refer to the discussion of the wedge product as a dual in the differential forms chapter for details.
+In this case, the ring $`G` might be $`\mathbb{Z}` where not all nonzero elements have an inverse, so division would cause trouble.
+
+Nevertheless, the differences will nicely cancel out, and we still have the corresponding element in the cohomology group equal to the element interpreted by the wedge product $`dx \wedge dy` — this is what we mean by $`H^\bullet(M; \mathbb{R}) \cong H_{\mathrm{dR}}^\bullet(M)`, stated below.
+
+Let us consider the familiar example of a torus, and the $`1`-cocycles "$`dx`" and "$`dy`".
+
+:::figure "figures/homology/cupproduct-torus-dxdy.svg"
+The $`1`-cocycles "$`dx`" and "$`dy`" on the torus, with their values on some marked $`1`-chains.
 :::
+
+From what we know about the wedge product, we want $`(dx \wedge dy)(T) = 1` for $`T` the whole torus (up to a $`\pm` sign).
+Indeed, with the definition above (work it out! Divide $`T` into two triangles arbitrarily) it will work.
+
+Nevertheless, we don't really care about the cup product itself as much as the induced cup product on the homology ring.
+::::
 
 First, we prove an analogous result as before:
 
@@ -201,6 +229,21 @@ where $`|\alpha| = 1` is a generator of $`H^1(\mathbb{RP}^n; \mathbb{Z}/2)` and 
 :::
 
 Already we have an interesting example where the cup product $`\smile` is different from the wedge product $`\wedge` — if $`n \geq 2`, then the generators $`\alpha` and $`\beta` above have $`\alpha \smile \alpha \neq 0` and $`\beta \smile \beta \neq 0`.
+
+Let us try to see what happens here.
+The formula above says $$`H^\bullet(\mathbb{RP}^2; \mathbb{Z}/2) \cong \mathbb{Z}/2[\alpha]/(\alpha^3).`
+As an abelian group, there is a single nonzero element in $`H^0(\mathbb{RP}^2; \mathbb{Z}/2)`, $`H^1(\mathbb{RP}^2; \mathbb{Z}/2)`, and $`H^2(\mathbb{RP}^2; \mathbb{Z}/2)`, and the remaining groups are $`0`.
+
+$`\mathbb{RP}^2` isn't too hard to visualize — it's just a $`2`-sphere, quotient by the relation to identify opposite vertices.
+
+There is a $`1`-cycle on it that is not homologous to $`0`:
+
+:::figure "figures/homology/cup-product-1cycle.svg"
+:::
+
+It's not very easy to show, but every such $`1`-cycle is homologous to each other, and double of that cycle is homologous to $`0`.
+
+As such, $`H^1(\mathbb{RP}^2; \mathbb{Z}/2) \cong \operatorname{Hom}(H_1(\mathbb{RP}^2), \mathbb{Z}/2)`, its only nontrivial element $`\alpha` maps each such $`1`-cycle to $`1`.
 
 # Relative cohomology pseudo-rings
 
@@ -250,11 +293,15 @@ Knowing just that the rings are isomorphic doesn't help much, it would be much b
 The isomorphism is the most trivial one: given $`f \in C^\bullet(X \vee Y; R)` that assigns to each chain $`c` inside $`X \vee Y` a value $`f(c) \in R`, we can interpret it as an element of $`C^\bullet(X)`, because each chain inside $`X` is trivially a chain inside $`X \vee Y` that can be fed into $`f` — formally, the embedding $`X \hookrightarrow X \vee Y` induces $`C_\bullet(X) \hookrightarrow C_\bullet(X \vee Y)`.
 The map induces a $`\widetilde H^\bullet(X \vee Y; R) \to \widetilde H^\bullet(X; R) \times \widetilde H^\bullet(Y; R)`, and it respects the ring multiplication i.e. the cup product.
 
-:::EXAMPLE "A wedge of a square and a circle"
+::::EXAMPLE "A wedge of a square and a circle"
 Let $`X` be a square and $`Y` a circle, so that $`X \vee Y` is the two fused at a point.
+
+:::figure "figures/homology/cupproduct-wedge.svg"
+The wedge $`X \vee Y` of a square and a circle, joined at a single point.
+:::
 Let $`f \in \widetilde H^1(X; \mathbb{Z})` assign $`f(X) = 2` to the whole square, and $`g \in \widetilde H^1(Y; \mathbb{Z})` assign $`g(Y) = 3` to the whole circle.
 Then, of course the element corresponding to $`(f, g)` inside $`\widetilde H^1(X \vee Y)` would assign $`2 + 3 = 5` to the cocycle corresponding to the whole space $`X \vee Y`.
-:::
+::::
 
 This allows us to resolve the first question posed at the beginning.
 Let $`X = \mathbb{CP}^2` and $`Y = S^2 \vee S^4`.
@@ -285,6 +332,10 @@ Intuitively, what the proof above says is:
 The nontrivial $`4`-cocycle $`a_4 \in H^4(S^2 \vee S^4; \mathbb{Z})` has nothing to do with the $`2`-cocycle $`a_2`, while the $`4`-cocycle $`\alpha^2 \in H^4(\mathbb{CP}^2)` is the cup product $`\alpha \smile \alpha` of the $`2`-cocycle $`\alpha` with itself.
 :::
 
+:::figure "figures/homology/cupproduct-rp2-cocycle.svg"
+The projective plane $`\mathbb{RP}^2` as a square with both edge-pairs reversed: the nonzero $`\alpha \in H^1(\mathbb{RP}^2; \mathbb{Z}/2)` acts like both $`dx` and $`dy` at once, so $`\alpha \smile \alpha` assigns $`1` to the whole surface and is nonzero.
+:::
+
 The exercise below would be much easier to visualize, apart from the fact that $`\mathbb{RP}^2` is nonorientable — in fact, we have already seen above why $`\alpha \smile \alpha \neq 0` for the nonzero element $`\alpha \in H^1(\mathbb{RP}^2)`.
 
 :::EXERCISE
@@ -312,6 +363,10 @@ We will formalize and prove the statement above.
 First, we define the *cross product*, that takes a $`m`-simplex $`f \colon \Delta^m \to X` and a $`n`-simplex $`g \colon \Delta^n \to Y`, and returns a $`(m + n)`-chain $`f \times g \in C_{m + n}(X \times Y)`.{margin}[As far as I know, this is just because the symbol $`\times` is a cross, and it has nothing to do with the cross product of vectors in $`\mathbb{R}^3`.]
 This is really the most natural way you might define it: intuitively, the product of a $`m`-dimensional cube in $`X` and a $`n`-dimensional cube in $`Y` is a $`(m + n)`-dimensional cube in $`X \times Y`.
 
+:::figure "figures/homology/cupproduct-cross-product.svg"
+A cube $`U` in $`X` and a cube $`V` in $`Y` give a product cube $`U \times V` in $`X \times Y`.
+:::
+
 In the case of a simplex, we need to subdivide $`\Delta^m \times \Delta^n` into finitely many copies of $`\Delta^{m + n}`.
 
 If $`n = 1`, we have already seen a subdivision when we worked with the prism operator.
@@ -334,7 +389,7 @@ If $`X` and $`Y` are CW complexes and $`R` is a PID, then the cross product of t
 
 Thus formalize our intuition earlier — at least, if we use homology as a measure of "holes".
 
-## Cross product is not a $`\mathbb{Z}`-module homomorphism
+## Cross product is not a ℤ-module homomorphism
 
 For this section, if $`a` and $`b` are elements of the $`\mathbb{Z}`-module $`C_m(X)` and $`C_n(Y)` respectively, we write $`\times(a, b)` to mean $`a \times b \in C_{m + n}(X \times Y)`, and $`(a, b)` to be the element that corresponds in the product $`C_m(X) \times C_n(Y)`.
 
@@ -462,6 +517,11 @@ Of course the multiplicative identity is $`1_A \otimes 1_B`.
 :::
 
 Now let $`X` and $`Y` be topological spaces.
+
+:::figure "figures/homology/cupproduct-projections.svg"
+The product $`X \times Y` with its projections $`\pi_X`, $`\pi_Y` onto the two factors.
+:::
+
 Using the projections $`\pi_X`, $`\pi_Y` of $`X \times Y`, functoriality gives induced maps $`\pi_X^\ast` and $`\pi_Y^\ast`, and we define the *cross product* $$`H^\bullet(X; R) \otimes_R H^\bullet(Y; R) \xrightarrow{\times} H^\bullet(X \times Y; R)`
 acting on cocycles by $`\phi \times \psi = \pi_X^\ast(\phi) \smile \pi_Y^\ast(\psi)`.
 

@@ -1,0 +1,19 @@
+% Spec k[x,y]_{(x,y)}: the local ring at the origin, seeing only primes through (x,y).
+% Source: book/tex/alg-geom/spec-examples.tex (Stalk above the origin).
+\documentclass[border=2mm]{standalone}
+\usepackage{amsmath}\usepackage{amssymb}\usepackage{tikz}
+\begin{document}
+\begin{tikzpicture}[scale=0.9]
+  \draw[green!50!black,thick] (0,0)--(0,3);
+  \node[blue] at (0,3.3){$\operatorname{Spec} k[x,y]_{(x,y)}$};
+  \draw[red,dotted] (-1,0.1)--(1,1.1);
+  \fill[red] (0.4,0.8) circle (1.4pt) node[below right,red]{$(3x-2y)$};
+  \draw[red,dotted] plot[smooth] coordinates {(-0.5,2.5)(0,2)(0.5,2.5)};
+  \fill[red] (-0.35,2.3) circle (1.4pt) node[left,red]{$(y-x^2)$};
+  \draw[red,dotted] plot[smooth] coordinates {(-1,1.3)(-0.5,1.8)(0,1.6)(0.5,1.4)(1,1.9)};
+  \fill[red] (0.5,1.4) circle (1.4pt) node[below right,red]{$(2y-x^3)$};
+  \fill[blue] (0,0) circle (2pt) node[below]{$(x,y)$};
+  \fill[red] (1.6,2.5) circle (1.4pt) node[below left,red]{$(0)$};
+  \draw[red,dotted] (1.6,2.5) circle (0.5);
+\end{tikzpicture}
+\end{document}

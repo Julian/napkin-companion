@@ -1,0 +1,15 @@
+% Exactness at B: the image of f equals the kernel of g.
+% Source: book/tex/cats/abelian.tex (§ Exact sequences).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\newcommand{\Img}{\mathrm{Img}}
+\newcommand{\Ker}{\mathrm{Ker}}
+\newcommand{\img}{\mathrm{img}}
+\begin{document}
+\begin{tikzcd}
+	A \ar[rd, "f"] \ar[rr, dashed, "0"] \ar[dd, "\img f"', two heads] && C  \\
+	& B \ar[ru, "g"] \\
+	\Img f \ar[ru, hook, "\iota"] \ar[rr, dashed, "\exists!"] &&
+	\Ker g \ar["0"', dashed, uu] \ar[lu, hook']
+\end{tikzcd}
+\end{document}

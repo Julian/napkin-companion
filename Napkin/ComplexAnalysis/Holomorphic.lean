@@ -54,6 +54,10 @@ You can skim over these very quickly: they're only here to make a point.
   But if you expand the Taylor series at $`x = 0`, you get $`0 + 0x + 0x^2 + \cdots`, which is wrong for *any* $`x > 0` (even $`x = 0.0001`).
 :::
 
+:::figure "weierstrass-pubdomain.png"
+The Weierstraß Function (image from {cite}`img:weierstrass`).
+:::
+
 Let's even put aside the pathology.
 If I tell you the value of a real smooth function on the interval $`[-1, 1]`, that still doesn't tell you anything about the function as a whole.
 It could be literally anything, because it's somehow possible to "fuse together" smooth functions.
@@ -122,7 +126,7 @@ The difference quotient $`\overline h / h` depends on the direction of approach:
 :::
 
 If a function $`f \colon U \to \mathbb{C}` is complex differentiable at all the points in its domain it is called *holomorphic*.
-In the special case of a holomorphic function with domain $`U = \mathbb{C}`, we call the function *entire*.
+In the special case of a holomorphic function with domain $`U = \mathbb{C}`, we call the function *entire*.{margin}[Sorry, I know the word "holomorphic" sounds so much cooler. I'll try to do things more generally for that sole reason.]
 
 Mathlib's name for "complex-differentiable everywhere on its domain" is `DifferentiableOn ℂ f s`; the entire-function case is just `Differentiable ℂ f`, with no explicit set.
 The name "holomorphic" doesn't appear in Mathlib by design — the parameterized `Differentiable` swallows it.
@@ -156,7 +160,7 @@ A contour integral lets us formalize this.
 
 First of all, if $`f \colon \mathbb{R} \to \mathbb{C}` and $`f(t) = u(t) + iv(t)` for $`u, v : \mathbb{R}`, we can define an integral $`\int_a^b` by just adding the real and imaginary parts:
 $$`\int_a^b f(t) \; dt = \left(\int_a^b u(t) \; dt\right) + i \left(\int_a^b v(t) \; dt\right).`
-Now let $`\alpha \colon [a, b] \to \mathbb{C}` be a path, thought of as a complex differentiable function.
+Now let $`\alpha \colon [a, b] \to \mathbb{C}` be a path, thought of as a complex differentiable function.{margin}[This isn't entirely correct here: you want the path $`\alpha` to be continuous and mostly differentiable, but you allow a finite number of points to have "sharp bends"; in other words, you can consider paths which are combinations of $`n` smooth pieces. But for this we also require that $`\alpha` has "bounded length".]
 Such a path is called a *contour*, and we define its *contour integral* by
 $$`\oint_\alpha f(z) \; dz = \int_a^b f(\alpha(t)) \cdot \alpha'(t) \; dt.`
 You can almost think of this as a $`u`-substitution (which is where the $`\alpha'` comes from).
@@ -533,7 +537,7 @@ We know the left hand side decreases as $`4^{-j}`, but the integral on the right
 Finish the proof. (Use the $`ML` estimation lemma.)
 :::
 
-Finally, what to do with arbitrary curve (which may not even have an interior{margin}[A space-filling curve is an example.})?
+Finally, what to do with arbitrary curve (which may not even have an interior{margin}[A space-filling curve is an example.])?
 
 We construct the antiderivative $`F \colon \Omega \to \mathbb{C}` by integrating $`f` across the side of a rectangle, prove $`F' = f`, and get a "fundamental theorem of calculus", that is $$`\oint_\alpha f(z) \; dz = F(\alpha(b)) - F(\alpha(a))`
 where $`\alpha \colon [a, b] \to \mathbb{C}` is some path.
@@ -586,7 +590,7 @@ Prove that if $`f` and $`g` agree on some open neighborhood, then $`f = g`.
 `AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq` packages the identity theorem in Mathlib; the proof is the clopen-set argument from the hint, using that the agreement set is open by power-series equality and closed by isolation of zeros from the previous problem.
 
 :::PROBLEM "Maximums Occur On Boundaries"
-Let $`f \colon U \to \mathbb{C}` be holomorphic, let $`Y \subseteq U` be compact, and let $`\partial Y` be the boundary of $`Y`.
+Let $`f \colon U \to \mathbb{C}` be holomorphic, let $`Y \subseteq U` be compact, and let $`\partial Y` be boundary{margin}[The boundary $`\partial Y` is the set of points $`p` such that no open neighborhood of $`p` is contained in $`Y`. It is also a compact set if $`Y` is compact.] of $`Y`.
 Show that
 $$`\max_{z \in Y} |f(z)| = \max_{z \in \partial Y} |f(z)|.`
 In other words, the maximum values of $`|f|` occur on the boundary.

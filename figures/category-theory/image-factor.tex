@@ -1,0 +1,14 @@
+% Every f factors through its image: A ↠ Img f ↪ B.
+% Source: book/tex/cats/abelian.tex (§ Images).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz-cd}
+\newcommand{\Img}{\mathrm{Img}}
+\newcommand{\Coker}{\mathrm{Coker}}
+\newcommand{\coker}{\mathrm{coker}}
+\begin{document}
+\begin{tikzcd}
+	A \ar[rd, "\exists!"'] \ar[rr, "f"] \ar[rrrd, "0"', near start, dashed]
+		&& B \ar[rd, two heads, "\coker f"] \\
+	& \Img f \ar[ur, hook] \ar[rr, "0", dashed] && \Coker f
+\end{tikzcd}
+\end{document}

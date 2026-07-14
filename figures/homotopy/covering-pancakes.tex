@@ -1,0 +1,29 @@
+% An evenly covered neighborhood of 1 in S^1: its preimage in R is a stack of
+% disjoint copies. Source: book/tex/topology/cover-project.tex (§ Even coverings).
+\documentclass[border=2mm]{standalone}
+\usepackage{tikz}
+\usepackage{amssymb}
+\usetikzlibrary{arrows.meta}
+\begin{document}
+\begin{tikzpicture}[scale=1]
+  % R with ticks
+  \draw[{Latex}-{Latex}] (-3.5,0) -- (3.5,0);
+  \foreach \x in {-2,-1,0,1,2} { \draw (\x,0.08) -- (\x,-0.08) node[below] {$\x$}; }
+  \node[above right] at (3,0) {$\mathbb{R}$};
+  % pancakes: open segments around each integer
+  \foreach \x in {-2,-1,0,1,2} {
+    \draw[blue,thick] (\x-0.2,0) -- (\x+0.2,0);
+    \draw[blue] (\x-0.2,0) circle (1.3pt); \draw[blue] (\x+0.2,0) circle (1.3pt);
+  }
+  % projection
+  \draw[-{Latex}] (0,2.5) -- (0,1.5) node[midway,right] {$p$};
+  % S^1 above
+  \begin{scope}[yshift=3cm]
+    \draw (0,0) circle (0.8);
+    \node at (0.6,0.6) {$S^1$};
+    \fill (0.8,0) circle (1.3pt) node[right] {$1$};
+    \draw[blue,thick] (20:0.8) arc (20:-20:0.8);
+    \draw[blue] (20:0.8) circle (1.3pt); \draw[blue] (-20:0.8) circle (1.3pt);
+  \end{scope}
+\end{tikzpicture}
+\end{document}

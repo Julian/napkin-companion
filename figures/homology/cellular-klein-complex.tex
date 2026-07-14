@@ -1,0 +1,16 @@
+% The cellular chain complex of the Klein bottle, with d_2(e^2)=2e^1_a.
+% Source: book/tex/homology/cellular.tex (§ Cellular homology of the Klein bottle).
+\documentclass[border=2mm]{standalone}
+\usepackage{amssymb}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}[row sep=tiny]
+  0 \arrow[r, "0"]
+    & \mathbb{Z} e^2 \arrow[r, "d_2"]
+    & \mathbb{Z} e^1_a \oplus \mathbb{Z} e^1_b \arrow[r, "d_1"]
+    & \mathbb{Z} e^0 \arrow[r, "d_0"] & 0 \\
+  & e^2 \arrow[r, mapsto] & 2 e^1_a \\
+  && e^1_a \arrow[r, mapsto] & 0 \\
+  && e^1_b \arrow[r, mapsto] & 0
+\end{tikzcd}
+\end{document}
