@@ -4,6 +4,7 @@ import Napkin.Meta.Directives
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.Algebra.Monoid.Defs
 import Mathlib.Topology.Instances.Real.Lemmas
+import Mathlib.Analysis.SpecificLimits.Basic
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -40,26 +41,6 @@ The distance function must obey:
 - The function $`d` should satisfy the *triangle inequality*: for all $`x, y, z : M`, $$`d(x, z) + d(z, y) \geq d(x, y).`
 :::
 
-:::aside
-We write `[MetricSpace M]`; the distance function is `dist : M → M → ℝ`.
-The three axioms come as named lemmas:
-
-```lean -show
-section
-```
-
-```lean
-recall dist_comm {α : Type*} [PseudoMetricSpace α] (x y : α) :
-    dist x y = dist y x
-recall dist_nonneg {α : Type*} [PseudoMetricSpace α] {x y : α} :
-    0 ≤ dist x y
-recall dist_eq_zero {α : Type*} [MetricSpace α] {x y : α} :
-    dist x y = 0 ↔ x = y
-recall dist_triangle {α : Type*} [PseudoMetricSpace α]
-    (x y z : α) : dist x z ≤ dist x y + dist y z
-```
-:::
-
 :::ABUSE
 Just like with groups, we will abbreviate $`(M, d)` as just $`M`.
 :::
@@ -68,13 +49,6 @@ Just like with groups, we will abbreviate $`(M, d)` as just $`M`.
 1. The real line $`\mathbb{R}` is a metric space under the metric $`d(x, y) = |x - y|`.
 2. The interval $`[0, 1]` is also a metric space with the same distance function.
 3. In fact, any subset $`S` of $`\mathbb{R}` can be made into a metric space in this way.
-:::
-
-:::aside
-```lean
-recall : MetricSpace ℝ
-recall (S : Set ℝ) : MetricSpace S
-```
 :::
 
 :::EXAMPLE "Metric spaces of ℝ²"
@@ -156,18 +130,6 @@ However, keep in mind that convergence is defined relative to the parent space; 
 A sequence $`x_1, x_2, \dots` settling into a small neighborhood of its limit $`x`.
 :::
 
-:::aside
-Convergence of `x : ℕ → M` to a limit `l` is written `Filter.Tendsto x Filter.atTop (𝓝 l)`.
-Mathlib's `Metric.tendsto_atTop` repackages this as the familiar $`\varepsilon`-$`N` form.
-
-```lean
-example (M : Type*) [MetricSpace M] (x : ℕ → M) (l : M) :
-    Filter.Tendsto x Filter.atTop (𝓝 l) ↔
-      ∀ ε > 0, ∃ N, ∀ n ≥ N, dist (x n) l < ε :=
-  Metric.tendsto_atTop
-```
-:::
-
 :::EXAMPLE
 Consider the sequence $`x_1 = 1`, $`x_2 = 1.4`, $`x_3 = 1.41`, $`x_4 = 1.414`, \dots.
 
@@ -196,18 +158,6 @@ All we have to do is replace the absolute values with the more general distance 
 Let $`M = (M, d_M)` and $`N = (N, d_N)` be metric spaces.
 A function $`f \colon M \to N` is *continuous* at a point $`p : M` if for every $`\varepsilon > 0` there exists a $`\delta > 0` such that $$`d_M(x, p) < \delta \implies d_N(f(x), f(p)) < \varepsilon.`
 Moreover, the entire function $`f` is continuous if it is continuous at every point $`p : M`.
-:::
-
-:::aside
-These are `ContinuousAt f p` and `Continuous f`, with the $`\varepsilon`-$`\delta` form available via `Metric.continuous_iff`:
-
-```lean
-recall Metric.continuous_iff {α β : Type*} [PseudoMetricSpace α]
-    [PseudoMetricSpace β] {f : α → β} :
-    Continuous f ↔
-      ∀ b, ∀ ε > 0, ∃ δ > 0, ∀ a,
-        dist a b < δ → dist (f a) (f b) < ε
-```
 :::
 
 Notice that, just like in our definition of an isomorphism of a group, we use the metric of $`M` for one condition and the metric of $`N` for the other condition.
@@ -246,23 +196,10 @@ Dead simple with sequences: Let $`p : M` be arbitrary and let $`x_n \to p` in $`
 Then $`f(x_n) \to f(p)` in $`N` and $`g(f(x_n)) \to g(f(p))` in $`L`, QED.
 :::
 
-:::aside
-```lean
-recall Continuous.comp {X Y Z : Type*} [TopologicalSpace X]
-    [TopologicalSpace Y] [TopologicalSpace Z] {f : X → Y}
-    {g : Y → Z} (hg : Continuous g) (hf : Continuous f) :
-    Continuous (g ∘ f)
-```
-:::
-
 :::QUESTION
 Let $`M` be any metric space and $`D` a discrete space.
 When is a map $`f \colon D \to M` continuous?
 :::
-
-```lean -show
-end
-```
 
 # Homeomorphisms
 
@@ -278,22 +215,6 @@ For metric spaces, we do exactly the same thing, but replace "structure-preservi
 Let $`M` and $`N` be metric spaces.
 A function $`f \colon M \to N` is a *homeomorphism* if it is a bijection, and both $`f \colon M \to N` and its inverse $`f^{-1} \colon N \to M` are continuous.
 We say $`M` and $`N` are *homeomorphic*.
-:::
-
-:::aside
-This is `Homeomorph M N` (notation `M ≃ₜ N`), bundling the bijection with both continuities:
-
-```lean -show
-section
-```
-
-```lean
-recall Homeomorph.continuous {X Y : Type*} [TopologicalSpace X]
-    [TopologicalSpace Y] (f : X ≃ₜ Y) : Continuous f
-recall Homeomorph.continuous_invFun {X Y : Type*}
-    [TopologicalSpace X] [TopologicalSpace Y] (f : X ≃ₜ Y) :
-    Continuous f.invFun
-```
 :::
 
 Needless to say, homeomorphism is an equivalence relation.
@@ -339,10 +260,6 @@ One bijection is given by $$`x \mapsto \tan(x \pi / 2)` with the inverse being g
 This might come as a surprise, since $`(-1, 1)` doesn't look that much like $`\mathbb{R}`; the former is "bounded" while the latter is "unbounded".
 :::
 
-```lean -show
-end
-```
-
 # Extended example/definition: product metric
 
 :::PROTOTYPE
@@ -368,15 +285,6 @@ Hence we will usually simply refer to *the* metric on $`M \times N`, called the 
 It will not be important which of the three metrics we select.
 :::
 
-:::aside
-Mathlib's pick is the $`d_{\text{max}}` form (the sup metric); it's auto-registered for any pair of metric spaces:
-
-```lean
-recall {M N : Type*} [MetricSpace M] [MetricSpace N] :
-    MetricSpace (M × N)
-```
-:::
-
 :::EXAMPLE "ℝ²"
 If $`M = N = \mathbb{R}`, we get $`\mathbb{R}^2`, the Euclidean plane.
 The metric $`d_{\text{Euclid}}` is the one we started with, but using either of the other two metric works fine as well.
@@ -396,17 +304,6 @@ Let's see an application of this:
 
 :::PROPOSITION "Addition and multiplication are continuous"
 The addition and multiplication maps are continuous maps $`\mathbb{R} \times \mathbb{R} \to \mathbb{R}`.
-:::
-
-:::aside
-Mathlib has them in the topological-algebra-typeclass form:
-
-```lean
-recall continuous_add {M : Type*} [TopologicalSpace M] [Add M]
-    [ContinuousAdd M] : Continuous fun p : M × M => p.1 + p.2
-recall continuous_mul {M : Type*} [TopologicalSpace M] [Mul M]
-    [ContinuousMul M] : Continuous fun p : M × M => p.1 * p.2
-```
 :::
 
 :::PROOF
@@ -435,19 +332,6 @@ For each real number $`r > 0` and point $`p : M`, we define $$`M_r(p) \coloneqq 
 The set $`M_r(p)` is called an *$`r`-neighborhood* of $`p`.
 :::
 
-:::aside
-Mathlib calls it `Metric.ball p r`:
-
-```lean -show
-section
-```
-
-```lean
-recall Metric.mem_ball {α : Type*} [PseudoMetricSpace α]
-    {x y : α} {ε : ℝ} : y ∈ Metric.ball x ε ↔ dist y x < ε
-```
-:::
-
 :::figure "figures/topology/r-neighborhood.svg"
 The $`r`-neighborhood $`M_r(p)` is the open ball of radius $`r` around $`p`.
 :::
@@ -472,15 +356,6 @@ In other words, there exists $`r > 0` such that $`M_r(p) \subseteq U`.
 :::ABUSE
 Note that a set being open is defined *relative to* the parent space $`M`.
 However, if $`M` is understood we can abbreviate "open in $`M`" to just "open".
-:::
-
-:::aside
-Openness is `IsOpen U`, with the definition above as `Metric.isOpen_iff`:
-
-```lean
-recall Metric.isOpen_iff {α : Type*} [PseudoMetricSpace α]
-    {s : Set α} : IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, Metric.ball x ε ⊆ s
-```
 :::
 
 :::figure "figures/topology/open-disk.svg"
@@ -529,14 +404,6 @@ The whole upshot of this is:
 A function $`f \colon M \to N` of metric spaces is continuous if and only if the pre-image of every open set in $`N` is open in $`M`.
 :::
 
-:::aside
-```lean
-recall continuous_def {X Y : Type*} [TopologicalSpace X]
-    [TopologicalSpace Y] {f : X → Y} :
-    Continuous f ↔ ∀ s : Set Y, IsOpen s → IsOpen (f ⁻¹' s)
-```
-:::
-
 ::::PROOF
 I'll just do one direction…
 
@@ -557,10 +424,6 @@ By continuity of $`f`, we can find a $`\delta` such that the $`\delta`-neighborh
 Thus the $`\delta`-neighborhood lives in $`U`, as desired.
 ::::
 
-```lean -show
-end
-```
-
 # Closed sets
 
 :::PROTOTYPE
@@ -574,22 +437,6 @@ The name "closed" comes from the definition in a metric space.
 Let $`M` be a metric space.
 A subset $`S \subseteq M` is *closed* in $`M` if the following property holds: let $`x_1, x_2, \dots` be a sequence of points in $`S` and suppose that $`x_n` converges to $`x` in $`M`.
 Then $`x \in S` as well.
-:::
-
-:::aside
-This is `IsClosed S`; the closure-under-limits characterization is `IsClosed.mem_of_tendsto`:
-
-```lean -show
-section
-```
-
-```lean
-recall IsClosed.mem_of_tendsto {X : Type*} [TopologicalSpace X]
-    {α : Type*} {x : X} {s : Set X} {f : α → X} {b : Filter α}
-    [b.NeBot] (hs : IsClosed s)
-    (hf : Filter.Tendsto f b (𝓝 x))
-    (h : ∀ᶠ y in b, f y ∈ s) : x ∈ s
-```
 :::
 
 :::ABUSE
@@ -607,10 +454,6 @@ Prove that $`\lim S` is closed even if $`S` isn't closed.
 
 For this reason, $`\lim S` is also called the *closure* of $`S` in $`M`, and denoted $`\overline{S}`.
 It is simply the smallest closed set which contains $`S`.
-
-:::aside
-The closure is `closure S`.
-:::
 
 :::EXAMPLE "Examples of closed sets"
 1. The empty set $`\varnothing` is closed in $`M` for vacuous reasons: there are no sequences of points with elements in $`\varnothing`.
@@ -650,15 +493,6 @@ Prove this theorem!
 You'll want to draw a picture to make it clear what's happening: for example, you might take $`M = \mathbb{R}^2` and $`S` to be the closed unit disk.
 :::
 
-:::aside
-This is `isOpen_compl_iff` (read right-to-left).
-
-```lean
-example (M : Type*) [MetricSpace M] (S : Set M) :
-    IsOpen Sᶜ ↔ IsClosed S := isOpen_compl_iff
-```
-:::
-
 # Problems
 
 :::PROBLEM
@@ -688,6 +522,262 @@ Someone on the Internet posted the question "is $`1/x` a continuous function?", 
 How should you respond?
 :::
 
-```lean -show
-end
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Definition and examples of metric spaces
+
+We write `[MetricSpace M]`; the distance function is `dist : M → M → ℝ`.
+The three axioms come as named lemmas:
+
+```lean
+recall dist_comm {α : Type*} [PseudoMetricSpace α] (x y : α) :
+    dist x y = dist y x
+recall dist_nonneg {α : Type*} [PseudoMetricSpace α] {x y : α} :
+    0 ≤ dist x y
+recall dist_eq_zero {α : Type*} [MetricSpace α] {x y : α} :
+    dist x y = 0 ↔ x = y
+recall dist_triangle {α : Type*} [PseudoMetricSpace α]
+    (x y z : α) : dist x z ≤ dist x y + dist y z
+```
+
+The real line, and any subset of it, is a metric space:
+
+```lean
+recall : MetricSpace ℝ
+recall (S : Set ℝ) : MetricSpace S
+```
+
+A first consequence of the axioms is that a point is at distance zero from itself:
+
+```lean
+example {M : Type*} [MetricSpace M] (x : M) : dist x x = 0 := dist_self x
+```
+
+Your turn: the triangle inequality also gives a *reverse* triangle inequality bounding how much a distance can change when one endpoint moves.
+Chase it out of `dist_triangle`.
+
+```lean
+example {M : Type*} [MetricSpace M] (x y z : M) :
+    dist x z - dist y z ≤ dist x y := by
+  sorry
+```
+
+## Convergence in metric spaces
+
+Convergence of `x : ℕ → M` to a limit `l` is written `Filter.Tendsto x Filter.atTop (𝓝 l)`.
+Mathlib's `Metric.tendsto_atTop` repackages this as the familiar $`\varepsilon`-$`N` form.
+
+```lean
+example (M : Type*) [MetricSpace M] (x : ℕ → M) (l : M) :
+    Filter.Tendsto x Filter.atTop (𝓝 l) ↔
+      ∀ ε > 0, ∃ N, ∀ n ≥ N, dist (x n) l < ε :=
+  Metric.tendsto_atTop
+```
+
+A constant sequence converges to its constant value; `tendsto_const_nhds` says exactly this.
+
+```lean
+example (M : Type*) [MetricSpace M] (l : M) :
+    Filter.Tendsto (fun _ : ℕ => l) Filter.atTop (𝓝 l) :=
+  tendsto_const_nhds
+```
+
+Your turn: the prototype of the chapter, the sequence $`\frac 1n`, converges to $`0` in $`\mathbb{R}`.
+Mathlib packages this fact under the name `tendsto_one_div_atTop_nhds_zero_nat`.
+
+```lean
+example : Filter.Tendsto (fun n : ℕ => 1 / (n : ℝ)) Filter.atTop (𝓝 0) := by
+  sorry
+```
+
+## Continuous maps
+
+`ContinuousAt f p` and `Continuous f` are the two predicates, with the $`\varepsilon`-$`\delta` form available via `Metric.continuous_iff`:
+
+```lean
+recall Metric.continuous_iff {α β : Type*} [PseudoMetricSpace α]
+    [PseudoMetricSpace β] {f : α → β} :
+    Continuous f ↔
+      ∀ b, ∀ ε > 0, ∃ δ > 0, ∀ a,
+        dist a b < δ → dist (f a) (f b) < ε
+```
+
+The composition of continuous maps is continuous — the `PROPOSITION` of this section — via `Continuous.comp`:
+
+```lean
+recall Continuous.comp {X Y Z : Type*} [TopologicalSpace X]
+    [TopologicalSpace Y] [TopologicalSpace Z] {f : X → Y}
+    {g : Y → Z} (hg : Continuous g) (hf : Continuous f) :
+    Continuous (g ∘ f)
+```
+
+The `QUESTION` about maps out of a discrete space has a clean answer: *every* map out of a discrete space is continuous, because there is nothing for the $`\delta`-neighborhoods to obstruct.
+Mathlib calls this `continuous_of_discreteTopology`.
+
+```lean
+example {D M : Type*} [MetricSpace M] [TopologicalSpace D]
+    [DiscreteTopology D] (f : D → M) : Continuous f :=
+  continuous_of_discreteTopology
+```
+
+Your turn: prove the easy direction of *sequential continuity* — a continuous function preserves convergence.
+If $`x_n \to p` and $`f` is continuous, then $`f(x_n) \to f(p)`.
+(Hint: `Continuous.tendsto` gives you the convergence `f` induces at `p`, and `Filter.Tendsto.comp` chains it with the convergence of `x`.)
+
+```lean
+example {M N : Type*} [MetricSpace M] [MetricSpace N] (f : M → N)
+    (x : ℕ → M) (p : M) (hf : Continuous f)
+    (hx : Filter.Tendsto x Filter.atTop (𝓝 p)) :
+    Filter.Tendsto (fun n => f (x n)) Filter.atTop (𝓝 (f p)) := by
+  sorry
+```
+
+## Homeomorphisms
+
+A homeomorphism is `Homeomorph M N` (notation `M ≃ₜ N`), bundling the bijection with both continuities:
+
+```lean
+recall Homeomorph.continuous {X Y : Type*} [TopologicalSpace X]
+    [TopologicalSpace Y] (f : X ≃ₜ Y) : Continuous f
+recall Homeomorph.continuous_invFun {X Y : Type*}
+    [TopologicalSpace X] [TopologicalSpace Y] (f : X ≃ₜ Y) :
+    Continuous f.invFun
+```
+
+The chapter notes that homeomorphism is an equivalence relation.
+Reflexivity is the identity map, packaged as `Homeomorph.refl`:
+
+```lean
+example (M : Type*) [MetricSpace M] : M ≃ₜ M := Homeomorph.refl M
+```
+
+Your turn: supply the symmetry and transitivity, i.e. that a homeomorphism can be inverted and that two of them compose.
+(Look for `Homeomorph.symm` and `Homeomorph.trans`.)
+
+```lean
+example (M N : Type*) [MetricSpace M] [MetricSpace N]
+    (f : M ≃ₜ N) : N ≃ₜ M := sorry
+
+example (M N L : Type*) [MetricSpace M] [MetricSpace N] [MetricSpace L]
+    (f : M ≃ₜ N) (g : N ≃ₜ L) : M ≃ₜ L := sorry
+```
+
+## Product metric
+
+Mathlib's pick for the product metric is the $`d_{\text{max}}` form (the sup metric); it's auto-registered for any pair of metric spaces:
+
+```lean
+recall {M N : Type*} [MetricSpace M] [MetricSpace N] :
+    MetricSpace (M × N)
+```
+
+The addition and multiplication maps are continuous, here in the topological-algebra-typeclass form:
+
+```lean
+recall continuous_add {M : Type*} [TopologicalSpace M] [Add M]
+    [ContinuousAdd M] : Continuous fun p : M × M => p.1 + p.2
+recall continuous_mul {M : Type*} [TopologicalSpace M] [Mul M]
+    [ContinuousMul M] : Continuous fun p : M × M => p.1 * p.2
+```
+
+Your turn: prove the `PROPOSITION` that convergence in the product metric is componentwise.
+The lemma `Prod.tendsto_iff` does the work — this exercise is about matching the chapter's statement to the library's.
+
+```lean
+example {M N : Type*} [MetricSpace M] [MetricSpace N]
+    (x : ℕ → M) (y : ℕ → N) (a : M) (b : N) :
+    Filter.Tendsto (fun n => (x n, y n)) Filter.atTop (𝓝 (a, b)) ↔
+      Filter.Tendsto x Filter.atTop (𝓝 a) ∧
+        Filter.Tendsto y Filter.atTop (𝓝 b) := by
+  sorry
+```
+
+And one more, restating the first end-of-chapter problem: subtraction on $`\mathbb{R}` is continuous.
+(The library name is `continuous_sub`.)
+
+```lean
+example : Continuous fun p : ℝ × ℝ => p.1 - p.2 := by
+  sorry
+```
+
+## Open sets
+
+An $`r`-neighborhood is `Metric.ball p r`:
+
+```lean
+recall Metric.mem_ball {α : Type*} [PseudoMetricSpace α]
+    {x y : α} {ε : ℝ} : y ∈ Metric.ball x ε ↔ dist y x < ε
+```
+
+Openness is `IsOpen U`, with the chapter's definition available as `Metric.isOpen_iff`:
+
+```lean
+recall Metric.isOpen_iff {α : Type*} [PseudoMetricSpace α]
+    {s : Set α} : IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, Metric.ball x ε ⊆ s
+```
+
+The `THEOREM` characterizing continuity by preimages of open sets is `continuous_def`:
+
+```lean
+recall continuous_def {X Y : Type*} [TopologicalSpace X]
+    [TopologicalSpace Y] {f : X → Y} :
+    Continuous f ↔ ∀ s : Set Y, IsOpen s → IsOpen (f ⁻¹' s)
+```
+
+The first example of an open set is that any $`r`-neighborhood is itself open, which is `Metric.isOpen_ball`:
+
+```lean
+example {M : Type*} [MetricSpace M] (p : M) (r : ℝ) :
+    IsOpen (Metric.ball p r) := Metric.isOpen_ball
+```
+
+Your turn: prove the two closure properties from the `PROPOSITION` — that a finite intersection of open sets is open, and that an arbitrary union of open sets is open.
+(Look for `IsOpen.inter` and `isOpen_iUnion`.)
+
+```lean
+example {M : Type*} [MetricSpace M] (s t : Set M)
+    (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ∩ t) := by
+  sorry
+
+example {M : Type*} [MetricSpace M] (U : ℕ → Set M)
+    (h : ∀ i, IsOpen (U i)) : IsOpen (⋃ i, U i) := by
+  sorry
+```
+
+## Closed sets
+
+Closedness is `IsClosed S`; the chapter's closure-under-limits characterization is `IsClosed.mem_of_tendsto`:
+
+```lean
+recall IsClosed.mem_of_tendsto {X : Type*} [TopologicalSpace X]
+    {α : Type*} {x : X} {s : Set X} {f : α → X} {b : Filter α}
+    [b.NeBot] (hs : IsClosed s)
+    (hf : Filter.Tendsto f b (𝓝 x))
+    (h : ∀ᶠ y in b, f y ∈ s) : x ∈ s
+```
+
+The closure $`\overline{S} = \lim S` is `closure S`; it contains $`S` (`subset_closure`) and is itself closed:
+
+```lean
+example {M : Type*} [MetricSpace M] (S : Set M) : S ⊆ closure S :=
+  subset_closure
+```
+
+The `THEOREM` that closed sets are exactly the complements of open sets is `isOpen_compl_iff` (read right-to-left).
+
+```lean
+example (M : Type*) [MetricSpace M] (S : Set M) :
+    IsOpen Sᶜ ↔ IsClosed S := isOpen_compl_iff
+```
+
+Your turn: the closure of any set is closed — this is the content of the `EXERCISE` that $`\lim S` is always closed, even when $`S` isn't.
+(The one-liner is `isClosed_closure`.)
+
+```lean
+example {M : Type*} [MetricSpace M] (S : Set M) :
+    IsClosed (closure S) := by
+  sorry
 ```
