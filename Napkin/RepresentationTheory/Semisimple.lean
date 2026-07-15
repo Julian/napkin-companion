@@ -60,30 +60,6 @@ Can we say anything more?
 For example, it also tells us that $$`\operatorname{Hom}_{\text{rep}}(V, V^{\oplus 2}) = k^{\oplus 2}.`
 The possible maps are $`v \mapsto (c_1 v_1, c_2 v_2)` for some choice of $`c_1, c_2 : k`.
 
-:::aside
-The engine behind all of this is `LinearMap.bijective_or_eq_zero`: any intertwining operator between two irreps is either an isomorphism or the zero map.
-
-```lean
-example {R M N : Type*} [Ring R]
-    [AddCommGroup M] [Module R M] [IsSimpleModule R M]
-    [AddCommGroup N] [Module R N] [IsSimpleModule R N]
-    (f : M →ₗ[R] N) :
-    Function.Bijective f ∨ f = 0 :=
-  LinearMap.bijective_or_eq_zero f
-```
-
-When $`k` is algebraically closed and $`V` is a finite-dimensional irrep, `IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed` sharpens this to the statement that *every* self-intertwiner is a scalar, which is exactly why $`\operatorname{Hom}_{\text{rep}}(V, V) \cong k`.
-
-```lean
-example {A V : Type*} (k : Type*)
-    [Field k] [Ring A] [Algebra k A] [AddCommGroup V]
-    [Module k V] [Module A V] [IsScalarTower k A V]
-    [IsSimpleModule A V] [FiniteDimensional k V] [IsAlgClosed k] :
-    Function.Bijective (algebraMap k (Module.End A V)) :=
-  IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed k
-```
-:::
-
 More generally, suppose $`V` is a finite-dimensional irrep and consider $`\operatorname{Hom}_{\text{rep}}(V^{\oplus m}, V^{\oplus n})`.
 Intertwining operators $`T \colon V^{\oplus m} \to V^{\oplus n}` are determined completely by the $`mn` choices of compositions $$`V \hookrightarrow V^{\oplus m} \xrightarrow{T} V^{\oplus n} \twoheadrightarrow V` where the first arrow is inclusion to the $`i`th component of $`V^{\oplus m}` (for $`1 \le i \le m`) and the second arrow is projection to the $`j`th component of $`V^{\oplus n}` (for $`1 \le j \le n`).
 However, by Schur's lemma on each of these compositions, we know they must be constant.
@@ -197,21 +173,6 @@ Then the following are equivalent:
 3. $`\operatorname{Reg}(A)` is completely reducible.
 :::
 
-:::aside
-The equivalence of the first two conditions is the Artin--Wedderburn theorem, recorded as `isSemisimpleRing_iff_pi_matrix_divisionRing`: a ring is semisimple exactly when it is a finite product of matrix rings over division rings.
-Over an algebraically closed field the division rings collapse to $`k` itself, giving the $`\bigoplus_i \operatorname{Mat}_{d_i}(k)` of the theorem.
-
-```lean
-example {R : Type u} [Ring R] :
-    IsSemisimpleRing R ↔
-      ∃ (n : ℕ) (D : Fin n → Type u) (d : Fin n → ℕ)
-        (_ : Π i, DivisionRing (D i)),
-        Nonempty (R ≃+*
-          Π i, Matrix (Fin (d i)) (Fin (d i)) (D i)) :=
-  isSemisimpleRing_iff_pi_matrix_divisionRing
-```
-:::
-
 :::PROOF
 (1) $`\implies` (2) follows from breaking any finite-dimensional representation of $`A` into a direct sum of representations of $`\operatorname{Mat}_{d_i}(k)`, then using the classification of representations of the matrix algebra which shows any such representations are completely reducible.
 (2) $`\implies` (3) is tautological.
@@ -280,18 +241,6 @@ Show that the map $`P` satisfies:
 
 Thus $`P` is idempotent (it is the identity on its image $`W`), so we have $`V = \ker P \oplus \operatorname{img} P`, but both $`\ker P` and $`\operatorname{img} P` are subrepresentations as desired.
 ::::
-
-:::aside
-`Submodule.exists_isCompl` is Maschke's theorem: any $`k[G]`-submodule of a representation has a $`k[G]`-invariant complement, provided $`|G|` is invertible in $`k`.
-The proof there is essentially the averaging argument above.
-
-Assembling those complements over all submodules yields that $`k[G]` is itself a semisimple ring whenever $`|G|` is invertible in $`k`, available directly as an instance.
-
-```lean
-example {k G : Type*} [Field k] [Group G] [Finite G] [NeZero (Nat.card G : k)] :
-    IsSemisimpleRing (MonoidAlgebra k G) := inferInstance
-```
-:::
 
 :::REMARK
 In the case where $`k = \mathbb{C}`, there is a shorter proof.
@@ -373,3 +322,87 @@ In how many ways can the bug move to end up at $`A` after all steps?
 :::figure "figures/representation-theory/aime-wheel.svg"
 :::
 ::::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Schur's lemma continued
+
+The engine behind all of this is `LinearMap.bijective_or_eq_zero`: any intertwining operator between two irreps is either an isomorphism or the zero map.
+
+```lean
+example {R M N : Type*} [Ring R]
+    [AddCommGroup M] [Module R M] [IsSimpleModule R M]
+    [AddCommGroup N] [Module R N] [IsSimpleModule R N]
+    (f : M →ₗ[R] N) :
+    Function.Bijective f ∨ f = 0 :=
+  LinearMap.bijective_or_eq_zero f
+```
+
+When $`k` is algebraically closed and $`V` is a finite-dimensional irrep, `IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed` sharpens this to the statement that *every* self-intertwiner is a scalar, which is exactly why $`\operatorname{Hom}_{\text{rep}}(V, V) \cong k`.
+
+```lean
+example {A V : Type*} (k : Type*)
+    [Field k] [Ring A] [Algebra k A] [AddCommGroup V]
+    [Module k V] [Module A V] [IsScalarTower k A V]
+    [IsSimpleModule A V] [FiniteDimensional k V] [IsAlgClosed k] :
+    Function.Bijective (algebraMap k (Module.End A V)) :=
+  IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed k
+```
+
+Read off the contrapositive as an exercise: a *nonzero* intertwiner between two irreps has no choice but to be an isomorphism.
+
+```lean
+example {R M N : Type*} [Ring R]
+    [AddCommGroup M] [Module R M] [IsSimpleModule R M]
+    [AddCommGroup N] [Module R N] [IsSimpleModule R N]
+    (f : M →ₗ[R] N) (hf : f ≠ 0) : Function.Bijective f := by
+  sorry
+```
+
+## Semisimple algebras
+
+The equivalence of the first two conditions is the Artin--Wedderburn theorem, recorded as `isSemisimpleRing_iff_pi_matrix_divisionRing`: a ring is semisimple exactly when it is a finite product of matrix rings over division rings.
+Over an algebraically closed field the division rings collapse to $`k` itself, giving the $`\bigoplus_i \operatorname{Mat}_{d_i}(k)` of the theorem.
+
+```lean
+example {R : Type u} [Ring R] :
+    IsSemisimpleRing R ↔
+      ∃ (n : ℕ) (D : Fin n → Type u) (d : Fin n → ℕ)
+        (_ : Π i, DivisionRing (D i)),
+        Nonempty (R ≃+*
+          Π i, Matrix (Fin (d i)) (Fin (d i)) (D i)) :=
+  isSemisimpleRing_iff_pi_matrix_divisionRing
+```
+
+Each summand $`\operatorname{Mat}_{d_i}(k)` of the classification is already semisimple on its own; show that a matrix ring over a field is a semisimple ring.
+
+```lean
+example (k : Type*) [Field k] (n : ℕ) :
+    IsSemisimpleRing (Matrix (Fin n) (Fin n) k) := by
+  sorry
+```
+
+## Maschke's theorem
+
+`Submodule.exists_isCompl` is Maschke's theorem: any $`k[G]`-submodule of a representation has a $`k[G]`-invariant complement, provided $`|G|` is invertible in $`k`.
+The proof there is essentially the averaging argument above.
+
+Assembling those complements over all submodules yields that $`k[G]` is itself a semisimple ring whenever $`|G|` is invertible in $`k`, available directly as an instance.
+
+```lean
+example {k G : Type*} [Field k] [Group G] [Finite G] [NeZero (Nat.card G : k)] :
+    IsSemisimpleRing (MonoidAlgebra k G) := inferInstance
+```
+
+The exercise above asked you to build the supplementary $`G`-invariant subspace $`W'` with $`V = W \oplus W'` out of the averaged projection $`P`; here is that upshot as an exercise, that every subrepresentation has an invariant complement.
+
+```lean
+example {k G V : Type*} [Field k] [Group G] [Finite G] [NeZero (Nat.card G : k)]
+    [AddCommGroup V] [Module (MonoidAlgebra k G) V]
+    (p : Submodule (MonoidAlgebra k G) V) :
+    ∃ q : Submodule (MonoidAlgebra k G) V, IsCompl p q := by
+  sorry
+```

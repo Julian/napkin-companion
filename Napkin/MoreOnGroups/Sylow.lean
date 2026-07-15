@@ -46,27 +46,7 @@ Then
    In particular, $`n_p \neq 0` and a Sylow $`p`-subgroup exists.
 2. $`n_p` divides $`m`.
 3. Any two Sylow $`p`-subgroups are conjugate subgroups (hence isomorphic).
-
-`Sylow p G` is the type of Sylow $`p`-subgroups of $`G`.
-
-```lean
-example (G : Type*) [Group G] (p : ℕ) : Type _ := Sylow p G
-```
 :::
-
-The three statements above appear in Mathlib as `card_sylow_modEq_one`, `Sylow.card_dvd_index`, and the transitivity instance `Sylow.isPretransitive_of_finite` (the conjugation action of $`G` on `Sylow p G` is transitive).
-
-```lean
-example (G : Type*) [Group G] (p : ℕ) [Fact p.Prime]
-    [Finite (Sylow p G)] :
-    Nat.card (Sylow p G) ≡ 1 [MOD p] :=
-  card_sylow_modEq_one p G
-
-example (G : Type*) [Group G] (p : ℕ) [Fact p.Prime]
-    [Finite (Sylow p G)] (P : Sylow p G) :
-    Nat.card (Sylow p G) ∣ P.1.index :=
-  Sylow.card_dvd_index P
-```
 
 Sylow's theorem is really huge for classifying groups; in particular, the conditions $`n_p \equiv 1 \pmod p` and $`n_p \mid m` can often pin down the value of $`n_p` to just a few values.
 Here are some results which follow from the Sylow theorems.
@@ -300,3 +280,85 @@ A group action $`\cdot` of a group $`G` on set $`X` is said to be
 
 Does there exist a faithful transitive action of $`S_5` on a six-element set?
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Sylow theorems
+
+`Sylow p G` is the type of Sylow $`p`-subgroups of $`G`.
+
+```lean
+example (G : Type*) [Group G] (p : ℕ) : Type _ := Sylow p G
+```
+
+The first two statements of the theorem appear in Mathlib as `card_sylow_modEq_one` and `Sylow.card_dvd_index`, using $`n_p = ` `Nat.card (Sylow p G)`.
+(The third, that any two are conjugate, is the transitivity instance `Sylow.isPretransitive_of_finite`: the conjugation action of $`G` on `Sylow p G` is transitive.)
+
+```lean
+example (G : Type*) [Group G] (p : ℕ) [Fact p.Prime]
+    [Finite (Sylow p G)] :
+    Nat.card (Sylow p G) ≡ 1 [MOD p] :=
+  card_sylow_modEq_one p G
+
+example (G : Type*) [Group G] (p : ℕ) [Fact p.Prime]
+    [Finite (Sylow p G)] (P : Sylow p G) :
+    Nat.card (Sylow p G) ∣ P.1.index :=
+  Sylow.card_dvd_index P
+```
+
+The chapter noted that a Sylow $`p`-subgroup is normal exactly when $`n_p = 1`.
+The "$`n_p = 1`" side is Mathlib's `Subsingleton (Sylow p G)`, that there is at most one Sylow $`p`-subgroup; show that under this hypothesis the Sylow subgroup is normal.
+
+```lean
+example (G : Type*) [Group G] (p : ℕ) [Subsingleton (Sylow p G)]
+    (P : Sylow p G) : (P : Subgroup G).Normal := by
+  sorry
+```
+
+## Proving Sylow's theorem
+
+The normalizer of a subgroup $`H` is `Subgroup.normalizer H`, the stabilizer of $`H` under conjugation, and it always contains $`H`.
+
+```lean
+example (G : Type*) [Group G] (H : Subgroup G) :
+    H ≤ Subgroup.normalizer H :=
+  Subgroup.le_normalizer
+```
+
+The conclusion of Step 2 is that any two Sylow $`p`-subgroups are conjugate, and hence isomorphic.
+Mathlib records the isomorphism directly as `Sylow.equiv`; produce it (as a `Nonempty` witness).
+
+```lean
+example (G : Type*) [Group G] (p : ℕ) [Fact p.Prime] [Finite (Sylow p G)]
+    (P Q : Sylow p G) : Nonempty (P ≃* Q) := by
+  sorry
+```
+
+## Simple groups and Jordan-Hölder
+
+`IsSimpleGroup G` is the predicate that $`G` is nontrivial and has no normal subgroups other than `⊥` and `⊤`.
+
+```lean
+example (G : Type*) [Group G] : Prop := IsSimpleGroup G
+```
+
+The question of "for which $`n` is $`\mathbb{Z}/n\mathbb{Z}` simple" is answered by the primes.
+Since $`\mathbb{Z}/n\mathbb{Z}` is abelian, the relevant notion here is the additive `IsSimpleAddGroup`; confirm Mathlib already knows $`\mathbb{Z}/p\mathbb{Z}` is a simple additive group when $`p` is prime.
+
+```lean
+example (p : ℕ) [Fact p.Prime] : IsSimpleAddGroup (ZMod p) := by
+  sorry
+```
+
+## Problems
+
+Cauchy's theorem says a prime $`p` dividing $`|G|` is realized as the order of some element.
+
+```lean
+example (G : Type*) [Group G] [Fintype G] (p : ℕ) [Fact p.Prime]
+    (h : p ∣ Fintype.card G) : ∃ g : G, orderOf g = p := by
+  sorry
+```

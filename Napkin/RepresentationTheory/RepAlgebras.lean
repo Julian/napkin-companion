@@ -80,17 +80,6 @@ Some other authors don't require $`A` to be associative or to have an identity, 
 However, this is needlessly wordy for our purposes.
 :::
 
-:::aside
-The setup above is captured directly:
-```lean (name := AlgebraExample)
-section
-variable (k A : Type*) [CommRing k] [Ring A] [Algebra k A]
-end
-```
-The `Algebra k A` typeclass packages the ring homomorphism $`k \to A` and the requirement that the image lies in the center of $`A`.
-Note that `Ring` here permits noncommutative multiplication; the commutative case is `CommRing A`.
-:::
-
 :::EXAMPLE "Group algebra"
 The *group algebra* $`k[G]` is the $`k`-vector space whose *basis elements* are the elements of a group $`G`, and where the product of two basis elements is the group multiplication.
 For example, suppose $`G = \mathbb{Z}/2\mathbb{Z} = \{1_G, x\}`.
@@ -102,17 +91,6 @@ When is $`k[G]` commutative?
 :::
 
 The example $`k[G]` is very important, because (as we will soon see) a representation of the algebra $`k[G]` amounts to a representation of the group $`G` itself.
-
-:::aside
-The group algebra is exactly `MonoidAlgebra`:
-```lean (name := GroupAlgebraExample)
-section
-variable (k G : Type*) [CommRing k] [Group G]
-recall : Algebra k (MonoidAlgebra k G)
-end
-```
-`MonoidAlgebra k G` is in fact defined for any monoid `G`; the group structure is only needed for the representation correspondence below.
-:::
 
 It is worth mentioning at this point that:
 
@@ -172,19 +150,6 @@ This is probably one of the worst abuses I will commit, but everyone else does i
 
 :::ABUSE
 Rather than $`\rho(a)(v)` we will just write $`\rho(a) v`.
-:::
-
-:::aside
-A representation is just a module over $`A` whose $`k`-scalar action agrees with the one inherited through $`A`:
-```lean (name := RepExample)
-section
-variable (k A V : Type*)
-  [CommRing k] [Ring A] [Algebra k A]
-  [AddCommGroup V] [Module k V] [Module A V]
-  [IsScalarTower k A V]
-end
-```
-The `IsScalarTower k A V` hypothesis is exactly the requirement that $`\lambda \cdot v` agree whether computed via the $`k`-action on $`V` directly, or by first scaling $`\lambda \cdot 1_A : A` and acting through that.
 :::
 
 :::EXAMPLE "Representations of $`\\operatorname{Mat}(V)`"
@@ -313,18 +278,6 @@ For brevity, an *irrep* of an algebra/group is an irreducible representation.
 In this textbook we won't consider infinite-dimensional irreps at all, even when $`\dim A` is not necessarily finite.)
 :::
 
-:::aside
-Mathlib spells "irreducible representation" as `IsSimpleModule A V`:
-```lean (name := IrrepExample)
-section
-variable (A V : Type*)
-  [Ring A] [AddCommGroup V] [Module A V]
-example [IsSimpleModule A V] : True := trivial
-end
-```
-A simple module is one with exactly two submodules (namely $`\{0\}` and the whole space), so that no proper nonzero $`A`-stable subspace exists --- exactly the irreducibility condition.
-:::
-
 :::EXAMPLE "Representation of $`S_n` decomposes"
 Let $`A = \mathbb{R}[S_3]` again, acting via permutation of coordinates on $$`V = \mathbb{R}^{\oplus 3} = \{ (x, y, z) \mid x, y, z : \mathbb{R} \}.` Consider again the two subspaces $$`W_1 = \left\{ (t, t, t) \mid t : \mathbb{R} \right\}` $$`W_2 = \left\{ (x, y, z) \mid x + y + z = 0 \right\}.` As we've seen, $`V = W_1 \oplus W_2`, and thus $`V` is not irreducible.
 But one can show that $`W_1` and $`W_2` are irreducible (and hence indecomposable) as follows.
@@ -374,19 +327,6 @@ The condition $`T(a \cdot v) = a \cdot T(v)` can be read as saying that $$`\begi
 :::REMARK "For category lovers"
 A representation is just a "bilinear" functor from an abelian one-object category $`\{*\}` (so $`\operatorname{Hom}(*, *) \cong A`) to the abelian category $`\mathsf{Vect}_k`.
 Then an intertwining operator is just a *natural transformation*.
-:::
-
-:::aside
-An intertwining operator is just an $`A`-linear map:
-```lean (name := IntertwineExample)
-section
-variable (A V W : Type*) [Ring A]
-  [AddCommGroup V] [Module A V]
-  [AddCommGroup W] [Module A W]
-example (T : V →ₗ[A] W) : True := trivial
-end
-```
-The notation `V →ₗ[A] W` means "linear map of $`A`-modules"; $`A`-linearity is precisely the condition $`T(a \cdot v) = a \cdot T(v)`.
 :::
 
 Here are some examples of intertwining operators.
@@ -441,10 +381,6 @@ Use the fact that $`T` has an eigenvalue $`\lambda` to deduce this from Schur's 
 :::
 
 We have already seen the counterexample of rotation by $`90^\circ` for $`k = \mathbb{R}`; this was the same counterexample we gave to the assertion that all linear maps have eigenvalues.
-
-:::aside
-`IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed` is the algebraically-closed-fields form of Schur's lemma: every $`A`-endomorphism of a finite-dimensional simple $`A`-module is in the image of $`k \to \operatorname{End}_A(V)`, i.e. is scalar multiplication.
-:::
 
 # The representations of the matrix algebra
 
@@ -522,3 +458,133 @@ Prove that any intertwining operator $`T \colon V \to V` is either nilpotent or 
 
 (Note that Schur's lemma for algebraically closed fields doesn't apply, since the field $`k` may not be algebraically closed.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Algebras
+
+The setup above is captured directly.
+The `Algebra k A` typeclass packages the ring homomorphism $`k \to A` and the requirement that the image lies in the center of $`A`.
+Note that `Ring` here permits noncommutative multiplication; the commutative case is `CommRing A`.
+
+```lean (name := AlgebraExample)
+section
+variable (k A : Type*) [CommRing k] [Ring A] [Algebra k A]
+end
+```
+
+The group algebra is exactly `MonoidAlgebra`.
+`MonoidAlgebra k G` is in fact defined for any monoid `G`; the group structure is only needed for the representation correspondence below.
+
+```lean (name := GroupAlgebraExample)
+section
+variable (k G : Type*) [CommRing k] [Group G]
+recall : Algebra k (MonoidAlgebra k G)
+end
+```
+
+The direct sum $`A \oplus B` of algebras (defined by componentwise multiplication) is Mathlib's product ring $`A \times B`, and its multiplicative identity is $`(1_A, 1_B)`, answering the question about the identity of $`A \oplus B`.
+
+```lean
+example (A B : Type*) [Ring A] [Ring B] : (1 : A × B) = (1, 1) := rfl
+```
+
+The question of when $`k[G]` is commutative has the answer "exactly when $`G` is abelian".
+Prove the forward direction: a commutative group yields a commutative group algebra.
+
+```lean
+example (k G : Type*) [CommRing k] [CommGroup G] :
+    CommRing (MonoidAlgebra k G) := by
+  sorry
+```
+
+## Representations
+
+A representation is just a module over $`A` whose $`k`-scalar action agrees with the one inherited through $`A`.
+The `IsScalarTower k A V` hypothesis is exactly the requirement that $`\lambda \cdot v` agree whether computed via the $`k`-action on $`V` directly, or by first scaling $`\lambda \cdot 1_A : A` and acting through that.
+
+```lean (name := RepExample)
+section
+variable (k A V : Type*)
+  [CommRing k] [Ring A] [Algebra k A]
+  [AddCommGroup V] [Module k V] [Module A V]
+  [IsScalarTower k A V]
+end
+```
+
+The regular representation $`\operatorname{Reg}(A)`, in which $`A` acts on itself by multiplication, is just the module structure a ring carries over itself.
+
+```lean
+example (A : Type*) [Ring A] : Module A A := inferInstance
+```
+
+The action axioms are precisely the module axioms.
+As one instance, prove the axiom $`1_A \cdot v = v` from the definition of a representation.
+
+```lean
+example (A V : Type*) [Ring A] [AddCommGroup V] [Module A V] (v : V) :
+    (1 : A) • v = v := by
+  sorry
+```
+
+## Irreducible and indecomposable representations
+
+Mathlib spells "irreducible representation" as `IsSimpleModule A V`.
+A simple module is one with exactly two submodules (namely $`\{0\}` and the whole space), so that no proper nonzero $`A`-stable subspace exists --- exactly the irreducibility condition.
+
+```lean (name := IrrepExample)
+section
+variable (A V : Type*)
+  [Ring A] [AddCommGroup V] [Module A V]
+example [IsSimpleModule A V] : True := trivial
+end
+```
+
+The concrete irreducibility computations of this section --- that $`k^{\oplus d}` is irreducible over $`\operatorname{Mat}_d(k)`, or that the $`\begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}` representation of $`\mathbb{R}[x]` is indecomposable but not irreducible --- are not packaged in Mathlib, and would require building each module structure by hand.
+A basic sanity check that is available is that an irreducible representation is nonzero.
+
+```lean
+example (A V : Type*) [Ring A] [AddCommGroup V] [Module A V]
+    [IsSimpleModule A V] : Nontrivial V := by
+  sorry
+```
+
+## Morphisms of representations
+
+An intertwining operator is just an $`A`-linear map.
+The notation `V →ₗ[A] W` means "linear map of $`A`-modules"; $`A`-linearity is precisely the condition $`T(a \cdot v) = a \cdot T(v)`.
+
+```lean (name := IntertwineExample)
+section
+variable (A V W : Type*) [Ring A]
+  [AddCommGroup V] [Module A V]
+  [AddCommGroup W] [Module A W]
+example (T : V →ₗ[A] W) : True := trivial
+end
+```
+
+The exercise that the kernel and image of an intertwining operator are subrepresentations is automatic: for an $`A`-linear map, both `LinearMap.ker T` and `LinearMap.range T` are already $`A`-submodules.
+
+```lean
+example (A V W : Type*) [Ring A] [AddCommGroup V] [Module A V]
+    [AddCommGroup W] [Module A W] (T : V →ₗ[A] W) : Submodule A V :=
+  LinearMap.ker T
+
+example (A V W : Type*) [Ring A] [AddCommGroup V] [Module A V]
+    [AddCommGroup W] [Module A W] (T : V →ₗ[A] W) : Submodule A W :=
+  LinearMap.range T
+```
+
+Schur's lemma then follows: a nonzero intertwining operator out of an irreducible representation is injective, because its kernel --- a subrepresentation of a simple module --- must be zero.
+
+```lean
+example (A V W : Type*) [Ring A] [AddCommGroup V] [Module A V]
+    [AddCommGroup W] [Module A W] [IsSimpleModule A V]
+    (T : V →ₗ[A] W) (hT : T ≠ 0) : Function.Injective T := by
+  sorry
+```
+
+The algebraically-closed form of Schur's lemma is `IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed`: every $`A`-endomorphism of a finite-dimensional simple $`A`-module is in the image of $`k \to \operatorname{End}_A(V)`, i.e. is scalar multiplication.

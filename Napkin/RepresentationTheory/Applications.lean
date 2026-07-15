@@ -3,9 +3,15 @@ import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+import Mathlib.Data.Complex.Basic
 import Mathlib.RingTheory.Polynomial.RationalRoot
+import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RepresentationTheory.FDRep
 import Mathlib.FieldTheory.IsAlgClosed.Basic
+import Mathlib.GroupTheory.Subgroup.Simple
+import Mathlib.GroupTheory.Subgroup.Center
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -36,12 +42,6 @@ Then $`\dim V` divides $`|G|`.
 The proof of this will require algebraic integers (developed in the algebraic number theory chapter).
 Recall that an *algebraic integer* is a complex number which is the root of a monic polynomial with integer coefficients, and that these algebraic integers form a ring $`\overline{\mathbb{Z}}` under addition and multiplication, and that $`\overline{\mathbb{Z}} \cap \mathbb{Q} = \mathbb{Z}`.
 
-Being an algebraic integer over a base ring is `IsIntegral`; the last fact $`\overline{\mathbb{Z}} \cap \mathbb{Q} = \mathbb{Z}` is the statement that $`\mathbb{Z}` is integrally closed, `IsIntegrallyClosed ℤ`, which holds for any unique factorization domain (a consequence of the rational root theorem).
-
-```lean
-example : IsIntegrallyClosed ℤ := inferInstance
-```
-
 First, we prove:
 
 :::LEMMA "Elements of $`\\mathbb{Z}[G]` are integral"
@@ -53,15 +53,6 @@ Then there exists a monic polynomial $`P` with integer coefficients such that $`
 Let $`A_k` be the $`\mathbb{Z}`-span of $`1, \alpha^1, \dots, \alpha^k`.
 Since $`\mathbb{Z}[G]` is Noetherian, the inclusions $`A_0 \subseteq A_1 \subseteq A_2 \subseteq \dots` cannot all be strict, hence $`A_k = A_{k+1}` for some $`k`, which means $`\alpha^{k+1}` can be expressed in terms of lower powers of $`\alpha`.
 :::
-
-This is exactly the general fact `IsIntegral.of_finite`: every element of an algebra that is module-finite over the base (such as $`\mathbb{Z}[G]`, which is free of rank $`|G|` over $`\mathbb{Z}`) is integral.
-The Noetherian phrasing of the same argument is `isIntegral_of_noetherian`.
-
-```lean
-example (R : Type*) [CommRing R] (B : Type*) [CommRing B] [Algebra R B]
-    [Module.Finite R B] (x : B) : IsIntegral R x :=
-  IsIntegral.of_finite R x
-```
 
 *Proof of Frobenius divisibility.*
 
@@ -77,16 +68,6 @@ By the lemma above, $`\lambda_i : \overline{\mathbb{Z}}`, as desired.
 
 Now we are done, since $`\overline{\chi_V(C_i)} : \overline{\mathbb{Z}}` too (it is the sum of conjugates of roots of unity), so $`\frac{|G|}{\dim V}` is the sum of products of algebraic integers, hence itself an algebraic integer.
 :::
-
-The Schur's lemma step — that an intertwining operator between irreps is a scalar — is `FDRep.finrank_hom_simple_simple` for finite-dimensional representations over an algebraically closed field: the space of morphisms between two simple objects `V ⟶ W` is one-dimensional when they are isomorphic and zero otherwise.
-A one-dimensional endomorphism space forces every self-intertwiner $`V \to V` to be a scalar multiple of the identity.
-
-```lean
-example {k : Type*} [Field k] [IsAlgClosed k] {G : Type*} [Group G]
-    (V W : FDRep k G) [Simple V] [Simple W] :
-    Module.finrank k (V ⟶ W) = if Nonempty (V ≅ W) then 1 else 0 :=
-  FDRep.finrank_hom_simple_simple V W
-```
 
 # Burnside's theorem
 
@@ -201,3 +182,104 @@ Let $`V_i = (V_i, \rho)`, and pick $`k = \dim V_i`.
 
   Thus, we are done.
 ::::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Frobenius divisibility
+
+Being an algebraic integer over a base ring is `IsIntegral`.
+The fact $`\overline{\mathbb{Z}} \cap \mathbb{Q} = \mathbb{Z}` is the statement that $`\mathbb{Z}` is integrally closed, `IsIntegrallyClosed ℤ`, which holds for any unique factorization domain (a consequence of the rational root theorem).
+
+```lean
+example : IsIntegrallyClosed ℤ := inferInstance
+```
+
+The lemma that every $`\alpha : \mathbb{Z}[G]` is integral is exactly the general fact `IsIntegral.of_finite`: every element of an algebra that is module-finite over the base (such as $`\mathbb{Z}[G]`, which is free of rank $`|G|` over $`\mathbb{Z}`) is integral.
+The Noetherian phrasing of the same argument is `isIntegral_of_noetherian`.
+
+```lean
+example (R : Type*) [CommRing R] (B : Type*) [CommRing B] [Algebra R B]
+    [Module.Finite R B] (x : B) : IsIntegral R x :=
+  IsIntegral.of_finite R x
+```
+
+The Schur's lemma step — that an intertwining operator between irreps is a scalar — is `FDRep.finrank_hom_simple_simple` for finite-dimensional representations over an algebraically closed field: the space of morphisms between two simple objects `V ⟶ W` is one-dimensional when they are isomorphic and zero otherwise.
+A one-dimensional endomorphism space forces every self-intertwiner $`V \to V` to be a scalar multiple of the identity.
+
+```lean
+example {k : Type*} [Field k] [IsAlgClosed k] {G : Type*} [Group G]
+    (V W : FDRep k G) [Simple V] [Simple W] :
+    Module.finrank k (V ⟶ W) = if Nonempty (V ≅ W) then 1 else 0 :=
+  FDRep.finrank_hom_simple_simple V W
+```
+
+The final line of the proof used that the algebraic integers are closed under addition and multiplication, so that a sum of products of them is again an algebraic integer.
+Prove this closure fact from `IsIntegral.add` and `IsIntegral.mul`.
+
+```lean
+example (a b c : ℂ) (ha : IsIntegral ℤ a) (hb : IsIntegral ℤ b)
+    (hc : IsIntegral ℤ c) : IsIntegral ℤ (a * b + c) := by
+  sorry
+```
+
+The reason $`\frac{|G|}{\dim V}`, once shown to be an algebraic integer, must actually be an integer is that $`\overline{\mathbb{Z}} \cap \mathbb{Q} = \mathbb{Z}`.
+Using `IsIntegrallyClosed.isIntegral_iff`, show that a rational number which is integral over $`\mathbb{Z}` comes from an integer.
+
+```lean
+example (q : ℚ) (h : IsIntegral ℤ q) : ∃ n : ℤ, (n : ℚ) = q := by
+  sorry
+```
+
+## Burnside's theorem
+
+Burnside's $`p^a q^b` theorem itself is not in Mathlib, so there is nothing to quote for the capstone statement.
+Its ingredients, though, are all present.
+The eigenvalues of $`\rho(g)` are roots of unity, and a root of unity is an algebraic integer; this is `IsPrimitiveRoot.isIntegral`.
+
+```lean
+example {μ : ℂ} {n : ℕ} (h : IsPrimitiveRoot μ n) (hn : 0 < n) :
+    IsIntegral ℤ μ :=
+  h.isIntegral hn
+```
+
+The final contradiction ran through the center $`Z(G)`, which is always a normal subgroup.
+
+```lean
+example (G : Type*) [Group G] : (Subgroup.center G).Normal := inferInstance
+```
+
+Simplicity is `IsSimpleGroup`: it says a group has no normal subgroups other than $`\bot` and the whole group.
+That dichotomy is what a nontrivial proper normal subgroup (such as $`Z(G)`, or the subgroup $`H` built in the lemma) contradicts.
+Show that in a simple group any normal subgroup is either trivial or everything.
+
+```lean
+example (G : Type*) [Group G] [IsSimpleGroup G] (H : Subgroup G)
+    (hH : H.Normal) : H = ⊥ ∨ H = ⊤ := by
+  sorry
+```
+
+## Frobenius determinant
+
+The Frobenius determinant theorem — the factorization of $`\det M_G` indexed by the irreps — is likewise not in Mathlib.
+Nor is the density-theorem input, nor the classical fact that the generic determinant $`\det (y_{ij})` in $`m^2` variables is an irreducible polynomial; these would have to be built by hand.
+What Mathlib does provide is the linear-algebra backbone of the proof.
+Determinants are multiplicative.
+
+```lean
+example {n : Type*} [Fintype n] [DecidableEq n] {R : Type*} [CommRing R]
+    (M N : Matrix n n R) : (M * N).det = M.det * N.det :=
+  Matrix.det_mul M N
+```
+
+The decomposition $`V = \bigoplus_i V_i^{\oplus \dim V_i}` turns $`T` into a block-diagonal operator, and the identity $`\det T = \prod_i (\det T|_{V_i})^{\dim V_i}` is an instance of the determinant of a block-diagonal matrix being the product of the blocks' determinants.
+Prove this using `Matrix.det_blockDiagonal`.
+
+```lean
+example {n o : Type*} [Fintype n] [DecidableEq n] [Fintype o] [DecidableEq o]
+    {R : Type*} [CommRing R] (M : o → Matrix n n R) :
+    (Matrix.blockDiagonal M).det = ∏ k, (M k).det := by
+  sorry
+```

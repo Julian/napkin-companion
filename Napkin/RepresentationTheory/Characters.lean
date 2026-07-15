@@ -37,13 +37,6 @@ The *character* $`\chi_V \colon A \to k` attached to $`V` is defined by $`\chi_V
 Since $`\operatorname{Tr}` and $`\rho` are additive, this is a $`k`-linear map (but it is not multiplicative).
 Note also that $`\chi_{V \oplus W} = \chi_V + \chi_W` for any representations $`V` and $`W`.
 
-The character $`\chi_V` of a finite-dimensional representation $`V` is `FDRep.character`, sending each $`g` to the trace of $`\rho(g) \colon V \to V`.
-
-```lean
-example {k G : Type*} [Field k] [Monoid G] (V : FDRep k G) (g : G) :
-    V.character g = LinearMap.trace k V (V.ρ g) := rfl
-```
-
 We are especially interested in the case $`A = k[G]`, of course.
 As usual, we just have to specify $`\chi_V(g)` for each $`g : G` to get the whole map $`k[G] \to k`.
 Thus we often think of $`\chi_V` as a function $`G \to k`, called a character of the group $`G`.
@@ -74,13 +67,6 @@ This $`\chi_V` is not multiplicative in any way, as the above example shows: one
 Show that $`\chi_V(1_A) = \dim V`, so one can read the dimensions of the representations from the leftmost column of a character table.
 :::
 
-Evaluating the character at the identity recovers the dimension, $`\chi_V(1) = \dim V`, which is `FDRep.char_one`.
-
-```lean
-example {k G : Type*} [Field k] [Monoid G] (V : FDRep k G) :
-    V.character 1 = Module.finrank k V := FDRep.char_one V
-```
-
 # The dual space modulo the commutator
 
 For any algebra, we first observe that since $`\operatorname{Tr}(TS) = \operatorname{Tr}(ST)`, we have for any $`V` that $$`\chi_V(ab) = \chi_V(ba).`
@@ -89,16 +75,6 @@ This explains observation (1) from earlier:
 :::QUESTION
 Deduce that if $`g` and $`h` are in the same conjugacy class of a group $`G`, and $`V` is a representation of $`k[G]`, then $`\chi(g) = \chi(h)`.
 :::
-
-The commutation identity $`\chi_V(hg) = \chi_V(gh)` is `FDRep.char_mul_comm`, and its consequence that the character is constant on conjugacy classes, $`\chi_V(hgh^{-1}) = \chi_V(g)`, is `FDRep.char_conj`.
-
-```lean
-example {k G : Type*} [Field k] [Monoid G] (V : FDRep k G) (g h : G) :
-    V.character (h * g) = V.character (g * h) := FDRep.char_mul_comm V g h
-
-example {k G : Type*} [Field k] [Group G] (V : FDRep k G) (g h : G) :
-    V.character (h * g * h⁻¹) = V.character g := FDRep.char_conj V g h
-```
 
 Now, given our algebra $`A` we define the *commutator* $`[A, A]` to be the $`k`-vector subspace spanned by $`xy - yx` for $`x, y : A`.
 Thus $`[A, A]` is contained in the kernel of each $`\chi_V`.
@@ -217,17 +193,6 @@ Then we see that in the basis $`e_1^\vee`, \dots, $`e_n^\vee`, the action of $`g
 So $$`\chi_V(g) = \sum_{i=1}^n \lambda_i \quad \text{and} \quad \chi_{V^\vee}(g) = \sum_{i=1}^n \lambda_i^{-1} = \sum_{i=1}^n \overline{\lambda_i}` where the last step follows from the identity $`|z| = 1 \iff z^{-1} = \overline{z}`.
 :::
 
-Multiplicativity under tensor product, $`\chi_{V \otimes W} = \chi_V \cdot \chi_W`, is `FDRep.char_tensor`, while the dual character is computed by `FDRep.char_dual` as $`\chi_{V^\vee}(g) = \chi_V(g^{-1})`.
-
-```lean
-example {k G : Type*} [Field k] [Monoid G] (V W : FDRep k G) :
-    (V ⊗ W).character = V.character * W.character := FDRep.char_tensor V W
-
-example {k G : Type*} [Field k] [Group G] (V : FDRep k G) (g : G) :
-    (FDRep.of (Representation.dual V.ρ)).character g = V.character g⁻¹ :=
-  FDRep.char_dual V g
-```
-
 :::REMARK "Warning"
 The identities (2) and (3) do not extend linearly to $`\mathbb{C}[G]`, i.e. it is not true for example that $`\chi_{V^\vee}(a) = \overline{\chi_V(a)}` if we think of $`\chi_V` as a map $`\mathbb{C}[G] \to \mathbb{C}`.
 :::
@@ -261,30 +226,6 @@ The orthogonality relation gives us a fast and mechanical way to check whether a
 Namely, compute the traces $`\chi_V(g)` for each $`g : G`, and then check whether $`\langle \chi_V, \chi_V \rangle = 1`.
 So, for example, we could have seen the three representations of $`S_3` that we found were irreps directly from the character table.
 Thus, we can now efficiently verify any time we have a complete set of irreps.
-
-:::aside
-Mathlib's `FDRep.character` defines the character of a finite-dimensional representation as a function $`G \to k`.
-The orthogonality theorem above corresponds to `FDRep.scalar_product_char_eq_finrank_equivariant`, with the classical orthonormality of irreducible characters captured by `FDRep.char_orthonormal`.
-:::
-
-The scalar product of two characters equals the dimension of the space of equivariant maps $`V \to W`, which is `FDRep.scalar_product_char_eq_finrank_equivariant`.
-
-```lean
-example {k G : Type*} [Field k] [Group G] [Fintype G]
-    [Invertible (Fintype.card G : k)] (V W : FDRep k G) :
-    ⅟(Fintype.card G : k) • ∑ g : G, W.character g * V.character g⁻¹ =
-      Module.finrank k (V ⟶ W) :=
-  FDRep.scalar_product_char_eq_finrank_equivariant V W
-```
-
-For irreducible representations this specializes to orthonormality, `FDRep.char_orthonormal`, taking the value $`1` when $`V \cong W` and $`0` otherwise.
-
-```lean
-example {k G : Type*} [Field k] [IsAlgClosed k] [Group G] [Fintype G]
-    [Invertible (Fintype.card G : k)] (V W : FDRep k G) [Simple V] [Simple W] :
-    ⅟(Fintype.card G : k) • ∑ g : G, V.character g * W.character g⁻¹ =
-      if Nonempty (V ≅ W) then (1 : k) else 0 := FDRep.char_orthonormal V W
-```
 
 # Examples of character tables
 
@@ -345,3 +286,93 @@ Let $`g` and $`h` be elements of a finite group $`G`, and let $`V_1`, \dots, $`V
 Prove that $$`\sum_{i=1}^r \chi_{V_i}(g) \overline{\chi_{V_i}(h)} = \begin{cases} |C_G(g)| & \text{if } g \text{ and } h \text{ are conjugates} \\ 0 & \text{otherwise}. \end{cases}`
 Here, $`C_G(g) = \{ x : G \mid xg = gx \}` is the centralizer of $`g`.
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Definitions
+
+The character $`\chi_V` of a finite-dimensional representation $`V` is `FDRep.character`, sending each $`g` to the trace of $`\rho(g) \colon V \to V`.
+
+```lean
+example {k G : Type*} [Field k] [Monoid G] (V : FDRep k G) (g : G) :
+    V.character g = LinearMap.trace k V (V.ρ g) := rfl
+```
+
+Evaluating the character at the identity recovers the dimension, $`\chi_V(1) = \dim V`, which is `FDRep.char_one`.
+
+```lean
+example {k G : Type*} [Field k] [Monoid G] (V : FDRep k G) :
+    V.character 1 = Module.finrank k V := FDRep.char_one V
+```
+
+Characters were promised to determine a representation up to isomorphism; the easy half of that is `FDRep.char_iso`, that isomorphic representations already share a character.
+
+```lean
+example {k G : Type*} [Field k] [Monoid G] (V W : FDRep k G) (i : V ≅ W) :
+    V.character = W.character := by
+  sorry
+```
+
+## The dual space modulo the commutator
+
+The commutation identity $`\chi_V(hg) = \chi_V(gh)` is `FDRep.char_mul_comm`, and its consequence that the character is constant on conjugacy classes, $`\chi_V(hgh^{-1}) = \chi_V(g)`, is `FDRep.char_conj`.
+
+```lean
+example {k G : Type*} [Field k] [Monoid G] (V : FDRep k G) (g h : G) :
+    V.character (h * g) = V.character (g * h) := FDRep.char_mul_comm V g h
+
+example {k G : Type*} [Field k] [Group G] (V : FDRep k G) (g h : G) :
+    V.character (h * g * h⁻¹) = V.character g := FDRep.char_conj V g h
+```
+
+The question asked you to deduce that a character takes the same value on conjugate elements.
+Mathlib's `IsConj g h` is exactly the statement that $`g` and $`h` are conjugate; show that the character then agrees on them.
+
+```lean
+example {k G : Type*} [Field k] [Group G] (V : FDRep k G) (g h : G)
+    (hc : IsConj g h) : V.character g = V.character h := by
+  sorry
+```
+
+## Orthogonality of characters
+
+Multiplicativity under tensor product, $`\chi_{V \otimes W} = \chi_V \cdot \chi_W`, is `FDRep.char_tensor`, while the dual character is computed by `FDRep.char_dual` as $`\chi_{V^\vee}(g) = \chi_V(g^{-1})`.
+
+```lean
+example {k G : Type*} [Field k] [Monoid G] (V W : FDRep k G) :
+    (V ⊗ W).character = V.character * W.character := FDRep.char_tensor V W
+
+example {k G : Type*} [Field k] [Group G] (V : FDRep k G) (g : G) :
+    (FDRep.of (Representation.dual V.ρ)).character g = V.character g⁻¹ :=
+  FDRep.char_dual V g
+```
+
+The scalar product of two characters equals the dimension of the space of equivariant maps $`V \to W`, which is `FDRep.scalar_product_char_eq_finrank_equivariant`.
+Over an algebraically closed field this specializes to orthonormality of irreducible characters, `FDRep.char_orthonormal`, taking the value $`1` when $`V \cong W` and $`0` otherwise.
+
+```lean
+example {k G : Type*} [Field k] [Group G] [Fintype G]
+    [Invertible (Fintype.card G : k)] (V W : FDRep k G) :
+    ⅟(Fintype.card G : k) • ∑ g : G, W.character g * V.character g⁻¹ =
+      Module.finrank k (V ⟶ W) :=
+  FDRep.scalar_product_char_eq_finrank_equivariant V W
+
+example {k G : Type*} [Field k] [IsAlgClosed k] [Group G] [Fintype G]
+    [Invertible (Fintype.card G : k)] (V W : FDRep k G) [Simple V] [Simple W] :
+    ⅟(Fintype.card G : k) • ∑ g : G, V.character g * W.character g⁻¹ =
+      if Nonempty (V ≅ W) then (1 : k) else 0 := FDRep.char_orthonormal V W
+```
+
+The orthogonality relation gives a mechanical irreducibility test: an irrep has norm $`1`, i.e. $`\langle \chi_V, \chi_V \rangle = 1`.
+Specialize `FDRep.char_orthonormal` to $`W = V` to confirm it.
+
+```lean
+example {k G : Type*} [Field k] [IsAlgClosed k] [Group G] [Fintype G]
+    [Invertible (Fintype.card G : k)] (V : FDRep k G) [Simple V] :
+    ⅟(Fintype.card G : k) • ∑ g : G, V.character g * V.character g⁻¹ =
+      (1 : k) := by
+  sorry
+```
