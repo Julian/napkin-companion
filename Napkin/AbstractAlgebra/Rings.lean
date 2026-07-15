@@ -118,24 +118,8 @@ The examples are much more important.
 
 :::EXAMPLE "Typical rings"
 1. The types $`\mathbb{Z}`, $`\mathbb{Q}`, $`\mathbb{R}` and $`\mathbb{C}` are all rings with the usual addition and multiplication.
-   Mathlib's `CommRing` typeclass packages addition, multiplication, distributivity, and commutativity:
-
-   ```lean -show
-   section
-   ```
-
-   ```lean
-   recall : CommRing ℤ
-   recall : CommRing ℚ
-   recall : CommRing ℝ
-   recall : CommRing ℂ
-   ```
 2. The integers modulo $`n` are also a ring with the usual addition and multiplication.
    We also denote it by $`\mathbb{Z}/n\mathbb{Z}`.
-
-   ```lean
-   recall (n : ℕ) : CommRing (ZMod n)
-   ```
 :::
 
 Here is also a trivial example.
@@ -157,11 +141,6 @@ For any ring $`R` and $`r : R`, $`r \cdot 0_R = 0_R`.
 Moreover, $`r \cdot (-1_R) = -r`.
 :::
 
-```lean
-example (R : Type*) [CommRing R] (r : R) : r * 0 = 0 := mul_zero r
-example (R : Type*) [CommRing R] (r : R) : r * (-1) = -r := mul_neg_one r
-```
-
 Here are some more examples of rings.
 
 :::EXAMPLE "Product ring"
@@ -176,11 +155,6 @@ Equivalently, we can define $`R \times S` as the abelian group $`R \oplus S`, an
 :::QUESTION
 Which $`(r, s)` is the identity element of the product ring $`R \times S`?
 :::
-
-```lean
--- Product ring: component-wise operations.
-recall (R S : Type*) [CommRing R] [CommRing S] : CommRing (R × S)
-```
 
 :::EXAMPLE "Polynomial ring"
 Given any ring $`R`, the *polynomial ring* $`R[x]` is defined as the type of polynomials with coefficients in $`R`: $$`R[x] = \{ a_n x^n + a_{n-1} x^{n-1} + \dots + a_0 \mid a_0, \dots, a_n : R \}.`
@@ -204,13 +178,6 @@ We can consider polynomials in $`n` variables with coefficients in $`R`, denoted
 (We can even adjoin infinitely many $`x`'s if we like!)
 :::
 
-```lean
--- Polynomial ring R[x] and the multivariate polynomial ring.
-recall (R : Type*) [CommRing R] : CommRing (Polynomial R)
-
-recall (R σ : Type*) [CommRing R] : CommRing (MvPolynomial σ R)
-```
-
 :::EXAMPLE "Gaussian integers are a ring"
 The *Gaussian integers* are the type of complex numbers with integer real and imaginary parts, that is $$`\mathbb{Z}[i] = \{ a + bi \mid a, b : \mathbb{Z} \}.`
 :::
@@ -223,10 +190,6 @@ However, it is understood from context that $`i^2 = -1`; and a polynomial in $`i
 :::EXAMPLE "Cube root of 2"
 As another example (using the same abuse of notation): $$`\mathbb{Z}[\sqrt[3]{2}] = \{ a + b \sqrt[3]{2} + c \sqrt[3]{4} \mid a, b, c : \mathbb{Z} \}.`
 :::
-
-```lean -show
-end
-```
 
 # Fields
 
@@ -242,16 +205,6 @@ To be explicit, let me write the relevant definitions.
 :::DEFINITION
 A *unit* of a ring $`R` is an element $`u : R` which is invertible: for some $`x : R` we have $`u x = 1_R`.
 :::
-
-`IsUnit` is Mathlib's "is invertible" predicate on a monoid.
-
-```lean -show
-section
-```
-
-```lean
-example (R : Type*) [CommRing R] (u : R) : Prop := IsUnit u
-```
 
 :::EXAMPLE "Examples of units"
 1. The units of $`\mathbb{Z}` are $`\pm 1`, because these are the only things which "divide $`1`" (which is the reason for the name "unit").
@@ -277,18 +230,7 @@ Depending on context, they are often denoted either $`k`, $`K`, $`F`.
 2. If $`p` is a prime, then $`\mathbb{Z}/p\mathbb{Z}` is a field, which we usually denote by $`\mathbb{F}_p`.
 
 The trivial ring $`0` is _not_ considered a field, since we require fields to be nontrivial.
-The `Field` typeclass extends `CommRing` with multiplicative inverses for nonzero elements.
-
-```lean
-recall : Field ℚ
-recall : Field ℝ
-recall : Field ℂ
-```
 :::
-
-```lean -show
-end
-```
 
 # Homomorphisms
 
@@ -332,27 +274,6 @@ Because we require $`1_R` to go to $`1_S`, some maps that you might have thought
 
 In particular, whereas for groups $`G` and $`H` there was always a trivial group homomorphism sending everything in $`G` to $`1_H`, this is not the case for rings.
 :::
-
-```lean -show
-section
-```
-
-```lean
--- `RingHom R S`, written `R →+* S`, bundles a function with the
--- conditions that it preserves addition, multiplication, and the unit.
-example (R S : Type*) [CommRing R] [CommRing S] (φ : R →+* S)
-    (x y : R) : φ (x + y) = φ x + φ y := φ.map_add x y
-
-example (R S : Type*) [CommRing R] [CommRing S] (φ : R →+* S)
-    (x y : R) : φ (x * y) = φ x * φ y := φ.map_mul x y
-
-example (R S : Type*) [CommRing R] [CommRing S] (φ : R →+* S) :
-    φ 1 = 1 := φ.map_one
-```
-
-```lean -show
-end
-```
 
 # Ideals
 
@@ -461,24 +382,6 @@ Here the shorthand $`(x^2 + 1) \coloneqq (x^2 + 1) \mathbb{Z}[x] = \{(x^2 + 1) f
 Figure out the analogous formalization of $`\mathbb{Z}[\sqrt[3]{2}]`.
 :::
 
-```lean -show
-section
-```
-
-```lean
--- Mathlib's `Ideal R` is an `R`-submodule of `R`. The kernel of a ring
--- homomorphism is recorded as an ideal.
-example (R S : Type*) [CommRing R] [CommRing S] (φ : R →+* S) :
-    Ideal R := RingHom.ker φ
-
--- The quotient ring R/I, written `R ⧸ I`.
-recall (R : Type*) [CommRing R] (I : Ideal R) : CommRing (R ⧸ I)
-```
-
-```lean -show
-end
-```
-
 # Generating ideals
 
 :::PROTOTYPE
@@ -570,24 +473,6 @@ By the way, given an ideal $`I` of a ring $`R`, it's totally legit to write $$`x
 Everything you learned about modular arithmetic carries over.
 :::
 
-```lean -show
-section
-```
-
-```lean
--- The ideal generated by a set of elements is `Ideal.span`. For a
--- single generator we get the principal ideal of multiples.
-example (R : Type*) [CommRing R] (S : Set R) : Ideal R := Ideal.span S
-
-example (R : Type*) [CommRing R] (x y : R) :
-    y ∈ Ideal.span ({x} : Set R) ↔ x ∣ y :=
-  Ideal.mem_span_singleton
-```
-
-```lean -show
-end
-```
-
 # Principal ideal domains
 
 :::PROTOTYPE
@@ -631,19 +516,6 @@ To reiterate, for now you should just verify that these are principal ideal ring
 
 4. $`\mathbb{C}[x, y]` is not a PID, because $`(x, y)` is not principal.
 :::
-
-```lean -show
-section
-```
-
-```lean
--- `IsPrincipalIdealRing R`: every ideal of R is principal.
-recall : IsPrincipalIdealRing ℤ
-```
-
-```lean -show
-end
-```
 
 # Noetherian rings
 
@@ -699,25 +571,6 @@ The proof of this theorem is really olympiad flavored, so I couldn't possibly sp
 Noetherian rings really shine in algebraic geometry, and it's a bit hard for me to motivate them right now, other than to say "most rings you'll encounter are Noetherian".
 Please bear with me!
 
-```lean -show
-section
-```
-
-```lean
--- `IsNoetherianRing R` is the predicate "every ideal of R is finitely
--- generated", equivalently the ascending chain condition on ideals.
-example (R : Type*) [CommRing R] [IsNoetherianRing R] (I : Ideal R) :
-    I.FG := (isNoetherianRing_iff_ideal_fg R).mp ‹_› I
-
--- Hilbert basis theorem: R Noetherian ⇒ R[x] Noetherian.
-recall (R : Type*) [CommRing R] [IsNoetherianRing R] :
-    IsNoetherianRing (Polynomial R)
-```
-
-```lean -show
-end
-```
-
 # Problems
 
 :::PROBLEM
@@ -769,3 +622,174 @@ Show that if a ring $`R` is Artinian, then it's Noetherian.
 (Artinian rings are better understood in the context of algebraic geometry, even more so than Noetherian ones — that is, a later problem shows a much better definition of Artinian ring.
 This problem is more here as a teaser — it looks like it should be easy, because the ascending chain condition and descending chain condition are both simple and similar-looking, but turns out to be difficult.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Definition and examples of rings
+
+Mathlib's `CommRing` typeclass packages addition, multiplication, distributivity, and commutativity.
+The types $`\mathbb{Z}`, $`\mathbb{Q}`, $`\mathbb{R}`, $`\mathbb{C}`, and the integers modulo $`n`, are all commutative rings.
+
+```lean
+recall : CommRing ℤ
+recall : CommRing ℚ
+recall : CommRing ℝ
+recall : CommRing ℂ
+
+recall (n : ℕ) : CommRing (ZMod n)
+```
+
+The obligatory facts $`r \cdot 0 = 0` and $`r \cdot (-1) = -r` are one-liners from the `CommRing` API.
+
+```lean
+example (R : Type*) [CommRing R] (r : R) : r * 0 = 0 := mul_zero r
+example (R : Type*) [CommRing R] (r : R) : r * (-1) = -r := mul_neg_one r
+```
+
+The product ring $`R \times S` has both operations done component-wise, and the polynomial ring $`R[x]` (and its multivariate cousin) are again commutative rings.
+
+```lean
+recall (R S : Type*) [CommRing R] [CommRing S] : CommRing (R × S)
+
+recall (R : Type*) [CommRing R] : CommRing (Polynomial R)
+
+recall (R σ : Type*) [CommRing R] : CommRing (MvPolynomial σ R)
+```
+
+The comedic exercise asked you to show a ring is nontrivial exactly when $`0_R \neq 1_R`.
+Mathlib's `Nontrivial` predicate says a type has two distinct elements; unfold it into the concrete inequality.
+
+```lean
+example (R : Type*) [CommRing R] : Nontrivial R ↔ (0 : R) ≠ 1 := by
+  sorry
+```
+
+## Fields
+
+`IsUnit` is Mathlib's "is invertible" predicate on a monoid, and the `Field` typeclass extends `CommRing` with multiplicative inverses for nonzero elements.
+
+```lean
+example (R : Type*) [CommRing R] (u : R) : Prop := IsUnit u
+
+recall : Field ℚ
+recall : Field ℝ
+recall : Field ℂ
+```
+
+The chapter noted that the units of $`\mathbb{Z}` are exactly $`\pm 1`.
+Prove it: any unit of $`\mathbb{Z}` is $`1` or $`-1`.
+
+```lean
+example (u : ℤ) (h : IsUnit u) : u = 1 ∨ u = -1 := by
+  sorry
+```
+
+## Homomorphisms
+
+`RingHom R S`, written `R →+* S`, bundles a function with the conditions that it preserves addition, multiplication, and the unit.
+
+```lean
+example (R S : Type*) [CommRing R] [CommRing S] (φ : R →+* S)
+    (x y : R) : φ (x + y) = φ x + φ y := φ.map_add x y
+
+example (R S : Type*) [CommRing R] [CommRing S] (φ : R →+* S)
+    (x y : R) : φ (x * y) = φ x * φ y := φ.map_mul x y
+
+example (R S : Type*) [CommRing R] [CommRing S] (φ : R →+* S) :
+    φ 1 = 1 := φ.map_one
+```
+
+Because a ring homomorphism must fix $`1`, there is exactly one homomorphism $`\mathbb{Z} \to R`: any two ring homomorphisms out of $`\mathbb{Z}` agree.
+
+```lean
+example (R : Type*) [CommRing R] (f g : ℤ →+* R) : f = g := by
+  sorry
+```
+
+## Ideals
+
+Mathlib's `Ideal R` is an `R`-submodule of `R`.
+The kernel of a ring homomorphism is recorded as an ideal, and the quotient ring $`R/I` is written `R ⧸ I`.
+
+```lean
+example (R S : Type*) [CommRing R] [CommRing S] (φ : R →+* S) :
+    Ideal R := RingHom.ker φ
+
+recall (R : Type*) [CommRing R] (I : Ideal R) : CommRing (R ⧸ I)
+```
+
+An ideal that contains a unit contains $`1`, and so must be the whole ring.
+
+```lean
+example (R : Type*) [CommRing R] (I : Ideal R) (u : R) (hu : IsUnit u)
+    (hmem : u ∈ I) : I = ⊤ :=
+  Ideal.eq_top_of_isUnit_mem I hmem hu
+```
+
+The mandatory exercise was that a field has exactly two ideals.
+Show that any ideal of a field is either the zero ideal `⊥` or the whole field `⊤`.
+
+```lean
+example (K : Type*) [Field K] (I : Ideal K) : I = ⊥ ∨ I = ⊤ := by
+  sorry
+```
+
+## Generating ideals
+
+The ideal generated by a set of elements is `Ideal.span`.
+For a single generator we get the principal ideal of multiples: $`y \in (x)` exactly when $`x \mid y`.
+
+```lean
+example (R : Type*) [CommRing R] (S : Set R) : Ideal R := Ideal.span S
+
+example (R : Type*) [CommRing R] (x y : R) :
+    y ∈ Ideal.span ({x} : Set R) ↔ x ∣ y :=
+  Ideal.mem_span_singleton
+```
+
+Since $`\gcd(2, 3) = 1`, the ideal $`(2, 3)` in $`\mathbb{Z}` is all of $`\mathbb{Z}`.
+Show that this span is the top ideal.
+
+```lean
+example : Ideal.span ({2, 3} : Set ℤ) = ⊤ := by
+  sorry
+```
+
+## Principal ideal domains
+
+`IsPrincipalIdealRing R` is the property that every ideal of `R` is principal, and $`\mathbb{Z}` has it.
+
+```lean
+recall : IsPrincipalIdealRing ℤ
+```
+
+Concretely, every ideal of $`\mathbb{Z}` is generated by a single element.
+
+```lean
+example (I : Ideal ℤ) : Submodule.IsPrincipal I := by
+  sorry
+```
+
+## Noetherian rings
+
+`IsNoetherianRing R` is the predicate "every ideal of `R` is finitely generated", equivalently the ascending chain condition on ideals.
+The Hilbert basis theorem says that if $`R` is Noetherian then so is $`R[x]`.
+
+```lean
+example (R : Type*) [CommRing R] [IsNoetherianRing R] (I : Ideal R) :
+    I.FG := (isNoetherianRing_iff_ideal_fg R).mp ‹_› I
+
+recall (R : Type*) [CommRing R] [IsNoetherianRing R] :
+    IsNoetherianRing (Polynomial R)
+```
+
+The chapter asked why fields are Noetherian.
+A field has only the two ideals `⊥` and `⊤`, both finitely generated — confirm Mathlib already knows a field is Noetherian.
+
+```lean
+example (K : Type*) [Field K] : IsNoetherianRing K := by
+  sorry
+```

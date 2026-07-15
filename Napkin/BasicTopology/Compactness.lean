@@ -5,13 +5,17 @@ import Napkin.Meta.Citations
 import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.MetricSpace.Bounded
 import Mathlib.Topology.UniformSpace.Compact
+import Mathlib.Topology.UniformSpace.HeineCantor
 import Mathlib.Topology.MetricSpace.Pseudo.Defs
+import Mathlib.Topology.Sequences
+import Mathlib.Topology.Order.Compact
+import Mathlib.Topology.Separation.Hausdorff
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
-open scoped Topology
+open scoped Topology Uniformity
 
 set_option pp.rawOnError true
 
@@ -175,13 +179,6 @@ An open cover $`X = \bigcup_\alpha U_\alpha` by several overlapping open sets.
 :::DEFINITION
 A topological space $`X` is *quasicompact* if _every_ open cover has a finite subcover.
 It is *compact* if it is also Hausdorff.
-
-`IsCompact` is the predicate on a set; `CompactSpace X` records whole-type compactness.
-
-```lean
-example (X : Type*) [TopologicalSpace X] (s : Set X) : Prop :=
-  IsCompact s
-```
 :::
 
 :::REMARK
@@ -338,25 +335,6 @@ Then $`y_{i_k} \to p` as well, since the $`x_k`'s and $`y_k`'s are close to each
 So both sequences $`f(x_{i_k})` and $`f(y_{i_k})` should converge to $`f(p)` by sequential continuity, but this can't be true since the two sequences are always $`\varepsilon` apart.
 :::
 
-```lean -show
-section
-```
-
-```lean
--- Continuous image of compact is compact.
-example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    {f : X → Y} (hf : Continuous f) {s : Set X} (hs : IsCompact s) :
-    IsCompact (f '' s) := hs.image hf
-
--- `UniformContinuous` for the uniform-continuity predicate.
-example {M N : Type*} [UniformSpace M] [UniformSpace N]
-    (f : M → N) : Prop := UniformContinuous f
-```
-
-```lean -show
-end
-```
-
 # (Optional) Equivalence of formulations of compactness
 
 We will prove that:
@@ -466,3 +444,156 @@ In this problem a "circle" refers to the boundary of a disk with _nonzero_ radiu
 2. From the plane $`\mathbb{R}^2` we delete two distinct points $`p` and $`q`.
    Is it possible to partition the remaining points into disjoint circles?
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Definition of sequential compactness
+
+Sequential compactness is `IsSeqCompact`: the predicate saying every sequence taking values in the set has a subsequence converging to a point of the set.
+The chapter promised sequential compactness and open-cover compactness agree for metric spaces, and Mathlib records exactly this equivalence as `isCompact_iff_isSeqCompact`.
+
+```lean
+example (X : Type*) [PseudoMetricSpace X] (s : Set X) :
+    IsCompact s ↔ IsSeqCompact s := isCompact_iff_isSeqCompact
+```
+
+The chapter's first question — show that a finite set is compact — is `Set.Finite.isCompact`.
+Prove it from the hypothesis that the set is finite.
+
+```lean
+example (X : Type*) [TopologicalSpace X] (s : Set X) (hs : s.Finite) :
+    IsCompact s := by
+  sorry
+```
+
+The proposition that closed subsets of compact sets are compact is `IsCompact.of_isClosed_subset`.
+Given that $`s` is compact, $`t` is closed, and $`t \subseteq s`, conclude $`t` is compact.
+
+```lean
+example (X : Type*) [TopologicalSpace X] (s t : Set X)
+    (hs : IsCompact s) (ht : IsClosed t) (h : t ⊆ s) :
+    IsCompact t := by
+  sorry
+```
+
+## Criteria for compactness
+
+That $`[0, 1]` is compact is `isCompact_Icc`, which holds for any closed interval in a suitable ordered space.
+
+```lean
+example : IsCompact (Set.Icc (0 : ℝ) 1) := isCompact_Icc
+```
+
+The Bolzano-Weierstraß theorem — a subset of a Euclidean-like space is compact if and only if it is closed and bounded — is `Metric.isCompact_iff_isClosed_bounded`, available whenever the space is proper (its closed bounded sets are compact).
+
+```lean
+example (α : Type*) [PseudoMetricSpace α] [T2Space α] [ProperSpace α]
+    (s : Set α) :
+    IsCompact s ↔ IsClosed s ∧ Bornology.IsBounded s :=
+  Metric.isCompact_iff_isClosed_bounded
+```
+
+Tychonoff's theorem, that a product of two compacts is compact, is `IsCompact.prod`.
+Given compact $`s` and $`t`, show their product $`s \times t` is compact.
+
+```lean
+example (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
+    (s : Set X) (t : Set Y) (hs : IsCompact s) (ht : IsCompact t) :
+    IsCompact (s ×ˢ t) := by
+  sorry
+```
+
+## Compactness using open covers
+
+`IsCompact` is the predicate on a set; `CompactSpace X` records whole-type compactness.
+
+```lean
+example (X : Type*) [TopologicalSpace X] (s : Set X) : Prop :=
+  IsCompact s
+```
+
+The open-cover definition itself — every open cover admits a finite subcover — is `IsCompact.elim_finite_subcover`: from a family of open sets covering a compact set, it extracts a finite subfamily that already covers.
+
+```lean
+example (X : Type*) [TopologicalSpace X] (s : Set X) {ι : Type}
+    (hs : IsCompact s) (U : ι → Set X) (hUo : ∀ i, IsOpen (U i))
+    (hsU : s ⊆ ⋃ i, U i) : ∃ t : Finset ι, s ⊆ ⋃ i ∈ t, U i :=
+  hs.elim_finite_subcover U hUo hsU
+```
+
+The Hausdorff hypothesis the chapter snuck in has teeth: in a Hausdorff space every compact set is closed, which is `IsCompact.isClosed`.
+Prove it for a compact $`s`.
+
+```lean
+example (X : Type*) [TopologicalSpace X] [T2Space X] (s : Set X)
+    (hs : IsCompact s) : IsClosed s := by
+  sorry
+```
+
+## Applications of compactness
+
+The theorem that continuous images of compacts are compact is `IsCompact.image`.
+
+```lean
+example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    {f : X → Y} (hf : Continuous f) {s : Set X} (hs : IsCompact s) :
+    IsCompact (f '' s) := hs.image hf
+```
+
+The proposition that a compact space is totally bounded is `IsCompact.totallyBounded`.
+Show a compact set is totally bounded.
+
+```lean
+example (M : Type*) [PseudoMetricSpace M] (s : Set M) (hs : IsCompact s) :
+    TotallyBounded s := by
+  sorry
+```
+
+The extreme value theorem — a continuous real-valued function on a nonempty compact set attains a maximum — is `IsCompact.exists_isMaxOn`.
+Produce the maximizing point.
+
+```lean
+example (X : Type*) [TopologicalSpace X] (s : Set X) (hs : IsCompact s)
+    (hne : s.Nonempty) (f : X → ℝ) (hf : ContinuousOn f s) :
+    ∃ x ∈ s, IsMaxOn f s x := by
+  sorry
+```
+
+Uniform continuity is the predicate `UniformContinuous`.
+
+```lean
+example {M N : Type*} [UniformSpace M] [UniformSpace N]
+    (f : M → N) : Prop := UniformContinuous f
+```
+
+The proposition that a continuous map out of a compact space is uniformly continuous — the Heine-Cantor theorem — is `CompactSpace.uniformContinuous_of_continuous`.
+Deduce uniform continuity from continuity when the domain is compact.
+
+```lean
+example (M N : Type*) [UniformSpace M] [UniformSpace N] [CompactSpace M]
+    (f : M → N) (hf : Continuous f) : UniformContinuous f := by
+  sorry
+```
+
+## Equivalence of formulations of compactness
+
+The Lebesgue number lemma is `lebesgue_number_lemma`: for an open cover of a compact set it produces an entourage $`V` such that every $`V`-ball around a point of the set sits inside a single cover element.
+
+```lean
+example {α : Type*} [UniformSpace α] {ι : Sort*} {K : Set α} {U : ι → Set α}
+    (hK : IsCompact K) (hopen : ∀ i, IsOpen (U i)) (hcover : K ⊆ ⋃ i, U i) :
+    ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ i, UniformSpace.ball x V ⊆ U i :=
+  lebesgue_number_lemma hK hopen hcover
+```
+
+One step of the equivalence — that a sequentially compact set is totally bounded, the direction (1) $`\implies` (2) — is `IsSeqCompact.totallyBounded`.
+Prove it.
+
+```lean
+example (M : Type*) [PseudoMetricSpace M] (s : Set M) (hs : IsSeqCompact s) :
+    TotallyBounded s := by
+  sorry
+```

@@ -8,6 +8,7 @@ import Mathlib.Topology.Connected.Basic
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Homotopy.Path
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -52,13 +53,6 @@ The topology must obey the following axioms.
 - $`\varnothing` and $`X` are both in $`\mathcal{T}`.
 - Finite intersections of open sets are also in $`\mathcal{T}`.
 - Arbitrary unions (possibly infinite) of open sets are also in $`\mathcal{T}`.
-
-`TopologicalSpace X` packs the topology into a typeclass on the type `X`; the open-set predicate is `IsOpen`, and the three axioms come out as `isOpen_empty`, `isOpen_univ`, `IsOpen.inter`, `isOpen_iUnion`.
-
-```lean
-example (X : Type*) [TopologicalSpace X] (U : Set X) : Prop :=
-  IsOpen U
-```
 :::
 
 So this time, the open sets are _given_.
@@ -186,15 +180,6 @@ In other words, around any two distinct points we should be able to draw disjoin
 Two distinct points $`p`, $`q` separated by disjoint open neighborhoods.
 :::
 
-`T2Space X` is the Hausdorff typeclass; `t2_separation` packages the separation property.
-
-```lean
-example (X : Type*) [TopologicalSpace X] [T2Space X]
-    (p q : X) (h : p ≠ q) :
-    ∃ U V : Set X, IsOpen U ∧ IsOpen V ∧ p ∈ U ∧ q ∈ V ∧ Disjoint U V :=
-  t2_separation h
-```
-
 :::QUESTION
 Show that all metric spaces are Hausdorff.
 :::
@@ -246,13 +231,6 @@ Show that a space $`X` has a nontrivial clopen set (one other than $`\varnothing
 
 We say $`X` is *disconnected* if there are nontrivial clopen sets, and *connected* otherwise.
 
-`IsClopen` and `ConnectedSpace` are the matching predicates.
-
-```lean
-example (X : Type*) [TopologicalSpace X] (S : Set X) : Prop :=
-  IsClopen S
-```
-
 :::EXAMPLE "Disconnected and connected spaces"
 1. The metric space $$`\{(x, y) \mid x^2 + y^2 \leq 1\} \cup \{(x, y) \mid (x - 4)^2 + y^2 \leq 1\} \subseteq \mathbb{R}^2` is disconnected (it consists of two disks).
 2. The space $`[0, 1] \cup [2, 3]` is disconnected: it consists of two segments, each of which is a clopen set.
@@ -288,8 +266,6 @@ Why does this agree with your intuitive notion of what a "path" is?
 
 :::DEFINITION
 A space $`X` is *path-connected* if any two points in it are connected by some path.
-
-`Path x y` is a continuous function `[0,1] → X` with the specified endpoints; `PathConnectedSpace X` records that any two points have one.
 :::
 
 :::EXERCISE "Path-connected implies connected"
@@ -464,3 +440,158 @@ In other words, show that one can impose a metric $`d \colon \mathbb{Z}^2 \to \m
 We know that any open set $`U \subseteq \mathbb{R}` is a union of open intervals (allowing $`\pm \infty` as endpoints).
 One can show that it's actually possible to write $`U` as the union of _pairwise disjoint_ open intervals.{margin}[You are invited to try and prove this, but I personally found the proof quite boring.] Prove that there exists such a disjoint union with at most _countably many_ intervals in it.
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Forgetting the metric
+
+`TopologicalSpace X` packs the topology into a typeclass on the type `X`; the open-set predicate is `IsOpen`, and the three axioms come out as `isOpen_empty`, `isOpen_univ`, `IsOpen.inter`, `isOpen_iUnion`.
+
+```lean
+example (X : Type*) [TopologicalSpace X] (U : Set X) : Prop :=
+  IsOpen U
+```
+
+The discrete space, in which every set is open, is `DiscreteTopology X`.
+Its defining property `isOpen_discrete` says exactly that.
+
+```lean
+example (X : Type*) [TopologicalSpace X] [DiscreteTopology X] (S : Set X) :
+    IsOpen S := by sorry
+```
+
+## Continuity
+
+`Continuous f` is continuity, and `continuous_def` is precisely the open-set characterization that motivates the whole chapter: a function is continuous exactly when the pre-image of every open set is open.
+So from a `Continuous f` we can pull back openness along `f`, via `IsOpen.preimage`.
+
+```lean
+example (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
+    (f : X → Y) (h : Continuous f) (U : Set Y) (hU : IsOpen U) :
+    IsOpen (f ⁻¹' U) := hU.preimage h
+```
+
+A homeomorphism is `X ≃ₜ Y`, a bijection bundled with continuity in both directions; the two halves are `.continuous` and `.symm.continuous`.
+Try recovering both from the bundled object.
+
+```lean
+example (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
+    (h : X ≃ₜ Y) : Continuous h ∧ Continuous h.symm := by
+  sorry
+```
+
+## Closed sets
+
+`IsClosed S` means the complement is open; `isOpen_compl_iff` is the equivalence.
+
+```lean
+example (X : Type*) [TopologicalSpace X] (S : Set X) :
+    IsClosed S ↔ IsOpen Sᶜ := isOpen_compl_iff.symm
+```
+
+The QUESTION about translating the axioms to closed sets — arbitrary intersections stay closed, finite unions stay closed — is `isClosed_iInter` and `IsClosed.union`.
+Prove the two-set union case.
+
+```lean
+example (X : Type*) [TopologicalSpace X] (S T : Set X)
+    (hS : IsClosed S) (hT : IsClosed T) : IsClosed (S ∪ T) := by sorry
+```
+
+The EXERCISE that a function is continuous if and only if the pre-image of every closed set is closed is `continuous_iff_isClosed`.
+
+```lean
+example (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) :
+    Continuous f ↔ ∀ S : Set Y, IsClosed S → IsClosed (f ⁻¹' S) := by sorry
+```
+
+## Hausdorff spaces
+
+`T2Space X` is the Hausdorff typeclass; `t2_separation` packages the separation property.
+
+```lean
+example (X : Type*) [TopologicalSpace X] [T2Space X]
+    (p q : X) (h : p ≠ q) :
+    ∃ U V : Set X, IsOpen U ∧ IsOpen V ∧ p ∈ U ∧ q ∈ V ∧ Disjoint U V :=
+  t2_separation h
+```
+
+The QUESTION "all metric spaces are Hausdorff" is registered as an instance, so instance resolution proves it outright.
+
+```lean
+example (X : Type*) [MetricSpace X] : T2Space X := by sorry
+```
+
+The PROBLEM "Hausdorff implies $`T_1`" — that every singleton `{p}` is closed — follows because `T2Space` already refines to `T1Space`, whose characteristic lemma is `isClosed_singleton`.
+
+```lean
+example (X : Type*) [TopologicalSpace X] [T2Space X] (p : X) :
+    IsClosed {p} := by sorry
+```
+
+## Subspaces
+
+The subspace topology on `S : Set X` is the topology Mathlib puts on the subtype coerced from `S`, and the inclusion `Subtype.val` is continuous (`continuous_subtype_val`).
+The open sets of the subspace are exactly the pre-images of open sets of `X` under that inclusion — which is the $`U \cap S` of the definition.
+
+```lean
+example (X : Type*) [TopologicalSpace X] (S : Set X) (U : Set X)
+    (hU : IsOpen U) : IsOpen (Subtype.val ⁻¹' U : Set S) :=
+  hU.preimage continuous_subtype_val
+```
+
+## Connected spaces
+
+`IsClopen` and `ConnectedSpace` are the matching predicates.
+
+```lean
+example (X : Type*) [TopologicalSpace X] (S : Set X) : Prop :=
+  IsClopen S
+```
+
+The two "stupid" clopen sets $`\varnothing` and $`X` are `isClopen_empty` and `isClopen_univ`.
+Show the whole space is clopen.
+
+```lean
+example (X : Type*) [TopologicalSpace X] :
+    IsClopen (Set.univ : Set X) := by sorry
+```
+
+## Path-connected spaces
+
+`Path x y` is a continuous function `[0,1] → X` with the specified endpoints; `PathConnectedSpace X` records that any two points have one.
+The endpoints are recovered by `Path.source` and `Path.target`.
+
+```lean
+example (X : Type*) [TopologicalSpace X] (x y : X) (γ : Path x y) :
+    γ 0 = x := γ.source
+```
+
+The EXERCISE "path-connected implies connected" is registered as an instance, so instance resolution supplies the `ConnectedSpace`.
+
+```lean
+example (X : Type*) [TopologicalSpace X] [PathConnectedSpace X] :
+    ConnectedSpace X := by sorry
+```
+
+## Homotopy and simply connected spaces
+
+`Path.Homotopic α β` is the relation "there is a path homotopy from `α` to `β`", and `SimplyConnectedSpace X` is the corresponding space-level property.
+As remarked, $`\simeq` is an equivalence relation; its reflexivity is `Path.Homotopic.refl`.
+
+```lean
+example (X : Type*) [TopologicalSpace X] (x y : X) (γ : Path x y) :
+    γ.Homotopic γ := by sorry
+```
+
+## Bases of spaces
+
+A basis is `TopologicalSpace.IsTopologicalBasis B`: a collection `B` of open sets such that every open set is a union of members of `B`.
+For the THEOREM that the $`r`-neighborhoods form a basis of a metric space, the relevant fact is `Metric.isOpen_iff`, which says an open set is exactly one that contains an $`\varepsilon`-ball around each of its points — the union-of-balls statement, phrased pointwise.
+
+```lean
+example (X : Type*) [MetricSpace X] (S : Set X) :
+    IsOpen S ↔ ∀ x ∈ S, ∃ ε > 0, Metric.ball x ε ⊆ S := Metric.isOpen_iff
+```

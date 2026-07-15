@@ -65,16 +65,6 @@ The fact that a discrete space on an infinite set is "bounded" might be upsettin
 
 :::DEFINITION
 A metric space is *totally bounded* if for any $`\varepsilon > 0`, we can cover $`M` with finitely many $`\varepsilon`-neighborhoods.
-
-`Bornology.IsBounded` is the predicate "set is bounded" and `TotallyBounded` requires the finite-cover-by-$`\varepsilon`-balls condition.
-
-```lean
-example (M : Type*) [PseudoMetricSpace M] (s : Set M) : Prop :=
-  Bornology.IsBounded s
-
-example (M : Type*) [PseudoMetricSpace M] (s : Set M) : Prop :=
-  TotallyBounded s
-```
 :::
 
 For example, if $`\varepsilon = 1/2`, you can cover $`[0, 1]^2` by $`\varepsilon`-neighborhoods.
@@ -117,11 +107,6 @@ Thus, we only want to mention the given points in the definition.
 :::DEFINITION
 Let $`x_1, x_2, \dots` be a sequence which lives in a metric space $`M = (M, d_M)`.
 We say the sequence is *Cauchy* if for any $`\varepsilon > 0`, we have $$`d_M(x_m, x_n) < \varepsilon` for all sufficiently large $`m` and $`n`.
-
-```lean
-example (M : Type*) [PseudoMetricSpace M] (x : ℕ → M) : Prop :=
-  CauchySeq x
-```
 :::
 
 :::QUESTION
@@ -133,12 +118,6 @@ Now we can define:
 
 :::DEFINITION
 A metric space $`M` is *complete* if every Cauchy sequence converges.
-
-`CompleteSpace M` is the corresponding typeclass.
-
-```lean
-recall : CompleteSpace ℝ
-```
 :::
 
 :::EXAMPLE "Examples of complete spaces"
@@ -271,3 +250,90 @@ Show that a metric space is totally bounded if and only if any sequence has a Ca
 :::PROBLEM (chili := 3)
 Prove that $`\mathbb{Q}` is not homeomorphic to any complete metric space.
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Boundedness
+
+Mathlib keeps the two notions apart: `Bornology.IsBounded` is the predicate "the set has finite diameter", while `TotallyBounded` demands the stronger finite-cover-by-$`\varepsilon`-balls condition.
+Both are stated for a subset of a `PseudoMetricSpace`.
+
+```lean
+example (M : Type*) [PseudoMetricSpace M] (s : Set M) : Prop :=
+  Bornology.IsBounded s
+
+example (M : Type*) [PseudoMetricSpace M] (s : Set M) : Prop :=
+  TotallyBounded s
+```
+
+The chapter asks you to show that "totally bounded" implies "bounded".
+The finished statement is `TotallyBounded.isBounded`; your job is to invoke it.
+
+```lean
+example (M : Type*) [PseudoMetricSpace M] (s : Set M)
+    (h : TotallyBounded s) : Bornology.IsBounded s := by
+  sorry
+```
+
+## Completeness
+
+A sequence is modeled as a function `ℕ → M`, and the Cauchy condition is `CauchySeq`.
+
+```lean
+example (M : Type*) [PseudoMetricSpace M] (x : ℕ → M) : Prop :=
+  CauchySeq x
+```
+
+"Complete" — every Cauchy sequence converges — is the typeclass `CompleteSpace`, and the real line is an instance.
+
+```lean
+recall : CompleteSpace ℝ
+```
+
+The chapter's first question asks you to show that a convergent sequence is automatically Cauchy.
+Here $`x` converges to $`p` is `Filter.Tendsto x Filter.atTop (𝓝 p)`, and the result you want is `Filter.Tendsto.cauchySeq`.
+
+```lean
+example (M : Type*) [PseudoMetricSpace M] (x : ℕ → M) (p : M)
+    (h : Filter.Tendsto x Filter.atTop (𝓝 p)) : CauchySeq x := by
+  sorry
+```
+
+## Let the buyer beware
+
+The fishy example pits $`(0, 1)` against $`\mathbb{R}`.
+On the $`(0, 1)` side, the open interval is bounded — indeed `Metric.isBounded_Ioo` says so directly.
+
+```lean
+example : Bornology.IsBounded (Set.Ioo (0 : ℝ) 1) :=
+  Metric.isBounded_Ioo 0 1
+```
+
+It is even totally bounded, witnessing the claim that $`(0, 1)` is totally bounded yet (as `CompleteSpace ℝ` above and the homeomorphism $`(0,1) \cong \mathbb{R}` together show) not complete.
+Prove it using `totallyBounded_Ioo`.
+
+```lean
+example : TotallyBounded (Set.Ioo (0 : ℝ) 1) := by
+  sorry
+```
+
+## Subspaces, and (inb4) a confusing linguistic point
+
+Completeness of a subset is `IsComplete`, and one half of the chapter's exercise — "a complete subset is closed" — is `IsComplete.isClosed`.
+
+```lean
+example (M : Type*) [MetricSpace M] (s : Set M)
+    (h : IsComplete s) : IsClosed s := h.isClosed
+```
+
+The other half asks you to prove that, inside a complete ambient space, a closed subset is complete.
+That direction is `IsClosed.isComplete`.
+
+```lean
+example (M : Type*) [MetricSpace M] [CompleteSpace M] (s : Set M)
+    (h : IsClosed s) : IsComplete s := by
+  sorry
+```

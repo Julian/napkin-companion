@@ -5,7 +5,12 @@ import Napkin.Meta.Citations
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.Hom
+import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
+import Mathlib.GroupTheory.OrderOfElement
+import Mathlib.GroupTheory.Subgroup.Center
+import Mathlib.Algebra.Group.Conj
+import Mathlib.Algebra.Group.Action.End
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -48,13 +53,6 @@ It satisfies the axioms
 
 - $`(g_1 g_2) \cdot x = g_1 \cdot (g_2 \cdot x)` for any $`g_1, g_2 : G` for all $`x : X`.
 - $`1_G \cdot x = x` for any $`x : X`.
-
-`MulAction G X` is the typeclass; the action is written `g • x`.
-
-```lean
-example (G X : Type*) [Group G] [MulAction G X] (g : G) (x : X) :
-    X := g • x
-```
 :::
 
 :::EXAMPLE "Examples of group actions"
@@ -132,24 +130,6 @@ The fact that $`S` is a stabilizer implies that it is irrelevant which represent
 
 Since the $`|\mathcal{O}|` cosets partition $`G`, each of size $`|S|`, we obtain the second result.
 ::::
-
-```lean -show
-section
-```
-
-```lean
--- `MulAction.stabilizer G x` is the stabilizer subgroup;
--- `MulAction.orbit G x` is the orbit set.
-example (G X : Type*) [Group G] [MulAction G X] (x : X) :
-    Subgroup G := MulAction.stabilizer G x
-
-example (G X : Type*) [Group G] [MulAction G X] (x : X) :
-    Set X := MulAction.orbit G x
-```
-
-```lean -show
-end
-```
 
 # Burnside's lemma
 
@@ -287,3 +267,134 @@ Assume $`G` is a finite group of order $`n \geq 2` and $`p` is the smallest prim
 Let $`H` be a subgroup of $`G` with $`|G| / |H| = p`.
 Show that $`H` is normal in $`G`.
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Definition of a group action
+
+`MulAction G X` is the typeclass; the action is written `g • x`.
+
+```lean
+example (G X : Type*) [Group G] [MulAction G X] (g : G) (x : X) :
+    X := g • x
+```
+
+The two axioms are `mul_smul` and `one_smul`.
+They say the action of a product is the composite of the actions, and the identity acts trivially.
+
+```lean
+example (G X : Type*) [Group G] [MulAction G X] (g₁ g₂ : G) (x : X) :
+    (g₁ * g₂) • x = g₁ • g₂ • x := mul_smul g₁ g₂ x
+example (G X : Type*) [Group G] [MulAction G X] (x : X) :
+    (1 : G) • x = x := one_smul G x
+```
+
+The chapter's exercise is that an action is the same data as a homomorphism $`G \to S_X`.
+One direction is `MulAction.toPermHom`, which turns an action into a homomorphism into the permutations of `X`.
+
+```lean
+example (G X : Type*) [Group G] [MulAction G X] : G →* Equiv.Perm X :=
+  MulAction.toPermHom G X
+```
+
+A concrete symptom of that fact: each $`g` acts as a *bijection*, with inverse the action of $`g^{-1}`.
+Show that applying $`g` then $`g^{-1}` gets you back where you started.
+
+```lean
+example (G X : Type*) [Group G] [MulAction G X] (g : G) (x : X) :
+    g⁻¹ • g • x = x := by
+  sorry
+```
+
+## Stabilizers and orbits
+
+`MulAction.stabilizer G x` is the stabilizer subgroup, and `MulAction.orbit G x` is the orbit set.
+
+```lean
+example (G X : Type*) [Group G] [MulAction G X] (x : X) :
+    Subgroup G := MulAction.stabilizer G x
+example (G X : Type*) [Group G] [MulAction G X] (x : X) :
+    Set X := MulAction.orbit G x
+```
+
+The chapter asks why $`\operatorname{Stab}_G(x)` is a subgroup; Mathlib has already bundled it as one, with membership given by `MulAction.mem_stabilizer_iff`.
+Prove that unfolding: $`g` stabilizes $`x` exactly when $`g \cdot x = x`.
+
+```lean
+example (G X : Type*) [Group G] [MulAction G X] (g : G) (x : X) :
+    g ∈ MulAction.stabilizer G x ↔ g • x = x := by
+  sorry
+```
+
+The relation $`\sim` is an equivalence relation; its reflexivity is that every point lies in its own orbit.
+
+```lean
+example (G X : Type*) [Group G] [MulAction G X] (x : X) :
+    x ∈ MulAction.orbit G x := by
+  sorry
+```
+
+The orbit-stabilizer theorem is the bijection between an orbit and the cosets of a stabilizer, packaged as `MulAction.orbitEquivQuotientStabilizer`.
+
+```lean
+noncomputable example (G X : Type*) [Group G] [MulAction G X] (x : X) :
+    MulAction.orbit G x ≃ G ⧸ MulAction.stabilizer G x :=
+  MulAction.orbitEquivQuotientStabilizer G x
+```
+
+## Burnside's lemma
+
+Burnside's lemma is `MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group`: summing $`|\operatorname{FixPt} g|` over all $`g` gives the number of orbits times $`|G|`.
+Here `MulAction.fixedBy X g` is $`\operatorname{FixPt} g` and `MulAction.orbitRel.Quotient G X` is the set of orbits.
+
+```lean
+example (G X : Type*) [Group G] [MulAction G X] [Fintype G]
+    [∀ g : G, Fintype (MulAction.fixedBy X g)]
+    [Fintype (MulAction.orbitRel.Quotient G X)] :
+    (∑ g : G, Fintype.card (MulAction.fixedBy X g))
+      = Fintype.card (MulAction.orbitRel.Quotient G X) * Fintype.card G :=
+  MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group G X
+```
+
+The set $`\operatorname{FixPt} g` is exactly the points fixed by $`g`.
+Show that membership in `fixedBy X g` unfolds to $`g \cdot x = x`.
+
+```lean
+example (G X : Type*) [Group G] [MulAction G X] (g : G) (x : X) :
+    x ∈ MulAction.fixedBy X g ↔ g • x = x := by
+  sorry
+```
+
+## Conjugation of elements
+
+`ConjClasses G` is the type of conjugacy classes, and `Subgroup.center G` is the center $`Z(G)`.
+
+```lean
+example (G : Type*) [Group G] : Type _ := ConjClasses G
+example (G : Type*) [Group G] : Subgroup G := Subgroup.center G
+```
+
+The center is normal, recorded by Mathlib as an instance.
+
+```lean
+example (G : Type*) [Group G] : (Subgroup.center G).Normal := inferInstance
+```
+
+The chapter's problem is that two elements in the same conjugacy class have the same order.
+Prove that conjugating $`h` by $`g` leaves its order unchanged.
+
+```lean
+example (G : Type*) [Group G] (g h : G) :
+    orderOf (g * h * g⁻¹) = orderOf h := by
+  sorry
+```
+
+Finally, conjugacy is trivial in an abelian group: conjugation does nothing at all.
+
+```lean
+example (G : Type*) [CommGroup G] (g h : G) : g * h * g⁻¹ = h := by
+  sorry
+```
