@@ -3,6 +3,7 @@ import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 
@@ -164,13 +165,6 @@ Hence $`\bigwedge^n(T)` is multiplication by some constant.
 :::DEFINITION
 Let $`T \colon V \to V`, where $`V` is an $`n`-dimensional vector space.
 Then $`\bigwedge^n(T)` is multiplication by a constant $`c`; we define the *determinant* of $`T` as $`c = \det T`.
-
-`Matrix.det` computes this on square matrices, accessible via `M.det` once a `Fintype` and `DecidableEq` for the index type are in scope.
-
-```lean
-example {n : Type*} [Fintype n] [DecidableEq n] {k : Type*}
-    [CommRing k] (M : Matrix n n k) : k := M.det
-```
 :::
 
 :::EXAMPLE "The determinant of a 2 × 2 matrix"
@@ -259,21 +253,6 @@ You'll see this written sometimes as $`T_\mathbb{C} = \mathrm{id} \otimes T`.
 One can then apply theorems to $`T_\mathbb{C}` and try to deduce the corresponding results on $`T`.
 :::
 
-```lean -show
-section
-```
-
-```lean
--- The characteristic polynomial of a matrix.
-noncomputable example {n : Type*} [DecidableEq n] [Fintype n]
-    {k : Type*} [CommRing k] (M : Matrix n n k) : Polynomial k :=
-  M.charpoly
-```
-
-```lean -show
-end
-```
-
 # Problems
 
 :::PROBLEM "Column operations"
@@ -318,3 +297,83 @@ Let $`n \geq s \geq 1` be integers, and let $`A` and $`B` be an $`s \times n` ma
 For any subset $`S \subseteq \{1, 2, \dots, n\}` with $`|S| = s`, we let $`A_S` be the $`s \times s` submatrix of $`A` of the rows with indices in $`S` and let $`B_S` be the $`s \times s` submatrix of $`B` of the columns with indices in $`S`.
 Prove that $$`\det(AB) = \sum_{|S| = s} \det A_S \det B_S.`
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Wedge product
+
+Mathlib packages the wedge product of a $`k`-module $`M` inside the `ExteriorAlgebra R M`, where the injection `ExteriorAlgebra.ι R : M → ExteriorAlgebra R M` sends a vector to its degree-one image and multiplication plays the role of $`\wedge`.
+The single defining relation of the wishlist, $`v \wedge v = 0`, is `ExteriorAlgebra.ι_sq_zero`.
+
+```lean
+example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (m : M) :
+    ExteriorAlgebra.ι R m * ExteriorAlgebra.ι R m = 0 :=
+  ExteriorAlgebra.ι_sq_zero m
+```
+
+The exercise asked you to derive the anticommutativity $`v \wedge w = -(w \wedge v)` from $`v \wedge v = 0` alone.
+Prove it: the sum `ExteriorAlgebra.ι_add_mul_swap` of the two orders vanishes, so each is the negation of the other.
+
+```lean
+example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (x y : M) :
+    ExteriorAlgebra.ι R x * ExteriorAlgebra.ι R y
+      = -(ExteriorAlgebra.ι R y * ExteriorAlgebra.ι R x) := by
+  sorry
+```
+
+## The determinant
+
+`Matrix.det` computes the determinant on square matrices, accessible via `M.det` once a `Fintype` and `DecidableEq` for the index type are in scope.
+
+```lean
+example {n : Type*} [Fintype n] [DecidableEq n] {k : Type*}
+    [CommRing k] (M : Matrix n n k) : k := M.det
+```
+
+For a $`2 \times 2` matrix this unfolds to the $`ad - bc` of the worked wedge computation, recorded as `Matrix.det_fin_two`.
+
+```lean
+example {k : Type*} [CommRing k] (M : Matrix (Fin 2) (Fin 2) k) :
+    M.det = M 0 0 * M 1 1 - M 0 1 * M 1 0 :=
+  Matrix.det_fin_two M
+```
+
+The basis-free definition makes multiplicativity, $`\det(S \circ T) = \det(S)\det(T)`, fall out for free.
+Show that the determinant of a product of matrices is the product of the determinants.
+
+```lean
+example {n : Type*} [Fintype n] [DecidableEq n] {k : Type*}
+    [CommRing k] (M N : Matrix n n k) : (M * N).det = M.det * N.det := by
+  sorry
+```
+
+The problem "determinant detects isomorphism" says $`T` is invertible exactly when $`\det T \neq 0`.
+Over a field the invertible elements are the nonzero ones, and Mathlib phrases the general statement with `IsUnit`: a matrix is invertible exactly when its determinant is.
+
+```lean
+example {n : Type*} [Fintype n] [DecidableEq n] {k : Type*}
+    [CommRing k] (M : Matrix n n k) : IsUnit M ↔ IsUnit M.det := by
+  sorry
+```
+
+## Characteristic polynomials, and Cayley-Hamilton
+
+The characteristic polynomial $`p_T(X) = \det(X \cdot \mathrm{id} - T)` of a matrix is `Matrix.charpoly`; it lives in the polynomial ring `Polynomial k`.
+
+```lean
+noncomputable example {n : Type*} [DecidableEq n] [Fintype n]
+    {k : Type*} [CommRing k] (M : Matrix n n k) : Polynomial k :=
+  M.charpoly
+```
+
+The Cayley-Hamilton theorem says $`p_T(T)` is the zero map.
+Substituting the matrix into its own characteristic polynomial — through the algebra evaluation `Polynomial.aeval` — yields zero, and Mathlib records this as `Matrix.aeval_self_charpoly`.
+
+```lean
+example {n : Type*} [DecidableEq n] [Fintype n] {k : Type*} [CommRing k]
+    (M : Matrix n n k) : Polynomial.aeval M M.charpoly = 0 := by
+  sorry
+```

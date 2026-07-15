@@ -4,6 +4,8 @@ import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.Analysis.InnerProductSpace.Adjoint
+import Mathlib.Analysis.InnerProductSpace.Dual
+import Mathlib.Analysis.InnerProductSpace.Spectrum
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -36,16 +38,6 @@ Let $`V` and $`W` be vector spaces.
 Suppose $`T \colon V \to W` is a linear map.
 Then we actually get a map $$`T^\vee \colon W^\vee \to V^\vee, \qquad f \mapsto f \circ T.`
 This map is called the *dual map*.
-
-`Module.Dual.transpose` is the corresponding map on `Module.Dual`s.
-
-```lean
-example (k V W : Type*) [Field k]
-    [AddCommGroup V] [Module k V]
-    [AddCommGroup W] [Module k W]
-    (T : V →ₗ[k] W) : Module.Dual k W →ₗ[k] Module.Dual k V :=
-  Module.Dual.transpose T
-```
 :::
 
 :::EXAMPLE "Example of a dual map"
@@ -191,16 +183,6 @@ We will see that, as a result of the flipping above, the *conjugate transpose* i
 :::DEFINITION
 Let $`V` and $`W` be finite-dimensional inner product spaces, and let $`T \colon V \to W`.
 The *adjoint* (or *conjugate transpose*) of $`T`, denoted $`T^\dagger \colon W \to V`, is defined as follows: for every vector $`w : W`, we let $`T^\dagger(w) : V` be the unique vector with $$`\langle v, T^\dagger(w) \rangle_V = \langle T(v), w \rangle_W` for every $`v : V`.
-
-`LinearMap.adjoint` is the same construction for finite-dimensional inner product spaces over `RCLike` scalars.
-
-```lean
-noncomputable example {𝕜 V W : Type*} [RCLike 𝕜]
-    [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
-    [NormedAddCommGroup W] [InnerProductSpace 𝕜 W]
-    [FiniteDimensional 𝕜 V] [FiniteDimensional 𝕜 W]
-    (T : V →ₗ[𝕜] W) : W →ₗ[𝕜] V := T.adjoint
-```
 :::
 
 Some immediate remarks about this definition:
@@ -250,15 +232,6 @@ We say a linear map $`T` (from a finite-dimensional inner product space to itsel
 We say a complex $`T` is *self-adjoint* or *Hermitian* if $`T = T^\dagger`; i.e. as a matrix in any orthonormal basis, $`T` is its own conjugate transpose.
 For real $`T` we say "self-adjoint", "Hermitian" or *symmetric*.
 :::
-
-`LinearMap.IsSymmetric` captures the self-adjoint condition without taking the adjoint — it asserts the inner-product equation directly.
-On finite-dimensional spaces this is equivalent to `T.adjoint = T`.
-
-```lean
-example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
-    [InnerProductSpace 𝕜 V] (T : V →ₗ[𝕜] V) : Prop :=
-  T.IsSymmetric
-```
 
 :::THEOREM "Normal ⟺ diagonalizable with orthonormal basis"
 Let $`V` be a finite-dimensional complex inner product space.
@@ -371,3 +344,107 @@ Let $`M` be an $`m \times n` matrix of complex numbers.
 Show that $`M^\dagger M` and $`M` have equal rank.
 (Try to find a basis-free proof.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Dual of a map
+
+`Module.Dual.transpose` is the corresponding map on `Module.Dual`s.
+
+```lean
+example (k V W : Type*) [Field k]
+    [AddCommGroup V] [Module k V]
+    [AddCommGroup W] [Module k W]
+    (T : V →ₗ[k] W) : Module.Dual k W →ₗ[k] Module.Dual k V :=
+  Module.Dual.transpose T
+```
+
+Unfolding the definition, the dual map really is precomposition $`f \mapsto f \circ T`: evaluating $`T^\vee f` at a vector $`v` gives $`f(T v)`.
+
+```lean
+example (k V W : Type*) [Field k]
+    [AddCommGroup V] [Module k V]
+    [AddCommGroup W] [Module k W]
+    (T : V →ₗ[k] W) (f : Module.Dual k W) (v : V) :
+    Module.Dual.transpose T f v = f (T v) := by
+  sorry
+```
+
+## Identifying with the dual space
+
+Given an inner product, `InnerProductSpace.toDualMap` sends a vector $`x` to the functional $`y \mapsto \langle x, y \rangle`, so evaluating it recovers the inner product.
+
+```lean
+example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
+    [InnerProductSpace 𝕜 V]
+    (x y : V) : InnerProductSpace.toDualMap 𝕜 V x y = inner 𝕜 x y := rfl
+
+```
+
+The injectivity half of the isomorphism $`V \cong V^\vee` is the fact used in the proof: if $`\langle v, w \rangle = 0` for every $`v`, then $`w = 0` by positive definiteness (take $`v = w`).
+
+```lean
+example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
+    [InnerProductSpace 𝕜 V]
+    (w : V) (h : ∀ v, inner 𝕜 v w = 0) : w = 0 := by
+  sorry
+```
+
+## The adjoint (conjugate transpose)
+
+`LinearMap.adjoint` is the same construction for finite-dimensional inner product spaces over `RCLike` scalars.
+
+```lean
+noncomputable example {𝕜 V W : Type*} [RCLike 𝕜]
+    [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
+    [NormedAddCommGroup W] [InnerProductSpace 𝕜 W]
+    [FiniteDimensional 𝕜 V] [FiniteDimensional 𝕜 W]
+    (T : V →ₗ[𝕜] W) : W →ₗ[𝕜] V := T.adjoint
+```
+
+The defining property of the adjoint is the inner-product identity $`\langle v, T^\dagger(w) \rangle_V = \langle T(v), w \rangle_W`.
+
+```lean
+example {𝕜 V W : Type*} [RCLike 𝕜]
+    [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
+    [NormedAddCommGroup W] [InnerProductSpace 𝕜 W]
+    [FiniteDimensional 𝕜 V] [FiniteDimensional 𝕜 W]
+    (T : V →ₗ[𝕜] W) (v : V) (w : W) :
+    inner 𝕜 v (T.adjoint w) = inner 𝕜 (T v) w := by
+  sorry
+```
+
+## Eigenvalues of normal maps
+
+`LinearMap.IsSymmetric` captures the self-adjoint condition without taking the adjoint — it asserts the inner-product equation directly.
+On finite-dimensional spaces this is equivalent to `T.adjoint = T`.
+
+```lean
+example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
+    [InnerProductSpace 𝕜 V] (T : V →ₗ[𝕜] V) : Prop :=
+  T.IsSymmetric
+```
+
+The corollary that a Hermitian map has real eigenvalues is `conj_eigenvalue_eq_self`: every eigenvalue is fixed by conjugation.
+
+```lean
+example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
+    [InnerProductSpace 𝕜 V]
+    (T : V →ₗ[𝕜] V) (hT : T.IsSymmetric) (μ : 𝕜)
+    (hμ : Module.End.HasEigenvalue T μ) : starRingEnd 𝕜 μ = μ := by
+  sorry
+```
+
+The key orthogonality step of the spectral theorem: eigenvectors of a self-adjoint map with distinct eigenvalues are orthogonal.
+
+```lean
+example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
+    [InnerProductSpace 𝕜 V]
+    (T : V →ₗ[𝕜] V) (hT : T.IsSymmetric) (μ ν : 𝕜) (v w : V)
+    (hv : T v = μ • v) (hw : T w = ν • w) (hμν : μ ≠ ν) :
+    inner 𝕜 v w = 0 := by
+  sorry
+```

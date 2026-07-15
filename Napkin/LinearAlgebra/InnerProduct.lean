@@ -4,6 +4,7 @@ import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.InnerProductSpace.Orthonormal
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Napkin.Meta.Recall
 
 open Verso.Genre Manual
@@ -116,13 +117,6 @@ It'll be useful to treat both types of spaces simultaneously:
 An *inner product space* is either a real vector space equipped with a real inner form, or a complex vector space equipped with a complex inner form.
 
 A linear map between inner product spaces is a map between the underlying vector spaces (we do _not_ require any compatibility with the inner form).
-
-`Inner k V` provides the inner product itself; `InnerProductSpace k V` packages it with a `NormedAddCommGroup` structure plus the axioms.
-
-```lean
-example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℝ V]
-    (v w : V) : ℝ := inner ℝ v w
-```
 :::
 
 :::REMARK "Why sesquilinear?"
@@ -157,14 +151,6 @@ This definition makes sense because we assumed our form to be positive definite,
 When $`V = \mathbb{R}^n` or $`V = \mathbb{C}^n` with the standard dot product norm, then the norm of $`v` corresponds to the absolute value that we are used to.
 :::
 
-The defining identity $`\|v\|^2 = \langle v, v \rangle` is `@inner_self_eq_norm_sq` (real case) and `@inner_self_eq_norm_sq_to_K` (over a general `RCLike` field):
-
-```lean
-recall inner_self_eq_norm_sq {𝕜 E : Type*} [RCLike 𝕜]
-    [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E] (v : E) :
-    RCLike.re (inner 𝕜 v v) = ‖v‖ ^ 2
-```
-
 Our goal now is to prove that
 
 :::MORAL
@@ -182,14 +168,6 @@ Let's now prove something we all know and love, which will be a stepping stone l
 Let $`V` be an inner product space.
 For any $`v, w : V` we have $$`|\langle v, w \rangle| \leq \|v\| \|w\|` with equality if and only if $`v` and $`w` are linearly dependent.
 :::
-
-In Mathlib this is `norm_inner_le_norm`, stated using `‖·‖` on both sides — the left-hand side is the norm in `𝕜`, which for $`\mathbb{C}` agrees with the modulus.
-
-```lean
-recall norm_inner_le_norm {𝕜 E : Type*} [RCLike 𝕜]
-    [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E] (x y : E) :
-    ‖inner 𝕜 x y‖ ≤ ‖x‖ * ‖y‖
-```
 
 :::PROOF
 The theorem is immediate if $`\langle v, w \rangle = 0`.
@@ -225,15 +203,6 @@ The definition is easy enough:
 Two nonzero vectors $`v` and $`w` in an inner product space are *orthogonal* if $`\langle v, w \rangle = 0`.
 :::
 
-`Orthonormal 𝕜 v` packages "norm-1 and pairwise orthogonal" into a single proposition over an indexed family `v : ι → E`, sidestepping the question of whether the family is finite or infinite.
-
-```lean
-recall Orthonormal {𝕜 E : Type*} [RCLike 𝕜]
-    [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-    {ι : Type*} (v : ι → E) : Prop :=
-  (∀ i, ‖v i‖ = 1) ∧ Pairwise fun i j => inner 𝕜 (v i) (v j) = 0
-```
-
 As we expect from our geometric intuition in $`\mathbb{R}^n`, this implies independence:
 
 :::LEMMA "Orthogonal vectors are independent"
@@ -256,9 +225,6 @@ An *orthonormal* basis of a _finite-dimensional_ inner product space $`V` is a b
 :::EXAMPLE "ℝⁿ and ℂⁿ have standard bases"
 In $`\mathbb{R}^n` and $`\mathbb{C}^n` equipped with the standard dot product, the standard basis $`\mathbf{e}_1, \dots, \mathbf{e}_n` is also orthonormal.
 :::
-
-The bundled form is `OrthonormalBasis ι 𝕜 E`: a structure carrying a basis indexed by `ι` together with a proof of orthonormality, on top of which Mathlib derives the linear isometry to `EuclideanSpace 𝕜 ι`.
-For `EuclideanSpace 𝕜 (Fin n)`, the standard basis is `EuclideanSpace.basisFun (Fin n) 𝕜`.
 
 This is no loss of generality:
 
@@ -295,9 +261,6 @@ Here is how it goes:
 :::DEFINITION
 A *Hilbert space* is an inner product space $`V`, such that the corresponding metric space is complete.
 :::
-
-There's no separate `HilbertSpace` typeclass in Mathlib; "Hilbert space" is the conjunction of `InnerProductSpace 𝕜 E` and `CompleteSpace E`.
-Finite-dimensional inner product spaces are automatically complete via `FiniteDimensional.complete`.
 
 In that case, it will now often make sense to take infinite linear combinations, because we can look at the sequence of partial sums and let it converge.
 Here is how we might do it.
@@ -392,3 +355,91 @@ A *Banach space* is a normed vector space $`V`, such that the corresponding metr
 Let $`(M, d)` be any metric space.
 Prove that there exists a Banach space $`X` and an injective function $`f \colon M \hookrightarrow X` such that $`d(x, y) = \|f(x) - f(y)\|` for any $`x` and $`y`.
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Inner product space
+
+`Inner k V` provides the inner product itself; `InnerProductSpace k V` packages it with a `NormedAddCommGroup` structure plus the axioms.
+The inner product of two vectors of a real inner product space is a real number.
+
+```lean
+example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+    (v w : V) : ℝ := inner ℝ v w
+```
+
+The complex definition replaces symmetry by *conjugate symmetry* $`\langle v, w \rangle = \overline{\langle w, v \rangle}`, recorded in Mathlib as `inner_conj_symm`.
+Confirm the conjugate symmetry axiom over $`\mathbb{C}`.
+
+```lean
+example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] (v w : V) :
+    inner ℂ v w = starRingEnd ℂ (inner ℂ w v) := by
+  sorry
+```
+
+## Norms
+
+The defining identity $`\|v\|^2 = \langle v, v \rangle` is `@inner_self_eq_norm_sq` (real case) and `@inner_self_eq_norm_sq_to_K` (over a general `RCLike` field).
+
+```lean
+recall inner_self_eq_norm_sq {𝕜 E : Type*} [RCLike 𝕜]
+    [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E] (v : E) :
+    RCLike.re (inner 𝕜 v v) = ‖v‖ ^ 2
+```
+
+Cauchy-Schwarz is `norm_inner_le_norm`, stated using `‖·‖` on both sides — the left-hand side is the norm in `𝕜`, which for $`\mathbb{C}` agrees with the modulus.
+
+```lean
+recall norm_inner_le_norm {𝕜 E : Type*} [RCLike 𝕜]
+    [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E] (x y : E) :
+    ‖inner 𝕜 x y‖ ≤ ‖x‖ * ‖y‖
+```
+
+The Pythagorean theorem (one of the chapter's problems) drops out of the expansion of $`\|v + w\|^2` once the cross term $`\langle v, w \rangle` vanishes.
+Prove it for a real inner product space.
+
+```lean
+example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℝ V] (v w : V)
+    (h : inner ℝ v w = 0) : ‖v‖ ^ 2 + ‖w‖ ^ 2 = ‖v + w‖ ^ 2 := by
+  sorry
+```
+
+## Orthogonality
+
+`Orthonormal 𝕜 v` packages "norm-1 and pairwise orthogonal" into a single proposition over an indexed family `v : ι → E`, sidestepping the question of whether the family is finite or infinite.
+
+```lean
+recall Orthonormal {𝕜 E : Type*} [RCLike 𝕜]
+    [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+    {ι : Type*} (v : ι → E) : Prop :=
+  (∀ i, ‖v i‖ = 1) ∧ Pairwise fun i j => inner 𝕜 (v i) (v j) = 0
+```
+
+The bundled form is `OrthonormalBasis ι 𝕜 E`: a structure carrying a basis indexed by `ι` together with a proof of orthonormality, on top of which Mathlib derives the linear isometry to `EuclideanSpace 𝕜 ι`.
+For `EuclideanSpace 𝕜 (Fin n)`, the standard basis is `EuclideanSpace.basisFun (Fin n) 𝕜`.
+
+The lemma that pairwise-orthogonal unit vectors are linearly independent is `Orthonormal.linearIndependent`.
+Derive it from an `Orthonormal` family.
+
+```lean
+example (𝕜 E : Type*) [RCLike 𝕜] [NormedAddCommGroup E]
+    [InnerProductSpace 𝕜 E] {ι : Type*} (v : ι → E)
+    (h : Orthonormal 𝕜 v) : LinearIndependent 𝕜 v := by
+  sorry
+```
+
+## Hilbert spaces
+
+There's no separate `HilbertSpace` typeclass in Mathlib; "Hilbert space" is the conjunction of `InnerProductSpace 𝕜 E` and `CompleteSpace E`.
+Finite-dimensional inner product spaces are automatically complete via `FiniteDimensional.complete`.
+
+The chapter problem "finite-dimensional $`\Rightarrow` Hilbert" then amounts to producing the `CompleteSpace` instance in finite dimension.
+
+```lean
+example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+    [FiniteDimensional ℝ V] : CompleteSpace V := by
+  sorry
+```

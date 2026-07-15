@@ -3,7 +3,9 @@ import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.LinearAlgebra.Eigenspace.Basic
+import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 import Mathlib.LinearAlgebra.Matrix.Diagonal
+import Mathlib.LinearAlgebra.Dimension.Constructions
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -90,14 +92,6 @@ Show that the $`\lambda`-eigenvectors, together with $`\{0\}` form a subspace.
 
 :::DEFINITION
 For any $`\lambda`, we define the $`\lambda`-*eigenspace* as the set of $`\lambda`-eigenvectors together with $`0`.
-
-`Module.End.HasEigenvalue` and `Module.End.eigenspace` are the matching predicate and submodule.
-
-```lean
-example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
-    (T : Module.End k V) (μ : k) : Submodule k V :=
-  T.eigenspace μ
-```
 :::
 
 This lets us state succinctly that "$`2` is an eigenvalue of $`T` with one-dimensional eigenspace spanned by $`e_1`".
@@ -341,14 +335,6 @@ Let $`T \colon V \to V` be a linear map and $`\lambda` a scalar.
   The *algebraic multiplicity* of $`\lambda` is the dimension $`\dim V^\lambda`.
 
 (Silly edge case: we allow "multiplicity zero" if $`\lambda` is not an eigenvalue at all.)
-
-`Module.End.genEigenspace T μ n` is the kernel of $`(T - \mu \cdot \mathrm{id})^n`; taking the `iSup` over $`n` recovers the generalized eigenspace.
-
-```lean
-example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
-    (T : Module.End k V) (μ : k) (n : ℕ) : Submodule k V :=
-  T.genEigenspace μ n
-```
 :::
 
 However in practice you should just count the Jordan blocks.
@@ -429,3 +415,87 @@ Let $`V` be the infinite-dimensional real vector space of all infinitely differe
 Note that $`\frac{d}{dx} \colon V \to V` is a linear map (for example it sends $`\cos x` to $`-\sin x`).
 Which real numbers are eigenvalues of this map?
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Eigenvectors and eigenvalues
+
+`Module.End.HasEigenvalue` and `Module.End.eigenspace` are the matching predicate and submodule.
+
+```lean
+example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    (T : Module.End k V) (μ : k) : Submodule k V :=
+  T.eigenspace μ
+```
+
+The defining condition $`T(v) = \lambda v` is exactly membership in the eigenspace, and $`\lambda` being an eigenvalue means this eigenspace is not the zero submodule `⊥`.
+
+```lean
+example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    (T : Module.End k V) (μ : k) (v : V) :
+    v ∈ T.eigenspace μ ↔ T v = μ • v :=
+  Module.End.mem_eigenspace_iff
+
+example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    (T : Module.End k V) (μ : k) :
+    T.HasEigenvalue μ ↔ T.eigenspace μ ≠ ⊥ :=
+  Module.End.hasEigenvalue_iff
+```
+
+The theorem that eigenvalues always exist over an algebraically closed field is `Module.End.exists_eigenvalue`, which needs `V` to be finite-dimensional and nontrivial.
+Restate it as a reader exercise.
+
+```lean
+example (k V : Type*) [Field k] [IsAlgClosed k] [AddCommGroup V] [Module k V]
+    [FiniteDimensional k V] [Nontrivial V] (T : Module.End k V) :
+    ∃ μ : k, T.HasEigenvalue μ := by
+  sorry
+```
+
+## Nilpotent maps
+
+Nilpotency is Mathlib's `IsNilpotent`, meaning some power is zero.
+
+```lean
+example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    (T : Module.End k V) : Prop := IsNilpotent T
+```
+
+The exercise showed the descending staircase has $`0` as its only eigenvalue.
+That holds for any nilpotent map over a field: prove that every eigenvalue of a nilpotent map is zero.
+
+```lean
+example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    (T : Module.End k V) (hT : IsNilpotent T) (μ : k) (hμ : T.HasEigenvalue μ) :
+    μ = 0 := by
+  sorry
+```
+
+## Algebraic and geometric multiplicity
+
+`Module.End.genEigenspace T μ n` is the kernel of $`(T - \mu \cdot \mathrm{id})^n`; taking the `iSup` over $`n` recovers the generalized eigenspace.
+
+```lean
+example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    (T : Module.End k V) (μ : k) (n : ℕ) : Submodule k V :=
+  T.genEigenspace μ n
+```
+
+The key inclusion behind "geometric multiplicity $`\leq` algebraic multiplicity" is that the eigenspace sits inside every generalized eigenspace of positive index.
+Prove that inclusion, then deduce the inequality of dimensions.
+
+```lean
+example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    (T : Module.End k V) (μ : k) (n : ℕ) (hn : 0 < n) :
+    T.eigenspace μ ≤ T.genEigenspace μ n := by
+  sorry
+
+example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    [FiniteDimensional k V] (T : Module.End k V) (μ : k) (n : ℕ) (hn : 0 < n) :
+    Module.finrank k (T.eigenspace μ)
+      ≤ Module.finrank k (T.genEigenspace μ n) := by
+  sorry
+```

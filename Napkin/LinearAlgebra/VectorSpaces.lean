@@ -128,38 +128,6 @@ Sorry about that, but it's kind of hard to avoid, and the point of the axioms is
 I'll try to remember to put $`r \cdot m` for the multiplication of the module and $`r_1 r_2` for the multiplication of $`R`.
 :::
 
-An $`R`-module on an additive abelian group $`M` is the typeclass `Module R M`.
-When $`R` is a field this also serves as the vector-space structure.
-The compatibility axioms are named lemmas (`mul_smul`, `add_smul`, `smul_add`, `one_smul`, `zero_smul`):
-
-```lean -show
-section
-```
-
-```lean
-example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
-    (r₁ r₂ : R) (m : M) : r₁ • (r₂ • m) = (r₁ * r₂) • m :=
-  (mul_smul r₁ r₂ m).symm
-
-example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
-    (r₁ r₂ : R) (m : M) : (r₁ + r₂) • m = r₁ • m + r₂ • m :=
-  add_smul r₁ r₂ m
-
-example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
-    (r : R) (m₁ m₂ : M) : r • (m₁ + m₂) = r • m₁ + r • m₂ :=
-  smul_add r m₁ m₂
-
-example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
-    (m : M) : (1 : R) • m = m := one_smul R m
-
-example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
-    (m : M) : (0 : R) • m = 0 := zero_smul R m
-```
-
-```lean -show
-end
-```
-
 :::QUESTION
 In the quadratic-polynomial example above, I was careful to say "degree at most $`2`" instead of "degree $`2`".
 What's the reason for this?
@@ -185,22 +153,6 @@ A couple less intuitive but somewhat important examples…
    Can you see why?
 2. By the same reasoning, we see that _any_ commutative ring $`R` can be thought of as an $`R`-module over itself.
 :::
-
-```lean -show
-section
-```
-
-```lean
--- Every additive commutative group is naturally a ℤ-module.
-recall (G : Type*) [AddCommGroup G] : Module ℤ G
-
--- Every commutative ring is a module over itself.
-recall (R : Type*) [CommRing R] : Module R R
-```
-
-```lean -show
-end
-```
 
 # Direct sums
 
@@ -259,26 +211,6 @@ In this way, you can see that $`V` should be isomorphic to $`\mathbb{R} \oplus \
 :::DEFINITION
 We can also define, for every positive integer $`n`, the module $$`M^{\oplus n} \coloneqq \underbrace{M \oplus M \oplus \dots \oplus M}_{n \text{ times}}.`
 :::
-
-```lean -show
-section
-```
-
-```lean
--- The (external) direct sum of two modules: their product, with
--- componentwise operations.
-recall (R M N : Type*) [CommRing R]
-    [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] :
-    Module R (M × N)
-
--- The n-fold direct sum M^⊕n is `Fin n → M`.
-recall (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
-    (n : ℕ) : Module R (Fin n → M)
-```
-
-```lean -show
-end
-```
 
 # Linear independence, spans, and basis
 
@@ -339,30 +271,6 @@ With these new terms, we can say a basis is a linearly independent and spanning 
 Show that a set of vectors is a basis if and only if it is linearly independent and spanning.
 (Think about the polynomial example if you get stuck.)
 :::
-
-```lean -show
-section
-```
-
-```lean
--- Linear independence and spanning over an `R`-module `M`. Mathlib
--- formulates linear independence as injectivity of the linear map
--- from `R`-many copies of the indexing type.
-example (R M ι : Type*) [CommRing R] [AddCommGroup M] [Module R M]
-    (v : ι → M) : Prop := LinearIndependent R v
-
-example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
-    (S : Set M) : Submodule R M := Submodule.span R S
-
--- A basis of `M` indexed by `ι` is `Basis ι R M`; equivalently it
--- is a linear isomorphism of `M` with `ι →₀ R`.
-noncomputable example (R M ι : Type*) [CommRing R] [AddCommGroup M] [Module R M]
-    (b : Basis ι R M) (i : ι) : M := b i
-```
-
-```lean -show
-end
-```
 
 Now we state a few results which assert that bases in vector spaces behave as nicely as possible.
 
@@ -425,28 +333,6 @@ A basis $`e_1, \dots, e_n` of $`V` is really cool because it means that to speci
 You can even think of $`v` as $`(a_1, \dots, a_n)`.
 To put it another way, if $`V` is a $`k`-vector space we always have $$`V = e_1 k \oplus e_2 k \oplus \dots \oplus e_n k.`
 
-```lean -show
-section
-```
-
-```lean
--- The dimension of a finite-dimensional vector space, as a natural
--- number.
-noncomputable example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
-    [FiniteDimensional k V] : ℕ := Module.finrank k V
-
--- All bases of a finite-dimensional vector space have the same
--- (finite) cardinality, given by `finrank`.
-example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
-    [FiniteDimensional k V] {ι : Type*} [Fintype ι] (b : Basis ι k V) :
-    Fintype.card ι = Module.finrank k V :=
-  (Module.finrank_eq_card_basis b).symm
-```
-
-```lean -show
-end
-```
-
 # Linear maps
 
 :::PROTOTYPE
@@ -508,33 +394,6 @@ Spaces often are more than just triples: $`ax^2 + bx + c` is a polynomial, and s
 Moreover, a lot of spaces, like the set of vectors $`(x, y, z)` with $`x + y + z = 0`, do not have an obvious choice of basis.
 Thus to cast such a space into $`k^{\oplus n}` would require you to make arbitrary decisions.
 :::
-
-```lean -show
-section
-```
-
-```lean
--- A linear map `V →ₗ[k] W` bundles a function with the additivity
--- and scalar-action conditions.
-example (k V W : Type*) [Field k]
-    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
-    (T : V →ₗ[k] W) (v₁ v₂ : V) : T (v₁ + v₂) = T v₁ + T v₂ :=
-  T.map_add v₁ v₂
-
-example (k V W : Type*) [Field k]
-    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
-    (T : V →ₗ[k] W) (a : k) (v : V) : T (a • v) = a • T v :=
-  T.map_smul a v
-
--- An isomorphism of vector spaces is `V ≃ₗ[k] W`.
-example (k V W : Type*) [Field k]
-    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
-    (T : V ≃ₗ[k] W) : V →ₗ[k] W := T.toLinearMap
-```
-
-```lean -show
-end
-```
 
 # What is a matrix?
 
@@ -662,45 +521,6 @@ In particular, since function composition is associative, it follows that matrix
 This means you can define concepts like the determinant or the trace of a matrix both in terms of an "intrinsic" map $`T \colon V \to W` and in terms of the entries of the matrix.
 Since the map $`T` itself doesn't refer to any basis, the abstract definition will imply that the numerical definition doesn't depend on the choice of a basis.
 
-```lean -show
-section
-```
-
-```lean
--- Once we fix bases of `V` and `W`, linear maps `V →ₗ[k] W` are in
--- bijection with matrices of the right shape. Mathlib bundles this
--- as the linear equivalence `LinearMap.toMatrix`.
-noncomputable example
-    {k : Type*} [Field k]
-    {V W : Type*}
-    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
-    {ιV ιW : Type*} [Fintype ιV] [DecidableEq ιV] [Fintype ιW] [DecidableEq ιW]
-    (bV : Basis ιV k V) (bW : Basis ιW k W) :
-    (V →ₗ[k] W) ≃ₗ[k] Matrix ιW ιV k :=
-  LinearMap.toMatrix bV bW
-
--- Composition of linear maps corresponds to matrix multiplication.
-example
-    {k : Type*} [Field k]
-    {V W U : Type*}
-    [AddCommGroup V] [Module k V]
-    [AddCommGroup W] [Module k W]
-    [AddCommGroup U] [Module k U]
-    {ιV ιW ιU : Type*}
-    [Fintype ιV] [DecidableEq ιV]
-    [Fintype ιW] [DecidableEq ιW]
-    [Fintype ιU] [DecidableEq ιU]
-    (bV : Basis ιV k V) (bW : Basis ιW k W) (bU : Basis ιU k U)
-    (S : W →ₗ[k] U) (T : V →ₗ[k] W) :
-    LinearMap.toMatrix bV bU (S ∘ₗ T) =
-      LinearMap.toMatrix bW bU S * LinearMap.toMatrix bV bW T :=
-  LinearMap.toMatrix_comp bV bW bU S T
-```
-
-```lean -show
-end
-```
-
 # Subspaces and picking convenient bases
 
 :::PROTOTYPE
@@ -728,30 +548,6 @@ Note that it is a subspace of $`V` as well!
 Why is $`0_V` an element of each of the above examples?
 In general, why must any subspace contain $`0_V`?
 :::
-
-```lean -show
-section
-```
-
-```lean
--- A subspace is a `Submodule k V`. The kernel and image of a linear
--- map are submodules.
-example (k V W : Type*) [Field k]
-    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
-    (T : V →ₗ[k] W) : Submodule k V := LinearMap.ker T
-
-example (k V W : Type*) [Field k]
-    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
-    (T : V →ₗ[k] W) : Submodule k W := LinearMap.range T
-
--- The span of a set of vectors is `Submodule.span`.
-example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
-    (S : Set V) : Submodule k V := Submodule.span k S
-```
-
-```lean -show
-end
-```
 
 Subspaces behave nicely with respect to bases.
 
@@ -803,25 +599,6 @@ If $`T \colon V \to W`, then $$`\dim V = \dim \ker T + \dim \mathrm{im}\, T.`
 :::QUESTION
 Conclude the rank-nullity theorem from the previous theorem.
 :::
-
-```lean -show
-section
-```
-
-```lean
--- Rank-nullity theorem: dim range T + dim ker T = dim V.
-example (k V W : Type*) [Field k]
-    [AddCommGroup V] [Module k V] [FiniteDimensional k V]
-    [AddCommGroup W] [Module k W]
-    (T : V →ₗ[k] W) :
-    Module.finrank k (LinearMap.range T) +
-        Module.finrank k (LinearMap.ker T) = Module.finrank k V :=
-  LinearMap.finrank_range_add_finrank_ker T
-```
-
-```lean -show
-end
-```
 
 # A cute application: Lagrange interpolation
 
@@ -1023,3 +800,235 @@ Prove that there exists an integer $`N` such that $$`V = \ker T^N \oplus \mathrm
 
 (Hint: use the fact that the infinite chain of subspaces $`\ker T \subseteq \ker T^2 \subseteq \ker T^3 \subseteq \dots` and the similar chain for $`\mathrm{im}\, T` must eventually stabilize, for dimension reasons.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Modules and vector spaces
+
+An $`R`-module on an additive abelian group $`M` is the typeclass `Module R M`.
+When $`R` is a field this also serves as the vector-space structure.
+The compatibility axioms are named lemmas (`mul_smul`, `add_smul`, `smul_add`, `one_smul`, `zero_smul`):
+
+```lean
+example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    (r₁ r₂ : R) (m : M) : r₁ • (r₂ • m) = (r₁ * r₂) • m :=
+  (mul_smul r₁ r₂ m).symm
+
+example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    (r₁ r₂ : R) (m : M) : (r₁ + r₂) • m = r₁ • m + r₂ • m :=
+  add_smul r₁ r₂ m
+
+example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    (r : R) (m₁ m₂ : M) : r • (m₁ + m₂) = r • m₁ + r • m₂ :=
+  smul_add r m₁ m₂
+
+example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    (m : M) : (1 : R) • m = m := one_smul R m
+
+example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    (m : M) : (0 : R) • m = 0 := zero_smul R m
+```
+
+Two of the running examples are recorded as instances: every additive abelian group is a $`\mathbb{Z}`-module, and every commutative ring is a module over itself.
+
+```lean
+-- Every additive commutative group is naturally a ℤ-module.
+recall (G : Type*) [AddCommGroup G] : Module ℤ G
+
+-- Every commutative ring is a module over itself.
+recall (R : Type*) [CommRing R] : Module R R
+```
+
+From these axioms one deduces the familiar sign rule.
+Show that negating the scalar negates the result: $`(-r) \cdot m = -(r \cdot m)`.
+
+```lean
+example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    (r : R) (m : M) : (-r) • m = -(r • m) := by
+  sorry
+```
+
+## Direct sums
+
+The (external) direct sum of two modules is their product with componentwise operations, and the $`n`-fold sum $`M^{\oplus n}` is the type of functions `Fin n → M`.
+
+```lean
+-- The (external) direct sum of two modules: their product, with
+-- componentwise operations.
+recall (R M N : Type*) [CommRing R]
+    [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] :
+    Module R (M × N)
+
+-- The n-fold direct sum M^⊕n is `Fin n → M`.
+recall (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    (n : ℕ) : Module R (Fin n → M)
+```
+
+The definition says scaling acts componentwise, $`r \cdot (m, n) = (r \cdot m, r \cdot n)`.
+Confirm this holds in Mathlib's product module.
+
+```lean
+example (R M N : Type*) [CommRing R]
+    [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+    (r : R) (m : M) (n : N) : r • ((m, n) : M × N) = (r • m, r • n) := by
+  sorry
+```
+
+## Linear independence, spans, and basis
+
+Mathlib formulates linear independence as injectivity of the linear map from $`R`-many copies of the indexing type; the span of a set is `Submodule.span`; and a basis of `M` indexed by `ι` is `Basis ι R M`, equivalently a linear isomorphism of `M` with `ι →₀ R`.
+
+```lean
+example (R M ι : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    (v : ι → M) : Prop := LinearIndependent R v
+
+example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    (S : Set M) : Submodule R M := Submodule.span R S
+
+-- A basis of `M` indexed by `ι` is `Basis ι R M`; equivalently it
+-- is a linear isomorphism of `M` with `ι →₀ R`.
+noncomputable example (R M ι : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    (b : Basis ι R M) (i : ι) : M := b i
+```
+
+The dimension theorem says any two finite bases of a vector space have the same size, which is the `finrank`.
+
+```lean
+-- The dimension of a finite-dimensional vector space, as a natural
+-- number.
+noncomputable example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    [FiniteDimensional k V] : ℕ := Module.finrank k V
+
+-- All bases of a finite-dimensional vector space have the same
+-- (finite) cardinality, given by `finrank`.
+example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    [FiniteDimensional k V] {ι : Type*} [Fintype ι] (b : Basis ι k V) :
+    Fintype.card ι = Module.finrank k V :=
+  (Module.finrank_eq_card_basis b).symm
+```
+
+A basis is linearly independent and spanning — that is exactly the exercise of the section.
+Extract the linear-independence half from a `Basis`.
+
+```lean
+example (R M ι : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    (b : Basis ι R M) : LinearIndependent R b := by
+  sorry
+```
+
+## Linear maps
+
+A linear map `V →ₗ[k] W` bundles a function with the additivity and scalar-action conditions, and an isomorphism of vector spaces is `V ≃ₗ[k] W`.
+
+```lean
+example (k V W : Type*) [Field k]
+    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
+    (T : V →ₗ[k] W) (v₁ v₂ : V) : T (v₁ + v₂) = T v₁ + T v₂ :=
+  T.map_add v₁ v₂
+
+example (k V W : Type*) [Field k]
+    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
+    (T : V →ₗ[k] W) (a : k) (v : V) : T (a • v) = a • T v :=
+  T.map_smul a v
+
+-- An isomorphism of vector spaces is `V ≃ₗ[k] W`.
+example (k V W : Type*) [Field k]
+    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
+    (T : V ≃ₗ[k] W) : V →ₗ[k] W := T.toLinearMap
+```
+
+Combining the two conditions, a linear map respects any two-term linear combination.
+Prove $`T(a v + b w) = a\, T(v) + b\, T(w)`.
+
+```lean
+example (k V W : Type*) [Field k]
+    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
+    (T : V →ₗ[k] W) (a b : k) (v w : V) :
+    T (a • v + b • w) = a • T v + b • T w := by
+  sorry
+```
+
+## What is a matrix?
+
+Once we fix bases of `V` and `W`, linear maps `V →ₗ[k] W` are in bijection with matrices of the right shape; Mathlib bundles this as the linear equivalence `LinearMap.toMatrix`, and composition of maps corresponds to matrix multiplication.
+
+```lean
+noncomputable example
+    {k : Type*} [Field k]
+    {V W : Type*}
+    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
+    {ιV ιW : Type*} [Fintype ιV] [DecidableEq ιV] [Fintype ιW] [DecidableEq ιW]
+    (bV : Basis ιV k V) (bW : Basis ιW k W) :
+    (V →ₗ[k] W) ≃ₗ[k] Matrix ιW ιV k :=
+  LinearMap.toMatrix bV bW
+
+-- Composition of linear maps corresponds to matrix multiplication.
+example
+    {k : Type*} [Field k]
+    {V W U : Type*}
+    [AddCommGroup V] [Module k V]
+    [AddCommGroup W] [Module k W]
+    [AddCommGroup U] [Module k U]
+    {ιV ιW ιU : Type*}
+    [Fintype ιV] [DecidableEq ιV]
+    [Fintype ιW] [DecidableEq ιW]
+    [Fintype ιU] [DecidableEq ιU]
+    (bV : Basis ιV k V) (bW : Basis ιW k W) (bU : Basis ιU k U)
+    (S : W →ₗ[k] U) (T : V →ₗ[k] W) :
+    LinearMap.toMatrix bV bU (S ∘ₗ T) =
+      LinearMap.toMatrix bW bU S * LinearMap.toMatrix bV bW T :=
+  LinearMap.toMatrix_comp bV bW bU S T
+```
+
+As the remark on the identity matrix explains, the identity map is encoded by the identity matrix in any basis.
+Prove it.
+
+```lean
+example (k V ι : Type*) [Field k] [AddCommGroup V] [Module k V]
+    [Fintype ι] [DecidableEq ι] (b : Basis ι k V) :
+    LinearMap.toMatrix b b LinearMap.id = 1 := by
+  sorry
+```
+
+## Subspaces and picking convenient bases
+
+A subspace is a `Submodule k V`; the kernel and image of a linear map are submodules, and the span of a set of vectors is `Submodule.span`.
+
+```lean
+example (k V W : Type*) [Field k]
+    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
+    (T : V →ₗ[k] W) : Submodule k V := LinearMap.ker T
+
+example (k V W : Type*) [Field k]
+    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
+    (T : V →ₗ[k] W) : Submodule k W := LinearMap.range T
+
+-- The span of a set of vectors is `Submodule.span`.
+example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    (S : Set V) : Submodule k V := Submodule.span k S
+```
+
+The rank-nullity theorem is the analog of the first isomorphism theorem: $`\dim V = \dim \ker T + \dim \operatorname{im} T`.
+
+```lean
+-- Rank-nullity theorem: dim range T + dim ker T = dim V.
+example (k V W : Type*) [Field k]
+    [AddCommGroup V] [Module k V] [FiniteDimensional k V]
+    [AddCommGroup W] [Module k W]
+    (T : V →ₗ[k] W) :
+    Module.finrank k (LinearMap.range T) +
+        Module.finrank k (LinearMap.ker T) = Module.finrank k V :=
+  LinearMap.finrank_range_add_finrank_ker T
+```
+
+The section asked why every subspace must contain $`0_V`.
+It is one of the closure conditions; confirm it.
+
+```lean
+example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    (N : Submodule k V) : (0 : V) ∈ N := by
+  sorry
+```
