@@ -6,6 +6,10 @@ import Napkin.Meta.Citations
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.MeasureTheory.Measure.Haar.Basic
 import Mathlib.Topology.Algebra.PontryaginDual
+import Mathlib.MeasureTheory.Function.L2Space
+import Mathlib.Analysis.Fourier.AddCircle
+import Mathlib.Analysis.Fourier.FourierTransform
+import Mathlib.Analysis.Fourier.Inversion
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -38,21 +42,11 @@ $$`G \to G \quad\text{by}\quad x \mapsto x^{-1}`
 are continuous.
 :::
 
-`TopologicalGroup G` (Mathlib calls it `IsTopologicalGroup` in newer versions) is the typeclass: a `Group G` plus a `TopologicalSpace G` plus continuity of multiplication and inversion.
-The Hausdorff condition is *not* baked in by default; you add `[T2Space G]` separately when you need it.
-
-```lean
-example (G : Type*) [Group G] [TopologicalSpace G]
-    [IsTopologicalGroup G] : True := trivial
-```
-
 For our Fourier analysis, we need some additional conditions.
 
 :::DEFINITION
 A *locally compact abelian (LCA) group* $`G` is one for which the group operation is abelian, and moreover the topology is *locally compact*: for every point $`p` of $`G`, there exists a compact subset $`K` of $`G` such that $`K \ni p`, and $`K` contains some open neighborhood of $`p`.
 :::
-
-`[CommGroup G] [TopologicalSpace G] [IsTopologicalGroup G] [LocallyCompactSpace G]` is the standard Mathlib bundle for LCA groups.
 
 Our previous examples all fall into this category:
 
@@ -61,8 +55,6 @@ Our previous examples all fall into this category:
 - The circle group $`\mathbb{T}` is LCA and also in fact compact.
 - The real numbers $`\mathbb{R}` are an example of an LCA group which is *not* compact.
 :::
-
-In Mathlib, `Circle` is the unit circle in `ℂ` with the multiplicative group structure (the abelian topological group $`\mathbb{T}`), and `ℝ`/`ℤ`/`ZMod n` all carry the LCA-group instances out of the box.
 
 These conditions turn out to be enough for us to define a measure on the space $`G`.
 The relevant theorem, which we will just quote:
@@ -80,18 +72,6 @@ There exists a measure $`\mu \colon \mathcal{B}(G) \to [0, \infty]`, called the 
 
 Moreover, it is unique up to scaling by a positive constant.
 :::
-
-`MeasureTheory.Measure.haar` is Mathlib's spelling, with the canonical Haar measure on a group `G` registered through the `[MeasureTheory.IsHaarMeasure μ]` typeclass.
-The four properties unpack into Mathlib lemmas: `MeasureTheory.map_mul_left_eq_self` for translation invariance, `IsCompact.measure_lt_top` for compact-set finiteness, `MeasureTheory.Measure.OuterRegular`/`InnerRegular` for the regularity halves.
-Existence comes from the Haar-measure construction in `Mathlib.MeasureTheory.Measure.Haar.Basic`; uniqueness up to scaling is `MeasureTheory.Measure.haarMeasure_unique`.
-
-```lean
-noncomputable example {G : Type*} [Group G] [TopologicalSpace G]
-    [IsTopologicalGroup G] [LocallyCompactSpace G] [MeasurableSpace G]
-    [BorelSpace G] (K : TopologicalSpace.PositiveCompacts G) :
-    MeasureTheory.Measure G :=
-  MeasureTheory.Measure.haarMeasure K
-```
 
 :::REMARK
 Note that if $`G` is compact, then $`\mu(G)` is finite (and positive).
@@ -114,14 +94,6 @@ $$`\widehat{G} \overset{\text{def}}{=} \{\text{continuous group homomorphisms } 
 The maps $`\xi` are called *characters*.
 It can be itself made into an LCA group.
 :::
-
-`PontryaginDual G` is the Mathlib type.
-Its definition is `G →ᶜ Circle` — continuous group homomorphisms into the unit circle, with the compact-open topology and pointwise multiplication making it into another LCA group.
-
-```lean
-example (G : Type*) [CommGroup G] [TopologicalSpace G]
-    [IsTopologicalGroup G] : Type _ := PontryaginDual G
-```
 
 :::EXAMPLE "Examples of Pontryagin duals"
 - $`\widehat{\mathbb{Z}} \cong \mathbb{T}`, since group homomorphisms $`\mathbb{Z} \to \mathbb{T}` are determined by the image of $`1`.
@@ -147,8 +119,6 @@ For any LCA group $`G`, there is an isomorphism
 $$`G \cong \widehat{\widehat{G}} \qquad \text{by} \qquad x \mapsto (\xi \mapsto \xi(x)).`
 :::
 
-Mathlib does not yet package this double-duality isomorphism for a general locally compact abelian group; the finite abelian case is available as `AddChar.doubleDualEquiv`, an isomorphism between a finite abelian group and the characters of its characters.
-
 The compact case is especially nice.
 
 :::PROPOSITION "$`G` compact iff $`\\widehat{G}` discrete"
@@ -167,9 +137,6 @@ We may now let $`L^2(G)` be the space of square-integrable functions to $`\mathb
 $$`L^2(G) = \left\{f \colon G \to \mathbb{C} \quad\text{such that}\quad \int_G |f|^2 < \infty\right\}.`
 Thus we can equip it with the inner form
 $$`\langle f, g \rangle = \int_G f \cdot \overline{g}.`
-
-`MeasureTheory.Lp ℂ 2 μ` (notation `Lp ℂ 2 μ`) is Mathlib's $`L^2(G)`, defined as a quotient of square-integrable functions by almost-everywhere equality.
-The inner-product structure is the canonical `[InnerProductSpace ℂ (Lp ℂ 2 μ)]` instance, with `inner f g = ∫ x, f x * conj (g x) ∂μ`.
 
 In that case, we get all the results we wanted before:
 
@@ -210,8 +177,6 @@ If $`f` is continuous, this holds for all $`x`.
 
 So while we don't have the niceness of a full inner product from before, we can still in some situations at least write $`f` as integral in sort of the same way as before.
 
-The bidirectional lemmas `MeasureTheory.Integrable.fourierInv_fourier_eq` and `MeasureTheory.Integrable.fourier_fourierInv_eq` (in `Mathlib.Analysis.Fourier.Inversion`) give the formal version on finite-dimensional real inner product spaces such as `ℝ`; Mathlib does not yet have the inversion formula for a general locally compact abelian group.
-
 In particular, they have special names for a few special $`G`:
 
 - If $`G = \mathbb{R}`, then $`\widehat{G} = \mathbb{R}`, yielding the "(continuous) Fourier transform".
@@ -227,11 +192,6 @@ You might notice that the *various names are awful*.
 This is part of the reason I got confused as a high school student: every type of Fourier series above has its own Wikipedia article.
 If it were up to me, we would just use the term "$`G`-Fourier transform", and that would make everyone's lives a lot easier.
 
-:::aside "Mathlib's unified Fourier transform"
-Mathlib essentially follows the "$`G`-Fourier transform" wish: `Mathlib.Analysis.Fourier.FourierTransform` defines a single `VectorFourier.fourierIntegral` parametrized by an LCA group `G` and an `AddChar`-valued choice of character (landing in the circle group `Circle`), and the named flavors above are all special cases (with `Mathlib.Analysis.Fourier.Inversion` providing the inversion formula in each).
-The price is a bunch of typeclass argument; the payoff is exactly one `fourierIntegral` definition to learn.
-:::
-
 # Problems
 
 :::PROBLEM
@@ -244,3 +204,124 @@ It is the counting measure (matching the discrete sum $`\sum_{\xi \in \widehat{G
 Show that an LCA group $`G` is compact if and only if $`\widehat{G}` is discrete.
 (You will need the compact-open topology for this.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## LCA groups
+
+Mathlib's `IsTopologicalGroup G` is the typeclass bundling a `Group G` and a `TopologicalSpace G` with continuity of multiplication and inversion.
+The Hausdorff condition is *not* baked in by default; you add `[T2Space G]` separately when you need it.
+
+```lean
+example (G : Type*) [Group G] [TopologicalSpace G]
+    [IsTopologicalGroup G] : True := trivial
+```
+
+An LCA group is then assembled from `[CommGroup G]`, `[TopologicalSpace G]`, `[IsTopologicalGroup G]`, and `[LocallyCompactSpace G]`.
+Here `Circle` is the unit circle in $`\mathbb{C}` with its multiplicative group structure, the abelian topological group $`\mathbb{T}`, while $`\mathbb{R}`, $`\mathbb{Z}`, and `ZMod n` all carry the LCA-group instances out of the box.
+
+The Haar measure is built through `MeasureTheory.Measure.haarMeasure`, which takes a nonempty compact set as a normalization datum and produces a translation-invariant measure on the group.
+
+```lean
+noncomputable example {G : Type*} [Group G] [TopologicalSpace G]
+    [IsTopologicalGroup G] [LocallyCompactSpace G] [MeasurableSpace G]
+    [BorelSpace G] (K : TopologicalSpace.PositiveCompacts G) :
+    MeasureTheory.Measure G :=
+  MeasureTheory.Measure.haarMeasure K
+```
+
+The theorem's four properties unpack into `MeasureTheory.map_mul_left_eq_self` for translation invariance, `IsCompact.measure_lt_top` for compact-set finiteness, and the outer/inner regularity classes for the last two; uniqueness up to scaling is `MeasureTheory.Measure.haarMeasure_unique`.
+As a first exercise, show that the defining translation invariance $`\mu(gS) = \mu(S)` really holds: pushing a left-invariant measure forward along left multiplication by $`g` recovers $`\mu`.
+
+```lean
+example {G : Type*} [Group G] [MeasurableSpace G]
+    (μ : MeasureTheory.Measure G) [μ.IsMulLeftInvariant]
+    (g : G) : μ.map (g * ·) = μ := by
+  sorry
+```
+
+## The Pontryagin dual
+
+`PontryaginDual G` is Mathlib's type of characters, defined as `G →ₜ* Circle`: the continuous group homomorphisms into the unit circle, given the compact-open topology and pointwise multiplication that make it into another LCA group.
+
+```lean
+example (G : Type*) [CommGroup G] [TopologicalSpace G]
+    [IsTopologicalGroup G] : Type _ := PontryaginDual G
+```
+
+The double-duality isomorphism $`G \cong \widehat{\widehat{G}}` is not yet packaged for a general LCA group; the finite abelian case is available as `AddChar.doubleDualEquiv`, between a finite abelian group and the characters of its characters.
+One half of the "compact iff discrete" proposition is, however, already an instance: when $`G` is compact its dual is discrete.
+Confirm it.
+
+```lean
+example (G : Type*) [CommGroup G] [TopologicalSpace G]
+    [IsTopologicalGroup G] [CompactSpace G] :
+    DiscreteTopology (PontryaginDual G) := by
+  sorry
+```
+
+## The orthonormal basis in the compact case
+
+$`L^2(G)` is `MeasureTheory.Lp ℂ 2 μ`, the quotient of square-integrable functions by almost-everywhere equality, and its canonical inner product is exactly the integral of the pointwise inner products.
+
+```lean
+example {α E : Type*} [MeasurableSpace α] {μ : MeasureTheory.Measure α}
+    [NormedAddCommGroup E] [InnerProductSpace ℂ E]
+    (f g : MeasureTheory.Lp E 2 μ) :
+    inner ℂ f g = ∫ a, inner ℂ (f a) (g a) ∂μ :=
+  MeasureTheory.L2.inner_def f g
+```
+
+For the circle $`\mathbb{T}` the characters really do form an orthonormal family, recorded as `orthonormal_fourier` against the family `fourierLp`.
+State this orthonormality.
+
+```lean
+example {T : ℝ} [Fact (0 < T)] :
+    Orthonormal ℂ (fourierLp (T := T) 2) := by
+  sorry
+```
+
+## The Fourier transform of the non-compact case
+
+Mathlib's Fourier transform is `VectorFourier.fourierIntegral`, parametrized by a bilinear pairing `L` and a character; the concrete real transform picks the character `Real.fourierChar`.
+
+```lean
+noncomputable example {V W E : Type*} [NormedAddCommGroup V]
+    [NormedSpace ℝ V] [MeasurableSpace V] [NormedAddCommGroup W]
+    [NormedSpace ℝ W] [NormedAddCommGroup E] [NormedSpace ℂ E]
+    (L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ) (μ : MeasureTheory.Measure V)
+    (f : V → E) : W → E :=
+  VectorFourier.fourierIntegral Real.fourierChar μ L f
+```
+
+The inversion formula holds on a finite-dimensional real inner product space such as $`\mathbb{R}`, as `MeasureTheory.Integrable.fourierInv_fourier_eq` (pointwise) and `Continuous.fourierInv_fourier_eq` (everywhere); the general-LCA statement is not yet in Mathlib.
+Prove the everywhere version: for a continuous integrable $`f` with integrable transform, applying $`\mathcal{F}` then $`\mathcal{F}^{-1}` recovers $`f`.
+
+```lean
+open scoped FourierTransform in
+example {V E : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+    [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
+    [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
+    (f : V → E) (h : Continuous f) (hf : MeasureTheory.Integrable f)
+    (h'f : MeasureTheory.Integrable (𝓕 f)) : 𝓕⁻ (𝓕 f) = f := by
+  sorry
+```
+
+## Summary
+
+Mathlib essentially follows the "$`G`-Fourier transform" wish: one `VectorFourier.fourierIntegral` definition is parametrized by the group, the measure, the pairing `L`, and an `AddChar`-valued character landing in `Circle`, and the named flavors above are all special cases.
+As a worked closing note, the transform is linear: scaling the input scales the output.
+
+```lean
+example {V W E : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+    [MeasurableSpace V] [NormedAddCommGroup W] [NormedSpace ℝ W]
+    [NormedAddCommGroup E] [NormedSpace ℂ E]
+    (L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ) (μ : MeasureTheory.Measure V)
+    (f : V → E) (r : ℂ) :
+    VectorFourier.fourierIntegral Real.fourierChar μ L (r • f)
+      = r • VectorFourier.fourierIntegral Real.fourierChar μ L f :=
+  VectorFourier.fourierIntegral_const_smul _ _ _ _ _
+```

@@ -8,11 +8,14 @@ import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Function.Egorov
 import Mathlib.MeasureTheory.Measure.Prod
+import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+
+open MeasureTheory
 
 set_option pp.rawOnError true
 
@@ -55,9 +58,6 @@ Then we say $`f_1`, $`f_2`, … *converges pointwise* to the limit $`f`, written
 
 We can define $`\liminf_{n \to \infty} f_n` and $`\limsup_{n \to \infty} f_n` similarly.
 :::
-
-`Filter.Tendsto (fun n => f n x) Filter.atTop (nhds (g x))` is the pointwise statement; the function-level shorthand is `Tendsto f atTop (𝓝 g)` *interpreted pointwise*, i.e. via `Filter.Tendsto.apply`.
-For the indexed-sup-and-inf flavor, `Filter.liminf` and `Filter.limsup` of a sequence of measurable functions are themselves measurable — `Measurable.liminf` / `Measurable.limsup`.
 
 By "the Lebesgue integral has better behavior", we means the following:
 
@@ -140,16 +140,6 @@ Here we allow either side to be $`+\infty`.
 
 Notice that there are *no extra hypothesis* on $`f_n` other than nonnegative: which makes this quite surprisingly versatile if you ever are trying to prove some general result.
 
-`MeasureTheory.lintegral_liminf_le` is exactly Fatou's lemma in Mathlib (for `lintegral`, the `ℝ≥0∞`-valued integral); the corresponding tool for the Bochner integral, where a dominating hypothesis is needed for the integrals to even converge, is the dominated convergence theorem `MeasureTheory.tendsto_integral_of_dominated_convergence`.
-
-```lean
-example {α : Type*} [MeasurableSpace α] (μ : MeasureTheory.Measure α)
-    (f : ℕ → α → ENNReal) (hf : ∀ n, Measurable (f n)) :
-    ∫⁻ x, Filter.liminf (fun n => f n x) Filter.atTop ∂μ ≤
-      Filter.liminf (fun n => ∫⁻ x, f n x ∂μ) Filter.atTop :=
-  MeasureTheory.lintegral_liminf_le hf
-```
-
 # Everything else
 
 The big surprise is how quickly all the "big-name" theorem follows from Fatou's lemma.
@@ -170,8 +160,6 @@ This implies all the inequalities are equalities and we are done.
 :::
 
 You can see how short the proof is — proving $`\limsup_{n \to \infty} \int_\Omega f_n \; d\mu \leq \int_\Omega f \; d\mu` is the easy half, and the difficult half is automatically taken care of by Fatou's lemma.
-
-`MeasureTheory.lintegral_iSup` (and the more general `MeasureTheory.lintegral_iSup_directed`, `MeasureTheory.lintegral_tendsto_of_tendsto_of_monotone`) state MCT in Mathlib for the `lintegral`; the Bochner version is `MeasureTheory.integral_tendsto_of_tendsto_of_monotone`.
 
 :::REMARK "The monotone convergence theorem does not require monotonicity!"
 In the literature it is much more common to see the hypothesis $`f_1(\omega) \leq f_2(\omega) \leq \dots \leq f(\omega)` rather than just $`f_n(\omega) \leq f(\omega)` for all $`n`, which is where the theorem gets its name.
@@ -224,23 +212,6 @@ If $`f(\omega) = \lim_{n \to \infty} f_n(\omega)`, then $`f(\omega) = \liminf_{n
 So all the inequalities in the Fatou-Lebesgue theorem become equalities, since the leftmost and rightmost sides are equal.
 :::
 
-`MeasureTheory.tendsto_integral_of_dominated_convergence` is Mathlib's DCT.
-The hypotheses come bundled in the now-familiar way: an `AEStronglyMeasurable` witness for each $`f_n`, the dominating-bound function `g` with `Integrable g μ`, and the pointwise-a.e. convergence `∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (F x))`.
-
-```lean
-example {α : Type*} [MeasurableSpace α] (μ : MeasureTheory.Measure α)
-    (F : α → ℝ) (f : ℕ → α → ℝ) (g : α → ℝ)
-    (hf : ∀ n, MeasureTheory.AEStronglyMeasurable (f n) μ)
-    (h_bound : ∀ n, ∀ᵐ x ∂μ, ‖f n x‖ ≤ g x)
-    (h_int : MeasureTheory.Integrable g μ)
-    (h_lim : ∀ᵐ x ∂μ,
-      Filter.Tendsto (fun n => f n x) Filter.atTop (nhds (F x))) :
-    Filter.Tendsto (fun n => ∫ x, f n x ∂μ) Filter.atTop
-      (nhds (∫ x, F x ∂μ)) :=
-  MeasureTheory.tendsto_integral_of_dominated_convergence
-    g hf h_int h_bound h_lim
-```
-
 Note this gives yet another way to verify the indicator-of-rationals example.
 In general, the dominated convergence theorem is a favorite cliché for undergraduate exams, because it is easy to create questions for it.
 Here is one example showing how they all look.
@@ -263,8 +234,6 @@ and the convergence is uniform on $`U`: the sequence
 $$`f_1|_U, f_2|_U, \dots`
 converges to $`f|_U` uniformly.
 :::
-
-`MeasureTheory.tendstoUniformlyOn_of_ae_tendsto'` packages exactly Egorov (for finite measure spaces) in `Mathlib.MeasureTheory.Function.Egorov`.
 
 This is because of the following theorem.
 
@@ -313,18 +282,6 @@ Then both iterated integrals exist (and are finite) and equal the joint integral
 
 The two theorems together say: for nonnegative measurable functions, you can always swap order; for sign-changing integrands, you first need to verify *absolute* integrability against the product measure (e.g. via Tonelli applied to $`|f|`), after which Fubini lets you swap freely.
 
-`MeasureTheory.lintegral_prod_swap` and `MeasureTheory.lintegral_prod` are Mathlib's Tonelli (for the `ℝ≥0∞`-valued `lintegral`); `MeasureTheory.integral_prod` and `MeasureTheory.integral_prod_swap` are Fubini (for the Bochner `integral`, with an `Integrable` hypothesis).
-The `[SigmaFinite μ₂]` typeclass instance is what carries the σ-finiteness assumption.
-
-```lean
-example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
-    {μ : MeasureTheory.Measure α} {ν : MeasureTheory.Measure β}
-    [MeasureTheory.SFinite ν]
-    (f : α × β → ENNReal) (hf : Measurable f) :
-    ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ :=
-  MeasureTheory.lintegral_prod f hf.aemeasurable
-```
-
 # Problems
 
 :::PROBLEM
@@ -343,3 +300,112 @@ Construct a sequence $`f_k \colon [0, 1] \to \mathbb{R}^+` that converges pointw
 :::
 
 (Hint: take any discontinuous-everywhere nonnegative function $`f`, and set $`f_k = \min(k, f)`.)
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Motivating limit interchange
+
+Pointwise convergence of a sequence of functions is `Filter.Tendsto (fun n => f n x) Filter.atTop (nhds (g x))` at each individual point $`x`; the function-level shorthand `Tendsto f atTop (𝓝 g)` is read pointwise through `Filter.Tendsto.apply`.
+For the indexed-sup-and-inf flavor, `Filter.liminf` and `Filter.limsup` of a sequence of measurable functions are again measurable — this is the proposition above, recorded as `Measurable.liminf`.
+
+```lean
+example {α : Type*} [MeasurableSpace α] (f : ℕ → α → ℝ)
+    (hf : ∀ n, Measurable (f n)) :
+    Measurable (fun x => Filter.liminf (fun n => f n x) Filter.atTop) :=
+  Measurable.liminf hf
+```
+
+The proposition also covers the $`\limsup`.
+Prove that the pointwise $`\limsup` of a sequence of measurable functions is measurable.
+
+```lean
+example {α : Type*} [MeasurableSpace α] (f : ℕ → α → ℝ)
+    (hf : ∀ n, Measurable (f n)) :
+    Measurable (fun x => Filter.limsup (fun n => f n x) Filter.atTop) := by
+  sorry
+```
+
+## Fatou's lemma
+
+`MeasureTheory.lintegral_liminf_le` is exactly Fatou's lemma in Mathlib (for `lintegral`, the `ℝ≥0∞`-valued integral); the corresponding tool for the Bochner integral, where a dominating hypothesis is needed for the integrals to even converge, is the dominated convergence theorem `MeasureTheory.tendsto_integral_of_dominated_convergence`.
+
+```lean
+example {α : Type*} [MeasurableSpace α] (μ : MeasureTheory.Measure α)
+    (f : ℕ → α → ENNReal) (hf : ∀ n, Measurable (f n)) :
+    ∫⁻ x, Filter.liminf (fun n => f n x) Filter.atTop ∂μ ≤
+      Filter.liminf (fun n => ∫⁻ x, f n x ∂μ) Filter.atTop :=
+  MeasureTheory.lintegral_liminf_le hf
+```
+
+The preliminary version of Fatou's lemma is the special case where the sequence converges pointwise.
+Given nonnegative measurable $`F_n` converging pointwise to $`f`, derive $`\int f \; d\mu \leq \liminf_n \int F_n \; d\mu` from the $`\liminf` form above.
+(Rewrite $`f` as the pointwise $`\liminf` using `Filter.Tendsto.liminf_eq`.)
+
+```lean
+example {α : Type*} [MeasurableSpace α] (μ : MeasureTheory.Measure α)
+    (f : α → ENNReal) (F : ℕ → α → ENNReal) (hF : ∀ n, Measurable (F n))
+    (h : ∀ x, Filter.Tendsto (fun n => F n x) Filter.atTop (nhds (f x))) :
+    ∫⁻ x, f x ∂μ ≤ Filter.liminf (fun n => ∫⁻ x, F n x ∂μ) Filter.atTop := by
+  sorry
+```
+
+## Everything else
+
+`MeasureTheory.lintegral_iSup` (and the more general `MeasureTheory.lintegral_iSup_directed`, `MeasureTheory.lintegral_tendsto_of_tendsto_of_monotone`) state MCT in Mathlib for the `lintegral`; the Bochner version is `MeasureTheory.integral_tendsto_of_tendsto_of_monotone`.
+
+`MeasureTheory.tendsto_integral_of_dominated_convergence` is Mathlib's DCT.
+The hypotheses come bundled in the now-familiar way: an `AEStronglyMeasurable` witness for each $`f_n`, the dominating-bound function `g` with `Integrable g μ`, and the pointwise-a.e. convergence `∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (F x))`.
+
+```lean
+example {α : Type*} [MeasurableSpace α] (μ : MeasureTheory.Measure α)
+    (F : α → ℝ) (f : ℕ → α → ℝ) (g : α → ℝ)
+    (hf : ∀ n, MeasureTheory.AEStronglyMeasurable (f n) μ)
+    (h_bound : ∀ n, ∀ᵐ x ∂μ, ‖f n x‖ ≤ g x)
+    (h_int : MeasureTheory.Integrable g μ)
+    (h_lim : ∀ᵐ x ∂μ,
+      Filter.Tendsto (fun n => f n x) Filter.atTop (nhds (F x))) :
+    Filter.Tendsto (fun n => ∫ x, f n x ∂μ) Filter.atTop
+      (nhds (∫ x, F x ∂μ)) :=
+  MeasureTheory.tendsto_integral_of_dominated_convergence
+    g hf h_int h_bound h_lim
+```
+
+`MeasureTheory.tendstoUniformlyOn_of_ae_tendsto'` packages exactly Egorov (for finite measure spaces) in `Mathlib.MeasureTheory.Function.Egorov`.
+
+The problems ask you to inspect the sequence $`f_n = n \cdot \mathbf{1}_{(0, 1/n)}`, whose integrals stay equal to $`1` even as $`f_n \to 0` pointwise — so the interchange fails.
+Compute the offending integral: over the interval $`(0, 1/n)`, the integral of the constant $`n` is $`1`.
+
+```lean
+example (n : ℕ) (hn : 0 < n) :
+    ∫⁻ _x in Set.Ioo (0 : ℝ) (1 / n), (n : ENNReal) ∂volume = 1 := by
+  sorry
+```
+
+## Fubini and Tonelli
+
+`MeasureTheory.lintegral_prod_swap` and `MeasureTheory.lintegral_prod` are Mathlib's Tonelli (for the `ℝ≥0∞`-valued `lintegral`); `MeasureTheory.integral_prod` and `MeasureTheory.integral_prod_swap` are Fubini (for the Bochner `integral`, with an `Integrable` hypothesis).
+The `[SigmaFinite μ₂]` typeclass instance is what carries the σ-finiteness assumption.
+
+```lean
+example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
+    {μ : MeasureTheory.Measure α} {ν : MeasureTheory.Measure β}
+    [MeasureTheory.SFinite ν]
+    (f : α × β → ENNReal) (hf : Measurable f) :
+    ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ :=
+  MeasureTheory.lintegral_prod f hf.aemeasurable
+```
+
+Tonelli lets you swap the order of a nonnegative iterated integral freely.
+Prove that the two iterated integral orders agree for a measurable nonnegative integrand.
+
+```lean
+example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
+    {μ : MeasureTheory.Measure α} {ν : MeasureTheory.Measure β}
+    [MeasureTheory.SFinite μ] [MeasureTheory.SFinite ν]
+    (f : α → β → ENNReal) (hf : Measurable (Function.uncurry f)) :
+    ∫⁻ x, ∫⁻ y, f x y ∂ν ∂μ = ∫⁻ y, ∫⁻ x, f x y ∂μ ∂ν := by
+  sorry
+```

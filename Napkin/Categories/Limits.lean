@@ -11,6 +11,8 @@ open Verso.Genre.Manual.InlineLean
 
 open Napkin
 
+open CategoryTheory CategoryTheory.Limits
+
 set_option pp.rawOnError true
 
 #doc (Manual) "Limits in categories" =>
@@ -72,27 +74,11 @@ If $`E \xrightarrow{e} X` and $`E' \xrightarrow{e'} X` are equalizers, show that
 According to (c) equalizers let us get at the concept of a kernel if there is a distinguished "trivial map", like the trivial homomorphism in $`\mathsf{Grp}`.
 We'll flesh this idea out in the chapter on abelian categories.
 
-:::aside "Equalizers in Mathlib"
-The universal fork is the pair {name}`CategoryTheory.Limits.Fork` (a cone over the two parallel arrows) and {name}`CategoryTheory.Limits.equalizer` (the chosen apex when it exists, guarded by the {name}`CategoryTheory.Limits.HasEqualizer` hypothesis).
-The universal property is delivered by `equalizer.lift`: any map killing the difference of `f` and `g` factors through the equalizer.
-
-```lean
-open CategoryTheory CategoryTheory.Limits in
-noncomputable example {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y)
-    [HasEqualizer f g] : C :=
-  equalizer f g
-```
-:::
-
 # Pullback squares
 
 The same universal-cone idea, applied to a diagram $`X \xrightarrow{f} Z \xleftarrow{g} Y` (a *cospan*), produces the *pullback*: the universal object $`P` with maps to $`X` and $`Y` agreeing after composing into $`Z`.
 In $`\mathsf{Set}` it is $`\{(x, y) \mid f(x) = g(y)\}`, the fibered product.
 A prototypical geometric example glues local data: the differentiable functions on $`(-3, 1)` and on $`(-1, 3)` that agree on the overlap $`(-1, 1)` assemble, via a pullback, into the differentiable functions on $`(-3, 3)`.
-
-:::aside "Pullbacks in Mathlib"
-Mathlib's {name}`CategoryTheory.Limits.pullback` is the apex of this cospan cone, available whenever {name}`CategoryTheory.Limits.HasPullback` holds; `pullback.fst` and `pullback.snd` are its two legs and `pullback.lift` its universal map.
-:::
 
 # Limits
 
@@ -103,13 +89,76 @@ If you then demand the cone be universal, you have the extremely general definit
 As always, these are unique up to unique isomorphism.
 We can also define the dual notion of a *colimit* in the same way.
 
-:::aside "Limits in Mathlib"
-A diagram is a functor $`F \colon J \to C` out of an indexing category $`J`, a cone over it is {name}`CategoryTheory.Limits.Cone`, and a universal cone is witnessed by {name}`CategoryTheory.Limits.IsLimit`.
-The chosen limit {name}`CategoryTheory.Limits.limit` exists under {name}`CategoryTheory.Limits.HasLimit`, and products, equalizers, and pullbacks are all the special cases where $`J` is discrete, a parallel pair, or a cospan.
-:::
-
 # Problems
 
 :::PROBLEM "Equalizers are monic"
 Show that the equalizer of any diagram $`X \rightrightarrows Y` is monic.
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Equalizers
+
+The universal fork is the pair {name}`CategoryTheory.Limits.Fork` (a cone over the two parallel arrows) and {name}`CategoryTheory.Limits.equalizer` (the chosen apex when it exists, guarded by the {name}`CategoryTheory.Limits.HasEqualizer` hypothesis).
+The universal property is delivered by `equalizer.lift`: any map killing the difference of `f` and `g` factors through the equalizer, and the leg `equalizer.ι` satisfies `f ∘ e = g ∘ e`.
+
+```lean
+noncomputable example {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y)
+    [HasEqualizer f g] : C :=
+  equalizer f g
+
+example {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y)
+    [HasEqualizer f g] : equalizer.ι f g ≫ f = equalizer.ι f g ≫ g :=
+  equalizer.condition f g
+```
+
+The exercise asked you to show that two equalizers $`E \xrightarrow{e} X` and $`E' \xrightarrow{e'} X` of the same parallel pair are isomorphic.
+Universality does all the work: two forks that are both universal have canonically isomorphic apexes, via {name}`CategoryTheory.Limits.IsLimit.conePointUniqueUpToIso`.
+
+```lean
+example {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y)
+    (c c' : Fork f g) (hc : IsLimit c) (hc' : IsLimit c') : c.pt ≅ c'.pt := by
+  sorry
+```
+
+A later problem asks you to show the equalizer map $`E \xrightarrow{e} X` is a monomorphism.
+Confirm that Mathlib already records this as an instance.
+
+```lean
+example {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y)
+    [HasEqualizer f g] : Mono (equalizer.ι f g) := by
+  sorry
+```
+
+## Pullback squares
+
+Mathlib's {name}`CategoryTheory.Limits.pullback` is the apex of this cospan cone, available whenever {name}`CategoryTheory.Limits.HasPullback` holds; `pullback.fst` and `pullback.snd` are its two legs and `pullback.lift` its universal map.
+The two legs agree after composing into the base, which is exactly `pullback.condition`.
+
+```lean
+noncomputable example {C : Type*} [Category C] {X Y Z : C}
+    (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] : C :=
+  pullback f g
+
+example {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
+    [HasPullback f g] : pullback.fst f g ≫ f = pullback.snd f g ≫ g :=
+  pullback.condition
+```
+
+## Limits
+
+A diagram is a functor $`F \colon J \to C` out of an indexing category $`J`, a cone over it is {name}`CategoryTheory.Limits.Cone`, and a universal cone is witnessed by {name}`CategoryTheory.Limits.IsLimit`.
+The chosen limit {name}`CategoryTheory.Limits.limit` exists under {name}`CategoryTheory.Limits.HasLimit`, and products, equalizers, and pullbacks are all the special cases where $`J` is discrete, a parallel pair, or a cospan.
+
+```lean
+noncomputable example {J C : Type*} [Category J] [Category C] (F : J ⥤ C)
+    [HasLimit F] : C :=
+  limit F
+
+example {J C : Type*} [Category J] [Category C] (F : J ⥤ C) (c : Cone F)
+    (hc : IsLimit c) (c' : Cone F) : c'.pt ⟶ c.pt :=
+  hc.lift c'
+```

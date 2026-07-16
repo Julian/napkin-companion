@@ -3,7 +3,10 @@ import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Iso
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Topology.Category.TopCat.Basic
@@ -15,6 +18,9 @@ open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Meta.Recall
+open CategoryTheory
+open CategoryTheory.Limits
 
 set_option pp.rawOnError true
 
@@ -60,8 +66,6 @@ A *category* $`\mathcal{A}` consists of:
   We say that $`h = g \circ f` *factors* through $`A_2`.
 - Finally, every object $`A \in \mathrm{ob}(\mathcal{A})` has a special *identity arrow* $`\mathrm{id}_A`; you can guess what it does.
   To be painfully explicit: if $`f \colon A' \to A` is an arrow then $`\mathrm{id}_A \circ f = f`; similarly, if $`g \colon A \to A'` is an arrow then $`g \circ \mathrm{id}_A = g`.
-
-This bundle of data — objects, hom-sets, composition, identities — is `CategoryTheory.Category` in Mathlib, declared as a typeclass on the carrier type so we can write `[Category C]`.
 :::
 
 :::figure "figures/category-theory/compose-triangle.svg"
@@ -81,11 +85,6 @@ Now and forever I'll be sloppy and assume all my categories are *locally small*,
 So elements of $`\mathcal{A}` may not form a set, but the set of morphisms between two *given* objects will always assumed to be a set.
 :::
 
-:::aside "Universes and locally small"
-The size paradox shows up in Mathlib as a universe argument: a `Category.{v, u}` has objects in `Type u` and arrows in `Type v`.
-The "locally small" assumption is exactly the case `v = u` (often abbreviated `SmallCategory`); the more general case `v < u` lets the object collection live one universe up, capturing the "class" intuition.
-:::
-
 Let's formalize the motivation we began with.
 
 :::EXAMPLE "Basic examples of categories"
@@ -101,15 +100,13 @@ Let's formalize the motivation we began with.
 - Similarly, there is a category $`\mathsf{Vect}_k` of vector spaces (possibly infinite-dimensional) over a field $`k`, whose arrows are the linear maps.
   There is even a category $`\mathsf{FDVect}_k` of *finite-dimensional* vector spaces.
 - We have a category $`\mathsf{Set}` of sets, where the arrows are *any* maps.
-
-The Mathlib counterparts of these are `GrpCat`, `CommRingCat`, and `TopCat` — each a bundled type-of-objects with its forgetful functor packaged in.
 :::
 
 And of course, we can now define what an isomorphism is!
 
 :::DEFINITION
 An arrow $`A_1 \xrightarrow{f} A_2` is an *isomorphism* if there exists $`A_2 \xrightarrow{g} A_1` such that $`f \circ g = \mathrm{id}_{A_2}` and $`g \circ f = \mathrm{id}_{A_1}`.
-In that case we say $`A_1` and $`A_2` are *isomorphic*, written $`A_1 \cong A_2` and packaged as `CategoryTheory.Iso A_1 A_2`.
+In that case we say $`A_1` and $`A_2` are *isomorphic*, written $`A_1 \cong A_2`.
 :::
 
 :::REMARK
@@ -143,11 +140,6 @@ We can construct a category $`P` for it as follows:
 
   There are no other arrows.
 - There's only one way to do the composition. What is it?
-:::
-
-:::aside "Posets in Mathlib"
-A `Preorder P` (with `≤` reflexive and transitive) gives a `SmallCategory P` instance, with `Hom p q := PLift (p ≤ q)`: there's at most one arrow between any two objects, namely the proof that one is below the other.
-Composition is transitivity; the identity is reflexivity.
 :::
 
 For example, for the poset $`\mathcal{P}` on four objects $`\{a,b,c,d\}` with $`a \le b` and $`a \le c \le d`, we get a diagram with arrows $`a \to b`, $`a \to c`, $`a \to d`, $`c \to d` (plus an identity loop at every object).
@@ -210,11 +202,6 @@ Finally, here are some examples of categories you can make from other categories
 - Given a category $`\mathcal{A}`, we can construct the *opposite category* $`\mathcal{A}^{\mathrm{op}}`, which is the same as $`\mathcal{A}` but with all arrows reversed.
 - Given categories $`\mathcal{A}` and $`\mathcal{B}`, we can construct the *product category* $`\mathcal{A} \times \mathcal{B}` as follows: the objects are pairs $`(A, B)` for $`A \in \mathcal{A}` and $`B \in \mathcal{B}`, and the arrows from $`(A_1, B_1)` to $`(A_2, B_2)` are pairs $`(A_1 \xrightarrow{f} A_2, B_1 \xrightarrow{g} B_2)`.
   What do you think the composition and identities are?
-:::
-
-:::aside "Op and product in Mathlib"
-The opposite category is `Opposite`, with the convenient notation `Cᵒᵖ`; its objects share the underlying type but the hom-direction is flipped.
-The product category is `CategoryTheory.Functor.prod` for functors, and the underlying category-on-pairs is the `instance : Category (C × D)` derived from `Category C` and `Category D`.
 :::
 
 # Special objects in categories
@@ -389,12 +376,6 @@ Of course, that's not to say we can't give concrete examples.
   - If the poset is the positive integers ordered by division, then it's $`\gcd(x,y)`.
 :::
 
-:::aside "Products in Mathlib"
-For categories with products in the categorical sense, Mathlib uses `CategoryTheory.Limits.HasBinaryProducts C`, which packages the universal cone.
-The notation `X ⨯ Y` (a special prod-times glyph, not the type-theoretic `×`) gives the categorical product in any category satisfying that typeclass.
-For concrete categories, the categorical product is identified with the obvious construction (Cartesian product, group product, etc.) by an `isLimit` proof or by an instance derived from the underlying type-theoretic product.
-:::
-
 Of course, we can define products of more than just two objects.
 Consider a set of objects $`(X_i)_{i \in I}` in a category $`\mathcal{A}`.
 We define a *cone* on the $`X_i` to be an object $`A` with some "projection" maps to each $`X_i`.
@@ -492,12 +473,6 @@ Most notably:
 Thus failures arise when a function $`f \colon X \to Y` can be determined by just some of the points of $`X`.
 :::
 
-:::aside "Mono and epi in Mathlib"
-Mathlib's `CategoryTheory.Mono f` says exactly: for all `Z` and `g h : Z ⟶ X`, `f ≫ g = f ≫ h → g = h` (note Mathlib's `≫` reads composition left-to-right, opposite of `∘`).
-The dual is `CategoryTheory.Epi f`.
-Both are typeclasses, so once you've proved an arrow is mono/epi you can use it generically.
-:::
-
 # Problems
 
 :::PROBLEM
@@ -519,3 +494,123 @@ where $`X`, $`Y`, $`Z` are arbitrary objects.
 Consider a category $`\mathcal{A}` with a *zero object*, meaning an object which is both initial and terminal.
 Given objects $`X` and $`Y` in $`\mathcal{A}`, prove that the projection $`X \times Y \to X` is epic.
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Categories, and examples thereof
+
+The bundle of data in the definition — objects, hom-sets, composition, identities — is `CategoryTheory.Category`, declared as a typeclass on the carrier type so we can write `[Category C]`.
+Composition is written `f ≫ g`, reading left-to-right (the opposite order of `∘`), and the identity arrow on `A` is `𝟙 A`.
+
+```lean
+example (C : Type*) [Category C] {A B D : C} (f : A ⟶ B) (g : B ⟶ D) :
+    A ⟶ D := f ≫ g
+
+example (C : Type*) [Category C] (A : C) : A ⟶ A := 𝟙 A
+```
+
+The size paradox shows up as a universe argument: a `Category.{v, u}` has objects in `Type u` and arrows in `Type v`.
+The "locally small" assumption is exactly the case `v = u` (often abbreviated `SmallCategory`); the general case `v < u` lets the object collection live one universe up, capturing the "class" intuition.
+The categories of groups, commutative rings, and topological spaces are `GrpCat`, `CommRingCat`, and `TopCat` — each a bundled type-of-objects with its forgetful functor packaged in.
+
+```lean
+recall : Category GrpCat
+recall : Category CommRingCat
+recall : Category TopCat
+```
+
+An isomorphism $`A_1 \cong A_2` is packaged as `CategoryTheory.Iso`, with notation `A₁ ≅ A₂`.
+Every object is isomorphic to itself via `Iso.refl` — the offensively easy question.
+
+```lean
+example (C : Type*) [Category C] (A : C) : A ≅ A := Iso.refl A
+```
+
+A partial order becomes a category with at most one arrow between objects: the hom-type `p ⟶ q` is a proof that `p ≤ q`, composition is transitivity, and the identity is reflexivity.
+`leOfHom` and `homOfLE` translate between arrows and inequalities.
+Deriving categories: the opposite category is `Cᵒᵖ` (same objects, arrows reversed), and pairs of objects form a product category.
+
+```lean
+example (C : Type*) [Category C] : Category Cᵒᵖ := inferInstance
+
+example (C D : Type*) [Category C] [Category D] :
+    Category (C × D) := inferInstance
+```
+
+The question asked you to check that no two distinct objects of a poset are isomorphic.
+An isomorphism supplies arrows both ways, hence `x ≤ y` and `y ≤ x`; antisymmetry then forces equality.
+
+```lean
+example (P : Type*) [PartialOrder P] (x y : P) (f : x ≅ y) : x = y := by
+  sorry
+```
+
+## Special objects in categories
+
+An initial object has exactly one arrow to every object, and a terminal object exactly one arrow from every object; Mathlib records these as `IsInitial` and `IsTerminal`.
+The important exercise — any two initial objects are uniquely isomorphic — is `IsInitial.uniqueUpToIso`.
+
+```lean
+example (C : Type*) [Category C] {I₁ I₂ : C}
+    (h₁ : IsInitial I₁) (h₂ : IsInitial I₂) : I₁ ≅ I₂ :=
+  h₁.uniqueUpToIso h₂
+```
+
+Duality is literal: a terminal object of $`\mathcal{A}` is precisely an initial object of $`\mathcal{A}^{\mathrm{op}}`, via `initialOpOfTerminal`.
+
+```lean
+example (C : Type*) [Category C] {X : C} (h : IsTerminal X) :
+    IsInitial (Opposite.op X) := initialOpOfTerminal h
+```
+
+Now repeat the proof for the dual: show that any two terminal objects are isomorphic.
+
+```lean
+example (C : Type*) [Category C] {T₁ T₂ : C}
+    (h₁ : IsTerminal T₁) (h₂ : IsTerminal T₂) : T₁ ≅ T₂ := by
+  sorry
+```
+
+## Binary products
+
+For categories with products in the categorical sense, Mathlib uses `HasBinaryProducts C` (or `HasBinaryProduct X Y` for a single pair), which packages the universal cone.
+The notation `X ⨯ Y` (a special glyph, not the type-theoretic `×`) is the categorical product, with projections `prod.fst` and `prod.snd`.
+
+```lean
+noncomputable example (C : Type*) [Category C] (X Y : C)
+    [HasBinaryProduct X Y] : (X ⨯ Y) ⟶ X := prod.fst
+
+noncomputable example (C : Type*) [Category C] (X Y : C)
+    [HasBinaryProduct X Y] : (X ⨯ Y) ⟶ Y := prod.snd
+```
+
+One of the problems asks you to show products are associative up to isomorphism.
+
+```lean
+noncomputable example (C : Type*) [Category C] [HasBinaryProducts C]
+    (X Y Z : C) : (X ⨯ Y) ⨯ Z ≅ X ⨯ (Y ⨯ Z) := by
+  sorry
+```
+
+## Monic and epic maps
+
+`CategoryTheory.Mono f` says exactly that `f` cancels on the right: for all `Z` and `g h : Z ⟶ X`, `g ≫ f = h ≫ f → g = h` (recall `≫` reads left-to-right, opposite of `∘`).
+The dual is `CategoryTheory.Epi f`.
+Both are typeclasses, so once you have proved an arrow is mono or epi you may use it generically; `cancel_mono` packages the cancellation as an iff.
+
+```lean
+example (C : Type*) [Category C] {X Y : C} (f : X ⟶ Y) [Mono f]
+    {Z : C} (g h : Z ⟶ X) (w : g ≫ f = h ≫ f) : g = h :=
+  (cancel_mono f).1 w
+```
+
+The question asked you to show that the composition of two monic maps is monic.
+
+```lean
+example (C : Type*) [Category C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [Mono f] [Mono g] : Mono (f ≫ g) := by
+  sorry
+```

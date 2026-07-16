@@ -14,6 +14,9 @@ open Verso.Genre.Manual.InlineLean
 
 open Napkin
 
+open CategoryTheory
+open CategoryTheory.Limits
+
 set_option pp.rawOnError true
 
 #doc (Manual) "Abelian categories" =>
@@ -101,11 +104,6 @@ The image $`\mathrm{Img}\, f = \mathrm{Ker}(\mathrm{coker}\, f)`, through which 
 The kernel, image, and cokernel of a single map $`f \colon A \to B`.
 :::
 
-:::aside "Zero objects, kernels, cokernels in Mathlib"
-The three ingredients are typeclasses on a category: {name}`CategoryTheory.Limits.HasZeroObject` for the object $`0`, {name}`CategoryTheory.Limits.HasZeroMorphisms` for the distinguished $`0 \colon A \to B`, and then {name}`CategoryTheory.Limits.kernel` and {name}`CategoryTheory.Limits.cokernel` for the (co)equalizers against that zero morphism.
-The image built here as $`\mathrm{Ker}(\mathrm{coker}\, f)` is exactly Mathlib's {name}`CategoryTheory.Abelian.image`.
-:::
-
 # Additive and abelian categories
 
 :::PROTOTYPE
@@ -144,11 +142,6 @@ An *abelian category* $`\mathcal{A}` is one with the additional properties that 
 :::
 
 From now on, you can basically forget about additive category, we will be working in abelian category.
-
-:::aside "Additive and abelian in Mathlib"
-The "you can add morphisms" content is {name}`CategoryTheory.Preadditive`, an abelian-group structure on each hom-set with bilinear composition; an additive category is this together with a zero object and binary products.
-The full package with kernels, cokernels, and the image factorization is {name}`CategoryTheory.Abelian`, and $`\mathsf{Mod}_R` is the guiding instance.
-:::
 
 In general, once you assume a category is abelian, all the properties you would want of these kernels, cokernels, … that you would guess hold true.
 For example,
@@ -252,10 +245,6 @@ Exactness at $`B`: the canonical map $`\mathrm{Img}\, f \to \mathrm{Ker}\, g` is
 Show that, as before, $`0 \to A \to B` is exact $`\iff` $`A \to B` is monic.
 :::
 
-:::aside "Exactness in Mathlib"
-Mathlib bundles a composable pair $`A \xrightarrow{f} B \xrightarrow{g} C` with $`g \circ f = 0` as a {name}`CategoryTheory.ShortComplex`; the predicate {name}`CategoryTheory.ShortComplex.Exact` is exactly "the canonical map from the image to the kernel is an isomorphism", and {name}`CategoryTheory.ShortComplex.ShortExact` adds that the outer maps are monic and epic — the categorical $`0 \to A \to B \to C \to 0`.
-:::
-
 # The Freyd–Mitchell embedding theorem
 
 We now introduce the Freyd–Mitchell embedding theorem, which essentially says that any abelian category can be realized as a concrete one.
@@ -322,11 +311,6 @@ I'm not sure there's an exact definition for this term, but the following quote 
 :::quote
 Proving the snake lemma (a problem at the end of this chapter) is something that should not be done in public, and it is notoriously useless to write down the details of the verification for others to read: the details are all essentially obvious, but they lead quickly to a notational quagmire.
 Such proofs are collectively known as the sport of diagram chase, best executed by pointing several fingers at different parts of a diagram on a blackboard, while enunciating the elements one is manipulating and stating their fate.
-:::
-
-:::aside "Diagram chasing in Mathlib"
-Mathlib does not (yet) have the full Freyd–Mitchell embedding theorem, but it recovers the tool the theorem exists to justify: {name}`CategoryTheory.Abelian.Pseudoelement` lets you chase "elements" of objects in _any_ abelian category, so that arguments like the one above go through directly.
-The four, five, and snake lemmas are all proved for `ShortComplex`-shaped diagrams on this basis.
 :::
 
 # Breaking long exact sequences
@@ -397,3 +381,112 @@ This category can be equivalently viewed as the category of short exact sequence
 Show that the arrow $`(X, 0) \to (X, X)` is monic and epic, but not an isomorphism.
 Conclude that the category is not abelian.
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Zero objects, kernels, cokernels, and images
+
+The three ingredients are typeclasses on a category: {name}`CategoryTheory.Limits.HasZeroObject` for the object $`0`, {name}`CategoryTheory.Limits.HasZeroMorphisms` for the distinguished $`0 \colon A \to B`, and {name}`CategoryTheory.Limits.kernel` and {name}`CategoryTheory.Limits.cokernel` for the (co)equalizers against that zero morphism.
+The image built here as $`\mathrm{Ker}(\mathrm{coker}\, f)` is exactly {name}`CategoryTheory.Abelian.image`.
+
+The defining property of the kernel is that its inclusion $`\ker f` composes with $`f` to give the zero morphism.
+
+```lean
+example (C : Type*) [Category C] [HasZeroMorphisms C] {A B : C} (f : A ⟶ B)
+    [HasKernel f] : kernel.ι f ≫ f = 0 :=
+  kernel.condition f
+```
+
+Dually, $`f` composed with the projection to its cokernel vanishes.
+Prove it.
+
+```lean
+example (C : Type*) [Category C] [HasZeroMorphisms C] {A B : C} (f : A ⟶ B)
+    [HasCokernel f] : f ≫ cokernel.π f = 0 := by
+  sorry
+```
+
+## Additive and abelian categories
+
+The "you can add morphisms" content is {name}`CategoryTheory.Preadditive`, an abelian-group structure on each hom-set with bilinear composition; an additive category is this together with a zero object and binary products.
+The full package with kernels, cokernels, and the image factorization is {name}`CategoryTheory.Abelian`, and $`\mathsf{Mod}_R` is the guiding instance.
+Bilinearity of composition means that precomposing a sum is the sum of the precompositions.
+
+```lean
+example (C : Type*) [Category C] [Preadditive C] {A B D : C}
+    (f f' : A ⟶ B) (g : B ⟶ D) : (f + f') ≫ g = f ≫ g + f' ≫ g := by
+  simp
+```
+
+The proposition above characterized isomorphisms as the maps that are both monic and epic.
+One half of that holds in every abelian category: a map that is monic and epic is an isomorphism.
+
+```lean
+example (C : Type*) [Category C] [Abelian C] {A B : C} (f : A ⟶ B)
+    [Mono f] [Epi f] : IsIso f := by
+  sorry
+```
+
+## Exact sequences
+
+A composable pair $`A \xrightarrow{f} B \xrightarrow{g} C` with $`g \circ f = 0` is a {name}`CategoryTheory.ShortComplex`; the predicate {name}`CategoryTheory.ShortComplex.Exact` is exactly "the canonical map from the image to the kernel is an isomorphism", and {name}`CategoryTheory.ShortComplex.ShortExact` adds that the outer maps are monic and epic — the categorical $`0 \to A \to B \to C \to 0`.
+The compatibility built into a short complex is that its two maps compose to zero.
+
+```lean
+example (C : Type*) [Category C] [HasZeroMorphisms C] (S : ShortComplex C) :
+    S.f ≫ S.g = 0 :=
+  S.zero
+```
+
+The exercise above showed that $`0 \to A \to B` is exact exactly when $`A \to B` is monic.
+When the first map of a short complex is zero, exactness of the complex is precisely monicity of the second map.
+
+```lean
+example (C : Type*) [Category C] [Abelian C] (S : ShortComplex C)
+    (hf : S.f = 0) : S.Exact ↔ Mono S.g := by
+  sorry
+```
+
+## The Freyd–Mitchell embedding theorem
+
+Mathlib does not (yet) have the full Freyd–Mitchell embedding theorem, but it recovers the tool the theorem exists to justify: {name}`CategoryTheory.Abelian.Pseudoelement` lets you chase "elements" of objects in _any_ abelian category, so that arguments like the one above go through directly.
+A morphism $`f` acts on pseudoelements through {name}`CategoryTheory.Abelian.Pseudoelement.pseudoApply`, and chasing through a composite applies each map in turn.
+
+```lean
+open CategoryTheory.Abelian.Pseudoelement in
+example (C : Type*) [Category C] [Abelian C] {A B D : C} (f : A ⟶ B) (g : B ⟶ D)
+    (a : Abelian.Pseudoelement A) :
+    pseudoApply (f ≫ g) a = pseudoApply g (pseudoApply f a) :=
+  comp_apply f g a
+```
+
+Every diagram chase relies on each map sending the zero pseudoelement to the zero pseudoelement.
+Prove it.
+
+```lean
+open CategoryTheory.Abelian.Pseudoelement in
+example (C : Type*) [Category C] [Abelian C] {A B : C} (f : A ⟶ B) :
+    pseudoApply f (0 : Abelian.Pseudoelement A) = 0 := by
+  sorry
+```
+
+## Breaking long exact sequences
+
+The first isomorphism theorem splices a map into the short exact sequence $`0 \to \mathrm{Ker}\, f \to A \to \mathrm{Img}\, f \to 0`.
+Mathlib does not package this categorical statement under a single name, but a {name}`CategoryTheory.ShortComplex.ShortExact` records exactly the data at the two ends: its first map is monic and its second map is epic.
+
+```lean
+example (C : Type*) [Category C] [Preadditive C] {S : ShortComplex C}
+    (hS : S.ShortExact) : Mono S.f := hS.mono_f
+```
+
+Dually, the last map of a short exact sequence is epic.
+
+```lean
+example (C : Type*) [Category C] [Preadditive C] {S : ShortComplex C}
+    (hS : S.ShortExact) : Epi S.g := by
+  sorry
+```

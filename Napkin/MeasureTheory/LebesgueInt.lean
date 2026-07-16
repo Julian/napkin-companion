@@ -6,11 +6,15 @@ import Napkin.Meta.Citations
 import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 import Mathlib.MeasureTheory.Function.SimpleFunc
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+import Mathlib.MeasureTheory.Measure.Prod
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+
+open MeasureTheory
 
 set_option pp.rawOnError true
 
@@ -35,9 +39,6 @@ If $`A` is a measurable set of $`\Omega`, then the *indicator function* $`\mathb
 $$`\mathbf{1}_A(\omega) = \begin{cases} 1 & \omega \in A \\ 0 & \omega \notin A. \end{cases}`
 :::
 
-`Set.indicator` is Mathlib's spelling: `Set.indicator A f x` is `f x` when `x ∈ A` and `0` otherwise.
-The all-ones case (the actual indicator function as the book defines it) is `(A : Set Ω).indicator (1 : Ω → ℝ)`, and shorthand `A.indicator` defaults to this when the codomain is clear.
-
 For an indicator function, we require
 $$`\int_\Omega \mathbf{1}_A \; d\mu \overset{\text{def}}{=} \mu(A)`
 (which may be infinite).
@@ -49,14 +50,6 @@ Let $`c_1, \dots, c_n` be either nonnegative real numbers or $`+\infty`.
 Then we define
 $$`\int_\Omega \left(\sum_{i=1}^n c_i \mathbf{1}_{A_i}\right) \; d\mu \overset{\text{def}}{=} \sum_{i=1}^n c_i \mu(A_i).`
 If $`c_i = \infty` and $`\mu(A_i) = 0`, we treat $`c_i \mu(A_i) = 0`.
-
-`MeasureTheory.SimpleFunc α β` is Mathlib's *simple function* type: a measurable function with finite range, packaged as a structure carrying its `toFun`, the finiteness witness, and the measurability of every level set.
-The integral against a measure is `MeasureTheory.SimpleFunc.lintegral f μ` (for `ℝ≥0∞`-valued functions); it sums `c_i * μ(A_i)` exactly as the book describes.
-
-```lean
-example (α : Type*) [MeasurableSpace α] :
-    Type _ := MeasureTheory.SimpleFunc α ENNReal
-```
 
 One can check the resulting sum does not depend on the representation of the simple function as $`\sum c_i \mathbf{1}_{A_i}`.
 In particular, it is compatible with the previous step.
@@ -76,14 +69,6 @@ That is,
 We define the integral $`\int_\Omega f \; d\mu` by approximating it from below with simple functions, for which we know how to integrate.
 :::
 
-This is `MeasureTheory.lintegral`, with notation `∫⁻ x, f x ∂μ` (the `⁻` glyph signaling the `ℝ≥0∞`-valued "lower" integral, as opposed to the Bochner integral `∫ x, f x ∂μ` for real- or Banach-valued functions below).
-
-```lean
-noncomputable example {α : Type*} [MeasurableSpace α]
-    (μ : MeasureTheory.Measure α) (f : α → ENNReal) : ENNReal :=
-  ∫⁻ x, f x ∂μ
-```
-
 One can check this is compatible with the previous definitions.
 At this point, we introduce an important term.
 
@@ -102,15 +87,6 @@ The constant function $`1` is *not* integrable on $`\mathbb{R}`, since $`\int_\m
 
 For this reason, I will usually prefer the term "absolutely integrable".
 (If it were up to me, I would call it "finitely integrable", and usually do so privately.)
-
-Mathlib calls this `MeasureTheory.Integrable f μ`, defined as `AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ`.
-The "has finite integral" half is exactly the book's "$`\int |f| < \infty`" condition; Mathlib's split is to keep the measurability hypothesis explicit so that the integrability lemma chains read cleanly.
-
-```lean
-example {α E : Type*} [MeasurableSpace α] [NormedAddCommGroup E]
-    (f : α → E) (μ : MeasureTheory.Measure α) : Prop :=
-  MeasureTheory.Integrable f μ
-```
 
 :::REMARK "Why don't we approximate the integral from above?"
 For bounded functions on measure spaces with $`|\Omega| < \infty`, we can equivalently define
@@ -137,15 +113,6 @@ and set
 $$`\int_\Omega f \; d\mu = \int_\Omega |f^+| \; d\mu - \int_\Omega |f^-| \; d\mu`
 which in particular is finite.
 
-`MeasureTheory.integral` is the Mathlib version, with notation `∫ x, f x ∂μ`.
-Underneath it's the *Bochner integral* — the same construction generalized to Banach-space-valued functions, which specializes to the book's two-piece "split positive and negative parts" definition for real-valued $`f`.
-
-```lean
-noncomputable example {α : Type*} [MeasurableSpace α]
-    (μ : MeasureTheory.Measure α) (f : α → ℝ) : ℝ :=
-  ∫ x, f x ∂μ
-```
-
 :::EXERCISE
 Show that $`\int_\Omega |f| \; d\mu < \infty` if and only if $`\int_\Omega |f^+| \; d\mu < \infty` and $`\int_\Omega |f^-| \; d\mu < \infty`.
 :::
@@ -167,15 +134,8 @@ Fix $`\Omega = (\Omega, \mathcal{A}, \mu)`, and let $`f` and $`g` be measurable 
   $$`\int_\Omega f \; d\mu \leq \int_\Omega g \; d\mu.`
   The "absolutely integrable" hypothesis can be dropped if $`f` and $`g` are nonnegative.
 
-These are all in Mathlib under predictable names: `MeasureTheory.integral_congr_ae` (almost-everywhere preservation), `MeasureTheory.integral_add` (additivity, with `Integrable` hypotheses), `MeasureTheory.integral_smul` (scaling for the more general scalar action), and `MeasureTheory.integral_mono_ae` (monotonicity, with `≤ᵐ[μ]` for "almost everywhere $`\leq`").
-
 There are more famous results like monotone/dominated convergence that are also true, but we won't state them here as we won't really have a use for them in the context of probability.
 (They appear later on in a bonus chapter.)
-
-:::aside "MCT and DCT in Mathlib"
-Even though Napkin defers them, the two big convergence theorems are first-class citizens in Mathlib: `MeasureTheory.lintegral_iSup_directed` and friends for the monotone convergence theorem (and its `iSup` and `tendsto` variants), `MeasureTheory.tendsto_integral_of_dominated_convergence` for the dominated convergence theorem.
-The latter is the workhorse for swapping limits and integrals — by far the most useful theorem in real-analytic computation.
-:::
 
 # An equivalent definition
 
@@ -205,8 +165,6 @@ For each function $`f \colon \Omega \to [0, +\infty]`, let
 $$`\int_\Omega f \; d\mu \overset{\text{def}}{=} |R(f)|.`
 The integral is well-defined whenever $`R(f)` is measurable.
 
-The product measure on $`\Omega \times \mathbb{R}` is `MeasureTheory.Measure.prod μ ν`, and the "volume under the graph" identity is `volume_regionBetween_eq_lintegral` (the region $`R(f)` being `regionBetween 0 f` in Mathlib).
-
 As promised in the measurable functions section, the definition of measurable function satisfies:
 
 :::MORAL
@@ -226,8 +184,6 @@ Let $`f \colon [a, b] \to \mathbb{R}` be a Riemann integrable function (where $`
 Then $`f` is also Lebesgue integrable and the integrals agree:
 $$`\int_a^b f(x) \; dx = \int_{[a, b]} f \; d\mu.`
 :::
-
-`MeasureTheory.integral_eq_lintegral_of_nonneg_ae` is the bridge from the Bochner integral to the Lebesgue integral `∫⁻` for nonnegative functions, and `intervalIntegrable_iff` connects interval-integrability of `∫ x in a..b, f x` (the notation we'd already met in the calculus chapter) to `IntegrableOn`.
 
 Note that a Riemann integrable function *must be bounded*, which means if you try to construct a function $`f \colon [0, 1] \to \mathbb{R}` along the lines of the improper-integral example by
 $$`f(x) = \begin{cases} \frac{\sin(1/x)}{x} & x > 0 \\ 0 & x = 0 \end{cases}`
@@ -254,8 +210,6 @@ where we allow both sides to be $`+\infty` if $`f` is not absolutely integrable.
 The right-hand side makes sense since $`[a', b'] \subsetneq (a, b)` is a compact interval on which $`f` is continuous.
 This means that improper Riemann integrals of nonnegative functions can just be regarded as Lebesgue ones over the corresponding open intervals.
 
-In Mathlib this is `MeasureTheory.intervalIntegral_tendsto_integral_Ioi` and friends — the limit-of-truncated-integral characterization for various flavors of half-line and full-line.
-
 It's probably better to just look at an example though.
 
 :::EXAMPLE "Integrating $`1/\\sqrt{x}` on $`(0, 1)`"
@@ -278,11 +232,110 @@ Take the indicator function $`\mathbf{1}_\mathbb{Q} \colon \mathbb{R} \to \{0, 1
 - Show that $`\int_\mathbb{R} \mathbf{1}_\mathbb{Q}` exists and determine its value — the one you expect!
 :::
 
-In Mathlib, the second part of this problem is essentially `MeasureTheory.integral_indicator_one` plus the Lebesgue-measure-of-`ℚ` calculation: since $`\mathbb{Q}` is countable and the Lebesgue measure has no atoms, `Set.Countable.measure_zero` concludes $`\mu(\mathbb{Q}) = 0` directly.
-
 :::PROBLEM "An improper Riemann integral with sign changes"
 Define $`f \colon (1, \infty) \to \mathbb{R}` by $`f(x) = \frac{\sin(x)}{x}`.
 Show that $`f` is not absolutely integrable, but that the improper Riemann integral
 $$`\int_1^\infty f(x) \; dx \overset{\text{def}}{=} \lim_{b \to \infty} \int_1^b f(x) \; dx`
 nonetheless exists.
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## The definition
+
+`Set.indicator` is Mathlib's spelling: `Set.indicator A f x` is `f x` when `x ∈ A` and `0` otherwise.
+The all-ones case (the actual indicator function as the book defines it) is `(A : Set Ω).indicator (1 : Ω → ℝ)`, and shorthand `A.indicator` defaults to this when the codomain is clear.
+
+`MeasureTheory.SimpleFunc α β` is Mathlib's *simple function* type: a measurable function with finite range, packaged as a structure carrying its `toFun`, the finiteness witness, and the measurability of every level set.
+The integral against a measure is `MeasureTheory.SimpleFunc.lintegral f μ` (for `ℝ≥0∞`-valued functions); it sums `c_i * μ(A_i)` exactly as the book describes.
+
+```lean
+example (α : Type*) [MeasurableSpace α] :
+    Type _ := MeasureTheory.SimpleFunc α ENNReal
+```
+
+This is `MeasureTheory.lintegral`, with notation `∫⁻ x, f x ∂μ` (the `⁻` glyph signaling the `ℝ≥0∞`-valued "lower" integral, as opposed to the Bochner integral `∫ x, f x ∂μ` for real- or Banach-valued functions below).
+
+```lean
+noncomputable example {α : Type*} [MeasurableSpace α]
+    (μ : MeasureTheory.Measure α) (f : α → ENNReal) : ENNReal :=
+  ∫⁻ x, f x ∂μ
+```
+
+Mathlib calls this `MeasureTheory.Integrable f μ`, defined as `AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ`.
+The "has finite integral" half is exactly the book's "$`\int |f| < \infty`" condition; Mathlib's split is to keep the measurability hypothesis explicit so that the integrability lemma chains read cleanly.
+
+```lean
+example {α E : Type*} [MeasurableSpace α] [NormedAddCommGroup E]
+    (f : α → E) (μ : MeasureTheory.Measure α) : Prop :=
+  MeasureTheory.Integrable f μ
+```
+
+`MeasureTheory.integral` is the Mathlib version, with notation `∫ x, f x ∂μ`.
+Underneath it's the *Bochner integral* — the same construction generalized to Banach-space-valued functions, which specializes to the book's two-piece "split positive and negative parts" definition for real-valued $`f`.
+
+```lean
+noncomputable example {α : Type*} [MeasurableSpace α]
+    (μ : MeasureTheory.Measure α) (f : α → ℝ) : ℝ :=
+  ∫ x, f x ∂μ
+```
+
+The almost-everywhere, additivity, scaling, and monotonicity results are all in Mathlib under predictable names: `MeasureTheory.integral_congr_ae` (almost-everywhere preservation), `MeasureTheory.integral_add` (additivity, with `Integrable` hypotheses), `MeasureTheory.integral_smul` (scaling for the more general scalar action), and `MeasureTheory.integral_mono_ae` (monotonicity, with `≤ᵐ[μ]` for "almost everywhere $`\leq`").
+
+:::aside "MCT and DCT in Mathlib"
+Even though Napkin defers them, the two big convergence theorems are first-class citizens in Mathlib: `MeasureTheory.lintegral_iSup_directed` and friends for the monotone convergence theorem (and its `iSup` and `tendsto` variants), `MeasureTheory.tendsto_integral_of_dominated_convergence` for the dominated convergence theorem.
+The latter is the workhorse for swapping limits and integrals — by far the most useful theorem in real-analytic computation.
+:::
+
+The exercise asked you to show that $`|f|` is absolutely integrable exactly when both $`f^+` and $`f^-` are.
+Since Mathlib folds measurability into `Integrable`, phrase it directly on a real-valued $`f`: it is integrable if and only if its positive part `fun x => max (f x) 0` and negative part `fun x => max (-f x) 0` both are.
+
+```lean
+example {α : Type*} [MeasurableSpace α] (μ : Measure α) (f : α → ℝ) :
+    Integrable f μ ↔
+      Integrable (fun x => max (f x) 0) μ ∧
+        Integrable (fun x => max (-f x) 0) μ := by
+  sorry
+```
+
+## An equivalent definition
+
+The product measure on $`\Omega \times \mathbb{R}` is `MeasureTheory.Measure.prod μ ν`, and the "volume under the graph" identity is `volume_regionBetween_eq_lintegral` (the region $`R(f)` being `regionBetween 0 f` in Mathlib).
+
+The pre-measure that started this construction was pinned down by $`|X \times Y| = |X| \cdot |Y|`.
+Check that the finished product measure still satisfies this on measurable rectangles.
+
+```lean
+example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
+    (μ : Measure α) (ν : Measure β) [SFinite ν] (s : Set α) (t : Set β) :
+    μ.prod ν (s ×ˢ t) = μ s * ν t := by
+  sorry
+```
+
+## Relation to Riemann integrals (or: actually computing Lebesgue integrals)
+
+`MeasureTheory.integral_eq_lintegral_of_nonneg_ae` is the bridge from the Bochner integral to the Lebesgue integral `∫⁻` for nonnegative functions, and `intervalIntegrable_iff` connects interval-integrability of `∫ x in a..b, f x` (the notation we'd already met in the calculus chapter) to `IntegrableOn`.
+
+For improper integrals of nonnegative functions, `MeasureTheory.intervalIntegral_tendsto_integral_Ioi` and friends give the limit-of-truncated-integral characterization for various flavors of half-line and full-line.
+
+The worked example evaluated $`\int_{[1, 4]} x^2 \; d\mu = 21` by falling back on the Fundamental Theorem of Calculus.
+Reproduce that computation on the interval integral.
+
+```lean
+example : ∫ x in (1 : ℝ)..4, x ^ 2 = 21 := by
+  sorry
+```
+
+## Problems
+
+In Mathlib, the second part of "The indicator of the rationals" is essentially `MeasureTheory.integral_indicator_one` plus the Lebesgue-measure-of-`ℚ` calculation: since $`\mathbb{Q}` is countable and the Lebesgue measure has no atoms, `Set.Countable.measure_zero` concludes $`\mu(\mathbb{Q}) = 0` directly.
+
+Carry that out: the indicator of the range of $`\mathbb{Q} \hookrightarrow \mathbb{R}` integrates to $`0`.
+
+```lean
+example : ∫ x, (Set.range ((↑) : ℚ → ℝ)).indicator (1 : ℝ → ℝ) x = 0 := by
+  sorry
+```

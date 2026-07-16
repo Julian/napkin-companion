@@ -22,6 +22,7 @@ open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open CategoryTheory
 
 set_option pp.rawOnError true
 
@@ -97,8 +98,6 @@ It needs to satisfy the "naturality" requirements:
 
 - Identity arrows get sent to identity arrows: for each identity arrow $`\mathrm{id}_A`, we have $`F(\mathrm{id}_A) = \mathrm{id}_{F(A)}`.
 - The functor respects composition: if $`A_1 \xrightarrow{f} A_2 \xrightarrow{g} A_3` are arrows in $`\mathcal{A}`, then $`F(g \circ f) = F(g) \circ F(f)`.
-
-The Mathlib version is `CategoryTheory.Functor C D` (notation `C ⥤ D`); its `obj` field is the action on objects and `map` is the action on arrows, with `map_id` and `map_comp` recording the two naturality conditions.
 :::
 
 :::figure "figures/category-theory/functor-object-map.svg"
@@ -138,11 +137,6 @@ There is also a notion of "injective" and "surjective" for functors (on arrows) 
 A functor $`F \colon \mathcal{A} \to \mathcal{B}` is *faithful* (resp. *full*) if for any $`A_1, A_2`, the induced map $`F \colon \mathrm{Hom}_{\mathcal{A}}(A_1, A_2) \to \mathrm{Hom}_{\mathcal{B}}(FA_1, FA_2)` is injective (resp. surjective).
 
 We can use this to give an exact definition of concrete category: it's a category with a faithful (forgetful) functor $`U \colon \mathcal{A} \to \mathsf{Set}`.
-:::
-
-:::aside "Faithful and full in Mathlib"
-`CategoryTheory.Functor.Faithful F` and `CategoryTheory.Functor.Full F` are typeclasses; combined as `Functor.FullyFaithful F` they package the equivalence on hom-sets that lets you transport equality and existence statements through the functor.
-A "concrete category" in Mathlib is `ConcreteCategory C` (an instance carrying a faithful forget functor to `Type _`).
 :::
 
 :::EXAMPLE "Functors from $`\\mathcal{G}`"
@@ -259,16 +253,6 @@ This can be most easily seen for a presheaf: "a contravariant functor $`\mathrm{
 In fact, just as $`\mathcal{A}^2` is a category, the functors $`\mathsf{2} \to \mathcal{A}` also forms a category.
 We will see this in the Yoneda section below.
 
-:::aside "Product categories in Mathlib"
-The product category $`\mathcal{A}^2` is just $`C \times D` with `C = D`; Mathlib puts a {name}`CategoryTheory.Category` instance on the product of any two categories, with morphisms the pairs `(f, g)`.
-The two-object discrete category $`\mathsf{2}` — objects but only identity arrows — is {name}`CategoryTheory.Discrete` applied to a two-element type, and a functor out of it is exactly a choice of two objects.
-
-```lean
-open CategoryTheory in
-example (C : Type*) [Category C] : Type _ := C × C
-```
-:::
-
 # Contravariant functors
 
 :::PROTOTYPE
@@ -334,11 +318,6 @@ Thus $`H_A(f)` is an arrow from $`\mathrm{Hom}_\mathcal{A}(Y, A) \to \mathrm{Hom
 Check now the claim that $`\mathcal{A}^{\mathrm{op}} \times \mathcal{A} \to \mathsf{Set}` by $`(A_1, A_2) \mapsto \mathrm{Hom}(A_1, A_2)` is in fact a functor.
 :::
 
-:::aside "Opposite categories and Yoneda in Mathlib"
-Mathlib writes the opposite category as $`C^{\mathrm{op}}`, so a contravariant functor is literally a term of type `Cᵒᵖ ⥤ D`; the operation $`\bullet^\vee` on the arrows is what {name}`CategoryTheory.Functor.op` produces.
-The contravariant Yoneda functor $`H_A = \mathrm{Hom}(-, A)` is bundled by {name}`CategoryTheory.yoneda`, and its covariant partner $`H^A = \mathrm{Hom}(A, -)` by {name}`CategoryTheory.coyoneda`.
-:::
-
 # Equivalence of categories
 
 When are two categories "the same"?
@@ -350,11 +329,6 @@ Two categories $`\mathcal{A}` and $`\mathcal{B}` are *equivalent* if there are f
 :::
 
 A cleaner criterion avoids naming $`G` at all: $`F` alone is an equivalence exactly when it is *fully faithful* (a bijection on each hom-set, so it neither collapses nor invents arrows) and *essentially surjective* (every object of $`\mathcal{B}` is isomorphic to some $`F(A)`, so it misses nothing up to isomorphism).
-
-:::aside "Equivalences in Mathlib"
-An equivalence is {name}`CategoryTheory.Equivalence`, written `C ≌ D`, packaging the two functors and the two natural isomorphisms.
-The criterion is the pair {name}`CategoryTheory.Functor.FullyFaithful` and {name}`CategoryTheory.Functor.EssSurj`; from a fully faithful, essentially surjective functor Mathlib manufactures the inverse and the isomorphisms.
-:::
 
 # Natural transformations
 
@@ -422,11 +396,6 @@ For example, one often claims that there is a canonical isomorphism $`(V^\vee)^\
 Category theory, amazingly, lets us formalize this: it just says that $`(V^\vee)^\vee \cong \mathrm{id}(V)` naturally in $`V \in \mathsf{FDVect}_k`.
 Really, we have a natural transformation with component $`\varepsilon_V` given by $`v \mapsto \mathrm{ev}_v` (the fact that it is an isomorphism follows from the fact that $`V` and $`(V^\vee)^\vee` have equal dimensions and $`\varepsilon_V` is injective).
 
-:::aside "Natural transformations in Mathlib"
-A natural transformation is {name}`CategoryTheory.NatTrans`, and since functors $`\mathcal{A} \to \mathcal{B}` themselves form a category (with natural transformations as arrows) the notation `F ⟶ G` denotes one.
-A natural isomorphism is then just an isomorphism `F ≅ G` in that functor category; {name}`CategoryTheory.NatIso.ofComponents` builds one from componentwise isomorphisms together with the naturality square.
-:::
-
 # The Yoneda lemma
 
 Now that I have natural transformations, I can define:
@@ -483,11 +452,6 @@ Is there another way we can get a set from these two pieces of information?
 Yes: just look at $`X(A)`.
 The Yoneda lemma is telling us that our heuristic still holds true here.
 
-:::aside "The Yoneda lemma in Mathlib"
-The bijection is {name}`CategoryTheory.yonedaEquiv`, and its naturality is packaged by {name}`CategoryTheory.yonedaLemma`.
-Its most-quoted consequence, that $`H_\bullet` embeds $`\mathcal{A}` into the presheaf category, is {name}`CategoryTheory.Yoneda.fullyFaithful` — the fully faithful Yoneda embedding, a category-theoretic Cayley theorem.
-:::
-
 Some consequences of the Yoneda lemma are recorded in {cite}`ref:msci`.
 Since this chapter is already a bit too long, I'll just write down the statements, and refer you to {cite}`ref:msci` for the proofs.
 
@@ -530,3 +494,150 @@ In the context of the Yoneda lemma:
 2. Prove that the bijection is indeed natural.
    (This is long-winded, but not difficult; from start to finish, there is only one thing you can possibly do.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Covariant functors
+
+Mathlib's `CategoryTheory.Functor C D`, written `C ⥤ D`, bundles the action on objects and the action on arrows together with the two naturality conditions.
+Its `obj` field sends an object to an object, and `map` sends an arrow to an arrow.
+
+```lean
+example (C D : Type*) [Category C] [Category D] : Type _ := C ⥤ D
+
+example (C D : Type*) [Category C] [Category D] (F : C ⥤ D) (A : C) : D :=
+  F.obj A
+
+example (C D : Type*) [Category C] [Category D] (F : C ⥤ D)
+    {A₁ A₂ : C} (f : A₁ ⟶ A₂) : F.obj A₁ ⟶ F.obj A₂ := F.map f
+```
+
+The two naturality requirements — identities go to identities, and composites go to composites — are the fields `map_id` and `map_comp`.
+
+```lean
+example (C D : Type*) [Category C] [Category D] (F : C ⥤ D) (A : C) :
+    F.map (𝟙 A) = 𝟙 (F.obj A) := F.map_id A
+
+example (C D : Type*) [Category C] [Category D] (F : C ⥤ D)
+    {A₁ A₂ A₃ : C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
+    F.map (f ≫ g) = F.map f ≫ F.map g := F.map_comp f g
+```
+
+A functor is `Faithful` when it is injective on each hom-set, and `Full` when it is surjective; the two combined are packaged as `Functor.FullyFaithful`.
+
+```lean
+example (C D : Type*) [Category C] [Category D] (F : C ⥤ D) : Prop := F.Faithful
+```
+
+The theorem was that functors preserve isomorphism.
+Given an isomorphism $`A_1 \cong A_2` in $`\mathcal{A}` and a functor $`F`, construct the isomorphism $`F(A_1) \cong F(A_2)` (you will need both `map_id` and `map_comp`).
+
+```lean
+example (C D : Type*) [Category C] [Category D] (F : C ⥤ D)
+    (A₁ A₂ : C) (e : A₁ ≅ A₂) : F.obj A₁ ≅ F.obj A₂ := by
+  sorry
+```
+
+## Covariant functors as indexed family of objects
+
+The product category $`\mathcal{A}^2` is the product of a category with itself, `C × C`; Mathlib puts a category instance on the product of any two categories, with morphisms the pairs `(f, g)`.
+Out of a product there are the two projection functors.
+
+```lean
+example (C : Type*) [Category C] : Type _ := C × C
+
+example (C D : Type*) [Category C] [Category D] : C × D ⥤ C :=
+  CategoryTheory.Prod.fst C D
+```
+
+Dually, from a single category there is the diagonal functor $`\mathcal{A} \to \mathcal{A}^2` sending each object to the pair with itself.
+Construct it.
+
+```lean
+example (C : Type*) [Category C] : C ⥤ C × C := by
+  sorry
+```
+
+## Contravariant functors
+
+A contravariant functor $`\mathcal{A}^{\mathrm{op}} \to \mathcal{B}` is literally a term of type `Cᵒᵖ ⥤ D`.
+The two Yoneda functors live here: the contravariant `yoneda` gives $`H_A = \mathrm{Hom}(-, A)`, and its covariant partner `coyoneda` gives $`H^A = \mathrm{Hom}(A, -)`.
+
+```lean
+example (C D : Type*) [Category C] [Category D] : Type _ := Cᵒᵖ ⥤ D
+
+example (C : Type*) [Category C] : C ⥤ Cᵒᵖ ⥤ Type _ := yoneda
+
+example (C : Type*) [Category C] : Cᵒᵖ ⥤ C ⥤ Type _ := coyoneda
+```
+
+Every functor $`F \colon \mathcal{A} \to \mathcal{B}` induces one on the opposite categories, $`\mathcal{A}^{\mathrm{op}} \to \mathcal{B}^{\mathrm{op}}`.
+Build it.
+
+```lean
+example (C D : Type*) [Category C] [Category D] (F : C ⥤ D) : Cᵒᵖ ⥤ Dᵒᵖ := by
+  sorry
+```
+
+## Equivalence of categories
+
+An equivalence, written `C ≌ D`, packages the two functors and the two natural isomorphisms witnessing that the round trips are naturally isomorphic to the identities.
+
+```lean
+example (C D : Type*) [Category C] [Category D] : Type _ := C ≌ D
+
+example (C D : Type*) [Category C] [Category D] (e : C ≌ D) : C ⥤ D := e.functor
+
+example (C D : Type*) [Category C] [Category D] (e : C ≌ D) : D ⥤ C := e.inverse
+```
+
+Equivalence is a symmetric relation on categories: an equivalence $`\mathcal{A} \simeq \mathcal{B}` gives one $`\mathcal{B} \simeq \mathcal{A}`.
+Produce it.
+
+```lean
+example (C D : Type*) [Category C] [Category D] (e : C ≌ D) : D ≌ C := by
+  sorry
+```
+
+## Natural transformations
+
+A natural transformation is `CategoryTheory.NatTrans`; since functors $`\mathcal{A} \to \mathcal{B}` themselves form a category, the notation `F ⟶ G` denotes one, and `α.app A` is its component at $`A`.
+
+```lean
+example (C D : Type*) [Category C] [Category D] (F G : C ⥤ D) : Type _ := F ⟶ G
+
+example (C D : Type*) [Category C] [Category D] (F G : C ⥤ D)
+    (α : F ⟶ G) (A : C) : F.obj A ⟶ G.obj A := α.app A
+```
+
+The defining condition is the naturality square: for every arrow $`f \colon A_1 \to A_2` we have $`\alpha_{A_2} \circ F(f) = G(f) \circ \alpha_{A_1}`.
+Prove it holds.
+
+```lean
+example (C D : Type*) [Category C] [Category D] (F G : C ⥤ D)
+    (α : F ⟶ G) {A₁ A₂ : C} (f : A₁ ⟶ A₂) :
+    F.map f ≫ α.app A₂ = α.app A₁ ≫ G.map f := by
+  sorry
+```
+
+## The Yoneda lemma
+
+The bijection of the Yoneda lemma is `yonedaEquiv`: natural transformations $`H_A \to X` are in bijection with the elements of $`X(A)`.
+
+```lean
+example (C : Type*) [Category C] (X : C) (F : Cᵒᵖ ⥤ Type _) :
+    (yoneda.obj X ⟶ F) ≃ F.obj (Opposite.op X) := yonedaEquiv
+```
+
+Its most-quoted consequence is that $`H_\bullet` embeds $`\mathcal{A}` fully faithfully into the presheaf category — the Yoneda embedding, a category-theoretic Cayley theorem.
+One face of this: a fully faithful functor reflects isomorphisms, so if the Yoneda images of $`X` and $`Y` are isomorphic then $`X \cong Y`.
+Prove it.
+
+```lean
+example (C : Type*) [Category C] (X Y : C)
+    (h : yoneda.obj X ≅ yoneda.obj Y) : X ≅ Y := by
+  sorry
+```
