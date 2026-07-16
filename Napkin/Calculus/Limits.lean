@@ -5,8 +5,14 @@ import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Analysis.SpecificLimits.Normed
+import Mathlib.Analysis.PSeries
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.NatInt
+import Mathlib.Topology.Algebra.InfiniteSum.Order
+import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
+import Mathlib.Topology.Order.MonotoneConvergence
 import Mathlib.Topology.MetricSpace.Cauchy
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Analysis.Normed.Order.UpperLower
@@ -45,15 +51,6 @@ The first fact you have already seen before:
 As a metric space, $`\mathbb{R}` is complete: sequences converge if and only if they are Cauchy.
 :::
 
-Mathlib registers this as the `CompleteSpace ℝ` instance — every `CauchySeq` in `ℝ` has a limit:
-
-```lean
-recall : CompleteSpace ℝ
-recall cauchySeq_tendsto_of_complete {α : Type*} {β : Type*}
-    [UniformSpace α] [Preorder β] [CompleteSpace α] {u : β → α}
-    (H : CauchySeq u) : ∃ x, Filter.Tendsto u Filter.atTop (nhds x)
-```
-
 The second one we have not seen before — it is the existence of $`\inf` and $`\sup`.
 Your intuition should be:
 
@@ -85,13 +82,6 @@ If $`S` is a set of real numbers:
 - If both upper and lower bounds exist, we say $`S` is *bounded*.
 :::
 
-Mathlib calls these `BddAbove S`, `BddBelow S`, and `Bornology.IsBounded S` (the last one is a metric notion that, on `ℝ`, agrees with `BddAbove S ∧ BddBelow S`).
-
-```lean
-recall BddAbove {α : Type*} [LE α] (s : Set α) : Prop :=
-  (upperBounds s).Nonempty
-```
-
 :::THEOREM "$`\\mathbb{R}` has inf's and sup's"
 Let $`S` be a nonempty set of real numbers.
 
@@ -99,22 +89,10 @@ Let $`S` be a nonempty set of real numbers.
 - If $`S` is bounded below then it has a *greatest* lower bound, which we denote by $`\inf S` and refer to as the *infimum* of $`S`.
 :::
 
-The "least upper bound" and "greatest lower bound" predicates are `IsLUB s x` and `IsGLB s x`.
-The actual values $`\sup S, \inf S` go through the `ConditionallyCompleteLinearOrder` typeclass that `ℝ` satisfies, and are written `sSup S` and `sInf S` (the lowercase `s` is for "set"; the indexed-family forms are `iSup`, `iInf`).
-The completeness theorem above is the statement `isLUB_sSup` for nonempty bounded-above sets.
-
-```lean
-recall isLUB_csSup {α : Type*} [ConditionallyCompleteLattice α]
-    {s : Set α} (ne : s.Nonempty) (H : BddAbove s) : IsLUB s (sSup s)
-```
-
 :::DEFINITION
 For convenience, if $`S` has not bounded above, we write $`\sup S = +\infty`.
 Similarly, if $`S` has not bounded below, we write $`\inf S = -\infty`.
 :::
-
-In Mathlib this is one of the more controversial design choices: on `ℝ` (a `ConditionallyCompleteLinearOrder` but not a complete lattice), `sSup ∅ = 0` and `sSup s = 0` for `¬BddAbove s`.
-To get $`+\infty` you cast into `ℝ≥0∞` (`ENNReal`) or work in `EReal`, where `sSup` is genuinely well-behaved on every set.
 
 :::EXAMPLE "Supremums"
 Since the examples for infimums are basically the same, we stick with supremums for now.
@@ -134,8 +112,6 @@ Since the examples for infimums are basically the same, we stick with supremums 
 If $`a_1, \dots` is a sequence we will often write $$`\sup_n a_n \,\overset{\text{def}}{=}\, \sup\{a_n \mid n : \mathbb{N}\}` $$`\inf_n a_n \,\overset{\text{def}}{=}\, \inf\{a_n \mid n : \mathbb{N}\}` for the supremum and infimum of the set of elements of the sequence.
 We also use the words "bounded above/below" for sequences in the same way.
 :::
-
-These are `iSup` and `iInf` indexed by `ℕ`: `⨆ n, a n` and `⨅ n, a n` (the `\Sup` and `\Inf` symbols, both Unicode); they unfold to `sSup` of the range of the sequence.
 
 :::EXAMPLE "Infimum of a sequence"
 The sequence $`a_n = \frac{1}{n}` has infimum $`\inf a_n = 0`.
@@ -206,13 +182,6 @@ With this definition the existence of $`\sup`/$`\inf` is easy: to take the supre
 The hard part is then figuring out how to define $`+`, $`-`, $`\times`, $`\div` and so on with this rather awkward construction.
 If you want to read more about this construction in detail, my favorite reference is {cite}`ref:pugh`, in which all of this is done carefully in Chapter 1.
 
-:::aside "Mathlib's `ℝ` is via Cauchy sequences"
-Mathlib doesn't define `ℝ` via Dedekind cuts.
-The route taken in `Mathlib.Data.Real.Basic` is the *Cauchy completion of $`\mathbb{Q}`* — `Real` is a quotient of `CauSeq abs ℚ` by the relation "their difference tends to zero."
-This makes the arithmetic operations very direct (term-by-term on representatives) at the cost of having to prove the supremum existence after the fact rather than as the definition.
-Either construction lands at the same total order, the same field operations, and the same `CompleteSpace` instance — and Mathlib provides interconverting API.
-:::
-
 # Monotonic sequences
 
 Here is a great exercise.
@@ -229,22 +198,12 @@ The proof here readily adapts by shifting.
 A sequence $`a_n` is *monotonic* if either $`a_1 \geq a_2 \geq \dots` or $`a_1 \leq a_2 \leq \dots`.
 :::
 
-`Monotone f` and `Antitone f` are the Mathlib predicates for non-decreasing and non-increasing functions; for a sequence `f : ℕ → ℝ`, "monotonic" in the book's sense is `Monotone f ∨ Antitone f`.
-There are also strict variants `StrictMono` and `StrictAnti`.
-
-```lean
-recall Monotone {α β : Type*} [Preorder α] [Preorder β] (f : α → β) : Prop :=
-  ∀ ⦃a b⦄, a ≤ b → f a ≤ f b
-```
-
 :::THEOREM "Monotonic bounded sequences converge"
 Let $`a_1, a_2, \dots` be a monotonic bounded sequence.
 Then $`\lim_{n \to \infty} a_n` exists.
 :::
 
 For non-decreasing, the limit is $`\sup_n a_n`; for non-increasing, $`\inf_n a_n`.
-Mathlib's lemmas are `tendsto_atTop_ciSup` and `tendsto_atTop_ciInf`, each requiring the relevant boundedness.
-Both implicitly use `ℝ`'s `ConditionallyCompleteLinearOrder` structure to take the sup/inf.
 
 :::EXAMPLE "Silly example of monotonicity"
 Consider the sequence defined by $$`\begin{aligned} a_1 &= 1.2 \\ a_2 &= 1.24 \\ a_3 &= 1.248 \\ a_4 &= 1.24816 \\ a_5 &= 1.2481632 \\ &\vdots \end{aligned}` and so on, where in general we stuck on the decimal representation of the next power of $`2`.
@@ -274,9 +233,6 @@ If $`a_n` is bounded above, the *limit infimum* $`\liminf_{n \to \infty} a_n` is
 In particular, $`\liminf_{n \to \infty} a_n = -\infty` if $`a_n` is not bounded below.
 :::
 
-Mathlib's `Filter.limsup` and `Filter.liminf` generalize the above to a sequence indexed by an arbitrary filter; for ordinary sequences in `ℝ` we want `Filter.limsup u Filter.atTop` and similarly for `liminf`.
-The output lives in `ℝ` only when the sequence is bounded both above and below; otherwise Mathlib's preference is to land in `EReal` (or the appropriate `Conditionally…CompleteLinearOrder` extension).
-
 :::EXERCISE
 Show that these definitions make sense, by checking that the supremums are non-increasing, and bounded below.
 :::
@@ -300,14 +256,6 @@ Consider a sequence $`a_1, \dots` of real numbers.
 The series $`\sum_k a_k` *converges* to a limit $`L` if the sequence of "partial sums" $$`\begin{aligned} s_1 &= a_1 \\ s_2 &= a_1 + a_2 \\ s_3 &= a_1 + a_2 + a_3 \\ &\vdots \\ s_n &= a_1 + \dots + a_n \end{aligned}` converges to the limit $`L`.
 Otherwise it *diverges*.
 :::
-
-`HasSum f L` is Mathlib's spelling: the net of finite partial sums converges to `L`. `Summable f` says some such `L` exists, and `tsum f` (notation `∑' i, f i`) returns it (or `0` if the series doesn't converge — Mathlib makes the `tsum` total at the cost of a junk default).
-
-`HasSum f a` is short for: the net of finite partial sums indexed by the directed set of `Finset β`, ordered by inclusion, tends to `a` in the topology on `α`.
-Mathlib parametrizes this by an explicit `SummationFilter` to choose between summing over all finite subsets (the default, `unconditional`) or over prefixes — the chapter's "partial sums" are the latter.
-
-`HasSum`'s default uses *all* finite subsets, not just initial segments — this gives the right notion for unordered sums (and matches Mathlib's preference for index types that aren't linearly ordered, like `ℕ × ℕ` for double series).
-For real-valued sequences indexed by `ℕ`, this happens to coincide with the "partial sums of $`a_1, \dots, a_n`" picture exactly when the series is *unconditionally* summable — see the next section for why that matters.
 
 :::ABUSE "Writing divergence as $`+\\infty`"
 It is customary, if all the $`a_k` are nonnegative, to write $`\sum_k a_k = \infty` to denote that the series diverges.
@@ -359,8 +307,6 @@ Indeed, this means for any $`\varepsilon` there are infinitely many terms of the
 This implies convergence.
 ::::
 
-The Mathlib repackaging is `summable_iff_cauchySeq_finset` for the general criterion, and for nonnegative reals indexed by `ℕ`, `summable_iff_not_tendsto_nat_atTop` cleanly says: a nonnegative series is summable iff its partial sums don't diverge to `⊤`.
-
 :::ABUSE "Writing $`\\sum < \\infty`"
 For this reason, if $`a_k` are nonnegative real numbers, it is customary to write $`\sum_k a_k < \infty` as a shorthand for "$`\sum_k a_k` converges to a finite limit", (or perhaps shorthand for "$`\sum_k a_k` is bounded" — as we have just proved these are equivalent).
 We will use this notation too.
@@ -375,10 +321,6 @@ In fact, it turns out that there is an explicit way to describe when rearrangeme
 A series $`\sum_k a_k` of real numbers is said to *converge absolutely* if $$`\sum_k |a_k| < \infty` i.e. the series of absolute values converges to some limit.
 If the series converges, but not absolutely, we say it *converges conditionally*.
 :::
-
-Mathlib's named predicate is `Summable (fun k => ‖a k‖)`, with a wrapping abbreviation `Summable.abs` (and dually `Summable.norm` for normed spaces).
-Importantly, `HasSum` itself is the *unconditional* notion (it sums over all finite subsets, not initial segments), so `Summable f` actually already implies permutation-invariance over `ℕ`.
-That's why the conditional / absolute distinction has to be reintroduced explicitly when one wants to talk about the sequence-of-partial-sums presentation familiar from calculus.
 
 :::PROPOSITION "Absolute convergence $`\\implies` convergence"
 If a series $`\sum_k a_k` of real numbers converges absolutely, then it converges in the usual sense.
@@ -427,12 +369,6 @@ You can also get it to diverge, too.)
 
 So, permutation is as bad as possible for conditionally convergent series, and hence don't even bother to try.
 
-:::aside "Why Mathlib stays out of conditional sums by default"
-The Mathlib design choice — `HasSum` based on finite subsets, not initial segments — is precisely a reaction to the Riemann rearrangement horror story.
-Conditional convergence is order- dependent and so doesn't compose well with operations that don't respect order (transposing a double series, summing over `ℤ` instead of `ℕ`, …).
-For working in Mathlib it's almost always cleaner to either prove `Summable (fun k => ‖a k‖)` upfront, or to work with the sequence of partial sums directly as a `Tendsto` claim — in which case the order-of-summation is explicit in the partial-sum sequence, not hidden in the notation.
-:::
-
 # Limits of functions at points
 
 :::PROTOTYPE
@@ -451,9 +387,6 @@ Suppose there exists a real number $`L` such that:
 Then we say $`L` is the *limit* of $`f` as $`x \to p`, and write $$`\lim_{x \to p} f(x) = L.`
 :::
 
-`Filter.Tendsto f (nhdsWithin p {p}ᶜ) (nhds L)` is the filter-language version: "the image of any neighborhood of $`p` *minus the point $`p` itself* eventually lands in any neighborhood of $`L`."
-The shorthand `nhdsWithin p {p}ᶜ` is `nhds p ⊓ 𝓟 {p}ᶜ`; Mathlib also abbreviates it `𝓝[≠] p` (the "punctured" neighborhood filter).
-
 There is an important point here: in this definition we *deliberately* require that $`x \neq p`.
 
 :::MORAL
@@ -470,9 +403,6 @@ Obviously, because $`f(0)` was made up to be some artificial value that did not 
 :::QUESTION
 Show that a function $`f` is continuous at $`p` if and only if $`\lim_{x \to p} f(x)` exists and equals $`f(p)`.
 :::
-
-The continuous-at-a-point relation in Mathlib is `ContinuousAt f p`, defined as `Filter.Tendsto f (nhds p) (nhds (f p))`.
-The above question is the bridge `tendsto_nhdsWithin_iff` plus the observation that on a neighborhood without `{p}` we always have the value $`f(p)` available too.
 
 :::EXAMPLE "Less trivial example: a rational piecewise function"
 Define the function $`f \colon \mathbb{R} \to \mathbb{R}` as follows: $$`f(x) = \begin{cases} 1 & \text{if } x = 0 \\ \frac{1}{q} & \text{if } x = \frac{p}{q} \text{ where } q > 0 \text{ and } \gcd(p, q) = 1 \\ 0 & \text{if } x \notin \mathbb{Q}. \end{cases}`
@@ -509,9 +439,6 @@ Thus if $`f \colon M \to N` and we want to define $`\lim_{x \to p} f(x)`, we hav
 In other words, $`p` should not be an isolated point.
 :::
 
-The condition "$`p` is not an isolated point" is `¬ IsIsolated p` in Mathlib (or equivalently, the neighborhood-without-$`p` filter is nontrivial, `(nhdsWithin p {p}ᶜ).NeBot`).
-Without this, the punctured-neighborhood filter is the principal filter on the empty set, and *every* `L` would tautologically be a limit — a degenerate case, which is exactly why we exclude isolated points.
-
 As usual, there are no surprises with arithmetic, we have $`\lim_{x \to p}(f(x) \pm g(x)) = \lim_{x \to p} f(x) \pm \lim_{x \to p} g(x)`, and so on and so forth.
 We have effectively done this proof before so we won't repeat it again.
 
@@ -528,14 +455,6 @@ Suppose there exists a real number $`L` such that:
 Then we say $`L` is the *limit* of $`f` as $`x` approaches $`\infty` and write $$`\lim_{x \to \infty} f(x) = L.`
 The limit $`\lim_{x \to -\infty} f(x)` is defined similarly, with $`x > M` replaced by $`x < M`.
 :::
-
-In Mathlib, $`x \to \infty` is encoded by the filter `Filter.atTop` (and dually `atBot` for $`-\infty`); the limit statement above becomes `Filter.Tendsto f Filter.atTop (nhds L)`.
-Crucially, `atTop` and `atBot` are filters on `ℝ` itself, *not* on a one-point extension — so we can keep $`f` typed `ℝ → ℝ` and not have to fight the value of $`f(\infty)`.
-
-```lean
-recall Filter.atTop {α : Type*} [Preorder α] : Filter α :=
-  ⨅ a, Filter.principal (Set.Ici a)
-```
 
 Fortunately, as $`\infty` is not an element of $`\mathbb{R}`, we don't have to do the same antics about $`f(\infty)` like we had to do with "$`f(p)` set arbitrarily".
 So these examples can be more easily written down.
@@ -570,13 +489,6 @@ Let $`-1 < r < 1` be a real number.
 Show that the series $$`1 + r + r^2 + r^3 + \dots` converges absolutely and determine what it converges to.
 :::
 
-The closed form $`1 / (1 - r)` is in Mathlib as `tsum_geometric_of_lt_one` for the nonnegative-base case, and as `tsum_geometric_of_abs_lt_one` for the general real case.
-
-```lean
-recall tsum_geometric_of_lt_one {r : ℝ} (h₁ : 0 ≤ r) (h₂ : r < 1) :
-    ∑' n : ℕ, r ^ n = (1 - r)⁻¹
-```
-
 :::PROBLEM "Alternating series test"
 Let $`a_0 \geq a_1 \geq a_2 \geq a_3 \geq \dots` be a weakly decreasing sequence of nonnegative real numbers, and assume that $`\lim_{n \to \infty} a_n = 0`.
 Show that the series $`\sum_n (-1)^n a_n` is convergent (it need not be absolutely convergent).
@@ -599,3 +511,208 @@ Consider again the function $`f \colon \mathbb{R} \to \mathbb{R}` in the rationa
 For every real number $`c`, compute $`\lim_{x \to c} f(x)`, if it exists.
 At which points is $`f` continuous?
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Completeness and inf/sup
+
+Mathlib registers completeness as the `CompleteSpace ℝ` instance — every `CauchySeq` in `ℝ` has a limit:
+
+```lean
+recall : CompleteSpace ℝ
+recall cauchySeq_tendsto_of_complete {α : Type*} {β : Type*}
+    [UniformSpace α] [Preorder β] [CompleteSpace α] {u : β → α}
+    (H : CauchySeq u) : ∃ x, Filter.Tendsto u Filter.atTop (nhds x)
+```
+
+Mathlib calls the bound predicates `BddAbove S`, `BddBelow S`, and `Bornology.IsBounded S` (the last one is a metric notion that, on `ℝ`, agrees with `BddAbove S ∧ BddBelow S`).
+
+```lean
+recall BddAbove {α : Type*} [LE α] (s : Set α) : Prop :=
+  (upperBounds s).Nonempty
+```
+
+The "least upper bound" and "greatest lower bound" predicates are `IsLUB s x` and `IsGLB s x`.
+The actual values $`\sup S, \inf S` go through the `ConditionallyCompleteLinearOrder` typeclass that `ℝ` satisfies, and are written `sSup S` and `sInf S` (the lowercase `s` is for "set"; the indexed-family forms are `iSup`, `iInf`).
+The completeness theorem above is the statement `isLUB_csSup` for nonempty bounded-above sets.
+
+```lean
+recall isLUB_csSup {α : Type*} [ConditionallyCompleteLattice α]
+    {s : Set α} (ne : s.Nonempty) (H : BddAbove s) : IsLUB s (sSup s)
+```
+
+The convention $`\sup S = +\infty` is one of the more controversial design choices: on `ℝ` (a `ConditionallyCompleteLinearOrder` but not a complete lattice), `sSup ∅ = 0` and `sSup s = 0` for `¬BddAbove s`.
+To get $`+\infty` you cast into `ℝ≥0∞` (`ENNReal`) or work in `EReal`, where `sSup` is genuinely well-behaved on every set.
+
+The sequence forms $`\sup_n a_n`, $`\inf_n a_n` are `iSup` and `iInf` indexed by `ℕ`: `⨆ n, a n` and `⨅ n, a n` (the `\Sup` and `\Inf` symbols, both Unicode); they unfold to `sSup` of the range of the sequence.
+
+The example $`\sup [0,1] = 1` is `csSup_Icc`.
+Fill in the proof that the supremum of the closed unit interval is $`1`.
+
+```lean
+example : sSup (Set.Icc (0 : ℝ) 1) = 1 := by
+  sorry
+```
+
+## Proofs of the two key completeness properties
+
+Mathlib doesn't define `ℝ` via Dedekind cuts.
+The route taken in `Mathlib.Data.Real.Basic` is the *Cauchy completion of $`\mathbb{Q}`* — `Real` is a quotient of `CauSeq abs ℚ` by the relation "their difference tends to zero."
+This makes the arithmetic operations very direct (term-by-term on representatives) at the cost of having to prove the supremum existence after the fact rather than as the definition.
+Either construction lands at the same total order, the same field operations, and the same `CompleteSpace` instance — and Mathlib provides interconverting API.
+
+The two halves of the "least upper bound" property are `le_csSup` (the supremum is an upper bound) and `csSup_le` (it is the least one).
+
+```lean
+example (s : Set ℝ) (hbdd : BddAbove s) (x : ℝ) (hx : x ∈ s) :
+    x ≤ sSup s := le_csSup hbdd hx
+```
+
+Prove the dual half: any upper bound of a nonempty set dominates its supremum.
+
+```lean
+example (s : Set ℝ) (hne : s.Nonempty) (b : ℝ) (hb : b ∈ upperBounds s) :
+    sSup s ≤ b := by
+  sorry
+```
+
+## Monotonic sequences
+
+`Monotone f` and `Antitone f` are the Mathlib predicates for non-decreasing and non-increasing functions; for a sequence `f : ℕ → ℝ`, "monotonic" in the book's sense is `Monotone f ∨ Antitone f`.
+There are also strict variants `StrictMono` and `StrictAnti`.
+
+```lean
+recall Monotone {α β : Type*} [Preorder α] [Preorder β] (f : α → β) : Prop :=
+  ∀ ⦃a b⦄, a ≤ b → f a ≤ f b
+```
+
+The lemmas witnessing that monotonic bounded sequences converge are `tendsto_atTop_ciSup` and `tendsto_atTop_ciInf`, each requiring the relevant boundedness.
+Both implicitly use `ℝ`'s `ConditionallyCompleteLinearOrder` structure to take the sup/inf.
+For limsup and liminf, Mathlib's `Filter.limsup` and `Filter.liminf` generalize the definition to a sequence indexed by an arbitrary filter; for ordinary sequences in `ℝ` we want `Filter.limsup u Filter.atTop` and similarly for `liminf`.
+The output lives in `ℝ` only when the sequence is bounded both above and below; otherwise Mathlib's preference is to land in `EReal` (or the appropriate `Conditionally…CompleteLinearOrder` extension).
+
+The mandatory exercise was that a weakly decreasing sequence of nonnegatives converges.
+Show that an antitone sequence bounded below by $`0` has a limit, using `tendsto_atTop_ciInf`.
+
+```lean
+example (a : ℕ → ℝ) (hanti : Antitone a) (hnonneg : ∀ n, 0 ≤ a n) :
+    ∃ L, Filter.Tendsto a Filter.atTop (nhds L) := by
+  sorry
+```
+
+## Infinite series
+
+`HasSum f L` is Mathlib's spelling: the net of finite partial sums converges to `L`. `Summable f` says some such `L` exists, and `tsum f` (notation `∑' i, f i`) returns it (or `0` if the series doesn't converge — Mathlib makes the `tsum` total at the cost of a junk default).
+
+`HasSum f a` is short for: the net of finite partial sums indexed by the directed set of `Finset β`, ordered by inclusion, tends to `a` in the topology on `α`.
+Its default uses *all* finite subsets, not just initial segments — this gives the right notion for unordered sums (and matches Mathlib's preference for index types that aren't linearly ordered, like `ℕ × ℕ` for double series).
+For real-valued sequences indexed by `ℕ`, this coincides with the "partial sums of $`a_1, \dots, a_n`" picture exactly when the series is *unconditionally* summable — see the next section for why that matters.
+
+Concretely, a `Summable` real sequence has its partial sums over `Finset.range n` tending to the `tsum`, recovering the calculus picture.
+
+```lean
+example (f : ℕ → ℝ) (hf : Summable f) :
+    Filter.Tendsto (fun n => ∑ i ∈ Finset.range n, f i) Filter.atTop
+      (nhds (∑' i, f i)) :=
+  hf.hasSum.tendsto_sum_nat
+```
+
+The Mathlib repackaging of the boundedness criterion is `summable_iff_cauchySeq_finset` for the general case, and for nonnegative reals indexed by `ℕ`, `summable_iff_not_tendsto_nat_atTop` cleanly says: a nonnegative series is summable iff its partial sums don't diverge to `⊤`.
+
+The harmonic series $`\sum_k \frac{1}{k}` diverges; its Mathlib witness is `Real.not_summable_one_div_natCast`.
+Restate this as non-summability.
+
+```lean
+example : ¬ Summable (fun n : ℕ => 1 / (n : ℝ)) := by
+  sorry
+```
+
+## Series addition is not commutative: a horror story
+
+Mathlib's named predicate for absolute convergence is `Summable (fun k => ‖a k‖)`, with a wrapping abbreviation `Summable.abs` (and dually `Summable.norm` for normed spaces).
+Importantly, `HasSum` itself is the *unconditional* notion (it sums over all finite subsets, not initial segments), so `Summable f` actually already implies permutation-invariance over `ℕ`.
+That's why the conditional / absolute distinction has to be reintroduced explicitly when one wants to talk about the sequence-of-partial-sums presentation familiar from calculus.
+
+The unconditional design is precisely a reaction to the Riemann rearrangement horror story: conditional convergence is order-dependent and doesn't compose well with operations that don't respect order (transposing a double series, summing over `ℤ` instead of `ℕ`, …).
+Because `Summable` is unconditional, precomposing with any bijection of the index set preserves it.
+
+```lean
+example (f : ℕ → ℝ) (e : ℕ ≃ ℕ) (h : Summable f) : Summable (f ∘ e) :=
+  h.comp_injective e.injective
+```
+
+The proposition "absolute convergence implies convergence" is `Summable.of_abs`.
+Prove it: if the series of absolute values is summable, so is the original.
+
+```lean
+example (f : ℕ → ℝ) (h : Summable (fun k => |f k|)) : Summable f := by
+  sorry
+```
+
+## Limits of functions at points
+
+`Filter.Tendsto f (nhdsWithin p {p}ᶜ) (nhds L)` is the filter-language version: "the image of any neighborhood of $`p` *minus the point $`p` itself* eventually lands in any neighborhood of $`L`."
+The shorthand `nhdsWithin p {p}ᶜ` is `nhds p ⊓ 𝓟 {p}ᶜ`; Mathlib also abbreviates it `𝓝[≠] p` (the "punctured" neighborhood filter).
+
+The continuous-at-a-point relation is `ContinuousAt f p`, defined as `Filter.Tendsto f (nhds p) (nhds (f p))` — so this identification is definitional.
+
+```lean
+example (f : ℝ → ℝ) (p : ℝ) :
+    ContinuousAt f p ↔ Filter.Tendsto f (nhds p) (nhds (f p)) := Iff.rfl
+```
+
+The requirement that $`p` is not an isolated point has no single predicate named for it; it is captured by asking the punctured-neighborhood filter to be nontrivial, `(nhdsWithin p {p}ᶜ).NeBot`.
+Without this, the punctured-neighborhood filter is the principal filter on the empty set, and *every* `L` would tautologically be a limit — a degenerate case, which is exactly why we exclude isolated points.
+
+The chapter's question asked you to bridge continuity and limits.
+Show that $`f` is continuous at $`p` exactly when it tends to $`f(p)` along the punctured neighborhood; `continuousWithinAt_compl_self` does the work.
+
+```lean
+example (f : ℝ → ℝ) (p : ℝ) :
+    ContinuousAt f p ↔ Filter.Tendsto f (nhdsWithin p {p}ᶜ) (nhds (f p)) := by
+  sorry
+```
+
+## Limits of functions at infinity
+
+The limit $`x \to \infty` is encoded by the filter `Filter.atTop` (and dually `atBot` for $`-\infty`); the limit statement becomes `Filter.Tendsto f Filter.atTop (nhds L)`.
+Crucially, `atTop` and `atBot` are filters on `ℝ` itself, *not* on a one-point extension — so we can keep $`f` typed `ℝ → ℝ` and not have to fight the value of $`f(\infty)`.
+
+```lean
+recall Filter.atTop {α : Type*} [Preorder α] : Filter α :=
+  ⨅ a, Filter.principal (Set.Ici a)
+```
+
+The example $`\lim_{x \to \infty} 1/x = 0` becomes a `Tendsto` claim along `atTop`; `tendsto_inv_atTop_zero` is the key.
+
+```lean
+example : Filter.Tendsto (fun x : ℝ => 1 / x) Filter.atTop (nhds 0) := by
+  sorry
+```
+
+## Problems
+
+The closed form $`1 / (1 - r)` for the geometric series is in Mathlib as `tsum_geometric_of_lt_one` for the nonnegative-base case, and as `tsum_geometric_of_abs_lt_one` for the general real case.
+
+```lean
+recall tsum_geometric_of_lt_one {r : ℝ} (h₁ : 0 ≤ r) (h₂ : r < 1) :
+    ∑' n : ℕ, r ^ n = (1 - r)⁻¹
+```
+
+For the geometric series problem, evaluate the sum for any $`|r| < 1` using the general lemma.
+
+```lean
+example (r : ℝ) (h : |r| < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ := by
+  sorry
+```
+
+For the comparison test, use `Summable.of_nonneg_of_le`: a nonnegative series dominated term-by-term by a summable one is itself summable.
+
+```lean
+example (a b : ℕ → ℝ) (hb : Summable (fun n => |b n|))
+    (hle : ∀ n, |a n| ≤ |b n|) : Summable (fun n => |a n|) := by
+  sorry
+```

@@ -102,13 +102,6 @@ $$`0 < |h| < \delta \implies \left|\frac{f(z_0 + h) - f(z_0)}{h} - L\right| < \v
 If you like topology, you are encouraged to think of this in terms of open neighborhoods in the complex plane.
 (This is why we require $`U` to be open: it makes it possible to take $`\delta`-neighborhoods in it.)
 
-Mathlib's `HasDerivAt` from the differentiation chapter is parameterized by the scalar field.
-Specializing the field parameter to `ℂ` gives complex differentiability for free — same definition, same combinator API (`HasDerivAt.add`, `HasDerivAt.mul`, `HasDerivAt.comp`), nothing extra to prove on Mathlib's side.
-
-```lean
-example (f : ℂ → ℂ) (f' z : ℂ) : Prop := HasDerivAt f f' z
-```
-
 But note that having a complex derivative is actually much stronger than a real function having a derivative.
 In the real line, $`h` can only approach zero from below and above, and for the limit to exist we need the "left limit" to equal the "right limit".
 But the complex numbers form a *plane*: $`h` can approach zero from many directions, and we need all the limits to be equal.
@@ -128,14 +121,6 @@ The difference quotient $`\overline h / h` depends on the direction of approach:
 If a function $`f \colon U \to \mathbb{C}` is complex differentiable at all the points in its domain it is called *holomorphic*.
 In the special case of a holomorphic function with domain $`U = \mathbb{C}`, we call the function *entire*.{margin}[Sorry, I know the word "holomorphic" sounds so much cooler. I'll try to do things more generally for that sole reason.]
 
-Mathlib's name for "complex-differentiable everywhere on its domain" is `DifferentiableOn ℂ f s`; the entire-function case is just `Differentiable ℂ f`, with no explicit set.
-The name "holomorphic" doesn't appear in Mathlib by design — the parameterized `Differentiable` swallows it.
-
-```lean
-example (f : ℂ → ℂ) : Prop := Differentiable ℂ f
-example (f : ℂ → ℂ) (s : Set ℂ) : Prop := DifferentiableOn ℂ f s
-```
-
 :::EXAMPLE "Examples of holomorphic functions"
 In all the examples below, the derivative of the function is the same as in their real analogues (e.g. the derivative of $`e^z` is $`e^z`).
 
@@ -144,9 +129,6 @@ In all the examples below, the derivative of the function is the same as in thei
 - $`\sin` and $`\cos` are holomorphic when extended to the complex plane by $`\cos z = \frac{e^{iz} + e^{-iz}}{2}` and $`\sin z = \frac{e^{iz} - e^{-iz}}{2i}`.
 - As usual, the sum, product, chain rules and so on apply, and hence *sums, products, nonzero quotients, and compositions of holomorphic functions are also holomorphic*.
 :::
-
-Each of the named examples is a one-liner: `Polynomial.differentiable`, `Complex.differentiable_exp`, `Complex.differentiable_sin`, `Complex.differentiable_cos`.
-The closure properties are `Differentiable.add`, `Differentiable.mul`, `Differentiable.div` (with a nonzero hypothesis), `Differentiable.comp`.
 
 # Contour integrals
 
@@ -166,14 +148,6 @@ $$`\oint_\alpha f(z) \; dz = \int_a^b f(\alpha(t)) \cdot \alpha'(t) \; dt.`
 You can almost think of this as a $`u`-substitution (which is where the $`\alpha'` comes from).
 In particular, it turns out this integral does not depend on how $`\alpha` is "parametrized": a circle given by $`[0, 2\pi] \to \mathbb{C} \colon t \mapsto e^{it}` and another circle given by $`[0, 1] \to \mathbb{C} \colon t \mapsto e^{2\pi i t}` and yet another circle given by $`[0, 1] \to \mathbb{C} \colon t \mapsto e^{2 \pi i t^5}` will all give the same contour integral, because the paths they represent have the same geometric description: "run around the unit circle once".
 
-Mathlib gives this directly as `intervalIntegral` of the integrand `f (α t) * α' t`.
-For the special case of a circle around `c` with radius `R`, parameterized by $`t \mapsto c + Re^{it}`, the wrapper `circleIntegral` and the notation `∮ z in C(c, R), f z` shorthand these.
-
-```lean
-noncomputable example (f : ℂ → ℂ) (c : ℂ) (R : ℝ) : ℂ :=
-  ∮ z in C(c, R), f z
-```
-
 In what follows I try to use $`\alpha` for general contours and $`\gamma` in the special case of loops.
 
 Let's see an example of a contour integral.
@@ -192,8 +166,6 @@ $$`\begin{aligned} \int_0^{2\pi} (e^{it})^m \cdot (i e^{it}) \; dt &= \int_0^{2\
 This is now an elementary calculus question.
 One can see that this equals $`2\pi i` if $`m = -1` and otherwise the integrals vanish.
 :::
-
-This is `circleIntegral.integral_sub_inv_of_mem_ball` in Mathlib (the `m = -1` case, which is what one actually wants); the higher-power cases follow from `Differentiable`'s closure under polynomials and the next theorem.
 
 Let me try to explain why this intuitively ought to be true for $`m = 0`.
 In that case we have $`\oint_\gamma 1 \; dz`.
@@ -270,8 +242,6 @@ Then
 $$`\oint_\gamma f(z) \; dz = 0.`
 :::
 
-`Complex.circleIntegral_eq_zero_of_differentiable_on_off_countable` is the closest single named lemma, but Mathlib's official statement of "loops integrate to zero" is woven into the proof of the Cauchy integral formula in `Mathlib.Analysis.Complex.CauchyIntegral` (since the integral formula immediately implies it for $`f` itself by taking $`a` outside the disk).
-
 :::REMARK "Sanity check"
 This might look surprising considering that we saw $`\oint_\gamma z^{-1} \; dz = 2 \pi i` earlier.
 The subtlety is that $`z^{-1}` is not even defined at $`z = 0`.
@@ -307,9 +277,6 @@ Note that we don't require $`U` to be simply connected, but the reason is pretty
 
 The presence of $`2\pi i`, which you saw earlier in the form $`\oint_{\text{circle}} z^{-1} \; dz`, is no accident.
 In fact, that's the central result we're going to use to prove the result.
-
-This is Mathlib's `Complex.circleIntegral_sub_inv_smul_of_differentiable_on_off_countable` (the long name reflects the most general off-countable-set hypotheses Mathlib has formalized).
-Specialized to a fully-differentiable $`f`, it reads exactly as the formula above, with `(2 * π * I)⁻¹ • ∮ z in C(c, R), (z - a)⁻¹ • f z = f a`.
 
 ::::PROOF
 There are several proofs out there, but I want to give the one that really draws out the power of Cauchy's theorem.
@@ -364,8 +331,6 @@ $$`\left|\oint_{\gamma_\varepsilon} \frac{f(z) - f(a)}{z - a}\right| \leq 2\pi \
 as desired.
 ::::
 
-The $`ML` estimation lemma is `circleIntegral.norm_integral_le_of_norm_le_const` (and friends for general intervals, `intervalIntegral.norm_integral_le_of_norm_le_const`); the bound there is $`M \cdot (b - a)`, which on a circle becomes $`M \cdot 2\pi R`.
-
 # Holomorphic functions are analytic
 
 :::PROTOTYPE
@@ -406,15 +371,6 @@ Over any disk, a holomorphic function is given exactly by a Taylor series.
 :::
 
 This establishes a result we stated at the beginning of the chapter: that a function being complex differentiable once means it is not only infinitely differentiable, but in fact equal to its Taylor series.
-
-Mathlib formalizes this as `DifferentiableOn.analyticOnNhd` (and its whole-space form `Complex.analyticOnNhd_univ_iff_differentiable`).
-Once you know `DifferentiableOn ℂ f s` for an open set `s`, you get `AnalyticOnNhd ℂ f s` — every point of `s` admits a power-series expansion that converges to `f` on a neighborhood — and from that all the corollaries (smoothness, identity theorem, maximum modulus, Liouville…) cascade.
-
-```lean
-example {s : Set ℂ} {f : ℂ → ℂ} (hf : DifferentiableOn ℂ f s) (hs : IsOpen s) :
-    AnalyticOnNhd ℂ f s :=
-  hf.analyticOnNhd hs
-```
 
 :::REMARK
 If you're willing to assume this, you can see why Cauchy-Goursat theorem should be true: assuming
@@ -572,22 +528,16 @@ Suppose that $`|f(z)| < 1000` for all complex numbers $`z`.
 Prove that $`f` is a constant function.
 :::
 
-Liouville's theorem is `Differentiable.apply_eq_apply_of_bounded` in Mathlib: any entire $`f \colon \mathbb{C} \to \mathbb{C}` whose image is bounded takes the same value at every two points, i.e. is constant.
-
 :::PROBLEM "Zeros are isolated"
 An *isolated set* in an open set $`U` in the complex plane is a set of points $`S` such that around each point in $`S`, one can draw an open neighborhood not intersecting any other point of $`S`.
 
 Show that the zero set of any nonzero holomorphic function $`f \colon U \to \mathbb{C}` is an isolated set, unless there exists a nonempty open subset of $`U` on which $`f` is identically zero.
 :::
 
-`AnalyticOnNhd.eqOn_zero_of_preconnected_of_eventuallyEq_zero` and the local version `AnalyticAt.eventually_eq_zero_or_eventually_ne_zero` give the dichotomy: either $`f` vanishes on a neighborhood, or its zeros are locally isolated.
-
 :::PROBLEM "Identity theorem" (chili := 1)
 Let $`f, g \colon U \to \mathbb{C}` be holomorphic, and assume that $`U` is connected.
 Prove that if $`f` and $`g` agree on some open neighborhood, then $`f = g`.
 :::
-
-`AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq` packages the identity theorem in Mathlib; the proof is the clopen-set argument from the hint, using that the agreement set is open by power-series equality and closed by isolation of zeros from the previous problem.
 
 :::PROBLEM "Maximums Occur On Boundaries"
 Let $`f \colon U \to \mathbb{C}` be holomorphic, let $`Y \subseteq U` be compact, and let $`\partial Y` be boundary{margin}[The boundary $`\partial Y` is the set of points $`p` such that no open neighborhood of $`p` is contained in $`Y`. It is also a compact set if $`Y` is compact.] of $`Y`.
@@ -596,8 +546,6 @@ $$`\max_{z \in Y} |f(z)| = \max_{z \in \partial Y} |f(z)|.`
 In other words, the maximum values of $`|f|` occur on the boundary.
 (Such maximums exist by compactness.)
 :::
-
-The maximum-modulus principle is `Complex.norm_eqOn_closedBall_of_isMaxOn` and friends in `Mathlib.Analysis.Complex.AbsMax`; the global statement above is `Complex.eqOn_of_isPreconnected_of_isMaxOn_norm` for open connected $`U`.
 
 :::PROBLEM "Harvard quals"
 Let $`f \colon \mathbb{C} \to \mathbb{C}` be a nonconstant entire function.
@@ -610,5 +558,121 @@ Let $`U` be open, $`p \in U`, and $`f \colon U \setminus \{p\} \to \mathbb{C}` b
 Suppose $`f` is bounded.
 Show that $`\lim_{z \to p} f(z)` exists, and the extension $`f \colon U \to \mathbb{C}` is holomorphic at $`p`.
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Complex differentiation
+
+Mathlib's `HasDerivAt` from the differentiation chapter is parameterized by the scalar field.
+Specializing the field parameter to `ℂ` gives complex differentiability for free — same definition, same combinator API (`HasDerivAt.add`, `HasDerivAt.mul`, `HasDerivAt.comp`), nothing extra to prove on Mathlib's side.
+
+```lean
+example (f : ℂ → ℂ) (f' z : ℂ) : Prop := HasDerivAt f f' z
+```
+
+Mathlib's name for "complex-differentiable everywhere on its domain" is `DifferentiableOn ℂ f s`; the entire-function case is just `Differentiable ℂ f`, with no explicit set.
+The name "holomorphic" doesn't appear in Mathlib by design — the parameterized `Differentiable` swallows it.
+
+```lean
+example (f : ℂ → ℂ) : Prop := Differentiable ℂ f
+example (f : ℂ → ℂ) (s : Set ℂ) : Prop := DifferentiableOn ℂ f s
+```
+
+Each of the named examples is a one-liner: `Polynomial.differentiable`, `Complex.differentiable_exp`, `Complex.differentiable_sin`, `Complex.differentiable_cos`.
+The closure properties are `Differentiable.add`, `Differentiable.mul`, `Differentiable.div` (with a nonzero hypothesis), `Differentiable.comp`.
+
+```lean
+example : Differentiable ℂ Complex.exp := Complex.differentiable_exp
+```
+
+The first bullet of the examples box claimed that any polynomial is holomorphic.
+Confirm it for a concrete one by chaining the closure properties (`fun_prop` will discharge it).
+
+```lean
+example : Differentiable ℂ (fun z : ℂ => z ^ 3 + 2 * z + 1) := by
+  sorry
+```
+
+## Contour integrals
+
+Mathlib gives this directly as `intervalIntegral` of the integrand `f (α t) * α' t`.
+For the special case of a circle around `c` with radius `R`, parameterized by $`t \mapsto c + Re^{it}`, the wrapper `circleIntegral` and the notation `∮ z in C(c, R), f z` shorthand these.
+
+```lean
+noncomputable example (f : ℂ → ℂ) (c : ℂ) (R : ℝ) : ℂ :=
+  ∮ z in C(c, R), f z
+```
+
+The computation $`\oint_\gamma z^m \; dz` is `circleIntegral.integral_sub_inv_of_mem_ball` in Mathlib (the $`m = -1` case, which is what one actually wants); the higher-power cases follow from `Differentiable`'s closure under polynomials and the next theorem.
+Prove the headline instance: around the unit circle, $`\oint_\gamma z^{-1} \; dz = 2\pi i`.
+
+```lean
+example : (∮ z in C((0 : ℂ), 1), (z - (0 : ℂ))⁻¹) = 2 * Real.pi * Complex.I :=
+  by sorry
+```
+
+## Cauchy-Goursat theorem
+
+`Complex.circleIntegral_eq_zero_of_differentiable_on_off_countable` is the closest single named lemma, but Mathlib's official statement of "loops integrate to zero" is woven into the proof of the Cauchy integral formula in `Mathlib.Analysis.Complex.CauchyIntegral` (since the integral formula immediately implies it for $`f` itself by taking $`a` outside the disk).
+The theorem, specialized to an entire $`f`, says a circle contour integral vanishes.
+
+```lean
+example (f : ℂ → ℂ) (hf : Differentiable ℂ f) (c : ℂ) (R : ℝ) (hR : 0 ≤ R) :
+    (∮ z in C(c, R), f z) = 0 := by
+  sorry
+```
+
+## Cauchy's integral theorem
+
+Cauchy's integral formula is Mathlib's `Complex.circleIntegral_sub_inv_smul_of_differentiable_on_off_countable` (the long name reflects the most general off-countable-set hypotheses Mathlib has formalized).
+Specialized to a fully-differentiable $`f`, it reads exactly as the formula above, with `(2 * π * I)⁻¹ • ∮ z in C(c, R), (z - a)⁻¹ • f z = f a`.
+
+The $`ML` estimation lemma is `circleIntegral.norm_integral_le_of_norm_le_const` (and friends for general intervals, `intervalIntegral.norm_integral_le_of_norm_le_const`); the bound there is $`M \cdot (b - a)`, which on a circle becomes $`M \cdot 2\pi R`.
+State the $`ML` bound: if $`\|f\| \leq C` on the circle, then the contour integral is bounded by $`2\pi R \cdot C`.
+
+```lean
+example (f : ℂ → ℂ) (c : ℂ) (R C : ℝ) (hR : 0 ≤ R)
+    (hf : ∀ z ∈ Metric.sphere c R, ‖f z‖ ≤ C) :
+    ‖∮ z in C(c, R), f z‖ ≤ 2 * Real.pi * R * C := by
+  sorry
+```
+
+## Holomorphic functions are analytic
+
+Mathlib formalizes this as `DifferentiableOn.analyticOnNhd` (and its whole-space form `Complex.analyticOnNhd_univ_iff_differentiable`).
+Once you know `DifferentiableOn ℂ f s` for an open set `s`, you get `AnalyticOnNhd ℂ f s` — every point of `s` admits a power-series expansion that converges to `f` on a neighborhood — and from that all the corollaries (smoothness, identity theorem, maximum modulus, Liouville…) cascade.
+
+```lean
+example {s : Set ℂ} {f : ℂ → ℂ} (hf : DifferentiableOn ℂ f s) (hs : IsOpen s) :
+    AnalyticOnNhd ℂ f s :=
+  hf.analyticOnNhd hs
+```
+
+Specialize to an entire function: differentiability on all of $`\mathbb{C}` makes it analytic everywhere.
+
+```lean
+example (f : ℂ → ℂ) (hf : Differentiable ℂ f) : AnalyticOnNhd ℂ f Set.univ := by
+  sorry
+```
+
+## Problems
+
+Liouville's theorem is `Differentiable.apply_eq_apply_of_bounded` in Mathlib: any entire $`f \colon \mathbb{C} \to \mathbb{C}` whose image is bounded takes the same value at every two points, i.e. is constant.
+Prove the first problem: a bounded entire function agrees at any two points.
+
+```lean
+example (f : ℂ → ℂ) (hf : Differentiable ℂ f)
+    (hb : Bornology.IsBounded (Set.range f)) (z w : ℂ) : f z = f w := by
+  sorry
+```
+
+`AnalyticOnNhd.eqOn_zero_of_preconnected_of_eventuallyEq_zero` and the local version `AnalyticAt.eventually_eq_zero_or_eventually_ne_zero` give the "zeros are isolated" dichotomy: either $`f` vanishes on a neighborhood, or its zeros are locally isolated.
+
+`AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq` packages the identity theorem in Mathlib; the proof is the clopen-set argument from the hint, using that the agreement set is open by power-series equality and closed by isolation of zeros from the previous problem.
+
+The maximum-modulus principle is `Complex.norm_eqOn_closedBall_of_isMaxOn` and friends in `Mathlib.Analysis.Complex.AbsMax`; the global statement is `Complex.eqOn_of_isPreconnected_of_isMaxOn_norm` for open connected $`U`.
 
 `Complex.differentiableOn_update_limUnder_of_bddAbove` is Mathlib's "Riemann removable singularity": a bounded holomorphic function on the punctured neighborhood extends holomorphically to the puncture, with the extension's value being the limit.

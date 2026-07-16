@@ -1,6 +1,8 @@
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 import Mathlib.Analysis.Complex.CauchyIntegral
+import Mathlib.Analysis.Complex.CoveringMap
+import Mathlib.Analysis.Complex.BranchLogRoot
 import VersoManual
 
 import Napkin.Meta
@@ -147,9 +149,6 @@ $$`\frac{1}{2\pi i} \oint_\gamma \frac{f'}{f} \; dz \in n\mathbb{Z}`
 for every contour $`\gamma` in $`U`.
 :::
 
-Mathlib doesn't have this exact "nth root exists iff" packaged as a single named theorem, but the components are there: the logarithmic-derivative integral side is the argument-principle machinery from the previous chapter, and the lifting side is `IsCoveringMap.existsUnique_continuousMap_lifts` for the covering map $`(-)^n \colon \mathbb{C}^* \to \mathbb{C}^*`.
-Composing the two recovers the theorem above as a one-page argument in Lean.
-
 # Complex logarithms
 
 The multivalued nature of the complex logarithm comes from the fact that
@@ -175,9 +174,6 @@ Then $`f` has a logarithm if and only if
 $$`\frac{1}{2\pi i} \oint_\gamma \frac{f'}{f} \; dz = 0`
 for every contour $`\gamma` in $`U`.
 :::
-
-Mathlib proves the universal-cover side as `Complex.isCoveringMap_exp`, and covering-space lifting (`IsCoveringMap.existsUnique_continuousMap_lifts`) supplies the lift over a simply-connected domain; Mathlib does not, however, package the resulting "holomorphic log exists" conclusion under a single named theorem.
-Once you have such a log, `Complex.exp_log` round-trips it back to the original nonvanishing function.
 
 # Some special cases
 
@@ -210,17 +206,6 @@ The *principal branch* is the "canonical" branch, analogous to the way we arbitr
 For $`\log`, we take the $`w` such that $`e^w = z` and the imaginary part of $`w` lies in $`(-\pi, \pi]` (since we can shift by integer multiples of $`2\pi i`).
 Often, authors will write $`\operatorname{Log} z` to emphasize this choice.
 
-`Complex.log` is exactly the principal-branch holomorphic logarithm.
-Mathlib defines it directly as `Complex.log z = Real.log ‖z‖ + Complex.arg z * Complex.I` — manifestly the principal branch with imaginary part in $`(-\pi, \pi]`, total on `ℂ` with the junk value `Real.log 0 = 0` at the origin.
-The associated derivative `Complex.deriv_log` gives $`(\log z)' = 1/z` on the slit plane, and `Complex.exp_log` round-trips for nonzero inputs.
-
-```lean
-recall Complex.log (z : ℂ) : ℂ
-recall Complex.exp_log {z : ℂ} (hz : z ≠ 0) : Complex.exp (Complex.log z) = z
-```
-
-The branch-cut domain `ℂ \ (-∞, 0]` shows up as `Complex.slitPlane`, with `Complex.differentiableAt_log` registering that the principal log is holomorphic at every point of it (and not at the cut, where the imaginary part jumps from $`\pi` to $`-\pi`).
-
 # Problems
 
 :::PROBLEM
@@ -230,3 +215,82 @@ Show that a holomorphic function $`f \colon U \to \mathbb{C}` has a holomorphic 
 :::PROBLEM
 Show that the function $`f \colon U \to \mathbb{C}` by $`z \mapsto z(z - 1)` has a holomorphic square root, where $`U` is the entire complex plane minus the closed interval $`[0, 1]`.
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Square roots of holomorphic functions
+
+The "make it up as you go" fudging of square roots is the lifting problem for the squaring map on the punctured plane.
+More generally, the $`n`th power map $`(-)^n \colon \mathbb{C}^* \to \mathbb{C}^*` is a covering map, and Mathlib records exactly this.
+
+```lean
+example (n : ℕ) (hn : (n : ℂ) ≠ 0) :
+    IsCoveringMapOn (fun x : ℂ => x ^ n) {0}ᶜ :=
+  isCoveringMapOn_npow n hn
+```
+
+## Covering projections
+
+The existence of holomorphic $`n`th roots is not packaged as one named theorem, but its two halves are both in Mathlib: the logarithmic-derivative integral is the argument-principle machinery from the previous chapter, and the lifting is `IsCoveringMap.existsUnique_continuousMap_lifts` applied to the covering map $`(-)^n \colon \mathbb{C}^* \to \mathbb{C}^*`.
+Composing the two recovers the theorem above.
+
+The question about the image of $`p` being $`2\mathbb{Z}` is, once we identify $`\pi_1(\mathbb{C}^*)` with $`\mathbb{Z}`, the statement that the doubling map on $`\mathbb{Z}` has the even integers as its image.
+
+```lean
+example : Set.range (fun k : ℤ => 2 * k) = {n : ℤ | Even n} := by
+  sorry
+```
+
+## Complex logarithms
+
+The map $`\exp \colon \mathbb{C} \to \mathbb{C}^*` is a covering map, and covering-space lifting (`IsCoveringMap.existsUnique_continuousMap_lifts`) supplies a lift over a simply-connected domain.
+Mathlib packages the resulting *continuous* branch of a logarithm as `Complex.exists_continuousOn_eqOn_exp_comp`: on an open simply-connected set where a continuous zero-free function is defined, there is a continuous $`f` with $`\exp \circ f = g`.
+It does not, however, strengthen this to a holomorphic branch under a single named theorem.
+
+```lean
+example : IsCoveringMapOn Complex.exp {0}ᶜ := Complex.isCoveringMapOn_exp
+
+example {X : Type*} [TopologicalSpace X] [LocPathConnectedSpace X] {U : Set X}
+    (hUc : IsSimplyConnected U) (hUo : IsOpen U) {g : X → ℂ}
+    (hgc : ContinuousOn g U) (hU₀ : (0 : ℂ) ∉ g '' U) :
+    ∃ f : X → ℂ, ContinuousOn f U ∧ Set.EqOn (Complex.exp ∘ f) g U :=
+  Complex.exists_continuousOn_eqOn_exp_comp hUc hUo hgc hU₀
+```
+
+The question asked why a function with a zero can have no logarithm.
+Since $`\exp` is never zero, a $`g` with $`\exp(g(z)) = f(z)` forces $`f` to be zero-free.
+
+```lean
+example (f g : ℂ → ℂ) (z₀ : ℂ) (hfg : ∀ z, Complex.exp (g z) = f z)
+    (hz : f z₀ = 0) : False := by
+  sorry
+```
+
+## Some special cases
+
+`Complex.log` is the principal-branch logarithm, defined directly as `Complex.log z = Real.log ‖z‖ + Complex.arg z * Complex.I`, so its imaginary part lies in $`(-\pi, \pi]`; it is total on $`\mathbb{C}`, with the junk value `Real.log 0 = 0` at the origin.
+For nonzero inputs `Complex.exp_log` round-trips it back.
+
+```lean
+recall Complex.log (z : ℂ) : ℂ
+recall Complex.exp_log {z : ℂ} (hz : z ≠ 0) : Complex.exp (Complex.log z) = z
+```
+
+The branch-cut domain $`\mathbb{C} \setminus (-\infty, 0]` is `Complex.slitPlane`, and the principal log is holomorphic at every one of its points (and not at the cut, where the imaginary part jumps from $`\pi` to $`-\pi`).
+
+```lean
+example (z : ℂ) (hz : z ∈ Complex.slitPlane) :
+    DifferentiableAt ℂ Complex.log z :=
+  Complex.differentiableAt_log hz
+```
+
+On the slit plane the principal log has the derivative $`(\log z)' = 1/z` you would expect.
+Prove it from the packaged derivative.
+
+```lean
+example (z : ℂ) (hz : z ∈ Complex.slitPlane) : deriv Complex.log z = z⁻¹ := by
+  sorry
+```

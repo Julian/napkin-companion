@@ -7,6 +7,9 @@ import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+import Mathlib.Topology.EMetricSpace.Lipschitz
+import Mathlib.Topology.Instances.Real.Lemmas
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -40,14 +43,6 @@ We say that $`f` is *uniformly continuous* if for all $`\varepsilon > 0` there e
 $$`d_M(p, q) < \delta \implies d_N(f(p), f(q)) < \varepsilon.`
 :::
 
-`UniformContinuous f` is Mathlib's predicate, defined slightly more generally — for `f` between *uniform spaces* — but it specializes to the metric definition above on `MetricSpace M` and `MetricSpace N` (`Metric.uniformContinuous_iff`).
-
-```lean
-example (f : ℝ → ℝ) : UniformContinuous f ↔
-    ∀ ε > 0, ∃ δ > 0, ∀ x y, dist x y < δ → dist (f x) (f y) < ε :=
-  Metric.uniformContinuous_iff
-```
-
 This difference is that given an $`\varepsilon > 0` we must specify a $`\delta > 0` which works for *every* choice $`p` and $`q` of inputs; whereas usually $`\delta` is allowed to depend on $`p` and $`q`.
 (Also, this definition can't be ported to a general topological space.)
 
@@ -79,7 +74,6 @@ Since the $`q_{i_n}` is within $`1/i_n` of $`p_{i_n}`, it ought to converge as w
 Then the sequences $`f(p_{i_n})` and $`f(q_{i_n})` should both converge to $`f(x) : N`, but this is impossible as they are always more than $`\varepsilon` away from each other.
 :::
 
-`CompactSpace.uniformContinuous_of_continuous` packages exactly this in Mathlib.
 This means for example that $`x^2` viewed as a continuous function $`[0, 1] \to \mathbb{R}` is automatically uniformly continuous.
 Man, isn't compactness great?
 
@@ -95,15 +89,10 @@ Let $`S` be a subset (or subspace) of a topological space $`X`.
 Then we say that $`S` is *dense* if every open subset of $`X` contains a point of $`S`.
 :::
 
-`Dense s` in Mathlib is the equivalent statement "`s.closure = univ`", or pointwise "`∀ x, x ∈ closure s`".
-The two-set form ("`s ⊆ t` and `t ⊆ closure s`") is `DenseRange` for ranges of functions.
-
 :::EXAMPLE "Dense sets"
 - $`\mathbb{Q}` is dense in $`\mathbb{R}`.
 - In general, any metric space $`M` is dense in its completion $`\overline{M}`.
 :::
-
-`Rat.denseRange_cast : DenseRange ((↑) : ℚ → ℝ)` is the first; the abstract completion comes with `UniformSpace.Completion.denseRange_coe` for the second.
 
 Dense sets lend themselves to having functions completed.
 The idea is that if I have a continuous function $`f \colon \mathbb{Q} \to N`, for some metric space $`N`, then there should be *at most* one way to extend it to a function $`\widetilde{f} \colon \mathbb{R} \to N`.
@@ -145,9 +134,6 @@ Prove that $`\psi(x_1), \psi(x_2), \dots` converges in $`N` by using uniform con
 Hence we define $`\widetilde{\psi}(x)` to be the limit of that sequence; this doesn't depend on the choice of sequence, and one can use sequential continuity to show $`\widetilde{\psi}` is continuous.
 ::::
 
-`IsDenseInducing.extend` (and its more uniform variant `UniformSpace.Completion.extension`) realizes this in Mathlib: given a uniformly continuous map out of a dense uniform inducing subspace into a complete uniform space, you get a unique extension.
-The companion lemma `IsDenseInducing.extend_eq_at` says the extension agrees with the original on the dense subset, and `IsDenseInducing.continuous_extend` gives continuity.
-
 # Defining the Riemann integral
 
 Extensions will allow us to define the Riemann integral.
@@ -164,9 +150,6 @@ Let $`[a, b]` be a closed interval.
 
 Warning: only $`C^0([a, b])` is common notation, and the other two are made up.
 
-The continuous-functions space $`C^0([a, b])` is `C(Set.Icc a b, ℝ)` in Mathlib (`ContinuousMap`), or as an `add_subgroup` of all functions, `BoundedContinuousFunction (Set.Icc a b) ℝ`.
-The rectangle functions don't have a Mathlib name — Mathlib jumps directly from continuous functions and step functions to integrable functions in the Lebesgue sense — but `MeasureTheory.SimpleFunc` plays the same role for the Lebesgue construction.
-
 It is irritating that we have to officially assign a single value to each $`t_i`, even though there are naturally two values we want to use, and so we use the convention of letting the left endpoint be closed.
 
 :::figure "figures/calculus/rectangle-function.svg"
@@ -178,7 +161,7 @@ We can impose a metric on $`M([a, b])` by defining
 $$`d(f, g) = \sup_{x \in [a, b]} |f(x) - g(x)|.`
 :::
 
-This is the *sup norm*; on `BoundedContinuousFunction X ℝ` it's the canonical normed-space structure — `BoundedContinuousFunction.norm_def` — and is what makes the space a Banach space when the codomain is complete.
+This is the *sup norm*.
 
 Now, there is a natural notion of integral for rectangle functions: just sum up the obvious rectangles!
 Officially, this is the expression
@@ -213,12 +196,6 @@ Approximating $`f` by a rectangle function whose rectangles touch the graph at t
   Actually this is pretty obvious: if two rectangle functions $`f` and $`g` have $`d(f, g) < \varepsilon`, then $`d(\Sigma f, \Sigma g) < \varepsilon (b - a)`.
 - $`\mathbb{R}` is complete.
 ::::
-
-:::aside "Mathlib's chosen integral"
-Mathlib's `intervalIntegral` (notation `∫ x in a..b, f x`) is built on the *Bochner* integral, the strict generalization of the Lebesgue integral to Banach-valued functions.
-For continuous $`f \colon [a, b] \to \mathbb{R}` it agrees with the Riemann integral above, but it gives sense to integrating much wider classes — measurable, $`L^1`, …
-The Riemann construction in this chapter exists for pedagogy, and to motivate why one would want the Lebesgue/Bochner setup in the next part of the book.
-:::
 
 # Meshes
 
@@ -260,17 +237,6 @@ The idea is that for any choice of partition $`a \leq t_0 < t_1 < t_2 < \dots < 
 The net change of $`f` decomposes into tangent (derivative) contributions at sample points $`\xi_i` chosen by the mean value theorem.
 :::
 
-`intervalIntegral.integral_eq_sub_of_hasDerivAt` is the FTC in Mathlib, and the proof there is the partition-and-MVT argument above.
-Mathlib does not expose a standalone lemma phrasing the integral as a `Tendsto`-style limit of Riemann sums over the filter of mesh-zero partitions; the FTC is derived directly instead.
-
-```lean
-example (f F : ℝ → ℝ) (a b : ℝ)
-    (hF : ∀ x ∈ Set.uIcc a b, HasDerivAt F (f x) x)
-    (hint : IntervalIntegrable f MeasureTheory.volume a b) :
-    ∫ x in a..b, f x = F b - F a :=
-  intervalIntegral.integral_eq_sub_of_hasDerivAt hF hint
-```
-
 One quick note is that although I've only defined the Riemann integral for continuous functions, there ought to be other functions for which it exists (including "piecewise continuous functions" for example, or functions "continuous almost everywhere").
 The relevant definition is:
 
@@ -298,8 +264,6 @@ Let $`f \colon (a, b) \to \mathbb{R}` be differentiable and assume $`f'` is boun
 Show that $`f` is uniformly continuous.
 :::
 
-The Mathlib statement is `LipschitzWith.uniformContinuous` plus the fact that bounded derivative implies Lipschitz (`Convex.lipschitzOnWith_of_nnnorm_deriv_le`), exactly the contrapositive-and-MVT argument the hint suggests.
-
 :::PROBLEM "Fundamental theorem of calculus"
 Let $`f \colon [a, b] \to \mathbb{R}` be continuous, differentiable on $`(a, b)`, and assume the derivative $`f'` extends to a continuous function $`f' \colon [a, b] \to \mathbb{R}`.
 Prove that
@@ -318,3 +282,96 @@ This can intuitively be thought of as the "improper" integral $`\int_0^1 x^{-r} 
 Show that
 $$`\lim_{n \to \infty} \left( \frac{1}{n+1} + \frac{1}{n+2} + \dots + \frac{1}{2n} \right) = \log 2.`
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Uniform continuity
+
+`UniformContinuous f` is Mathlib's predicate, defined slightly more generally — for `f` between *uniform spaces* — but it specializes to the metric definition above on `MetricSpace M` and `MetricSpace N` (`Metric.uniformContinuous_iff`).
+
+```lean
+example (f : ℝ → ℝ) : UniformContinuous f ↔
+    ∀ ε > 0, ∃ δ > 0, ∀ x y, dist x y < δ → dist (f x) (f y) < ε :=
+  Metric.uniformContinuous_iff
+```
+
+`CompactSpace.uniformContinuous_of_continuous` packages exactly the compact case in Mathlib: on a compact metric space, every continuous map is automatically uniformly continuous.
+
+```lean
+example {M N : Type*} [MetricSpace M] [CompactSpace M] [MetricSpace N]
+    (f : M → N) (hf : Continuous f) : UniformContinuous f := by
+  sorry
+```
+
+## Dense sets and extension
+
+`Dense s` in Mathlib is the equivalent statement "`s.closure = univ`", or pointwise "`∀ x, x ∈ closure s`".
+The two-set form ("`s ⊆ t` and `t ⊆ closure s`") is `DenseRange` for ranges of functions.
+`Rat.denseRange_cast : DenseRange ((↑) : ℚ → ℝ)` records that $`\mathbb{Q}` is dense in $`\mathbb{R}`; the abstract completion comes with `UniformSpace.Completion.denseRange_coe`.
+
+`IsDenseInducing.extend` (and its more uniform variant `UniformSpace.Completion.extension`) realizes the extension theorem in Mathlib: given a uniformly continuous map out of a dense uniform inducing subspace into a complete uniform space, you get a unique extension.
+The companion lemma `IsDenseInducing.extend_eq_at` says the extension agrees with the original on the dense subset, and `IsDenseInducing.continuous_extend` gives continuity.
+
+The uniqueness half of that story is that there is *at most one* continuous extension: two continuous functions that agree on the dense subset $`\mathbb{Q}` must be equal.
+Prove it, using density of $`\mathbb{Q}` and `Continuous.ext_on`.
+
+```lean
+example (f g : ℝ → ℝ) (hf : Continuous f) (hg : Continuous g)
+    (h : ∀ q : ℚ, f q = g q) : f = g := by
+  sorry
+```
+
+## Defining the Riemann integral
+
+The continuous-functions space $`C^0([a, b])` is `C(Set.Icc a b, ℝ)` in Mathlib (`ContinuousMap`), or as an `add_subgroup` of all functions, `BoundedContinuousFunction (Set.Icc a b) ℝ`.
+The rectangle functions don't have a Mathlib name — Mathlib jumps directly from continuous functions and step functions to integrable functions in the Lebesgue sense — but `MeasureTheory.SimpleFunc` plays the same role for the Lebesgue construction.
+On `BoundedContinuousFunction X ℝ` the sup metric is the canonical normed-space structure (`BoundedContinuousFunction.norm_def`), which is what makes the space a Banach space when the codomain is complete.
+
+:::aside "Mathlib's chosen integral"
+Mathlib's `intervalIntegral` (notation `∫ x in a..b, f x`) is built on the *Bochner* integral, the strict generalization of the Lebesgue integral to Banach-valued functions.
+For continuous $`f \colon [a, b] \to \mathbb{R}` it agrees with the Riemann integral above, but it gives sense to integrating much wider classes — measurable, $`L^1`, …
+The Riemann construction in this chapter exists for pedagogy, and to motivate why one would want the Lebesgue/Bochner setup in the next part of the book.
+:::
+
+The rectangle-sum functional $`\Sigma` sends a single constant rectangle of height $`c` over $`[a, b]` to its area $`(b - a) c`.
+Confirm the integral does the same on a constant, via `intervalIntegral.integral_const`.
+
+```lean
+example (a b c : ℝ) : ∫ _ in a..b, c = (b - a) • c := by
+  sorry
+```
+
+## Meshes
+
+`intervalIntegral.integral_eq_sub_of_hasDerivAt` is the FTC in Mathlib, and the proof there is the partition-and-MVT argument above.
+Mathlib does not expose a standalone lemma phrasing the integral as a `Tendsto`-style limit of Riemann sums over the filter of mesh-zero partitions; the FTC is derived directly instead.
+
+```lean
+example (f F : ℝ → ℝ) (a b : ℝ)
+    (hF : ∀ x ∈ Set.uIcc a b, HasDerivAt F (f x) x)
+    (hint : IntervalIntegrable f MeasureTheory.volume a b) :
+    ∫ x in a..b, f x = F b - F a :=
+  intervalIntegral.integral_eq_sub_of_hasDerivAt hF hint
+```
+
+The AP-calculus example computed $`\int_1^4 x^2 \; dx = 21` from the antiderivative $`F(x) = \tfrac13 x^3`.
+Check that concrete value; `integral_pow` gives $`\int_a^b x^n \; dx = \frac{b^{n+1} - a^{n+1}}{n + 1}`, and `norm_num` finishes.
+
+```lean
+example : ∫ x in (1 : ℝ)..4, x ^ 2 = 21 := by
+  sorry
+```
+
+## Problems
+
+The first problem — a differentiable function with bounded derivative is uniformly continuous — is the Mathlib statement `LipschitzWith.uniformContinuous` combined with the fact that a bounded derivative implies Lipschitz (`Convex.lipschitzOnWith_of_nnnorm_deriv_le`), exactly the contrapositive-and-MVT argument the hint suggests.
+The final Lipschitz step is short: prove that any Lipschitz function is uniformly continuous.
+
+```lean
+example {M N : Type*} [PseudoMetricSpace M] [PseudoMetricSpace N]
+    (f : M → N) (K : NNReal) (h : LipschitzWith K f) : UniformContinuous f := by
+  sorry
+```

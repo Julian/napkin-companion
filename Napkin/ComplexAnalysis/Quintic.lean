@@ -129,33 +129,16 @@ $$`S_5 = G \supseteq G^{(1)} \supseteq G^{(2)} \supseteq \dots`
 where each group is the commutator subgroup of the next, we want to show that $`G^{(n)}` never becomes trivial.
 This chain is called the *derived series*.
 
-`derivedSeries G : ℕ → Subgroup G` is the Mathlib version, defined recursively with `derivedSeries G 0 = ⊤` and each successive subgroup the commutator of the previous one with itself.
-The commutator subgroup of `G` is `commutator G`, the join of all $`[g, h] = g h g^{-1} h^{-1}` for $`g, h : G`.
-
-```lean
-recall commutator (G : Type*) [Group G] : Subgroup G
-recall derivedSeries (G : Type*) [Group G] : ℕ → Subgroup G
-```
-
 :::EXERCISE
 Show that for the commutator subgroup $`[G, G]` of a group $`G`, we have that $`[G, G] \trianglelefteq G`, and that $`G/[G, G]` is Abelian.
 :::
-
-`commutator_normal G : (commutator G).Normal` is the first half; the second is `commutator_eq_bot_iff_isCommutative` (so that the abelianization $`G/[G, G]` is the universal abelian quotient).
 
 :::DEFINITION
 A group $`G` is *solvable* if its derived series is nontrivial.
 :::
 
-Mathlib spells this `IsSolvable G`, a typeclass on a group whose single field asserts the existence of an `n` with `derivedSeries G n = ⊥`.
-The unfold lemma is `isSolvable_def`.
-
 So all that remains is showing that $`S_5` is not solvable.
 This is a calculation that isn't relevant to the topology ideas in this chapter, so we defer it to the problem at the end.
-
-The corresponding Mathlib statement for the *alternating* group $`A_5` is `alternatingGroup.isSimpleGroup` (specialized to `Fin 5`), which is even stronger: $`A_5` is *simple*.
-A simple group is solvable iff it's abelian, and $`A_5` is plainly nonabelian, so $`A_5` is not solvable; since solvability descends to subgroups, $`S_5` is not solvable either.
-The latter is `Equiv.Perm.not_solvable` in `Mathlib.GroupTheory.Perm.Cycle.Type`.
 
 # Summary
 
@@ -172,4 +155,48 @@ It also allows you to broadly understand what people mean when they compare this
 Show that $`A_5` is not solvable.
 :::
 
-This is precisely the content of `alternatingGroup.isSimpleGroup` (specialized to `Fin 5`) plus the simple-group solvable-iff-abelian lemma `IsSimpleGroup.comm_iff_isSolvable` (in `Mathlib.GroupTheory.Solvable`).
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Step 3: Normal Groups
+
+`derivedSeries G : ℕ → Subgroup G` is the Mathlib version, defined recursively with `derivedSeries G 0 = ⊤` and each successive subgroup the commutator of the previous one with itself.
+The commutator subgroup of `G` is `commutator G`, the join of all $`[g, h] = g h g^{-1} h^{-1}` for $`g, h : G`.
+
+```lean
+recall commutator (G : Type*) [Group G] : Subgroup G
+recall derivedSeries (G : Type*) [Group G] : ℕ → Subgroup G
+```
+
+The exercise asked you to show that the commutator subgroup $`[G, G]` is normal in $`G`, and that the quotient $`G/[G, G]` is Abelian.
+The first half is the instance `Subgroup.commutator_normal`, so it is found automatically.
+
+```lean
+example (G : Type*) [Group G] : (commutator G).Normal := inferInstance
+```
+
+The second half says $`G/[G, G]` is the universal abelian quotient; Mathlib packages it as `Abelianization G` and equips it with a commutative group structure, and `commutator_eq_bot_iff` records that $`[G, G]` is trivial exactly when $`G` is already Abelian.
+Show that the abelianization is Abelian.
+
+```lean
+example (G : Type*) [Group G] (x y : Abelianization G) : x * y = y * x := by
+  sorry
+```
+
+A group is *solvable* when its derived series eventually reaches the trivial subgroup.
+Mathlib spells this `IsSolvable G`, a typeclass on a group whose single field asserts the existence of an `n` with `derivedSeries G n = ⊥`.
+The unfold lemma is `isSolvable_def`.
+
+## Problems
+
+The corresponding Mathlib statement for the *alternating* group $`A_5` is `alternatingGroup.isSimpleGroup` (specialized to `Fin 5`), which is even stronger: $`A_5` is *simple*.
+A simple group is solvable iff it's abelian, and $`A_5` is plainly nonabelian, so $`A_5` is not solvable.
+The bridge is the simple-group solvable-iff-abelian lemma `IsSimpleGroup.comm_iff_isSolvable` (in `Mathlib.GroupTheory.Solvable`).
+Show that $`A_5` is not solvable.
+
+```lean
+example : ¬ IsSolvable (alternatingGroup (Fin 5)) := by
+  sorry
+```

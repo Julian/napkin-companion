@@ -4,6 +4,8 @@ import Napkin.Meta.Recall
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.Analysis.Calculus.Deriv.Abs
 import Mathlib.Analysis.Calculus.Deriv.MeanValue
 import Mathlib.Analysis.Calculus.LocalExtr.Basic
 import Mathlib.Analysis.Calculus.ContDiff.Basic
@@ -41,21 +43,9 @@ The function $`f` is differentiable if it is differentiable at every point.
 In that case, we regard the derivative $`f' \colon (a, b) \to \mathbb{R}` as a function in its own right.
 :::
 
-Mathlib's name for the assertion "$`f` has derivative $`v` at $`x`" is `HasDerivAt f v x`, defined in terms of the more general Fréchet derivative `HasFDerivAt`.
-Conveniently, the total function `deriv f : 𝕜 → F` is also defined: it returns the derivative when one exists, and `0` otherwise.
-(As with `tsum` in the limits chapter, Mathlib favors total functions with junk defaults.) `Differentiable 𝕜 f` is the predicate "differentiable at every point."
-
-```lean
-example (f : ℝ → ℝ) (f' x : ℝ) : Prop := HasDerivAt f f' x
-```
-
-The book's `f' : ℝ → ℝ` is the special case `𝕜 = F = ℝ`; the extra type-class generality is what lets the same `HasDerivAt` serve for vector-valued or complex-valued functions later in the book.
-
 :::EXERCISE
 Show that if $`f` is differentiable at $`p` then it is continuous at $`p` too.
 :::
-
-The continuity-at-point fact is `HasDerivAt.continuousAt` — exactly the statement of the exercise.
 
 Here is the picture.
 Suppose $`f \colon \mathbb{R} \to \mathbb{R}` is differentiable (hence continuous).
@@ -79,9 +69,6 @@ This is important.
 If $`f \colon [a, b] \to \mathbb{R}` for example, we could still define the derivative at each interior point, but $`f'(a)` no longer makes sense since $`f` is not given a value on any open neighborhood of $`a`.
 :::
 
-Mathlib has a parallel notion `derivWithin f s x` for the derivative of $`f` constrained to take values in a set $`s` near $`x`; this is what one uses to talk about "differentiable on a closed interval", with the understanding that at the endpoints we use a one-sided derivative.
-The chapter's "open interval only" stance is simpler and we'll follow it.
-
 Let's do one computation and get on with this.
 
 :::EXAMPLE "Derivative of $`x^3` is $`3x^2`"
@@ -102,10 +89,6 @@ If $`f` is a function from real life, the units do not even match!
 This convention is so deeply entrenched I cannot uproot it without more confusion than it is worth.
 But if you read the chapters on multivariable calculus you will see how it comes back to bite us, when I need to re-define the derivative to be a *linear map*, rather than a single real number.
 :::
-
-Mathlib bites the bullet on the multivariable issue from the start: the "real" derivative is `fderiv 𝕜 f x : E →L[𝕜] F`, the Fréchet derivative, which is a *continuous linear map*.
-The single-real-number `deriv` (for functions of one real or complex variable) is the value that linear map takes at `1`.
-Reading `deriv f p` as "the slope at `p`" matches the book's convention once you know what `fderiv` is being collapsed to.
 
 # How to compute them
 
@@ -134,23 +117,9 @@ In what follows $`f` and $`g` are differentiable functions, and $`U`, $`V` are o
   This was the desired result.
 :::
 
-These show up as `HasDerivAt.add`, `HasDerivAt.mul`, and `HasDerivAt.comp` in Mathlib.
-Each takes hypotheses about each factor's derivative and produces the combined statement; the chain rule's `comp` is the most subtle, and Mathlib's proof follows the workaround above (the `Q`-trick).
-
-```lean
-recall HasDerivAt.add {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    {f g : 𝕜 → F} {f' g' : F} {x : 𝕜}
-    (hf : HasDerivAt f f' x) (hg : HasDerivAt g g' x) :
-    HasDerivAt (fun y => f y + g y) (f' + g') x
-```
-
 :::EXERCISE
 Compute the derivative of the polynomial $`f(x) = x^3 + 10x^2 + 2019`, viewed as a function $`f \colon \mathbb{R} \to \mathbb{R}`.
 :::
-
-Two-line in Mathlib via the `Polynomial.hasDerivAt` API, or by chaining `HasDerivAt.add`/`.mul`/`.const`.
-The `simp` tactic also knows the standard rules under the `[deriv_simp]` set.
 
 :::REMARK
 Quick linguistic point: the theorems above all hold at each individual point.
@@ -162,22 +131,12 @@ We only state the latter since that is what is used in practice.
 However, in the rare situations where you have a function differentiable only at certain points of $`U` rather than the whole interval $`U`, you can still use the below.
 :::
 
-Mathlib makes the same distinction: every named rule comes in both an `HasDerivAt`/`HasDerivWithinAt` (point-by-point) form and a `Differentiable` (whole-domain) form, with the latter auto-derived from the former.
-
 We next list some derivatives of well-known functions, but as we do not give rigorous definitions of these functions, we do not prove these here.
 
 :::PROPOSITION "Derivatives of some well-known functions"
 - The exponential function $`\exp \colon \mathbb{R} \to \mathbb{R}` defined by $`\exp(x) = e^x` is its own derivative.
 - The trig functions $`\sin` and $`\cos` have $`\sin' = \cos`, $`\cos' = -\sin`.
 :::
-
-These are first-class facts in Mathlib: `Real.hasDerivAt_exp`, `Real.hasDerivAt_sin`, `Real.hasDerivAt_cos`.
-Mathlib's `Real.exp` is constructed from the power series, which is what makes the self-derivative property a theorem rather than an axiom.
-
-```lean
-example (x : ℝ) : HasDerivAt Real.exp (Real.exp x) x :=
-  Real.hasDerivAt_exp x
-```
 
 :::EXAMPLE "A typical high-school calculus question"
 This means that you can mechanically compute the derivatives of any artificial function obtained by using the above, which makes it a great source of busy work in American high schools and universities.
@@ -211,9 +170,6 @@ The reason we don't prove the formulas for $`e^x` and $`\log x` is that we don't
 However it's nice to know that some things imply the other.
 :::
 
-Mathlib spells these `Real.hasDerivAt_log` and the various `Real.hasDerivAt_rpow_const` (for $`x^r` with $`r` a real).
-Both are corollaries of the chain rule applied to $`\exp` and $`\log` exactly as above — and Mathlib does in fact have rigorous definitions of both, anchored to the Cauchy completion that built `ℝ`.
-
 # Local (and global) maximums
 
 :::PROTOTYPE
@@ -235,22 +191,12 @@ A *local minimum* is defined similarly.
 A point $`p` is a *local extrema* if it satisfies either of these.
 :::
 
-`IsLocalMax f p` and `IsLocalMin f p` are the predicates in `Mathlib.Topology.Order.LocalExtr`, defined neighborhood-filter-style: "on a punctured neighborhood of $`p`, $`f(x) \leq f(p)`."
-
 The nice thing about derivatives is that they pick up all extrema.
 
 :::THEOREM "Fermat's theorem on stationary points"
 Suppose $`f \colon U \to \mathbb{R}` is differentiable and $`p \in U` is a local extrema.
 Then $`f'(p) = 0`.
 :::
-
-`IsLocalMax.deriv_eq_zero` packages exactly this — given a `IsLocalMax f p` hypothesis, `deriv f p = 0`.
-The dual `IsLocalMin.deriv_eq_zero` covers the minimum case.
-
-```lean
-recall IsLocalMax.deriv_eq_zero {f : ℝ → ℝ} {a : ℝ}
-    (h : IsLocalMax f a) : deriv f a = 0
-```
 
 If you draw a picture, this result is not surprising.
 
@@ -275,8 +221,6 @@ The issue is that we seek *global* extrema, which may not even exist: for exampl
 The key to resolving this is to use *compactness*: we change the domain to be a compact set $`Z`, for which we know that $`f` will achieve some global maximum.
 The set $`Z` will naturally have some *interior* $`S`, and calculus will give us all the extrema within $`S`.
 Then we manually check all cases outside $`Z`.
-
-The "compact + continuous ⇒ attains max/min" backbone is `IsCompact.exists_isMaxOn` and friends from `Mathlib.Topology.ContinuousOn`, which the reader has met in the basic-topology chapter on compactness.
 
 Let's see two extended examples.
 The one is simple, and you probably already know about it, but I want to show you how to use compactness to argue thoroughly, and how the "boundary" points naturally show up.
@@ -318,8 +262,6 @@ Otherwise, if it lies in $`U = (-1, 100)` then it would have to satisfy $$`0 = f
 As $`f(-1) > 0`, $`f(100) > 0`, $`f(0) = 0`, we conclude $`p = 0` is the global minimum of $`Z`; and hence $`f(x) \geq 0` for all $`x \in Z`, hence for all $`x`.
 :::
 
-In Mathlib this exact inequality is `Real.add_one_le_exp` (or its strict variant `Real.add_one_lt_exp`); the proof there is the convexity-of-$`\exp` route, but the compactness-and-Fermat sketch above is also fine and is closer to how you'd convince yourself by hand.
-
 :::REMARK
 If you are willing to use limits at $`\pm\infty`, you can rewrite proofs like the above in such a way that you don't have to explicitly come up with endpoints like $`-1` or $`100`.
 We won't do so here, but it's nice food for thought.
@@ -350,9 +292,6 @@ I was going to draw a picture until I realized xkcd #2042 has one already.
 Image from {cite}`img:xkcd_rolles`.
 :::
 
-Mathlib has Rolle as `exists_deriv_eq_zero` (in `Deriv.MeanValue`) and several variants for different smoothness hypotheses.
-The proof there is exactly the sketch above.
-
 One can adapt the theorem as follows.
 
 :::THEOREM "Mean value theorem"
@@ -365,13 +304,6 @@ Pictorially, there is a $`c` such that the tangent at $`c` has the same slope as
 :::figure "figures/calculus/mean-value-theorem.svg"
 A point $`c` where the tangent (red) is parallel to the secant (green) from $`(a, f(a))` to $`(b, f(b))`.
 :::
-
-```lean
-recall exists_hasDerivAt_eq_slope (f f' : ℝ → ℝ) {a b : ℝ}
-    (hab : a < b) (hfc : ContinuousOn f (Set.Icc a b))
-    (hff' : ∀ x ∈ Set.Ioo a b, HasDerivAt f (f' x) x) :
-    ∃ c ∈ Set.Ioo a b, f' c = (f b - f a) / (b - a)
-```
 
 :::PROOF
 Let $`s = \frac{f(b) - f(a)}{b - a}` be the slope of the secant line, and define $$`g(x) = f(x) - sx` which intuitively shears $`f` downwards so that the secant becomes horizontal.
@@ -409,8 +341,6 @@ Then the secant joining $`(0, h(0))` to $`(p, h(p))` has negative slope; in othe
 Part (b) is the same.
 :::
 
-The MVT-based monotonicity statements are `strictMonoOn_of_hasDerivWithinAt_pos` and friends in `Deriv.MeanValue`, building toward the full "$`f' \geq g' \Rightarrow f \geq g + \text{const}`" picture.
-
 Sometimes you will be faced with two functions which you cannot easily decouple; the following form may be more useful in that case.
 
 :::THEOREM "Ratio mean value theorem"
@@ -423,7 +353,6 @@ Use Rolle's theorem on the function $$`h(x) = [f(x) - f(a)][g(b) - g(a)] - [g(x)
 :::
 
 This is also called Cauchy's mean value theorem or the extended mean value theorem.
-Mathlib has it as `exists_ratio_hasDerivAt_eq_ratio_slope`.
 
 # Smooth functions
 
@@ -440,14 +369,6 @@ By convention, $`f^{(0)} = f`.
 A function $`f \colon U \to \mathbb{R}` is *smooth* if it is infinitely differentiable; that is the function $`f^{(n)}` exists for all $`n`.
 :::
 
-`ContDiff 𝕜 ⊤ f` is Mathlib's name for "$`f` is smooth"; the $`n`-times-differentiable variant is `ContDiff 𝕜 n f` for `n : WithTop ℕ∞`.
-Iterated derivatives are `iteratedDeriv n f`, with the same `0`-indexed convention as the book.
-
-```lean
-open scoped ContDiff in
-example (f : ℝ → ℝ) : Prop := ContDiff ℝ (⊤ : ℕ∞ω) f
-```
-
 :::QUESTION
 Show that the absolute value function is not smooth.
 :::
@@ -461,7 +382,6 @@ So this function has every derivative at the origin equal to zero, despite being
 :::
 
 This bump function is the workhorse behind partitions of unity in differential geometry, where the property "every derivative at the join is zero" is exactly what makes the piecewise definition $`C^\infty`.
-Mathlib formalizes a related construction in `Mathlib.Analysis.SpecialFunctions.SmoothTransition` (`Real.smoothTransition`), which uses a quotient of two such exponentials to build a smooth $`[0, 1]`-valued cutoff.
 
 # Problems
 
@@ -494,9 +414,140 @@ Let $`f, g \colon \mathbb{R} \to \mathbb{R}` be differentiable functions and let
 Suppose that $$`\lim_{x \to p} f(x) = \lim_{x \to p} g(x) = 0.` Prove that $$`\lim_{x \to p} \frac{f(x)}{g(x)} = \lim_{x \to p} \frac{f'(x)}{g'(x)}` provided the right-hand limit exists.
 :::
 
-L'Hôpital's rule is in Mathlib as `HasDerivAt.lhopital_zero_atTop` (and several siblings for different limit forms).
-The proof in Mathlib uses the ratio mean value theorem above, applied carefully to control the near-$`p` behavior.
-
 :::PROBLEM
 Calculate the derivative of the function $`f \colon (0, \infty) \to \mathbb{R}` defined by $`f(x) = x^x`.
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Definition
+
+Mathlib's name for the assertion "$`f` has derivative $`v` at $`x`" is `HasDerivAt f v x`, defined in terms of the more general Fréchet derivative `HasFDerivAt`.
+Conveniently, the total function `deriv f : 𝕜 → F` is also defined: it returns the derivative when one exists, and `0` otherwise.
+(As with `tsum` in the limits chapter, Mathlib favors total functions with junk defaults.) `Differentiable 𝕜 f` is the predicate "differentiable at every point."
+
+```lean
+example (f : ℝ → ℝ) (f' x : ℝ) : Prop := HasDerivAt f f' x
+```
+
+The book's `f' : ℝ → ℝ` is the special case `𝕜 = F = ℝ`; the extra type-class generality is what lets the same `HasDerivAt` serve for vector-valued or complex-valued functions later in the book.
+
+Mathlib has a parallel notion `derivWithin f s x` for the derivative of $`f` constrained to take values in a set $`s` near $`x`; this is what one uses to talk about "differentiable on a closed interval", with the understanding that at the endpoints we use a one-sided derivative.
+The chapter's "open interval only" stance is simpler and we'll follow it.
+
+Mathlib bites the bullet on the multivariable issue from the start: the "real" derivative is `fderiv 𝕜 f x : E →L[𝕜] F`, the Fréchet derivative, which is a *continuous linear map*.
+The single-real-number `deriv` (for functions of one real or complex variable) is the value that linear map takes at `1`.
+Reading `deriv f p` as "the slope at `p`" matches the book's convention once you know what `fderiv` is being collapsed to.
+
+The exercise asked you to show that a function differentiable at $`p` is continuous there; the answer is `HasDerivAt.continuousAt`.
+
+```lean
+example (f : ℝ → ℝ) (f' p : ℝ) (h : HasDerivAt f f' p) : ContinuousAt f p := by
+  sorry
+```
+
+## How to compute them
+
+The sum, product, and chain rules show up as `HasDerivAt.add`, `HasDerivAt.mul`, and `HasDerivAt.comp` in Mathlib.
+Each takes hypotheses about each factor's derivative and produces the combined statement; the chain rule's `comp` is the most subtle, and Mathlib's proof follows the workaround above (the `Q`-trick).
+
+```lean
+recall HasDerivAt.add {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    {f g : 𝕜 → F} {f' g' : F} {x : 𝕜}
+    (hf : HasDerivAt f f' x) (hg : HasDerivAt g g' x) :
+    HasDerivAt (fun y => f y + g y) (f' + g') x
+```
+
+Mathlib makes the same point-by-point/whole-domain distinction as the chapter: every named rule comes in both an `HasDerivAt`/`HasDerivWithinAt` (point-by-point) form and a `Differentiable` (whole-domain) form, with the latter auto-derived from the former.
+
+The derivatives of well-known functions are first-class facts in Mathlib: `Real.hasDerivAt_exp`, `Real.hasDerivAt_sin`, `Real.hasDerivAt_cos`.
+Mathlib's `Real.exp` is constructed from the power series, which is what makes the self-derivative property a theorem rather than an axiom.
+
+```lean
+example (x : ℝ) : HasDerivAt Real.exp (Real.exp x) x :=
+  Real.hasDerivAt_exp x
+```
+
+The log and power-rule corollaries are spelled `Real.hasDerivAt_log` and the various `Real.hasDerivAt_rpow_const` (for $`x^r` with $`r` a real).
+Both are corollaries of the chain rule applied to $`\exp` and $`\log` exactly as above — and Mathlib does in fact have rigorous definitions of both, anchored to the Cauchy completion that built `ℝ`.
+
+The exercise asked for the derivative of $`f(x) = x^3 + 10x^2 + 2019`; assemble it from `hasDerivAt_pow`, `HasDerivAt.const_mul`, `HasDerivAt.add`, and `HasDerivAt.add_const`.
+The `simp` tactic also knows the standard rules under the `[deriv_simp]` set.
+
+```lean
+example (x : ℝ) :
+    HasDerivAt (fun x : ℝ => x^3 + 10*x^2 + 2019) (3*x^2 + 20*x) x := by
+  sorry
+```
+
+## Local (and global) maximums
+
+`IsLocalMax f p` and `IsLocalMin f p` are the predicates in `Mathlib.Topology.Order.LocalExtr`, defined neighborhood-filter-style: "on a punctured neighborhood of $`p`, $`f(x) \leq f(p)`."
+
+`IsLocalMax.deriv_eq_zero` packages Fermat's theorem on stationary points exactly — given a `IsLocalMax f p` hypothesis, `deriv f p = 0`.
+The dual `IsLocalMin.deriv_eq_zero` covers the minimum case.
+
+```lean
+recall IsLocalMax.deriv_eq_zero {f : ℝ → ℝ} {a : ℝ}
+    (h : IsLocalMax f a) : deriv f a = 0
+```
+
+The "compact + continuous ⇒ attains max/min" backbone is `IsCompact.exists_isMaxOn` and friends from `Mathlib.Topology.ContinuousOn`, which the reader has met in the basic-topology chapter on compactness.
+
+The proposition $`e^x \geq 1 + x` is `Real.add_one_le_exp` (with strict variant `Real.add_one_lt_exp`); the proof there is the convexity-of-$`\exp` route, but the compactness-and-Fermat sketch above is also fine and is closer to how you'd convince yourself by hand.
+
+```lean
+example (x : ℝ) : 1 + x ≤ Real.exp x := by
+  sorry
+```
+
+## Rolle and friends
+
+Mathlib has Rolle as `exists_deriv_eq_zero` (in `Deriv.MeanValue`) and several variants for different smoothness hypotheses.
+The proof there is exactly the sketch above.
+
+```lean
+example (f : ℝ → ℝ) (a b : ℝ) (hab : a < b) (hfc : ContinuousOn f (Set.Icc a b))
+    (hfI : f a = f b) : ∃ c ∈ Set.Ioo a b, deriv f c = 0 := by
+  sorry
+```
+
+The mean value theorem is `exists_hasDerivAt_eq_slope`.
+
+```lean
+recall exists_hasDerivAt_eq_slope (f f' : ℝ → ℝ) {a b : ℝ}
+    (hab : a < b) (hfc : ContinuousOn f (Set.Icc a b))
+    (hff' : ∀ x ∈ Set.Ioo a b, HasDerivAt f (f' x) x) :
+    ∃ c ∈ Set.Ioo a b, f' c = (f b - f a) / (b - a)
+```
+
+The MVT-based monotonicity statements behind the racetrack principle are `strictMonoOn_of_hasDerivWithinAt_pos` and friends in `Deriv.MeanValue`, building toward the full "$`f' \geq g' \Rightarrow f \geq g + \text{const}`" picture.
+Mathlib has the ratio mean value theorem as `exists_ratio_hasDerivAt_eq_ratio_slope`.
+
+## Smooth functions
+
+`ContDiff 𝕜 ⊤ f` is Mathlib's name for "$`f` is smooth"; the $`n`-times-differentiable variant is `ContDiff 𝕜 n f` for `n : WithTop ℕ∞`.
+Iterated derivatives are `iteratedDeriv n f`, with the same `0`-indexed convention as the book.
+
+```lean
+open scoped ContDiff in
+example (f : ℝ → ℝ) : Prop := ContDiff ℝ (⊤ : ℕ∞ω) f
+```
+
+Mathlib formalizes a related construction in `Mathlib.Analysis.SpecialFunctions.SmoothTransition` (`Real.smoothTransition`), which uses a quotient of two such exponentials to build a smooth $`[0, 1]`-valued cutoff.
+
+The question asked you to show the absolute value function is not smooth; already it fails to be differentiable at $`0`, recorded as `not_differentiableAt_abs_zero`.
+
+```lean
+example : ¬ DifferentiableAt ℝ (fun x : ℝ => |x|) 0 := by
+  sorry
+```
+
+## Problems
+
+L'Hôpital's rule is in Mathlib as `HasDerivAt.lhopital_zero_atTop` (and several siblings for different limit forms).
+The proof in Mathlib uses the ratio mean value theorem above, applied carefully to control the near-$`p` behavior.

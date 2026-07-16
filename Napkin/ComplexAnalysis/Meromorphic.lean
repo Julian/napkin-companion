@@ -8,6 +8,9 @@ import Mathlib.Analysis.Meromorphic.Order
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.Analysis.Complex.AbsMax
+import Mathlib.Analysis.Calculus.LogDeriv
+import Mathlib.MeasureTheory.Integral.CircleIntegral
+import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -53,23 +56,6 @@ Let $`U` be an open subset of $`\mathbb{C}` again.
 :::DEFINITION
 A function $`f \colon U \to \mathbb{C}` is *meromorphic* if there exists holomorphic functions $`A, B \colon U \to \mathbb{C}` with $`B` not identically zero in any open neighborhood, and $`f(z) = A(z)/B(z)` whenever $`B(z) \neq 0`.
 :::
-
-`MeromorphicAt f z` and the global `MeromorphicOn f s` are Mathlib's predicates, defined slightly more abstractly than the rational-quotient form: $`f` is meromorphic at $`z_0` iff some integer power $`(z - z_0)^n \cdot f(z)` is analytic at $`z_0`.
-The two definitions agree (`MeromorphicAt.iff_eventuallyEq_zpow_smul_analyticAt`), and Mathlib's choice makes the closure properties (sum, product, composition) immediate.
-
-```lean
-example (f : ℂ → ℂ) (z : ℂ) : Prop := MeromorphicAt f z
-example (f : ℂ → ℂ) (s : Set ℂ) : Prop := MeromorphicOn f s
-```
-
-The characterization "some power $`(z - z_0)^n` times $`f` is analytic" is exactly `MeromorphicAt.iff_eventuallyEq_zpow_smul_analyticAt`, where the power $`n` ranges over all integers so that poles ($`n > 0`) are allowed.
-
-```lean
-example (f : ℂ → ℂ) (z : ℂ) :
-    MeromorphicAt f z ↔ ∃ (n : ℤ), ∃ g, AnalyticAt ℂ g z ∧
-      ∀ᶠ w in nhdsWithin z {z}ᶜ, f w = (w - z) ^ n • g w :=
-  MeromorphicAt.iff_eventuallyEq_zpow_smul_analyticAt
-```
 
 Let's see how this function $`f` behaves.
 If $`z \in U` has $`B(z) \neq 0`, then in some small open neighborhood the function $`B` isn't zero at all, and thus $`A/B` is in fact *holomorphic*; thus $`f` is holomorphic at $`z`.
@@ -117,9 +103,6 @@ The reason I have to do this is that it's still important for $`f` to remember i
 As a function $`\mathbb{C} \setminus \{0\} \to \mathbb{C}` the function $`\frac{1}{z}` is actually holomorphic.
 :::
 
-`MeromorphicAt` cleanly sidesteps this abuse: a meromorphic function in Mathlib is a single total function `ℂ → ℂ` that just happens to take some value at the pole (often `0` by convention).
-What matters is the local behavior — `MeromorphicAt f z` constrains the function only on a punctured neighborhood of `z`, ignoring whatever junk value sits at `z` itself.
-
 :::REMARK
 I have shown that any function $`A(z)/B(z)` has this characterization with poles, but an important result is that the converse is true too: if $`f \colon U \setminus S \to \mathbb{C}` is holomorphic for some isolated set $`S`, and moreover $`f` admits a Laurent series at each point in $`S`, then $`f` can be written as a rational quotient of holomorphic functions.
 I won't prove this here, but it is good to be aware of.
@@ -133,15 +116,6 @@ A pole of order $`1` is called a *simple pole*.
 
 We also give the coefficient $`c_{-1}` a name, the *residue* of $`f` at $`p`, which we write $`\operatorname{Res}(f; p)`.
 :::
-
-`meromorphicOrderAt f z` returns the order of the pole/zero (negative for poles, positive for zeros, `0` for "$`f` neither vanishes nor blows up").
-Mathlib does not yet have a named residue for meromorphic functions, so the coefficient $`c_{-1}` has no lemma to cite; it would have to be read off the formal Laurent expansion by hand.
-
-The order lands in $`\mathbb{Z} \cup \{\infty\}`, spelled `WithTop ℤ`, with the value $`\infty` reserved for the function that vanishes identically near the point.
-
-```lean
-noncomputable example (f : ℂ → ℂ) (z : ℂ) : WithTop ℤ := meromorphicOrderAt f z
-```
 
 The order of a pole tells you how "bad" the pole is.
 The order of a pole is the "opposite" concept of the *multiplicity* of a *zero*.
@@ -157,16 +131,6 @@ These orders are additive: $`f(z) g(z)` still has a pole of order $`5 - 3 = 2`, 
 Convince yourself that orders are additive as described above.
 (This is obvious once you understand that you are multiplying Taylor/Laurent series.)
 :::
-
-`meromorphicOrderAt_mul` is the lemma: order of a product is the sum of the orders, provided both are nonzero.
-
-```lean
-example (f g : ℂ → ℂ) (z : ℂ)
-    (hf : MeromorphicAt f z) (hg : MeromorphicAt g z) :
-    meromorphicOrderAt (f * g) z
-      = meromorphicOrderAt f z + meromorphicOrderAt g z :=
-  meromorphicOrderAt_mul hf hg
-```
 
 Metaphorically, poles can be thought of as "negative zeros".
 
@@ -240,8 +204,6 @@ In particular, the winding number is always an integer.
 The details are more complicated, so we omit them here).
 In the simplest case the winding numbers are either $`0` or $`1`.
 
-Mathlib does not have a winding-number API for complex contours, so there is no lemma to name here; the closest available primitive is `circleIntegral`, the integral of a function over a parametrized circle.
-
 :::DEFINITION
 We say a loop $`\gamma` is *regular* if $`\operatorname{Wind}(\gamma, p) = 1` for all points $`p` in the interior of $`\gamma` (for example, if $`\gamma` is a counterclockwise circle).
 :::
@@ -277,8 +239,6 @@ On the other hand, if $`P_i(x) = c_1 x + c_2 x^2 + \dots + c_d x^d` then
 $$`\begin{aligned} \oint_\gamma P_i\left(\frac{1}{z - p_i}\right) \; dz &= \oint_\gamma c_1 \cdot \left(\frac{1}{z - p_i}\right) \; dz + \oint_\gamma c_2 \cdot \left(\frac{1}{z - p_i}\right)^2 \; dz + \dots \\ &= c_1 \cdot \operatorname{Wind}(\gamma, p_i) + 0 + 0 + \dots \\ &= \operatorname{Wind}(\gamma, p_i) \operatorname{Res}(f; p_i). \end{aligned}`
 which gives the conclusion.
 :::
-
-Mathlib does not yet formalize the residue theorem — there is no residue API to state it with — so this contour-integral computation has no direct counterpart to cite; only the underlying `circleIntegral` primitive is available.
 
 :::REMARK "Intuition behind Cauchy's integral formula"
 In the setting of Cauchy's integral formula, note that if $`f` is meromorphic in the disk $`D`, we can compute the Laurent series of $`f` at the point $`a`:
@@ -332,8 +292,6 @@ $$`\frac{f'(z)}{f(z)} = \frac{1}{z} \cdot \frac{k c_k + (k+1) c_{k+1} z + \dots}
 So we get a simple pole at $`z = 0`, with residue $`k`.
 :::
 
-Mathlib has the logarithmic derivative itself as `logDeriv`, but not the meromorphic statement that $`f'/f` has a simple pole whose residue is exactly the order of $`f`; that fact is not yet formalized.
-
 Using this trick you can determine the number of zeros and poles inside a regular closed curve, using the so-called Argument Principle.{margin}[So-called because the _argument_ of a complex number $`z` is the angle formed by the real axis and the vector representing $`z`, not because you need to use any argument. If $`z \in \mathbb{C}` is interpreted as a point in $`\mathbb{R}^2`, the argument of $`z` is the same as the angle function we met with the angle form.]
 
 :::THEOREM "Argument principle"
@@ -350,8 +308,6 @@ In fact you can generalize to any curve $`\gamma` via the winding number: the in
 $$`\frac{1}{2\pi i} \oint_\gamma \frac{f'}{f} \; dz = \sum_{\text{zero } z} \operatorname{Wind}(\gamma, z) - \sum_{\text{pole } p} \operatorname{Wind}(\gamma, p)`
 where the sums are with multiplicity.
 :::
-
-Mathlib does not yet have the argument principle in any form; it would first need the residue theorem and a winding-number API, neither of which is present.
 
 Thus the Argument Principle allows one to count zeros and poles inside any region of choice.
 
@@ -429,21 +385,11 @@ As another piece of intuition from Siu: if you try to get (left) differentiable 
 Prove that if $`f` is a nonzero polynomial of degree $`n` then it has $`n` roots.
 :::
 
-`Complex.exists_root` is the bare existence form (`Complex.isAlgClosed` for the typeclass version), while `Polynomial.degree_eq_card_roots` gives the count-with-multiplicity.
-
-```lean
-example {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z :=
-  Complex.exists_root hf
-example : IsAlgClosed ℂ := Complex.isAlgClosed
-```
-
 :::PROBLEM "Rouché's theorem"
 Let $`f, g \colon U \to \mathbb{C}` be holomorphic functions, where $`U` contains the unit disk.
 Suppose that $`|f(z)| > |g(z)|` for all $`z` on the unit circle.
 Prove that $`f` and $`f + g` have the same number of zeros which lie strictly inside the unit circle (counting multiplicities).
 :::
-
-Rouché's theorem is not in Mathlib — it rests on the argument principle, which is also absent — so there is no lemma to cite for this problem.
 
 :::PROBLEM "Wedge contour" (chili := 1)
 For each odd integer $`n \geq 3`, evaluate the improper integral
@@ -464,8 +410,108 @@ Let $`f \colon U \to \mathbb{C}` be a nonconstant holomorphic function.
   That is, show that for any $`z \in U`, there is some $`z' \in U` such that $`|f(z)| < |f(z')|`.
 :::
 
-The open mapping theorem is `AnalyticOnNhd.is_constant_or_isOpen` in Mathlib (a nonconstant analytic function on a connected open set is either constant or an open map), and the maximum modulus principle is `Complex.eqOn_of_isPreconnected_of_isMaxOn_norm`.
+# Formalization
 
+:::LEANCOMPANION
+:::
+
+## Meromorphic functions
+
+`MeromorphicAt f z` and the global `MeromorphicOn f s` are Mathlib's predicates, defined slightly more abstractly than the rational-quotient form: $`f` is meromorphic at $`z_0` iff some integer power $`(z - z_0)^n \cdot f(z)` is analytic at $`z_0`.
+The two definitions agree (`MeromorphicAt.iff_eventuallyEq_zpow_smul_analyticAt`), and Mathlib's choice makes the closure properties (sum, product, composition) immediate.
+
+```lean
+example (f : ℂ → ℂ) (z : ℂ) : Prop := MeromorphicAt f z
+example (f : ℂ → ℂ) (s : Set ℂ) : Prop := MeromorphicOn f s
+```
+
+The characterization "some power $`(z - z_0)^n` times $`f` is analytic" is exactly `MeromorphicAt.iff_eventuallyEq_zpow_smul_analyticAt`, where the power $`n` ranges over all integers so that poles ($`n > 0`) are allowed.
+
+```lean
+example (f : ℂ → ℂ) (z : ℂ) :
+    MeromorphicAt f z ↔ ∃ (n : ℤ), ∃ g, AnalyticAt ℂ g z ∧
+      ∀ᶠ w in nhdsWithin z {z}ᶜ, f w = (w - z) ^ n • g w :=
+  MeromorphicAt.iff_eventuallyEq_zpow_smul_analyticAt
+```
+
+`MeromorphicAt` cleanly sidesteps the abuse of a function "undefined at a point": a meromorphic function in Mathlib is a single total function `ℂ → ℂ` that just happens to take some value at the pole (often `0` by convention).
+What matters is the local behavior — `MeromorphicAt f z` constrains the function only on a punctured neighborhood of `z`, ignoring whatever junk value sits at `z` itself.
+
+`meromorphicOrderAt f z` returns the order of the pole/zero (negative for poles, positive for zeros, `0` for "$`f` neither vanishes nor blows up").
+Mathlib does not yet have a named residue for meromorphic functions, so the coefficient $`c_{-1}` has no lemma to cite; it would have to be read off the formal Laurent expansion by hand.
+The order lands in $`\mathbb{Z} \cup \{\infty\}`, spelled `WithTop ℤ`, with the value $`\infty` reserved for the function that vanishes identically near the point.
+
+```lean
+noncomputable example (f : ℂ → ℂ) (z : ℂ) : WithTop ℤ := meromorphicOrderAt f z
+```
+
+`meromorphicOrderAt_mul` is the lemma matching the exercise that orders are additive: the order of a product is the sum of the orders.
+
+```lean
+example (f g : ℂ → ℂ) (z : ℂ)
+    (hf : MeromorphicAt f z) (hg : MeromorphicAt g z) :
+    meromorphicOrderAt (f * g) z
+      = meromorphicOrderAt f z + meromorphicOrderAt g z :=
+  meromorphicOrderAt_mul hf hg
+```
+
+Specialize additivity to the square $`f \cdot f`, whose order is twice the order of $`f`.
+
+```lean
+example (f : ℂ → ℂ) (z : ℂ) (hf : MeromorphicAt f z) :
+    meromorphicOrderAt (f * f) z
+      = meromorphicOrderAt f z + meromorphicOrderAt f z := by
+  sorry
+```
+
+## Winding numbers and the residue theorem
+
+Mathlib does not have a winding-number API for complex contours, and it does not yet formalize residues or the residue theorem — there is no residue API to state them with.
+The closest available primitive is `circleIntegral`, the integral of a function over a parametrized circle, written `∮ z in C(c, R), f z`.
+
+The winding number of a counterclockwise unit circle about its center rests on the single computation $`\oint_\gamma \frac{1}{z} \; dz = 2\pi i`, which is `circleIntegral.integral_sub_inv_of_mem_ball`.
+Verify it for the unit circle centered at the origin.
+
+```lean
+example : (∮ z in C(0, 1), (z - 0)⁻¹) = 2 * Real.pi * Complex.I := by
+  sorry
+```
+
+## Argument principle
+
+Mathlib has the logarithmic derivative itself as `logDeriv`, but not the meromorphic statement that $`f'/f` has a simple pole whose residue is exactly the order of $`f`; nor does it have the argument principle in any form, which would first need the residue theorem and a winding-number API.
+
+The one piece that is available is the algebra behind the logarithmic derivative: it turns products into sums, which is exactly why $`P'/P = \sum_i \frac{e_i}{x - a_i}` for a factored polynomial.
+Prove that `logDeriv (f g) = logDeriv f + logDeriv g` where the factors are nonzero and differentiable.
+
+```lean
+example (f g : ℂ → ℂ) (x : ℂ) (hf : f x ≠ 0) (hg : g x ≠ 0)
+    (hdf : DifferentiableAt ℂ f x) (hdg : DifferentiableAt ℂ g x) :
+    logDeriv (fun z => f z * g z) x = logDeriv f x + logDeriv g x := by
+  sorry
+```
+
+## Problems
+
+`Complex.exists_root` is the bare existence form (`Complex.isAlgClosed` for the typeclass version), while `Polynomial.degree_eq_card_roots` gives the count-with-multiplicity.
+
+```lean
+example {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z :=
+  Complex.exists_root hf
+example : IsAlgClosed ℂ := Complex.isAlgClosed
+```
+
+Rouché's theorem is not in Mathlib — it rests on the argument principle, which is also absent — so there is no lemma to cite for that problem.
+
+The fundamental theorem of algebra problem asks that a polynomial of degree $`n` has $`n` roots.
+Because $`\mathbb{C}` is algebraically closed, the number of roots counted with multiplicity is exactly the degree.
+
+```lean
+example (f : ℂ[X]) : f.roots.card = f.natDegree := by
+  sorry
+```
+
+The open mapping theorem is `AnalyticOnNhd.is_constant_or_isOpen` in Mathlib (a nonconstant analytic function on a connected open set is either constant or an open map), and the maximum modulus principle is `Complex.eqOn_of_isPreconnected_of_isMaxOn_norm`.
 The maximum-modulus statement takes its cleanest form as a rigidity result: a function whose norm attains a maximum at an interior point of a connected open set is forced to be constant there.
 
 ```lean

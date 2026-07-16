@@ -31,14 +31,6 @@ In everything that follows $`p` is always assumed to denote a prime.
 The first four sections will cover the founding definitions culminating in a short solution to a USA TST problem.
 We will then state (mostly without proof) some more surprising results about continuous functions $`f \colon \mathbb{Z}_p \to \mathbb{Q}_p`; finally we close with the famous proof of the Skolem-Mahler-Lech theorem using $`p`-adic analysis.
 
-Mathlib's notations are `ℚ_[p]` for $`\mathbb{Q}_p` and `ℤ_[p]` for $`\mathbb{Z}_p`; both live in `Mathlib.NumberTheory.Padics` and require a `[Fact p.Prime]` instance to even be well-typed, which is the convention Mathlib uses anywhere a hypothesis like "$`p` is prime" is meant to be carried implicitly through typeclass synthesis.
-
-```lean
-recall : ∀ (p : ℕ) [Fact p.Prime], CommRing ℚ_[p]
-recall : ∀ (p : ℕ) [Fact p.Prime], Field ℚ_[p]
-recall : ∀ (p : ℕ) [Fact p.Prime], CommRing ℤ_[p]
-```
-
 # Motivation
 
 Before really telling you what $`\mathbb{Z}_p` and $`\mathbb{Q}_p` are, let me tell you what you might expect them to do.
@@ -101,14 +93,6 @@ A *$`p`-adic integer* is a sequence $$`x = (x_1 \bmod p, \; x_2 \bmod p^2, \; x_
 The set $`\mathbb{Z}_p` of $`p`-adic integers forms a ring under component-wise addition and multiplication.
 :::
 
-Mathlib doesn't take the inverse-limit construction as the definition of `ℤ_[p]`; instead it defines `Padic p` first, as the Cauchy completion of `ℚ` with respect to `padicNorm`, and then carves out `ℤ_[p]` as the closed unit ball `{x : ℚ_[p] // ‖x‖ ≤ 1}`.
-The two presentations agree, and Mathlib provides the bridge: `PadicInt.toZModPow n` for the projection to each $`\mathbb{Z}/p^e`.
-Rather than packaging the inverse limit as a single isomorphism, `Mathlib.NumberTheory.Padics.RingHoms` pins down $`\mathbb{Z}_p` by its universal property: `PadicInt.lift` builds a map into $`\mathbb{Z}_p` out of any compatible family of maps to the $`\mathbb{Z}/p^e`, and `PadicInt.ext_of_toZModPow` records that two $`p`-adic integers agreeing modulo every $`p^e` are equal.
-
-```lean
-example (p : ℕ) [Fact p.Prime] (x : ℤ_[p]) : ℚ_[p] := (x : ℚ_[p])
-```
-
 :::EXAMPLE "Some 3-adic integers"
 Let $`p = 3`.
 Every usual integer $`n` generates a (compatible) sequence of residues modulo $`p^e` for each $`e`, so we can view each ordinary integer as $`p`-adic one: $$`50 = (2 \bmod 3, \; 5 \bmod 9, \; 23 \bmod{27}, \; 50 \bmod{81}, \; 50 \bmod{243}, \; \dots).`
@@ -120,7 +104,6 @@ So there are more $`p`-adic integers than usual integers.
 
 :::aside "The inverse-limit description"
 For those of you familiar with category theory, the definition above can be written concisely as $$`\mathbb{Z}_p \overset{\text{def}}{=} \varprojlim_e \mathbb{Z}/p^e\mathbb{Z}` where the inverse limit is taken across $`e \geq 1`.
-Mathlib realizes this via `PadicInt.lift` and the `RingHoms` file mentioned above.
 :::
 
 :::EXERCISE
@@ -162,14 +145,6 @@ If $`x \equiv 0 \pmod p` then $`x_1 = 0`, so clearly not invertible.
 Otherwise, $`x_e \not\equiv 0 \pmod p` for all $`e`, so we can take an inverse $`y_e` modulo $`p^e`, with $`x_e y_e \equiv 1 \pmod{p^e}`.
 As the $`y_e` are themselves compatible, the element $`(y_1, y_2, \dots)` is an inverse.
 :::
-
-In Mathlib's normed picture, the same statement reads "the units of `ℤ_[p]` are exactly the elements of norm $`1`", since $`x \not\equiv 0 \pmod p` is the condition that $`\nu_p(x) = 0`, i.e. $`\|x\|_p = 1`.
-This is `PadicInt.isUnit_iff`:
-
-```lean
-recall PadicInt.isUnit_iff {p : ℕ} [Fact p.Prime] {z : ℤ_[p]} :
-    IsUnit z ↔ ‖z‖ = 1
-```
 
 :::EXAMPLE "We have $`-1/2 = \\overline{\\dots1111}_3 : \\mathbb{Z}_3`"
 We claim the earlier example is actually $$`-\tfrac{1}{2} = (1 \bmod 3, \; 4 \bmod 9, \; 13 \bmod{27}, \; 40 \bmod{81}, \; \dots) = 1 + 3 + 3^2 + \dots = \overline{\dots1111}_3.`
@@ -252,14 +227,6 @@ Finally, define the *$`p`-adic absolute value* $`|\bullet|_p` by $$`|x|_p = p^{-
 In particular $`|0|_p = 0`.
 :::
 
-Mathlib has both pieces. `padicValRat p` (and the natural-number version `padicValNat p`) is the valuation on the rational numbers; for an element of `ℚ_[p]` itself the same role is played by the norm `‖·‖`, satisfying $`\|x\|_p = p^{-\nu_p(x)}`.
-The norm comes from `padicNormE` and is what makes `ℚ_[p]` into a `NormedField`.
-
-```lean
-recall padicValRat (p : ℕ) (q : ℚ) : ℤ
-recall : ∀ (p : ℕ) [Fact p.Prime], NormedField ℚ_[p]
-```
-
 This fulfills the promise that $`x` and $`y` are close if they look the same modulo $`p^e` for large $`e`; in that case $`\nu_p(x - y)` is large and accordingly $`|x - y|_p` is small.
 
 ## Ultrametric space
@@ -277,15 +244,6 @@ In fact, these spaces satisfy a stronger form of the triangle inequality than yo
 For any $`x, y : \mathbb{Z}_p`, we have the *strong triangle inequality* $$`|x + y|_p \leq \max\{|x|_p, |y|_p\}.`
 Equality holds if (but not only if) $`|x|_p \neq |y|_p`.
 :::
-
-The strong triangle inequality is `Padic.nonarchimedean` (or, as a tagged instance, the `IsUltrametricDist ℚ_[p]` instance Mathlib provides).
-It generalizes the ordinary triangle inequality to one where the sup of two sides bounds the third — much stronger than the sum.
-
-```lean
-example (p : ℕ) [Fact p.Prime] (q r : ℚ_[p]) :
-    ‖q + r‖ ≤ max ‖q‖ ‖r‖ :=
-  Padic.nonarchimedean q r
-```
 
 However, $`\mathbb{Q}_p` is more than just a metric space: it is a field, with its own addition and multiplication.
 This means we can do analysis just like in $`\mathbb{R}` or $`\mathbb{C}`: basically, any notion such as "continuous function", "convergent series", et cetera has a $`p`-adic analog.
@@ -323,7 +281,6 @@ Then one can check we approach the limit $`a = (a_1, a_2, \dots)`.
 :::
 
 This "$`x_k \to 0` iff convergent" miracle is the practical heart of $`p`-adic analysis.
-Mathlib calls it `summable_iff_tendsto_zero` (in the ultrametric setting); it turns infinite sums into a much friendlier object than they are over $`\mathbb{R}`.
 
 ## More fun with geometric series
 
@@ -360,13 +317,6 @@ The space $`\mathbb{Q}_p` is the completion of $`\mathbb{Q}` with respect to $`|
 :::
 
 This is the definition of $`\mathbb{Q}_p` you'll see more frequently; one then defines $`\mathbb{Z}_p` in terms of $`\mathbb{Q}_p` (rather than vice-versa) according to $$`\mathbb{Z}_p = \{x : \mathbb{Q}_p \mid |x|_p \leq 1\}.`
-
-That second definition is exactly the one Mathlib takes — see `PadicInt`'s subtype above.
-Completeness is the `CompleteSpace ℚ_[p]` instance, which makes Mathlib's full real-analysis API (Cauchy sequences, summable, `Tendsto`, power series, …) available verbatim with the $`p`-adic norm in place of the absolute value.
-
-```lean
-recall : ∀ (p : ℕ) [Fact p.Prime], CompleteSpace ℚ_[p]
-```
 
 ## Philosophical notes
 
@@ -412,13 +362,6 @@ Conversely, if $`a_n` is any sequence converging to zero, then $`f(x) = \sum_{n 
 :::
 
 The $`a_i` are called the *Mahler coefficients* of $`f`.
-
-Mathlib has the full apparatus in `Mathlib.NumberTheory.Padics.MahlerBasis`: `mahler k : C(ℤ_[p], ℤ_[p])` is the basis function $`\binom{x}{k}`, and the Mahler theorem is `PadicInt.hasSum_mahler` — for any continuous $`f \colon \mathbb{Z}_p \to E` (with `E` a normed `ℤ_[p]`-module), the Mahler series with the finite-difference coefficients $`\Delta^n f(0)` sums to $`f` uniformly.
-
-```lean
-noncomputable example (p : ℕ) [Fact p.Prime] (k : ℕ) :
-    C(ℤ_[p], ℤ_[p]) := mahler k
-```
 
 :::EXERCISE
 Last post we proved that if $`f \colon \mathbb{Z}_p \to \mathbb{Q}_p` is continuous and $`f(n) = (-1)^n` for every $`n : \mathbb{Z}_{\geq 0}` then $`p = 2`.
@@ -470,12 +413,6 @@ Also, we can check that $`\lim_n \frac{a_n}{n!} = 0` hence $`f` is even analytic
 Thus by Strassmann's theorem, $`f` is either identically zero, or else it has finitely many zeros, as desired.
 ::::
 
-:::aside "What's not in Mathlib"
-The Mahler basis machinery is fully formalized — see the `MahlerBasis` file we referenced earlier.
-Strassmann's theorem is *not* (as of this writing); neither is Skolem-Mahler-Lech.
-Both would be excellent ports for someone wanting a concrete $`p`-adic-flavored project; the analytic-function side requires filling in the basic theory of $`p`-adic power-series radius of convergence first.
-:::
-
 # Problems
 
 :::PROBLEM "Z_p is compact" (chili := 1)
@@ -486,9 +423,6 @@ Show that $`\mathbb{Q}_p` is not compact, but $`\mathbb{Z}_p` is.
 :::PROBLEM "Totally disconnected" (chili := 1)
 Show that both $`\mathbb{Z}_p` and $`\mathbb{Q}_p` are *totally disconnected*: there are no connected sets other than the empty set and singleton sets.
 :::
-
-Mathlib already knows this: there's a `TotallyDisconnectedSpace ℚ_[p]` instance and the corresponding one for `ℤ_[p]`, which both follow from the ultrametric.
-The compactness of `ℤ_[p]` is `PadicInt.compactSpace`, an instance in `Mathlib.NumberTheory.Padics.ProperSpace`.
 
 :::PROBLEM "Mentioned in MathOverflow"
 Let $`p` be a prime.
@@ -502,3 +436,138 @@ Find a sequence $`q_1, q_2, \dots` of rational numbers such that:
 Let $`p` be a prime.
 We say that a sequence of integers $`\{z_n\}_{n=0}^\infty` is a *$`p`-pod* if for each $`e \geq 0`, there is an $`N \geq 0` such that whenever $`m \geq N`, $`p^e` divides the sum $$`\sum_{k=0}^m (-1)^k \binom{m}{k} z_k.` Prove that if both sequences $`\{x_n\}_{n=0}^\infty` and $`\{y_n\}_{n=0}^\infty` are $`p`-pods, then the sequence $`\{x_n y_n\}_{n=0}^\infty` is a $`p`-pod.
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+The notations `ℚ_[p]` for $`\mathbb{Q}_p` and `ℤ_[p]` for $`\mathbb{Z}_p` both live in `Mathlib.NumberTheory.Padics` and require a `[Fact p.Prime]` instance to even be well-typed, which is the convention Mathlib uses anywhere a hypothesis like "$`p` is prime" is meant to be carried implicitly through typeclass synthesis.
+The rationals $`\mathbb{Q}_p` form a field and the integers $`\mathbb{Z}_p` form a commutative ring.
+
+```lean
+recall : ∀ (p : ℕ) [Fact p.Prime], CommRing ℚ_[p]
+recall : ∀ (p : ℕ) [Fact p.Prime], Field ℚ_[p]
+recall : ∀ (p : ℕ) [Fact p.Prime], CommRing ℤ_[p]
+```
+
+## Definition of the p-adic integers
+
+Mathlib doesn't take the inverse-limit construction as the definition of `ℤ_[p]`; instead it defines `Padic p` first, as the Cauchy completion of `ℚ` with respect to `padicNorm`, and then carves out `ℤ_[p]` as the closed unit ball `{x : ℚ_[p] // ‖x‖ ≤ 1}`.
+So every $`p`-adic integer is in particular a $`p`-adic number.
+
+```lean
+example (p : ℕ) [Fact p.Prime] (x : ℤ_[p]) : ℚ_[p] := (x : ℚ_[p])
+```
+
+The two presentations agree, and Mathlib provides the bridge: `PadicInt.toZModPow n` for the projection to each $`\mathbb{Z}/p^e`.
+Rather than packaging the inverse limit as a single isomorphism, `Mathlib.NumberTheory.Padics.RingHoms` pins down $`\mathbb{Z}_p` by its universal property: `PadicInt.lift` builds a map into $`\mathbb{Z}_p` out of any compatible family of maps to the $`\mathbb{Z}/p^e`, and `PadicInt.ext_of_toZModPow` records that two $`p`-adic integers agreeing modulo every $`p^e` are equal.
+
+The exercise asked you to check that $`\mathbb{Z}_p` is an integral domain.
+Mathlib packages "commutative ring with no zero divisors and $`0 \neq 1`" as the `IsDomain` class; find the instance.
+
+```lean
+example (p : ℕ) [Fact p.Prime] : IsDomain ℤ_[p] := by
+  sorry
+```
+
+## Constructing the p-adic numbers
+
+The proposition that non-multiples of $`p` are all invertible reads, in the normed picture, "the units of `ℤ_[p]` are exactly the elements of norm $`1`", since $`x \not\equiv 0 \pmod p` is the condition that $`\nu_p(x) = 0`, i.e. $`\|x\|_p = 1`.
+This is `PadicInt.isUnit_iff`.
+
+```lean
+recall PadicInt.isUnit_iff {p : ℕ} [Fact p.Prime] {z : ℤ_[p]} :
+    IsUnit z ↔ ‖z‖ = 1
+```
+
+## The p-adic valuation and absolute value
+
+Mathlib has both pieces of the valuation/absolute-value story.
+`padicValRat p` (and the natural-number version `padicValNat p`) is the valuation on the rational numbers; for an element of `ℚ_[p]` itself the same role is played by the norm `‖·‖`, satisfying $`\|x\|_p = p^{-\nu_p(x)}`.
+The norm comes from `padicNormE` and is what makes `ℚ_[p]` into a `NormedField`.
+
+```lean
+recall padicValRat (p : ℕ) (q : ℚ) : ℤ
+recall : ∀ (p : ℕ) [Fact p.Prime], NormedField ℚ_[p]
+```
+
+## Ultrametric space
+
+The strong triangle inequality is `Padic.nonarchimedean` (or, as a tagged instance, the `IsUltrametricDist ℚ_[p]` instance Mathlib provides).
+It generalizes the ordinary triangle inequality to one where the sup of two sides bounds the third — much stronger than the sum.
+
+```lean
+example (p : ℕ) [Fact p.Prime] (q r : ℚ_[p]) :
+    ‖q + r‖ ≤ max ‖q‖ ‖r‖ :=
+  Padic.nonarchimedean q r
+```
+
+The proposition also promised that equality holds when the two norms differ.
+Prove that if $`\|q\|_p \neq \|r\|_p` then $`\|q + r\|_p = \max\{\|q\|_p, \|r\|_p\}`.
+
+```lean
+example (p : ℕ) [Fact p.Prime] (q r : ℚ_[p]) (h : ‖q‖ ≠ ‖r‖) :
+    ‖q + r‖ = max ‖q‖ ‖r‖ := by
+  sorry
+```
+
+## Convergence of series
+
+The "$`x_k \to 0` iff convergent" miracle turns infinite sums into a much friendlier object than they are over $`\mathbb{R}`.
+Restate it: a family in the complete nonarchimedean field $`\mathbb{Q}_p` is summable exactly when its terms tend to zero along the cofinite filter.
+
+```lean
+open Filter Topology in
+example (p : ℕ) [Fact p.Prime] (f : ℕ → ℚ_[p]) :
+    Summable f ↔ Tendsto f cofinite (𝓝 0) := by
+  sorry
+```
+
+## More fun with geometric series
+
+The geometric series formula holds verbatim in $`\mathbb{Q}_p`: for $`\|x\|_p < 1`, the sum $`\sum_{n \geq 0} x^n` converges to $`\frac{1}{1 - x}`.
+
+```lean
+example (p : ℕ) [Fact p.Prime] (x : ℚ_[p]) (h : ‖x‖ < 1) :
+    ∑' n : ℕ, x ^ n = (1 - x)⁻¹ := by
+  sorry
+```
+
+## Completeness
+
+Completeness is the `CompleteSpace ℚ_[p]` instance, which makes Mathlib's full real-analysis API (Cauchy sequences, summable, `Tendsto`, power series, …) available verbatim with the $`p`-adic norm in place of the absolute value.
+
+```lean
+recall : ∀ (p : ℕ) [Fact p.Prime], CompleteSpace ℚ_[p]
+```
+
+One of the problems asked you to show that $`\mathbb{Z}_p` is compact.
+Mathlib records this as `PadicInt.compactSpace`, an instance in `Mathlib.NumberTheory.Padics.ProperSpace`; confirm the type is already inhabited.
+
+```lean
+example (p : ℕ) [Fact p.Prime] : CompactSpace ℤ_[p] := by
+  sorry
+```
+
+## Mahler coefficients
+
+Mathlib has the full apparatus in `Mathlib.NumberTheory.Padics.MahlerBasis`: `mahler k : C(ℤ_[p], ℤ_[p])` is the basis function $`\binom{x}{k}`, and the Mahler theorem is `PadicInt.hasSum_mahler` — for any continuous $`f \colon \mathbb{Z}_p \to E` (with `E` a normed `ℤ_[p]`-module), the Mahler series with the finite-difference coefficients $`\Delta^n f(0)` sums to $`f` uniformly.
+
+```lean
+noncomputable example (p : ℕ) [Fact p.Prime] (k : ℕ) :
+    C(ℤ_[p], ℤ_[p]) := mahler k
+```
+
+The Mahler basis machinery is fully formalized, but Strassmann's theorem is *not* (as of this writing), and neither is Skolem-Mahler-Lech.
+Both would be excellent ports for someone wanting a concrete $`p`-adic-flavored project; the analytic-function side requires filling in the basic theory of $`p`-adic power-series radius of convergence first.
+
+## Problems
+
+The "totally disconnected" problem asked you to show that $`\mathbb{Q}_p` (and likewise $`\mathbb{Z}_p`) has no connected subsets beyond the empty set and singletons.
+This follows from the ultrametric, and Mathlib already provides the `TotallyDisconnectedSpace ℚ_[p]` instance.
+
+```lean
+example (p : ℕ) [Fact p.Prime] : TotallyDisconnectedSpace ℚ_[p] := by
+  sorry
+```
