@@ -4,8 +4,10 @@ import Napkin.Meta.Recall
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.Analysis.Calculus.FDeriv.Basic
+import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+import Mathlib.Analysis.Calculus.LineDeriv.Basic
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -94,19 +96,6 @@ We denote this by $`(Df)_p`, and say $`f` is *differentiable at $`p`*.
 If $`(Df)_p` exists at every point, we say $`f` is *differentiable*.
 :::
 
-`HasFDerivAt f f' x` is Mathlib's predicate: "$`f` has Fréchet derivative $`f'` at $`x`", with $`f' : V →L[𝕜] W` a *continuous linear map* between normed vector spaces.
-The total-function `fderiv 𝕜 f x : V →L[𝕜] W` returns the derivative when one exists and `0` otherwise (the now-familiar Mathlib totality convention).
-
-```lean
-example {V W : Type*}
-    [NormedAddCommGroup V] [NormedSpace ℝ V]
-    [NormedAddCommGroup W] [NormedSpace ℝ W]
-    (f : V → W) (f' : V →L[ℝ] W) (p : V) : Prop :=
-  HasFDerivAt f f' p
-```
-
-The single-variable `HasDerivAt` from the calculus chapter is the `V = W = ℝ` specialization, and the bridge `hasDerivAt_iff_hasFDerivAt` exhibits the `1 ↦ slope` continuous linear map as the Fréchet derivative.
-
 :::QUESTION
 Check if that $`V = W = \mathbb{R}`, this is equivalent to the single-variable definition.
 (What are the linear maps from $`V` to $`W`?)
@@ -131,8 +120,6 @@ Thus, for $`p = a e_1 + b e_2` we indeed have $`(Df)_p = 2a \cdot \mathbf{e}_1^\
 :::REMARK
 As usual, differentiability implies continuity.
 :::
-
-`HasFDerivAt.continuousAt` is the corresponding Mathlib lemma — Fréchet-differentiable at a point implies continuous there.
 
 :::REMARK
 Although $`U \subseteq V`, it might be helpful to think of vectors from $`U` and $`V` as different types of objects (in particular, note that it's possible for $`0_V \notin U`).
@@ -174,8 +161,6 @@ To think about a function $`f \colon U \to \mathbb{R}^m`, it suffices to think a
 For this reason, we'll most often be interested in functions $`f \colon U \to \mathbb{R}`.
 That's why the dual space $`V^\vee` is so important.
 
-`hasFDerivAt_pi` (and its `n`-tuple variant `hasFDerivAt_pi'`) realizes the projection principle in Mathlib for differentiability into a finite product: a function $`f \colon V \to \prod_i W_i` is differentiable at $`x` iff each component is, and the derivative is taken componentwise.
-
 # Total and partial derivatives
 
 :::PROTOTYPE
@@ -204,16 +189,11 @@ is defined by
 $$`\frac{\partial f}{\partial \mathbf{e}_i}(p) \overset{\text{def}}{=} \lim_{t \to 0} \frac{f(p + t e_i) - f(p)}{t}.`
 :::
 
-`Mathlib.Analysis.Calculus.Deriv.Basic`'s `lineDeriv 𝕜 f x v` is the directional derivative — the partial derivative in the book is exactly `lineDeriv ℝ f p (e_i)`.
-For the standard basis on `ℝ^n` (or `EuclideanSpace ℝ (Fin n)`), this lines up with `partialDeriv` and what `simp` knows under the `[deriv_simp]` set.
-
 You can think of it as "$`f'` along $`\mathbf{e}_i`".
 
 :::QUESTION
 Check that if $`Df` exists, then $`(Df)_p(\mathbf{e}_i) = \frac{\partial f}{\partial \mathbf{e}_i}(p)`.
 :::
-
-`HasFDerivAt.hasLineDerivAt` is the Mathlib lemma: applying the Fréchet derivative to a vector recovers the directional derivative in that direction.
 
 :::REMARK
 Of course you can write down a definition of $`\frac{\partial f}{\partial v}` for any $`v` (rather than just the $`\mathbf{e}_i`).
@@ -257,8 +237,6 @@ Not going to write out the details, but… given $`v = t_1 e_1 + \dots + t_n e_n
 Do some calculation.
 :::
 
-`hasFDerivAt_of_lineDeriv_continuous` (and the more general `hasFDerivAt_of_partialDeriv_continuous` on `EuclideanSpace`) is the Mathlib statement: if all partial / directional derivatives exist on a neighborhood and are continuous at the point, then the Fréchet derivative exists and assembles from them.
-
 :::REMARK
 The continuous condition cannot be dropped.
 The function
@@ -294,8 +272,6 @@ As consolation, we at least know that $`\operatorname{Hom}(V, W) \cong V^\vee \o
 $$`D^k f \colon V \to (V^\vee)^{\otimes k} \otimes W`
 rather than writing a bunch of $`\operatorname{Hom}`'s.
 
-`iteratedFDeriv 𝕜 n f` packages exactly this in Mathlib: for `n : ℕ`, it returns a function `V → V[×n]→L[𝕜] W` (an $`n`-multilinear continuous map), avoiding the iterated `Hom`-of-`Hom`-of-… clutter via the multilinear-map abstraction `ContinuousMultilinearMap`.
-
 :::REMARK
 If $`k = 2`, $`W = \mathbb{R}`, then $`D^2 f(v) \in (V^\vee)^{\otimes 2}`, so it can be represented as an $`n \times n` matrix, which for some reason is called a *Hessian*.
 :::
@@ -317,8 +293,6 @@ Then for any point $`p` such that the quantities are defined,
 $$`\frac{\partial}{\partial \mathbf{e}_i} \frac{\partial}{\partial \mathbf{e}_j} f(p) = \frac{\partial}{\partial \mathbf{e}_j} \frac{\partial}{\partial \mathbf{e}_i} f(p).`
 :::
 
-`IsSymmSndFDerivAt` is the Mathlib formulation of the symmetry of the second derivative; that it holds for any sufficiently smooth function is `ContDiffAt.isSymmSndFDerivAt` (and Clairaut's theorem itself follows by applying to the standard basis).
-
 # Towards differential forms
 
 This concludes the exposition of what the derivative really is: the key idea I want to communicate in this chapter is that $`Df` should be thought of as a map from $`U \to V^\vee`.
@@ -335,10 +309,110 @@ Prove the Chain Rule: for any point $`p \in U_1`, we have
 $$`(Dh)_p = (Dg)_{f(p)} \circ (Df)_p.`
 :::
 
-`HasFDerivAt.comp` is the Mathlib chain rule; the fully-curried version `fderiv_comp` operates on `fderiv` directly.
-
 :::PROBLEM
 Let $`U \subseteq V` be open, and $`f \colon U \to \mathbb{R}` be differentiable $`k` times.
 Show that $`(D^k f)_p` is symmetric in its $`k` arguments, meaning for any $`v_1, \dots, v_k \in V` and any permutation $`\sigma` on $`\{1, \dots, k\}` we have
 $$`(D^k f)_p(v_1, \dots, v_k) = (D^k f)_p(v_{\sigma(1)}, \dots, v_{\sigma(k)}).`
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## The total derivative
+
+`HasFDerivAt f f' x` is Mathlib's predicate: "$`f` has Fréchet derivative $`f'` at $`x`", with $`f' : V →L[𝕜] W` a *continuous linear map* between normed vector spaces.
+The total-function `fderiv 𝕜 f x : V →L[𝕜] W` returns the derivative when one exists and `0` otherwise (the now-familiar Mathlib totality convention).
+
+```lean
+example {V W : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V]
+    [NormedAddCommGroup W] [NormedSpace ℝ W]
+    (f : V → W) (f' : V →L[ℝ] W) (p : V) : Prop :=
+  HasFDerivAt f f' p
+```
+
+The chapter's first question asks you to check that for $`V = W = \mathbb{R}` this reduces to the single-variable definition.
+The single-variable `HasDerivAt` from the calculus chapter is the `V = W = ℝ` specialization, and the bridge `hasDerivAt_iff_hasFDerivAt` exhibits the `1 ↦ slope` continuous linear map (here `ContinuousLinearMap.toSpanSingleton`) as the Fréchet derivative.
+
+```lean
+open ContinuousLinearMap in
+example (f : ℝ → ℝ) (f' x : ℝ) :
+    HasDerivAt f f' x ↔ HasFDerivAt f (toSpanSingleton ℝ f') x := by
+  sorry
+```
+
+As the remark notes, differentiability implies continuity.
+`HasFDerivAt.continuousAt` is the corresponding Mathlib lemma — Fréchet-differentiable at a point implies continuous there.
+
+```lean
+example {V W : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V]
+    [NormedAddCommGroup W] [NormedSpace ℝ W]
+    (f : V → W) (f' : V →L[ℝ] W) (p : V) (h : HasFDerivAt f f' p) :
+    ContinuousAt f p := by
+  sorry
+```
+
+## The projection principle
+
+`hasFDerivAt_pi'` realizes the projection principle in Mathlib for differentiability into a finite product: a function $`f \colon V \to (\iota \to \mathbb{R})` is differentiable at $`x` iff each component is, and the derivative is taken componentwise.
+
+```lean
+open ContinuousLinearMap in
+example {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Φ : V → (ι → ℝ)) (Φ' : V →L[ℝ] (ι → ℝ)) (x : V) :
+    HasFDerivAt Φ Φ' x ↔
+      ∀ i, HasFDerivAt (fun v => Φ v i) ((proj i).comp Φ') x := by
+  sorry
+```
+
+## Total and partial derivatives
+
+`Mathlib.Analysis.Calculus.LineDeriv.Basic`'s `lineDeriv 𝕜 f x v` is the directional derivative — the partial derivative in the book is exactly `lineDeriv ℝ f p (e_i)`.
+The question in this section asks you to check that $`(Df)_p(\mathbf{e}_i) = \frac{\partial f}{\partial \mathbf{e}_i}(p)`; the underlying Mathlib lemma is `HasFDerivAt.hasLineDerivAt`, that applying the Fréchet derivative to a vector recovers the directional derivative in that direction.
+
+```lean
+example {V W : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V]
+    [NormedAddCommGroup W] [NormedSpace ℝ W]
+    (f : V → W) (L : V →L[ℝ] W) (p v : V) (h : HasFDerivAt f L p) :
+    HasLineDerivAt ℝ f (L v) p v := by
+  sorry
+```
+
+The theorem "continuous partials implies differentiable" is `hasFDerivAt_of_lineDeriv_continuous` (and the more general `hasFDerivAt_of_partialDeriv_continuous` on `EuclideanSpace`): if all directional derivatives exist on a neighborhood and are continuous at the point, then the Fréchet derivative exists and assembles from them.
+
+## (Optional) A word on higher derivatives
+
+`iteratedFDeriv 𝕜 n f` packages the iterated derivative in Mathlib: for `n : ℕ`, it returns a function `V → V[×n]→L[𝕜] W` (an $`n`-multilinear continuous map), avoiding the iterated `Hom`-of-`Hom`-of-… clutter via the multilinear-map abstraction `ContinuousMultilinearMap`.
+
+The symmetry of the second derivative is `IsSymmSndFDerivAt`; that it holds for any sufficiently smooth function is `ContDiffAt.isSymmSndFDerivAt` (and Clairaut's theorem itself follows by applying it to the standard basis).
+Here `minSmoothness ℝ 2 = 2`, so being twice continuously differentiable suffices over $`\mathbb{R}`.
+
+```lean
+example {V W : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V]
+    [NormedAddCommGroup W] [NormedSpace ℝ W]
+    (f : V → W) (p : V) (h : ContDiffAt ℝ 2 f p) :
+    IsSymmSndFDerivAt ℝ f p := by
+  sorry
+```
+
+## Problems
+
+The first problem is the Chain Rule, $`(Dh)_p = (Dg)_{f(p)} \circ (Df)_p`.
+`HasFDerivAt.comp` is the Mathlib chain rule; the fully-curried version `fderiv_comp` operates on `fderiv` directly.
+
+```lean
+example {V W X : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V]
+    [NormedAddCommGroup W] [NormedSpace ℝ W]
+    [NormedAddCommGroup X] [NormedSpace ℝ X]
+    (f : V → W) (g : W → X) (f' : V →L[ℝ] W) (g' : W →L[ℝ] X) (p : V)
+    (hg : HasFDerivAt g g' (f p)) (hf : HasFDerivAt f f' p) :
+    HasFDerivAt (g ∘ f) (g'.comp f') p := by
+  sorry
+```

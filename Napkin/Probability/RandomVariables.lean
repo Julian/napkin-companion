@@ -27,11 +27,6 @@ file := "Random-variables"
 
 Having properly developed the Lebesgue measure and the integral on it, we can now proceed to develop random variables.
 
-```lean -show
-open MeasureTheory ProbabilityTheory
-open scoped ProbabilityTheory
-```
-
 # Random variables
 
 With all this set-up, random variables are going to be really quick to define.
@@ -43,9 +38,6 @@ A (real) *random variable* $`X` on a probability space $`\Omega = (\Omega, \math
 In particular, addition of random variables, etc. all makes sense, as we can just add.
 Also, we can integrate $`X` over $`\Omega`, by previous chapter.
 
-There is deliberately no `RandomVariable` bundle to reach for: a random variable is literally a function `X : Ω → ℝ` used together with a `Measurable X` (or weaker, `AEMeasurable X μ`) hypothesis, over a measure space whose measure is a probability measure (`IsProbabilityMeasure μ`).
-When the probability space is fixed once and for all as a `MeasureSpace` instance, its measure is written `ℙ` and the expectation notation below drops the measure entirely.
-
 :::DEFINITION "First properties of random variables"
 Given a random variable $`X`, the *expected value* of $`X` is defined by the Lebesgue integral $$`\mathbb{E}[X] = \int_{\Omega} X(\omega) \; d\mu.`
 Confusingly, the letter $`\mu` is often used for expected values.
@@ -54,33 +46,9 @@ The *$`k`th moment* of $`X` is defined as $`\mathbb{E}[X^k]`, for each positive 
 The *variance* of $`X` is then defined as $$`\operatorname{Var}(X) = \mathbb{E}\left[ (X-\mathbb{E}[X])^2 \right].`
 :::
 
-The expectation is written `𝔼[X]` — notation for exactly the integral `∫ ω, X ω` against `ℙ` — and the moments and variance come bundled as `ProbabilityTheory.moment` and `ProbabilityTheory.variance` (notation `Var[X]`):
-
-```lean
-recall ProbabilityTheory.moment {Ω : Type*} {m : MeasurableSpace Ω}
-    (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ :=
-  μ[X ^ p]
-
-recall ProbabilityTheory.variance {Ω : Type*} {mΩ : MeasurableSpace Ω}
-    (X : Ω → ℝ) (μ : Measure Ω) : ℝ
-```
-
-(One wrinkle: `variance` is defined by passing through an $`[0, +\infty]`-valued version `evariance` and truncating, so that it is total even for random variables without finite second moment; `variance_def'` recovers the formula $`\mathbb{E}[X^2] - \mathbb{E}[X]^2` under a `MemLp X 2` hypothesis.)
-
 :::QUESTION
 Show that $`\mathbf{1}_A` is a random variable (just check that it is Borel measurable), and its expected value is $`\mu(A)`.
 :::
-
-The indicator is `Set.indicator A 1`, its measurability is `measurable_one.indicator hA`, and the expected-value computation is `MeasureTheory.integral_indicator_one`:
-
-```lean
-recall MeasureTheory.integral_indicator_one {X : Type*}
-    {mX : MeasurableSpace X} {μ : Measure X} ⦃s : Set X⦄
-    (hs : MeasurableSet s) :
-    ∫ x, s.indicator 1 x ∂μ = μ.real s
-```
-
-(`μ.real s` is the measure of $`s` coerced from $`[0,+\infty]` to $`\mathbb{R}`, which is the honest way to compare an integral with a measure.)
 
 An important property of expected value you probably already know:
 
@@ -93,19 +61,6 @@ $`\mathbb{E}[X+Y] = \int_\Omega X(\omega) + Y(\omega) \; d\mu = \int_\Omega X(\o
 :::
 
 Note that $`X` and $`Y` do not have to be "independent" here: a notion we will define shortly.
-
-The Lean statement is `MeasureTheory.integral_add`, and it exposes a hypothesis the one-line proof quietly relies on: both integrals on the right must exist.
-
-```lean
-recall MeasureTheory.integral_add {α : Type*} {G : Type*}
-    [NormedAddCommGroup G] [NormedSpace ℝ G] {m : MeasurableSpace α}
-    {μ : Measure α} {f g : α → G}
-    (hf : Integrable f μ) (hg : Integrable g μ) :
-    ∫ a, f a + g a ∂μ = ∫ a, f a ∂μ + ∫ a, g a ∂μ
-```
-
-Without integrability the equation can genuinely fail — with $`X` integrating to $`+\infty` and $`Y` to $`-\infty`, the left side is the integral of something that need not even converge, while the Bochner integral's junk-value convention makes each summand on the right $`0`.
-So `Integrable X ℙ` hypotheses will follow every random variable through this part of the book.
 
 # Distribution functions
 
@@ -120,9 +75,6 @@ The *distribution* (or *law*) of a random variable $`X` is the probability measu
 Verify that $`\mu_X` really is a probability measure on $`\mathbb{R}`.
 (The only thing to check is countable additivity, and that $`\mu_X(\mathbb{R}) = 1`.)
 :::
-
-The pushforward is `MeasureTheory.Measure.map X μ`, and the fact that it stays a probability measure when `X` is (a.e.) measurable is an instance, so `μ.map X` can be used wherever a probability measure on `ℝ` is expected.
-Two random variables — even on entirely different probability spaces — with the same law are *identically distributed*, which is `ProbabilityTheory.IdentDistrib X Y μ ν`.
 
 Since measures are unwieldy objects, it is convenient that the law on $`\mathbb{R}` can be repackaged as a single monotone function.
 
@@ -140,20 +92,6 @@ Prove this, using countable additivity for the limits.
 :::
 
 More importantly, the CDF is a *complete* invariant: two probability measures on $`\mathbb{R}` with the same CDF are equal, essentially because the intervals $`(-\infty, x]` generate the Borel $`\sigma`-algebra.
-
-The Mathlib CDF is `ProbabilityTheory.cdf μ`, bundled as a `StieltjesFunction` — a structure carrying a function together with proofs of monotonicity and right-continuity, exactly the first two properties above.
-The remaining properties are the lemmas
-
-```lean
-recall ProbabilityTheory.tendsto_cdf_atBot (μ : Measure ℝ) :
-    Filter.Tendsto (cdf μ) Filter.atBot (nhds 0)
-
-recall ProbabilityTheory.tendsto_cdf_atTop (μ : Measure ℝ) :
-    Filter.Tendsto (cdf μ) Filter.atTop (nhds 1)
-```
-
-and completeness of the invariant is `MeasureTheory.Measure.eq_of_cdf`: if `cdf μ = cdf ν` then `μ = ν`.
-(The CDF of a random variable, as opposed to a measure, is then just `cdf (μ.map X)`.)
 
 # Examples of random variables
 
@@ -178,16 +116,6 @@ For example, if $`X` is uniform on $`[0, 1]` then $`F_X(x) = x` for $`x` in $`[0
 A random variable $`X` is *Gaussian* (or *normally distributed*) with mean $`m` and variance $`\sigma^2 > 0` if its law is given by the famous bell-curve density: $$`\mu_X(B) = \frac{1}{\sqrt{2\pi\sigma^2}} \int_B \exp\left( -\frac{(x-m)^2}{2\sigma^2} \right) \; dx.`
 :::
 
-Discrete distributions such as the Bernoulli live in Mathlib as `PMF` (probability mass functions), e.g. `PMF.bernoulli p` for the coin flip; a `PMF` can be turned into a genuine measure with `PMF.toMeasure`.
-Uniformity is the predicate `MeasureTheory.pdf.IsUniform X s ℙ`, asserting that the law of `X` is the normalized restriction of the ambient measure to `s`.
-And the Gaussian law is the measure `ProbabilityTheory.gaussianReal m v`:
-
-```lean
-recall ProbabilityTheory.gaussianReal (μ : ℝ) (v : NNReal) : Measure ℝ
-```
-
-The variance parameter here has type `NNReal` (nonnegative reals) rather than carrying a side hypothesis $`\sigma^2 > 0`; the degenerate case `v = 0` is defined to be the point mass at the mean (`gaussianReal_zero_var`), which keeps the family closed under limits.
-
 # Characteristic functions
 
 We take a moment to connect this chapter with the bonus chapter on Fourier analysis.
@@ -207,16 +135,6 @@ If $`X` and $`Y` are random variables with $`\varphi_X = \varphi_Y`, then $`X` a
 
 We won't prove this (it is essentially a Fourier inversion theorem), but this is the engine behind proofs of the central limit theorem: to show a sequence of laws converges to a Gaussian, one shows the characteristic functions converge pointwise.
 
-The characteristic function of a *measure* is `MeasureTheory.charFun`, defined for measures on any inner-product space at once (so the same definition serves random vectors):
-
-```lean
-recall MeasureTheory.charFun {E : Type*} {mE : MeasurableSpace E}
-    [Inner ℝ E] (μ : Measure E) (t : E) : ℂ :=
-  ∫ x, Complex.exp (inner ℝ x t * Complex.I) ∂μ
-```
-
-so that $`\varphi_X` is `charFun (ℙ.map X)`, and the uniqueness theorem is `MeasureTheory.Measure.ext_of_charFun`.
-
 # Independent random variables
 
 Finally, the notion that separates probability from mere measure theory.
@@ -233,25 +151,11 @@ Requiring only that each *pair* $`(X_i, X_j)` be independent is genuinely weaker
 
 A family of random variables which is independent and whose members all have the same law is called *independent and identically distributed*, universally abbreviated *i.i.d.*; this is the standing assumption in the limit theorems of the next chapter.
 
-Pairwise independence is `ProbabilityTheory.IndepFun X Y μ`, with notation `X ⟂ᵢ[μ] Y`, and mutual independence of a family is `ProbabilityTheory.iIndepFun X μ`.
-Both are special cases of independence of $`\sigma`-algebras — `X ⟂ᵢ[μ] Y` says the $`\sigma`-algebras of preimages under `X` and `Y` are independent — which is why the definitions live in `Mathlib.Probability.Independence`.
-There is no bundled "i.i.d."; one carries `iIndepFun X μ` together with `∀ i, IdentDistrib (X i) (X 0) μ μ`.
-
 The first payoff of independence:
 
 :::THEOREM "Expected value of a product"
 If $`X` and $`Y` are independent, integrable random variables, then $$`\mathbb{E}[XY] = \mathbb{E}[X] \cdot \mathbb{E}[Y].`
 :::
-
-Mathlib knows both this (`ProbabilityTheory.IndepFun.integral_comp_mul_comp` and its relatives, which even bootstrap the integrability of the product via `IndepFun.integrable_mul`) and its most useful corollary, that variance becomes additive:
-
-```lean
-recall ProbabilityTheory.IndepFun.variance_add {Ω : Type*}
-    {mΩ : MeasurableSpace Ω} {μ : Measure Ω} {X Y : Ω → ℝ}
-    (hX : MeasureTheory.MemLp X 2 μ) (hY : MeasureTheory.MemLp Y 2 μ)
-    (h : IndepFun X Y μ) :
-    variance (X + Y) μ = variance X μ + variance Y μ
-```
 
 :::EXERCISE
 Prove that $`\operatorname{Var}(X + Y) = \operatorname{Var}(X) + \operatorname{Var}(Y)` for independent $`X` and $`Y` by expanding both sides, using the product formula on the cross term.
@@ -269,3 +173,151 @@ Let $`X_1`, $`Y_1`, $`X_2`, $`Y_2`, $`X_3`, $`Y_3` be six independent standard G
 Define triangle $`ABC` in the Cartesian plane by $`A = (X_1,Y_1)`, $`B = (X_2,Y_2)`, $`C = (X_3,Y_3)`.
 Prove that the length of side $`BC` is independent from the length of the $`A`-median.
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+```lean -show
+open MeasureTheory ProbabilityTheory
+open scoped ProbabilityTheory
+```
+
+## Random variables
+
+There is deliberately no `RandomVariable` bundle to reach for: a random variable is literally a function `X : Ω → ℝ` used together with a `Measurable X` (or weaker, `AEMeasurable X μ`) hypothesis, over a measure space whose measure is a probability measure (`IsProbabilityMeasure μ`).
+When the probability space is fixed once and for all as a `MeasureSpace` instance, its measure is written `ℙ` and the expectation notation below drops the measure entirely.
+
+The expectation is written `𝔼[X]` — notation for exactly the integral `∫ ω, X ω` against `ℙ` — and the moments and variance come bundled as `ProbabilityTheory.moment` and `ProbabilityTheory.variance` (notation `Var[X]`):
+
+```lean
+recall ProbabilityTheory.moment {Ω : Type*} {m : MeasurableSpace Ω}
+    (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ :=
+  μ[X ^ p]
+
+recall ProbabilityTheory.variance {Ω : Type*} {mΩ : MeasurableSpace Ω}
+    (X : Ω → ℝ) (μ : Measure Ω) : ℝ
+```
+
+(One wrinkle: `variance` is defined by passing through an $`[0, +\infty]`-valued version `evariance` and truncating, so that it is total even for random variables without finite second moment; `variance_def'` recovers the formula $`\mathbb{E}[X^2] - \mathbb{E}[X]^2` under a `MemLp X 2` hypothesis.)
+
+The indicator $`\mathbf{1}_A` is `Set.indicator A 1`, and the expected-value computation $`\mathbb{E}[\mathbf{1}_A] = \mu(A)` is `MeasureTheory.integral_indicator_one`:
+
+```lean
+recall MeasureTheory.integral_indicator_one {X : Type*}
+    {mX : MeasurableSpace X} {μ : Measure X} ⦃s : Set X⦄
+    (hs : MeasurableSet s) :
+    ∫ x, s.indicator 1 x ∂μ = μ.real s
+```
+
+(`μ.real s` is the measure of $`s` coerced from $`[0,+\infty]` to $`\mathbb{R}`, which is the honest way to compare an integral with a measure.)
+
+The other half of that question — that $`\mathbf{1}_A` really is a random variable — asks only for Borel measurability, which follows from measurability of the constant $`1`.
+
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] {A : Set Ω} (hA : MeasurableSet A) :
+    Measurable (Set.indicator A (1 : Ω → ℝ)) := by
+  sorry
+```
+
+The Lean statement of linearity of expectation is `MeasureTheory.integral_add`, and it exposes a hypothesis the one-line proof quietly relies on: both integrals on the right must exist.
+
+```lean
+recall MeasureTheory.integral_add {α : Type*} {G : Type*}
+    [NormedAddCommGroup G] [NormedSpace ℝ G] {m : MeasurableSpace α}
+    {μ : Measure α} {f g : α → G}
+    (hf : Integrable f μ) (hg : Integrable g μ) :
+    ∫ a, f a + g a ∂μ = ∫ a, f a ∂μ + ∫ a, g a ∂μ
+```
+
+Without integrability the equation can genuinely fail — with $`X` integrating to $`+\infty` and $`Y` to $`-\infty`, the left side is the integral of something that need not even converge, while the Bochner integral's junk-value convention makes each summand on the right $`0`.
+So `Integrable X ℙ` hypotheses will follow every random variable through this part of the book.
+
+## Distribution functions
+
+The pushforward is `MeasureTheory.Measure.map X μ`, and the fact that it stays a probability measure when `X` is (a.e.) measurable is an instance, so `μ.map X` can be used wherever a probability measure on `ℝ` is expected.
+Two random variables — even on entirely different probability spaces — with the same law are *identically distributed*, which is `ProbabilityTheory.IdentDistrib X Y μ ν`.
+
+The Mathlib CDF is `ProbabilityTheory.cdf μ`, bundled as a `StieltjesFunction` — a structure carrying a function together with proofs of monotonicity and right-continuity, exactly the first two properties above.
+The remaining properties are the lemmas
+
+```lean
+recall ProbabilityTheory.tendsto_cdf_atBot (μ : Measure ℝ) :
+    Filter.Tendsto (cdf μ) Filter.atBot (nhds 0)
+
+recall ProbabilityTheory.tendsto_cdf_atTop (μ : Measure ℝ) :
+    Filter.Tendsto (cdf μ) Filter.atTop (nhds 1)
+```
+
+and completeness of the invariant is `MeasureTheory.Measure.eq_of_cdf`: if `cdf μ = cdf ν` then `μ = ν`.
+(The CDF of a random variable, as opposed to a measure, is then just `cdf (μ.map X)`.)
+
+The exercise asks for all four properties directly; the monotonicity half is already the `StieltjesFunction.mono` field of the bundled CDF.
+
+```lean
+example (μ : Measure ℝ) : Monotone ⇑(cdf μ) := by
+  sorry
+```
+
+## Examples of random variables
+
+Discrete distributions such as the Bernoulli live in Mathlib as `PMF` (probability mass functions), e.g. `PMF.bernoulli p` for the coin flip; a `PMF` can be turned into a genuine measure with `PMF.toMeasure`.
+Uniformity is the predicate `MeasureTheory.pdf.IsUniform X s ℙ`, asserting that the law of `X` is the normalized restriction of the ambient measure to `s`.
+And the Gaussian law is the measure `ProbabilityTheory.gaussianReal m v`:
+
+```lean
+recall ProbabilityTheory.gaussianReal (μ : ℝ) (v : NNReal) : Measure ℝ
+```
+
+The variance parameter here has type `NNReal` (nonnegative reals) rather than carrying a side hypothesis $`\sigma^2 > 0`; the degenerate case `v = 0` is defined to be the point mass at the mean (`gaussianReal_zero_var`), which keeps the family closed under limits.
+
+Each of these example laws is a genuine probability measure; confirm it for the Gaussian, where Mathlib already registers the instance.
+
+```lean
+example (m : ℝ) (v : NNReal) : IsProbabilityMeasure (gaussianReal m v) := by
+  sorry
+```
+
+## Characteristic functions
+
+The characteristic function of a *measure* is `MeasureTheory.charFun`, defined for measures on any inner-product space at once (so the same definition serves random vectors):
+
+```lean
+recall MeasureTheory.charFun {E : Type*} {mE : MeasurableSpace E}
+    [Inner ℝ E] (μ : Measure E) (t : E) : ℂ :=
+  ∫ x, Complex.exp (inner ℝ x t * Complex.I) ∂μ
+```
+
+so that $`\varphi_X` is `charFun (ℙ.map X)`, and the uniqueness theorem is `MeasureTheory.Measure.ext_of_charFun`.
+
+One sanity check falls straight out of the definition: since $`e^{i \cdot 0 \cdot X} = 1`, the characteristic function of any probability measure takes the value $`1` at $`t = 0`.
+
+```lean
+example (μ : Measure ℝ) [IsProbabilityMeasure μ] : charFun μ 0 = 1 := by
+  sorry
+```
+
+## Independent random variables
+
+Pairwise independence is `ProbabilityTheory.IndepFun X Y μ`, with notation `X ⟂ᵢ[μ] Y`, and mutual independence of a family is `ProbabilityTheory.iIndepFun X μ`.
+Both are special cases of independence of $`\sigma`-algebras — `X ⟂ᵢ[μ] Y` says the $`\sigma`-algebras of preimages under `X` and `Y` are independent — which is why the definitions live in `Mathlib.Probability.Independence`.
+There is no bundled "i.i.d."; one carries `iIndepFun X μ` together with `∀ i, IdentDistrib (X i) (X 0) μ μ`.
+
+Mathlib knows both the product formula (`ProbabilityTheory.IndepFun.integral_comp_mul_comp` and its relatives, which even bootstrap the integrability of the product via `IndepFun.integrable_mul`) and its most useful corollary, that variance becomes additive:
+
+```lean
+recall ProbabilityTheory.IndepFun.variance_add {Ω : Type*}
+    {mΩ : MeasurableSpace Ω} {μ : Measure Ω} {X Y : Ω → ℝ}
+    (hX : MeasureTheory.MemLp X 2 μ) (hY : MeasureTheory.MemLp Y 2 μ)
+    (h : IndepFun X Y μ) :
+    variance (X + Y) μ = variance X μ + variance Y μ
+```
+
+The definition is visibly symmetric in $`X` and $`Y`: independence of $`X` and $`Y` is the same statement as independence of $`Y` and $`X`.
+
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} {X Y : Ω → ℝ}
+    (h : IndepFun X Y μ) : IndepFun Y X μ := by
+  sorry
+```

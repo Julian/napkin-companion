@@ -7,6 +7,8 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 import Mathlib.Analysis.BoxIntegral.DivergenceTheorem
 import Mathlib.LinearAlgebra.Alternating.Basic
+import Mathlib.LinearAlgebra.CrossProduct
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -32,21 +34,6 @@ where $`f` is a function such that $`g = df/dt`.
 Equivalently, for $`f \colon [a,b] \to \mathbb{R}`,
 $$`\int_{[a,b]} g \; dt = \int_{[a,b]} df = f(b) - f(a)`
 where $`df` is the exterior derivative we defined earlier.
-
-:::aside
-The Mathlib statement closest to this elementary form sits in `Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus`:
-`intervalIntegral.integral_eq_sub_of_hasDerivAt` says that if $`f` has derivative $`f'` everywhere on $`[a,b]` and $`f'` is interval-integrable, then $`\int_a^b f'(t) \; dt = f(b) - f(a)`.
-This is the prototype for the much more general Stokes' theorem we are about to build toward.
-
-```lean
-recall intervalIntegral.integral_eq_sub_of_hasDerivAt
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    {a b : ℝ} [CompleteSpace E] {f f' : ℝ → E}
-    (hderiv : ∀ x ∈ Set.uIcc a b, HasDerivAt f (f' x) x)
-    (hint : IntervalIntegrable f' MeasureTheory.volume a b) :
-    ∫ y in a..b, f' y = f b - f a
-```
-:::
 
 Cool, so we can integrate over $`[a,b]`.
 Now suppose more generally, we have $`U` an open subset of our real vector space $`V` and a $`1`-form $`\alpha \colon U \to V^\vee`.
@@ -111,23 +98,6 @@ Pulling a form $`\alpha` back along a map $`\phi \colon U \to U'`.
 :::
 ::::
 
-:::aside
-The single-point version of this construction lives in `Mathlib.LinearAlgebra.Alternating.Basic` as `AlternatingMap.compLinearMap`: given an alternating $`k`-form $`f \colon M^k \to N` and a linear map $`g \colon M_2 \to M`, it produces the alternating $`k`-form $`(v_1, \dots, v_k) \mapsto f(g v_1, \dots, g v_k)` on $`M_2^k`.
-For continuous alternating maps the analog is `ContinuousAlternatingMap.compContinuousLinearMapCLM`.
-The pullback of a smooth differential form is then the pointwise application $`p \mapsto \alpha_{\phi(p)} \circ (D\phi)_p`, where $`(D\phi)_p` comes from `fderiv` (or `mfderiv` in the manifold setting).
-
-```lean
-recall AlternatingMap.compLinearMap_apply
-    {R : Type*} [Semiring R]
-    {M : Type*} [AddCommMonoid M] [Module R M]
-    {N : Type*} [AddCommMonoid N] [Module R N]
-    {ι : Type*}
-    {M₂ : Type*} [AddCommMonoid M₂] [Module R M₂]
-    (f : M [⋀^ι]→ₗ[R] N) (g : M₂ →ₗ[R] M) (v : ι → M₂) :
-    f.compLinearMap g v = f fun i => g (v i) := rfl
-```
-:::
-
 There is a more concrete way to define the pullback using bases.
 Suppose $`w_1, \dots, w_n` is a basis of $`V'` and $`e_1, \dots, e_m` is a basis of $`V`.
 Thus, by the projection principle, the map $`\phi \colon V \to V'` can be thought of as
@@ -172,8 +142,6 @@ Specifically, to generalize the notion of integrals we had before:
 :::DEFINITION
 A *$`k`-cell* is a smooth function $`c \colon [a_1, b_1] \times [a_2, b_2] \times \dots \times [a_k, b_k] \to V`.
 :::
-
-The closest Mathlib structure for the domain is `BoxIntegral.Box`, which packages an $`n`-dimensional rectangular box as a pair of corner points; the integration story for forms over boxes is then routed through `BoxIntegral.integral` and `MeasureTheory.integral` against the standard volume measure `MeasureTheory.volume`.
 
 :::EXAMPLE "Examples of cells"
 Let $`V = \mathbb{R}^2` for convenience.
@@ -236,9 +204,6 @@ $$`\int_{c \circ \phi} \alpha = \begin{cases} \int_c \alpha & \phi \text{ preser
 ::::PROOF
 Use naturality of the pullback to reduce it to the corresponding theorem in normal calculus.
 ::::
-
-The "normal calculus" change-of-variables theorem here is `MeasureTheory.integral_image_eq_integral_abs_det_fderiv_smul` in `Mathlib.MeasureTheory.Function.Jacobian`: for a measurable injection $`\phi` differentiable on a set $`s`, the integral of $`f \circ \phi` against the absolute value of the Jacobian equals the integral of $`f` over $`\phi(s)`.
-The sign that distinguishes orientation-preserving from orientation-reversing reparametrizations is precisely the sign of $`\det (D\phi)_p`, which the absolute value strips off — that's why pulling back a $`k`-form keeps the sign and a "raw" change of variables loses it.
 
 So for example, if we had parametrized the unit circle as $`[0, 1] \times [0, 1] \to \mathbb{R}^2` by $`(r, t) \mapsto R \cos(2\pi t) \mathbf{e}_1 + R \sin(2\pi t) \mathbf{e}_2`, we would have arrived at the same result.
 So we really can think of a $`k`-cell just in terms of the points it specifies.
@@ -325,11 +290,6 @@ In particular, if $`d\alpha = 0` then the left-hand side vanishes.
 
 For example, if $`c` is the interval $`[a, b]` then $`\partial c = \{b\} - \{a\}`, and thus we obtain the fundamental theorem of calculus.
 
-Mathlib does not yet bundle Stokes' theorem for arbitrary differential forms on cells, but it does have several special cases as named theorems.
-The most central is the divergence theorem on a rectangular box:
-`MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable` says that for a continuous vector field $`f \colon \mathbb{R}^n \to \mathbb{R}^n` differentiable off a countable set, the integral of $`\sum_i \partial_i f_i` over a box $`[a, b]` equals the sum over its faces of the appropriate boundary integrals — exactly Stokes' theorem instantiated at $`\alpha = \sum_i (-1)^{i-1} f_i \; dx_1 \wedge \dots \widehat{dx_i} \dots \wedge dx_n`.
-The version `BoxIntegral.hasIntegral_GP_divergence_of_forall_hasDerivWithinAt` in `Mathlib.Analysis.BoxIntegral.DivergenceTheorem` is the gauge-integral original from which the Bochner version is deduced.
-
 # Back to Earth: a comparison to vector calculus
 
 Now that we've done everything abstractly, let's compare what we've learned to what you might see in $`\mathbb{R}^3` if you're doing a vector calculus course at a typical university.
@@ -412,8 +372,6 @@ $$`\mathbf{F}(\mathbf{r}(u, v)) \cdot (\mathbf{r}_u \times \mathbf{r}_v) \; du \
 is now rigged to correspond to the pullback $`c^\ast \alpha`.
 So using this Hodge star, we find that flux is actually the integration of a $`2`-form.
 
-The Mathlib name for the elementary cross product on $`\mathbb{R}^3` is `crossProduct`; the algebraic Hodge-star machinery on exterior powers does not yet have a unified Mathlib home, although `crossProduct` and the spectral calculus on $`\mathbb{R}^3` make the $`n = 3` case fully usable.
-
 ## Exterior derivatives
 
 Each "red arrow" in the $`0`-D / $`1`-D / $`2`-D / $`3`-D integral chart corresponds to the exterior derivative of the corresponding form.
@@ -463,9 +421,6 @@ So Stokes' theorem even for cells is really great, because we get six 18.02 theo
 - For $`n = 3`, the arrow from work to flux is confusingly also called *Stokes' theorem*; it says the flux of a $`2`-D surface equals the work on the $`1`-D boundary.
 - The rightmost red arrow for $`n = 3` is called the *divergence theorem*; it says the divergence of a $`3`-D volume equals the flux of the $`2`-D boundary surface.
 
-The divergence theorem on a box is the one Mathlib has formalized in `MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable`; Green's theorem in $`\mathbb{R}^2` is the corollary `MeasureTheory.integral2_divergence_prod_of_hasFDerivAt`.
-The full form of Stokes' theorem on a smooth manifold remains an active formalization target.
-
 # Problems
 
 :::PROBLEM "Green's theorem"
@@ -512,3 +467,109 @@ where $`C_1` and $`C_2` are any concentric circles in the plane and $`\alpha` is
 
 (Hint: show that $`d^2 = 0` implies $`\int_{\partial c} \alpha = 0` for exact $`\alpha`. Draw an annulus.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Motivation: line integrals
+
+The Mathlib statement closest to the elementary form $`\int_{[a,b]} df = f(b) - f(a)` sits in `Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus`.
+`intervalIntegral.integral_eq_sub_of_hasDerivAt` says that if $`f` has derivative $`f'` everywhere on $`[a,b]` and $`f'` is interval-integrable, then $`\int_a^b f'(t) \; dt = f(b) - f(a)`.
+This is the prototype for the much more general Stokes' theorem the chapter builds toward.
+
+```lean
+recall intervalIntegral.integral_eq_sub_of_hasDerivAt
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {a b : ℝ} [CompleteSpace E] {f f' : ℝ → E}
+    (hderiv : ∀ x ∈ Set.uIcc a b, HasDerivAt f (f' x) x)
+    (hint : IntervalIntegrable f' MeasureTheory.volume a b) :
+    ∫ y in a..b, f' y = f b - f a
+```
+
+As a concrete instance, integrating $`x` (the derivative of $`\tfrac12 x^2`) over $`[0, 1]` gives $`\tfrac12`.
+
+```lean
+example : ∫ x in (0:ℝ)..1, x = 1/2 := by
+  sorry
+```
+
+## Pullbacks
+
+The single-point version of the pullback lives in `Mathlib.LinearAlgebra.Alternating.Basic` as `AlternatingMap.compLinearMap`: given an alternating $`k`-form $`f \colon M^k \to N` and a linear map $`g \colon M_2 \to M`, it produces the alternating $`k`-form $`(v_1, \dots, v_k) \mapsto f(g v_1, \dots, g v_k)` on $`M_2^k`.
+For continuous alternating maps the analog is `ContinuousAlternatingMap.compContinuousLinearMapCLM`.
+The pullback of a smooth differential form is then the pointwise application $`p \mapsto \alpha_{\phi(p)} \circ (D\phi)_p`, where $`(D\phi)_p` comes from `fderiv` (or `mfderiv` in the manifold setting).
+
+```lean
+recall AlternatingMap.compLinearMap_apply
+    {R : Type*} [Semiring R]
+    {M : Type*} [AddCommMonoid M] [Module R M]
+    {N : Type*} [AddCommMonoid N] [Module R N]
+    {ι : Type*}
+    {M₂ : Type*} [AddCommMonoid M₂] [Module R M₂]
+    (f : M [⋀^ι]→ₗ[R] N) (g : M₂ →ₗ[R] M) (v : ι → M₂) :
+    f.compLinearMap g v = f fun i => g (v i) := rfl
+```
+
+The pullback along the identity map does nothing to a form — the degenerate case of naturality $`\phi_1^\ast (\phi_2^\ast \alpha) = (\phi_2 \circ \phi_1)^\ast \alpha`.
+Prove it: composing an alternating form with the identity linear map returns the same form.
+
+```lean
+example {R M N ι : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [AddCommMonoid N] [Module R N] (f : M [⋀^ι]→ₗ[R] N) :
+    f.compLinearMap LinearMap.id = f := by
+  sorry
+```
+
+## Cells
+
+The closest Mathlib structure for a cell's domain is `BoxIntegral.Box`, which packages an $`n`-dimensional rectangular box as a pair of corner points; the integration story for forms over boxes is then routed through `BoxIntegral.integral` and `MeasureTheory.integral` against the standard volume measure `MeasureTheory.volume`.
+The "normal calculus" change-of-variables theorem behind the reparametrization theorem is `MeasureTheory.integral_image_eq_integral_abs_det_fderiv_smul` in `Mathlib.MeasureTheory.Function.Jacobian`: for a measurable injection $`\phi` differentiable on a set $`s`, the integral of $`f \circ \phi` against the absolute value of the Jacobian equals the integral of $`f` over $`\phi(s)`.
+The sign that distinguishes orientation-preserving from orientation-reversing reparametrizations is precisely the sign of $`\det (D\phi)_p`, which the absolute value strips off — that's why pulling back a $`k`-form keeps the sign and a "raw" change of variables loses it.
+
+The "Area of a circle" example computed $`\int_c \alpha = \int_0^{2\pi} \int_0^R r \; dr \; d\theta = \pi R^2` for the volume form pulled back along the polar cell.
+Verify that iterated integral.
+
+```lean
+example (R : ℝ) : ∫ _θ in (0:ℝ)..(2*Real.pi), ∫ r in (0:ℝ)..R, r
+    = Real.pi * R^2 := by
+  sorry
+```
+
+## Boundaries
+
+Mathlib does not have a general theory of $`k`-chains and their boundary operator $`\partial`, so the definition $`\partial c = \sum_i (-1)^{i+1}(c_i^{\text{stop}} - c_i^{\text{start}})` and the theorem $`\partial^2 = 0` are not directly available.
+What is available is the one-dimensional shadow: the boundary of a subdivided interval telescopes to its endpoints, mirroring $`\partial [a, b] = \{b\} - \{a\}`.
+Prove that a telescoping sum of successive differences collapses to the difference of the endpoints.
+
+```lean
+example (g : ℕ → ℝ) (n : ℕ) :
+    ∑ i ∈ Finset.range n, (g (i+1) - g i) = g n - g 0 := by
+  sorry
+```
+
+## Stokes' theorem
+
+Mathlib does not yet bundle Stokes' theorem for arbitrary differential forms on cells, but it does have several special cases as named theorems.
+The most central is the divergence theorem on a rectangular box, `MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable`: for a continuous vector field $`f \colon \mathbb{R}^n \to \mathbb{R}^n` differentiable off a countable set, the integral of $`\sum_i \partial_i f_i` over a box $`[a, b]` equals the sum over its faces of the appropriate boundary integrals — exactly Stokes' theorem instantiated at $`\alpha = \sum_i (-1)^{i-1} f_i \; dx_1 \wedge \dots \widehat{dx_i} \dots \wedge dx_n`.
+The gauge-integral original it is deduced from is `BoxIntegral.hasIntegral_GP_divergence_of_forall_hasDerivWithinAt` in `Mathlib.Analysis.BoxIntegral.DivergenceTheorem`, Green's theorem in $`\mathbb{R}^2` is the corollary `MeasureTheory.integral2_divergence_prod_of_hasFDerivAt`, and the full form of Stokes' theorem on a smooth manifold remains an active formalization target.
+
+The prototype case is the fundamental theorem of calculus on $`[a, b]`, where $`\partial [a, b] = \{b\} - \{a\}`.
+Confirm that integrating the constant $`1`-form (i.e. $`dx`) over $`[a, b]` gives $`b - a`.
+
+```lean
+example (a b : ℝ) : ∫ _x in a..b, (1:ℝ) = b - a := by
+  sorry
+```
+
+## Back to Earth: a comparison to vector calculus
+
+The Mathlib name for the elementary cross product on $`\mathbb{R}^3` is `crossProduct` (in the root namespace, written `⨯₃`); the algebraic Hodge-star machinery on exterior powers does not yet have a unified Mathlib home, although `crossProduct` makes the $`n = 3` case fully usable.
+The flux hack identifies $`\mathbf{F}` with a $`2`-form using the star map $`\mathbf{e}_1 \wedge \mathbf{e}_2 \mapsto \mathbf{e}_3`, which is exactly $`\mathbf{e}_1 \times \mathbf{e}_2 = \mathbf{e}_3`.
+Verify that instance of the cross product.
+
+```lean
+example : crossProduct (![1,0,0] : Fin 3 → ℝ) ![0,1,0] = ![0,0,1] := by
+  sorry
+```

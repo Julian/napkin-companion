@@ -44,19 +44,6 @@ In particular, $`S^0` consists of two points, while $`D^1` can be thought of as 
 $`S^0` is two points bounding the segment $`D^1`, while $`D^2` is a disk with boundary circle $`S^1`.
 :::
 
-:::aside
-Both of these are just the unit sphere and unit ball of a Euclidean space, and Mathlib names them exactly that way once you fix the ambient type to $`\mathbb{R}^{n+1}`.
-The sphere is the level set $`\{\,x \mid \operatorname{dist}(x, 0) = 1\,\}` and the closed ball is the sublevel set $`\{\,x \mid \operatorname{dist}(x, 0) \le 1\,\}`.
-
-```lean
-example (n : ℕ) : Set (EuclideanSpace ℝ (Fin (n + 1))) :=
-  Metric.sphere 0 1     -- Sⁿ
-
-example (n : ℕ) : Set (EuclideanSpace ℝ (Fin (n + 1))) :=
-  Metric.closedBall 0 1 -- Dⁿ⁺¹
-```
-:::
-
 # Quotient topology
 
 :::PROTOTYPE
@@ -88,18 +75,6 @@ This should convince you the definition we gave is the right one.
 
 :::figure "figures/homotopy/interval-mod-endpoints.svg"
 Identifying the endpoints $`-1` and $`1` of $`D^1 = [-1, 1]` recovers $`S^1`.
-:::
-
-:::aside
-The two clauses of the definition are exactly how a quotient carries a topology in Mathlib.
-An equivalence relation is packaged as a {name}`Setoid`, the quotient type is a {name}`Quotient`, and the topology it receives is the finest one making the projection $`x \mapsto [x]` continuous — the _coinduced_ topology.
-Unwinding that adjective gives back the "open iff its preimage is open" clause verbatim.
-
-```lean
-example {X : Type*} [TopologicalSpace X] (s : Setoid X) (U : Set (Quotient s)) :
-    IsOpen U ↔ IsOpen (Quotient.mk s ⁻¹' U) :=
-  isOpen_coinduced
-```
 :::
 
 :::EXAMPLE "More quotient spaces"
@@ -178,15 +153,6 @@ Convince yourself this basis gives the same topology as the product metric on $`
 So this is the "right" definition.
 :::
 
-:::aside
-Mathlib puts the product topology on $`X \times Y` automatically, and the "an open set need not be a rectangle, but is a union of rectangles" content is exactly the criterion {name}`isOpen_prod_iff`: a set is open precisely when every point it contains sits inside some rectangle $`U \times V` contained in the set.
-
-```lean
-example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] :
-    TopologicalSpace (X × Y) := inferInstance
-```
-:::
-
 :::EXAMPLE "More product spaces"
 - $`\mathbb{R} \times \mathbb{R}` is the Euclidean plane.
 - $`S^1 \times [0, 1]` is a cylinder.
@@ -213,16 +179,6 @@ The *disjoint union*, denoted $`X \amalg Y`, is defined by
 Show that the disjoint union of two nonempty spaces is disconnected.
 :::
 
-:::aside
-The disjoint union of types is Mathlib's sum type $`X \oplus Y`, and it carries a topology whose open sets are governed by exactly the two-preimage condition above: a set is open iff its preimages along the two inclusions $`X \hookrightarrow X \oplus Y` and $`Y \hookrightarrow X \oplus Y` are both open.
-That is the content of {name}`isOpen_sum_iff`.
-
-```lean
-example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] :
-    TopologicalSpace (X ⊕ Y) := inferInstance
-```
-:::
-
 More interesting is the wedge sum, where two topological spaces $`X` and $`Y` are fused together only at a single base point.
 
 :::DEFINITION
@@ -244,48 +200,6 @@ $`S^1 \vee S^1` is two circles fused at a single point.
 We often don't mention $`x_0` and $`y_0` when they are understood (or irrelevant).
 For example, from now on we will just write $`S^1 \vee S^1` for a figure eight.
 :::
-
-Mathlib has no wedge sum on the shelf, but the definition above is a recipe we can follow literally: take the disjoint union $`X \oplus Y`, and quotient by the equivalence relation that glues $`x_0` to $`y_0` and nothing else.
-The one subtlety is that "glues $`x_0` to $`y_0` and nothing else" must be spelled out as a genuine equivalence relation — reflexive, symmetric, and transitive — before we may hand it to the quotient machinery.
-
-```lean
-namespace Wedge
-
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-
-/-- Two points of `X ⊕ Y` are glued exactly when they are equal, or one is the
-distinguished `x₀` and the other the distinguished `y₀`. -/
-def Rel (x₀ : X) (y₀ : Y) : X ⊕ Y → X ⊕ Y → Prop
-  | a, b => a = b ∨ (a = .inl x₀ ∧ b = .inr y₀) ∨ (a = .inr y₀ ∧ b = .inl x₀)
-
-def setoid (x₀ : X) (y₀ : Y) : Setoid (X ⊕ Y) where
-  r := Rel x₀ y₀
-  iseqv := by
-    refine ⟨fun _ => .inl rfl, ?_, ?_⟩
-    · rintro a b (rfl | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
-      · exact .inl rfl
-      · exact .inr (.inr ⟨rfl, rfl⟩)
-      · exact .inr (.inl ⟨rfl, rfl⟩)
-    · rintro a b c hab hbc
-      rcases hab with rfl | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
-      · exact hbc
-      · rcases hbc with rfl | ⟨h, rfl⟩ | ⟨_, rfl⟩
-        · exact .inr (.inl ⟨rfl, rfl⟩)
-        · simp at h
-        · exact .inl rfl
-      · rcases hbc with rfl | ⟨_, rfl⟩ | ⟨h, rfl⟩
-        · exact .inr (.inr ⟨rfl, rfl⟩)
-        · exact .inl rfl
-        · simp at h
-
-/-- The wedge sum `X ∨ Y`, glued at `x₀` and `y₀`. -/
-def WedgeSum (x₀ : X) (y₀ : Y) : Type _ := Quotient (setoid x₀ y₀)
-
-instance (x₀ : X) (y₀ : Y) : TopologicalSpace (WedgeSum x₀ y₀) :=
-  inferInstanceAs (TopologicalSpace (Quotient (setoid x₀ y₀)))
-
-end Wedge
-```
 
 :::REMARK
 Annoyingly, in $`\LaTeX` `\wedge` gives $`\wedge` instead of $`\vee` (which is `\vee`).
@@ -348,11 +262,6 @@ Then $$`X^k = \left( X^{k-1} \amalg \left(\coprod_\alpha e^k_\alpha\right) \righ
 where $`\sim` identifies each boundary point of $`e^k_\alpha` with its image in $`X^{k-1}`.
 :::
 
-:::aside
-Mathlib does have a formal theory of CW complexes, phrased not as a type but as a predicate {name}`CWComplex` on a set $`C` sitting inside an ambient topological space, together with the attaching-map data that presents it.
-It is built for stating and proving theorems about such spaces — that they are compactly generated, that a finite complex is compact, and so on — rather than as a convenient way to _name_ the sphere, so we will keep using the informal cell descriptions above.
-:::
-
 # The torus, Klein bottle, ℝℙⁿ, ℂℙⁿ
 
 We now present four of the most important examples of CW complexes.
@@ -390,14 +299,6 @@ The torus' $`1`-skeleton: one $`0`-cell $`e^0` with two $`1`-cells $`e^1_a, e^1_
 
 :::figure "figures/homotopy/torus-2cell.svg"
 The single $`2`-cell, its boundary welded on via $`aba^{-1}b^{-1}`.
-:::
-
-:::aside
-The "$`(\mathbb{R}/\mathbb{Z})^2`" description is one we can write down directly: $`\mathbb{R}/\mathbb{Z}` is the additive circle, and Mathlib abbreviates it {lean}`UnitAddCircle`, so the torus is a product of two copies.
-
-```lean
-example : Type := UnitAddCircle × UnitAddCircle -- (ℝ/ℤ)²
-```
 :::
 
 ## The Klein bottle
@@ -510,19 +411,6 @@ Note that $`\mathbb{RP}^n` thus consists of *one cell in each dimension*.
 - $`\mathbb{RP}^2` can be formed by taking a $`2`-cell and wrapping its perimeter twice around a copy of $`\mathbb{RP}^1`.
 :::
 
-:::aside
-The "lines through the origin" description is the one Mathlib formalizes: {lean}`Projectivization` takes a field $`K` and a vector space $`V` and returns the quotient of the nonzero vectors by the scaling relation.
-Real and complex projective $`n`-space are the instances with $`V = K^{n+1}`.
-
-```lean
-example (n : ℕ) : Type := Projectivization ℝ (Fin (n + 1) → ℝ) -- ℝℙⁿ
-
-example (n : ℕ) : Type := Projectivization ℂ (Fin (n + 1) → ℂ) -- ℂℙⁿ
-```
-
-The topology that makes these the spaces of this section is not yet part of the general `Projectivization` API — Mathlib currently carries a topology only for the projective line — so for the moment this construction gives us the _set_ of points but not, out of the box, their gluing.
-:::
-
 ## Complex projective space
 
 The *complex projective space* $`\mathbb{CP}^n` is defined like $`\mathbb{RP}^n` with coordinates, i.e. $$`(z_0 : z_1 : \dots : z_n)`
@@ -574,3 +462,192 @@ Realize the following spaces as CW complexes:
 Show that a finite CW complex is compact.
 (Hint: prove and use the fact that a quotient of a compact space remains compact.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Spheres
+
+Both of these are just the unit sphere and unit ball of a Euclidean space, and Mathlib names them exactly that way once you fix the ambient type to $`\mathbb{R}^{n+1}`.
+The sphere is the level set $`\{\,x \mid \operatorname{dist}(x, 0) = 1\,\}` and the closed ball is the sublevel set $`\{\,x \mid \operatorname{dist}(x, 0) \le 1\,\}`.
+
+```lean
+example (n : ℕ) : Set (EuclideanSpace ℝ (Fin (n + 1))) :=
+  Metric.sphere 0 1     -- Sⁿ
+
+example (n : ℕ) : Set (EuclideanSpace ℝ (Fin (n + 1))) :=
+  Metric.closedBall 0 1 -- Dⁿ⁺¹
+```
+
+The chapter's exercise — that the open ball is homeomorphic to $`\mathbb{R}^n` — is real work; here is a warm-up in the same spirit.
+Show that a point lies on $`S^n` exactly when it has norm $`1`, recovering the defining equation $`x_0^2 + \dots + x_n^2 = 1`.
+
+```lean
+example (n : ℕ) (x : EuclideanSpace ℝ (Fin (n + 1))) :
+    x ∈ Metric.sphere (0 : EuclideanSpace ℝ (Fin (n + 1))) 1 ↔ ‖x‖ = 1 := by
+  sorry
+```
+
+## Quotient topology
+
+The two clauses of the definition are exactly how a quotient carries a topology in Mathlib.
+An equivalence relation is packaged as a `Setoid`, the quotient type is a `Quotient`, and the topology it receives is the finest one making the projection $`x \mapsto [x]` continuous — the _coinduced_ topology.
+Unwinding that adjective gives back the "open iff its preimage is open" clause verbatim.
+
+```lean
+example {X : Type*} [TopologicalSpace X] (s : Setoid X) (U : Set (Quotient s)) :
+    IsOpen U ↔ IsOpen (Quotient.mk s ⁻¹' U) :=
+  isOpen_coinduced
+```
+
+Because the quotient carries the finest topology making $`x \mapsto [x]` continuous, that projection is in particular continuous.
+Show it.
+
+```lean
+example {X : Type*} [TopologicalSpace X] (s : Setoid X) :
+    Continuous (Quotient.mk s) := by
+  sorry
+```
+
+## Product topology
+
+Mathlib puts the product topology on $`X \times Y` automatically, and the "an open set need not be a rectangle, but is a union of rectangles" content is exactly the criterion `isOpen_prod_iff`: a set is open precisely when every point it contains sits inside some rectangle $`U \times V` contained in the set.
+
+```lean
+example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] :
+    TopologicalSpace (X × Y) := inferInstance
+```
+
+The basic open sets are the rectangles themselves.
+Show that if $`U` and $`V` are open then so is $`U \times V`.
+
+```lean
+example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    (U : Set X) (V : Set Y) (hU : IsOpen U) (hV : IsOpen V) :
+    IsOpen (U ×ˢ V) := by
+  sorry
+```
+
+## Disjoint union and wedge sum
+
+The disjoint union of types is Mathlib's sum type $`X \oplus Y`, and it carries a topology whose open sets are governed by exactly the two-preimage condition above: a set is open iff its preimages along the two inclusions $`X \hookrightarrow X \oplus Y` and $`Y \hookrightarrow X \oplus Y` are both open.
+That is the content of `isOpen_sum_iff`.
+
+```lean
+example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] :
+    TopologicalSpace (X ⊕ Y) := inferInstance
+```
+
+The chapter asked you to show that a disjoint union of two nonempty spaces is disconnected.
+The heart of that fact is that the copy of $`X` inside $`X \oplus Y` is both open and closed, i.e. a nontrivial _clopen_ set.
+Show that the range of the inclusion is clopen.
+
+```lean
+example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] :
+    IsClopen (Set.range (Sum.inl : X → X ⊕ Y)) := by
+  sorry
+```
+
+Mathlib has no wedge sum on the shelf, but the definition above is a recipe we can follow literally: take the disjoint union $`X \oplus Y`, and quotient by the equivalence relation that glues $`x_0` to $`y_0` and nothing else.
+The one subtlety is that "glues $`x_0` to $`y_0` and nothing else" must be spelled out as a genuine equivalence relation — reflexive, symmetric, and transitive — before we may hand it to the quotient machinery.
+
+```lean
+namespace Wedge
+
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+
+/-- Two points of `X ⊕ Y` are glued exactly when they are equal, or one is the
+distinguished `x₀` and the other the distinguished `y₀`. -/
+def Rel (x₀ : X) (y₀ : Y) : X ⊕ Y → X ⊕ Y → Prop
+  | a, b => a = b ∨ (a = .inl x₀ ∧ b = .inr y₀) ∨ (a = .inr y₀ ∧ b = .inl x₀)
+
+def setoid (x₀ : X) (y₀ : Y) : Setoid (X ⊕ Y) where
+  r := Rel x₀ y₀
+  iseqv := by
+    refine ⟨fun _ => .inl rfl, ?_, ?_⟩
+    · rintro a b (rfl | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
+      · exact .inl rfl
+      · exact .inr (.inr ⟨rfl, rfl⟩)
+      · exact .inr (.inl ⟨rfl, rfl⟩)
+    · rintro a b c hab hbc
+      rcases hab with rfl | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
+      · exact hbc
+      · rcases hbc with rfl | ⟨h, rfl⟩ | ⟨_, rfl⟩
+        · exact .inr (.inl ⟨rfl, rfl⟩)
+        · simp at h
+        · exact .inl rfl
+      · rcases hbc with rfl | ⟨_, rfl⟩ | ⟨h, rfl⟩
+        · exact .inr (.inr ⟨rfl, rfl⟩)
+        · exact .inl rfl
+        · simp at h
+
+/-- The wedge sum `X ∨ Y`, glued at `x₀` and `y₀`. -/
+def WedgeSum (x₀ : X) (y₀ : Y) : Type _ := Quotient (setoid x₀ y₀)
+
+instance (x₀ : X) (y₀ : Y) : TopologicalSpace (WedgeSum x₀ y₀) :=
+  inferInstanceAs (TopologicalSpace (Quotient (setoid x₀ y₀)))
+
+end Wedge
+```
+
+## CW complexes
+
+Mathlib does have a formal theory of CW complexes, phrased not as a type but as a predicate `CWComplex` on a set $`C` sitting inside an ambient topological space, together with the attaching-map data that presents it.
+It is built for stating and proving theorems about such spaces — that they are compactly generated, that a finite complex is compact, and so on — rather than as a convenient way to _name_ the sphere, so we will keep using the informal cell descriptions above.
+
+## The torus
+
+The "$`(\mathbb{R}/\mathbb{Z})^2`" description is one we can write down directly: $`\mathbb{R}/\mathbb{Z}` is the additive circle, and Mathlib abbreviates it `UnitAddCircle`, so the torus is a product of two copies.
+
+```lean
+example : Type := UnitAddCircle × UnitAddCircle -- (ℝ/ℤ)²
+```
+
+The additive circle is compact, and a product of compact spaces is compact.
+Show that the torus is a compact space.
+
+```lean
+example : CompactSpace (UnitAddCircle × UnitAddCircle) := by
+  sorry
+```
+
+## Real projective space
+
+The "lines through the origin" description is the one Mathlib formalizes: `Projectivization` takes a field $`K` and a vector space $`V` and returns the quotient of the nonzero vectors by the scaling relation.
+Real and complex projective $`n`-space are the instances with $`V = K^{n+1}`.
+
+```lean
+example (n : ℕ) : Type := Projectivization ℝ (Fin (n + 1) → ℝ) -- ℝℙⁿ
+```
+
+The topology that makes these the spaces of this section is not yet part of the general `Projectivization` API — Mathlib currently carries a topology only for the projective line — so for the moment this construction gives us the _set_ of points but not, out of the box, their gluing.
+
+The defining feature of these coordinates is that they are only defined "up to scaling".
+Show that two nonzero vectors name the same point of $`\mathbb{RP}^n` exactly when one is a scalar multiple of the other.
+
+```lean
+example (n : ℕ) (v w : Fin (n + 1) → ℝ) (hv : v ≠ 0) (hw : w ≠ 0) :
+    Projectivization.mk ℝ v hv = Projectivization.mk ℝ w hw ↔
+      ∃ a : ℝˣ, a • w = v := by
+  sorry
+```
+
+## Complex projective space
+
+Complex projective $`n`-space is the same construction over $`\mathbb{C}`.
+
+```lean
+example (n : ℕ) : Type := Projectivization ℂ (Fin (n + 1) → ℂ) -- ℂℙⁿ
+```
+
+The scaling relation reads the same way, now with a complex scalar.
+Show that two nonzero vectors name the same point of $`\mathbb{CP}^n` exactly when one is a complex scalar multiple of the other.
+
+```lean
+example (n : ℕ) (v w : Fin (n + 1) → ℂ) (hv : v ≠ 0) (hw : w ≠ 0) :
+    Projectivization.mk ℂ v hv = Projectivization.mk ℂ w hw ↔
+      ∃ a : ℂˣ, a • w = v := by
+  sorry
+```

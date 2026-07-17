@@ -6,6 +6,7 @@ import Mathlib.Topology.Covering.Basic
 import Mathlib.Topology.Covering.Quotient
 import Mathlib.Topology.Homotopy.Lifting
 import Mathlib.Topology.Connected.LocPathConnected
+import Mathlib.Analysis.Complex.CoveringMap
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -50,18 +51,6 @@ All we're saying is that $`U` is evenly covered if its pre-image is a bunch of c
 
 :::DEFINITION
 A *covering projection* $`p \colon E \to B` is a surjective continuous map such that every base point $`b \in B` has an open neighborhood $`U \ni b` which is evenly covered by $`p`.
-:::
-
-:::aside
-Both notions live in Mathlib.
-{name}`IsEvenlyCovered` packages "the pre-image splits into pancakes, each mapped homeomorphically" as the data of a homeomorphism $`p^{-1}(U) \cong U \times I` over $`U`, where the index type $`I` carries the discrete topology — the discreteness is precisely what keeps the sheets from touching.
-A {name}`IsCoveringMap` is then a map for which every point has an evenly covered neighborhood, with the fiber itself serving as the index type.
-
-```lean
-example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
-    (p : E → B) : Prop :=
-  IsCoveringMap p
-```
 :::
 
 :::EXERCISE "On requiring surjectivity of $p$"
@@ -183,23 +172,6 @@ So the robot just mimics the mouse until it gets to the end of $`I_k`.
 Then the mouse is in some new evenly covered $`U_{k+1}`, and we can repeat.
 :::
 
-:::aside
-Mathlib carries out exactly this compactness argument once and for all, packaging the result as {name}`IsCoveringMap.liftPath`: from a covering map, a path $`\gamma` in the base, a chosen start $`e` in the fiber, and a proof that $`\gamma(0) = p(e)`, it produces the lifted path.
-That the output really is a lift starting where we asked is recorded by {name}`IsCoveringMap.liftPath_lifts` and {name}`IsCoveringMap.liftPath_zero`.
-
-```lean
-noncomputable example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
-    {p : E → B} (cov : IsCoveringMap p) (γ : C(I, B)) (e : E) (h : γ 0 = p e) :
-    C(I, E) :=
-  cov.liftPath γ e h
-
-example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
-    {p : E → B} (cov : IsCoveringMap p) (γ : C(I, B)) (e : E) (h : γ 0 = p e) :
-    p ∘ cov.liftPath γ e h = γ :=
-  cov.liftPath_lifts γ e h
-```
-:::
-
 The theorem can be generalized to a diagram where a path is replaced by a map out of a sufficiently nice space $`Y`, as follows.
 
 :::figure "figures/homotopy/general-lifting-diagram.svg"
@@ -228,11 +200,6 @@ What happens if we put $`Y = [0, 1]`?
 Here's another cool special case: recall that a homotopy can be encoded as a continuous function $`[0, 1] \times [0, 1] \to X`.
 But $`[0, 1] \times [0, 1]` is also simply connected.
 Hence given a homotopy $`\gamma_1 \simeq \gamma_2` in the base space $`B`, we can lift it to get a homotopy $`\tilde\gamma_1 \simeq \tilde\gamma_2` in $`E`.
-:::
-
-:::aside
-The locally-path-connected hypothesis is the typeclass {name}`LocPathConnectedSpace`, and the whole criterion is Mathlib's {name}`IsCoveringMap.existsUnique_continuousMap_lifts`, stated for a source that is {name}`SimplyConnectedSpace` and {name}`LocPathConnectedSpace` (so that the subgroup condition is automatic).
-The homotopy-lifting special case of the remark is separately available as {name}`IsCoveringMap.liftHomotopy`.
 :::
 
 ::::REMARK "The locally path-connected condition really is necessary"
@@ -336,11 +303,6 @@ by simply sending every point to the orbit it lives in.
 :::DEFINITION
 Such a projection is called *regular*.
 (Terrible, I know.)
-:::
-
-:::aside
-Mathlib records when such a quotient projection is a covering map as {name}`IsQuotientCoveringMap`, phrased for a group $`G` acting on $`E` with $`E \to E/G` the orbit projection.
-The "stabilizers are trivial and each translate is continuous" hypotheses are what this predicate distills into the statement that the orbit map is a covering.
 :::
 
 :::EXAMPLE "$\\mathbb{R} \\to S^1$ is regular"
@@ -480,3 +442,148 @@ Hence it's possible to understand the group theory of $`\pi_1(B)` completely in 
 Moreover, this is how the "universal cover" gets its name: it is the one corresponding to the trivial subgroup of $`\pi_1(B)`.
 Actually, you can show that it really is universal in the sense that if $`p \colon E \to B` is another covering projection, then $`E` is in turn covered by the universal space.
 More generally, if $`H_1 \subseteq H_2 \subseteq G` are subgroups, then the space corresponding to $`H_2` can be covered by the space corresponding to $`H_1`.
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Even coverings and covering projections
+
+Both notions live in Mathlib.
+{name}`IsEvenlyCovered` packages "the pre-image splits into pancakes, each mapped homeomorphically" as the data of a homeomorphism $`p^{-1}(U) \cong U \times I` over $`U`, where the index type $`I` carries the discrete topology — the discreteness is precisely what keeps the sheets from touching.
+A {name}`IsCoveringMap` is then a map for which every point has an evenly covered neighborhood, with the fiber itself serving as the index type.
+
+```lean
+example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
+    (p : E → B) : Prop :=
+  IsCoveringMap p
+```
+
+Once the pancakes are in place, both defining properties of a covering projection follow: it is continuous, and in fact a local homeomorphism.
+
+```lean
+example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
+    {p : E → B} (cov : IsCoveringMap p) : Continuous p :=
+  cov.continuous
+
+example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
+    {p : E → B} (cov : IsCoveringMap p) : IsLocalHomeomorph p :=
+  cov.isLocalHomeomorph
+```
+
+The chapter's complex examples include the exponential map $`\exp \colon \mathbb{C} \to \mathbb{C} \setminus \{0\}`.
+Show that it is a covering projection — Mathlib has done the work, so find the lemma that names it.
+
+```lean
+example :
+    IsCoveringMap fun z : ℂ ↦ (⟨_, z.exp_ne_zero⟩ : {z : ℂ // z ≠ 0}) := by
+  sorry
+```
+
+## Lifting theorem
+
+Mathlib carries out exactly this compactness argument once and for all, packaging the result as {name}`IsCoveringMap.liftPath`: from a covering map, a path $`\gamma` in the base, a chosen start $`e` in the fiber, and a proof that $`\gamma(0) = p(e)`, it produces the lifted path.
+That the output really is a lift starting where we asked is recorded by {name}`IsCoveringMap.liftPath_lifts` and {name}`IsCoveringMap.liftPath_zero`.
+
+```lean
+noncomputable example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
+    {p : E → B} (cov : IsCoveringMap p) (γ : C(I, B)) (e : E) (h : γ 0 = p e) :
+    C(I, E) :=
+  cov.liftPath γ e h
+
+example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
+    {p : E → B} (cov : IsCoveringMap p) (γ : C(I, B)) (e : E) (h : γ 0 = p e) :
+    p ∘ cov.liftPath γ e h = γ :=
+  cov.liftPath_lifts γ e h
+```
+
+The general lifting criterion is {name}`IsCoveringMap.existsUnique_continuousMap_lifts`, stated for a source that is {name}`SimplyConnectedSpace` and {name}`LocPathConnectedSpace` (so that the subgroup condition is automatic), and the homotopy-lifting special case of the remark is separately available as {name}`IsCoveringMap.liftHomotopy`.
+
+```lean
+example {E B A : Type*} [TopologicalSpace E] [TopologicalSpace B]
+    [TopologicalSpace A] [SimplyConnectedSpace A] [LocPathConnectedSpace A]
+    {p : E → B} (cov : IsCoveringMap p)
+    (f : C(A, B)) (a₀ : A) (e₀ : E) (he : p e₀ = f a₀) :
+    ∃! F : C(A, E), F a₀ = e₀ ∧ p ∘ F = f :=
+  cov.existsUnique_continuousMap_lifts f a₀ e₀ he
+```
+
+The question observed that a lift starting at a chosen point is unique.
+Show that two lifts of the same path that agree at time $`0` agree everywhere — the interval $`[0, 1]` is connected, which is what makes this work.
+
+```lean
+example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
+    {p : E → B} (cov : IsCoveringMap p) (g₁ g₂ : I → E)
+    (h₁ : Continuous g₁) (h₂ : Continuous g₂)
+    (he : p ∘ g₁ = p ∘ g₂) (h0 : g₁ 0 = g₂ 0) : g₁ = g₂ := by
+  sorry
+```
+
+## Lifting correspondence
+
+The lifting correspondence $`\Phi \colon [\gamma] \mapsto \tilde\gamma(1)` is well-defined on homotopy classes because homotopic paths lift, from a common start, to paths with a common endpoint.
+
+```lean
+example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
+    {p : E → B} (cov : IsCoveringMap p) {γ₀ γ₁ : C(I, B)}
+    (h : γ₀.HomotopicRel γ₁ {0, 1}) (e : E)
+    (h₀ : γ₀ 0 = p e) (h₁ : γ₁ 0 = p e) :
+    cov.liftPath γ₀ e h₀ 1 = cov.liftPath γ₁ e h₁ 1 :=
+  cov.liftPath_apply_one_eq_of_homotopicRel h e h₀ h₁
+```
+
+The constant loop at $`b_0` sits at the identity of $`\pi_1(B, b_0)`, and under $`\Phi` it should stay put at $`e_0`.
+Show that lifting the constant path at $`p(e)` from $`e` gives the constant path at $`e`.
+
+```lean
+example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
+    {p : E → B} (cov : IsCoveringMap p) (e : E) :
+    cov.liftPath (.const I (p e)) e rfl = .const I e := by
+  sorry
+```
+
+## Regular coverings
+
+Mathlib records when such a quotient projection is a covering map as {name}`IsQuotientCoveringMap`, phrased for a group $`G` acting on $`E` with $`E \to E/G` the orbit projection.
+The "stabilizers are trivial and each translate is continuous" hypotheses are what this predicate distills into the statement that the orbit map is a covering.
+
+```lean
+example {E X G : Type*} [TopologicalSpace E] [TopologicalSpace X] [Group G]
+    [MulAction G E] (f : E → X) : Prop :=
+  IsQuotientCoveringMap f G
+```
+
+Confirm that a regular projection really is a covering projection: extract {name}`IsCoveringMap` from an {name}`IsQuotientCoveringMap`.
+
+```lean
+example {E X G : Type*} [TopologicalSpace E] [TopologicalSpace X] [Group G]
+    [MulAction G E] {f : E → X} (hf : IsQuotientCoveringMap f G) :
+    IsCoveringMap f := by
+  sorry
+```
+
+## The algebra of fundamental groups
+
+The proposition that a covering projection is injective on $`\pi_1` is Mathlib's {name}`IsCoveringMap.injective_path_homotopic_map`: postcomposition with $`p` is injective on homotopy classes of paths, hence on $`\pi_1(E, e_0)`.
+
+```lean
+example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
+    {p : E → B} (cov : IsCoveringMap p) (e₀ e₁ : E) :
+    Function.Injective
+      fun γ : Path.Homotopic.Quotient e₀ e₁ ↦ γ.map ⟨p, cov.continuous⟩ :=
+  cov.injective_path_homotopic_map e₀ e₁
+```
+
+The classification theorem — the Galois correspondence between subgroups of $`\pi_1(B)` and connected covers, with normal subgroups matching the regular coverings — is not yet in Mathlib, so we cannot formalize it here.
+What we can do is the uniqueness half of the isomorphism story: a map of covering projections out of a connected space is determined by a single value.
+Prove that two continuous maps into a cover which project to the same map and agree at one point are equal.
+
+```lean
+example {E₁ E₂ B : Type*} [TopologicalSpace E₁] [TopologicalSpace E₂]
+    [TopologicalSpace B] [PreconnectedSpace E₁] {p : E₂ → B}
+    (cov : IsCoveringMap p) (f g : E₁ → E₂)
+    (hf : Continuous f) (hg : Continuous g) (he : p ∘ f = p ∘ g)
+    (x : E₁) (hx : f x = g x) : f = g := by
+  sorry
+```

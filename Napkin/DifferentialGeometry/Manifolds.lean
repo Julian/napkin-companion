@@ -5,8 +5,12 @@ import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.Geometry.Manifold.ChartedSpace
 import Mathlib.Geometry.Manifold.IsManifold.Basic
+import Mathlib.Geometry.Manifold.ContMDiff.Basic
+import Mathlib.Geometry.Manifold.LocalDiffeomorph
+import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.Geometry.Manifold.DerivationBundle
+import Mathlib.RingTheory.Ideal.Cotangent
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -63,20 +67,6 @@ Each $`\phi_i \colon U_i \to E_i` is called a *chart*, and together they form a 
 :::REMARK
 Here "$`E`" stands for "Euclidean".
 I think this notation is not standard; usually people just write $`\phi_i(U_i)` instead.
-:::
-
-:::aside
-Mathlib formalizes the atlas data as a `ChartedSpace`: a topological space $`M` together with a "model" topological space $`H` and, at every point of $`M`, a partial homeomorphism into $`H`.
-The `chartAt` field picks out a chart through any given point and `mem_chart_source` ensures every point lies in the source of its chart.
-
-```lean
-recall ChartedSpace.chartAt
-    {H : Type*} [TopologicalSpace H]
-    {M : Type*} [TopologicalSpace M] [self : ChartedSpace H M]
-    (x : M) : OpenPartialHomeomorph M H
-```
-
-For a "concrete" topological $`n`-manifold one would take $`H = \mathbb{R}^n`, but the abstract setup `ChartedSpace H M` is more flexible: we can model on $`H = \mathbb{R}^n`, on a half-space (for manifolds with boundary), or on a Banach space (for the infinite-dimensional case).
 :::
 
 :::REMARK
@@ -138,20 +128,6 @@ We say $`M` is a *smooth manifold* if all its transition maps are smooth.
 
 This definition makes sense because we know what it means for a map between two open sets of $`\mathbb{R}^n` to be differentiable.
 
-:::aside
-Mathlib bundles "the topological manifold structure plus a smoothness compatibility" into the typeclass `IsManifold I n M`, where `I` is a *model with corners* — packaging the choice of model space (typically $`\mathbb{R}^n`) and any boundary structure — and `n : WithTop ℕ∞` records the smoothness order ($`C^k`, $`C^\infty`, or analytic).
-
-```lean
-recall IsManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
-    (M : Type*) [TopologicalSpace M] [ChartedSpace H M] : Prop
-```
-
-The "transition maps are smooth" condition becomes the field `compatible` saying that for any pair of charts in the atlas, the change-of-coordinates partial homeomorphism is in the $`C^n`-groupoid, which is exactly the Mathlib-side incarnation of the requirement above.
-:::
-
 With smooth manifolds we can try to port over definitions that we built for $`\mathbb{R}^n` onto our manifolds.
 So in general, all definitions involving smooth manifolds will reduce to something on each of the coordinate charts, with a compatibility condition.
 
@@ -167,9 +143,6 @@ As an example, here is the definition of a "smooth map":
   $$`E_i \xrightarrow{\phi_i^{-1}} U_i \hookrightarrow M \xrightarrow{f} N \twoheadrightarrow U_j \xrightarrow{\phi_j} E_j`
   is smooth, as a function $`E_i \to E_j`.
 :::
-
-The Mathlib counterpart is `ContMDiff I I' n f`, defined as: for every point $`x \in M`, the function $`\phi_j \circ f \circ \phi_i^{-1}` is $`C^n` between the relevant open subsets of model spaces.
-The notation `C^∞⟮I, M; I', M'⟯` is sugar for the type of smooth maps $`M \to M'`.
 
 # Regular value theorem
 
@@ -211,9 +184,6 @@ Thus:
   Indeed, $`M` is a single point, which is actually a zero-dimensional manifold.
 :::
 
-The regular value theorem is not yet packaged as a one-liner in Mathlib's manifold library, but its essential ingredients are: `MeasureTheory.MeasurePreserving` and the implicit function theorem `HasStrictFDerivAt.implicitFunction` from `Mathlib.Analysis.Calculus.Implicit` give the chart construction at a regular point, and `IsLocalDiffeomorphAt.localInverse_contMDiffOn` packages the smoothness of the local inverse.
-The "rank $`m`" hypothesis becomes surjectivity of the differential, which is Mathlib's `Function.Surjective ((fderiv ℝ f) p)`.
-
 We won't give further examples since I'm only mentioning this in passing in order to increase your capacity to write real concrete examples.
 (But {cite}`ref:manifolds`, Chapter 6.2 has some more examples, beautifully illustrated.)
 
@@ -230,9 +200,6 @@ $$`\alpha_j = \phi_{ij}^\ast (\alpha_i).`
 :::
 
 In English: we specify a differential form on each chart, which is compatible under pullbacks of the transition maps.
-
-The Mathlib-side packaging of "section of an exterior power of the cotangent bundle" lives in `Mathlib.Geometry.Manifold.VectorBundle.Tangent` and `Mathlib.Geometry.Manifold.MFDeriv.Defs`: the cotangent bundle is built as the dual of `TangentSpace I x`, and a $`k`-form is a smooth section of $`\bigwedge^k T^\ast M`.
-The chart-by-chart compatibility is automatic from the bundle structure.
 
 # Orientations
 
@@ -284,9 +251,6 @@ In any event, the point is that guesses about the orientability of spaces are li
 Stokes' theorem in the general case is based on the idea of a *manifold with boundary* $`M`, which I won't define, other than to say its boundary $`\partial M` is an $`(n - 1)`-dimensional manifold and that it is oriented if $`M` is oriented.
 An example is $`M = D^2`, which has boundary $`\partial M = S^1`.
 
-Mathlib accommodates manifolds with boundary by allowing the model space to be a half-space rather than all of $`\mathbb{R}^n`; this is precisely the role of the "with corners" in `ModelWithCorners`.
-The boundary points are then those whose chart image lies on the boundary of the half-space, captured by the predicate `ModelWithCorners.IsInteriorPoint`.
-
 Next:
 
 :::DEFINITION
@@ -309,8 +273,6 @@ $$`\int_M d\alpha = \int_{\partial M} \alpha.`
 :::
 
 All the omitted details are developed in full in {cite}`ref:manifolds`.
-
-The full Stokes' theorem on a smooth oriented manifold remains an active formalization target in Mathlib; the closest currently formalized statement is the divergence theorem on a box, `MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable`, which corresponds to the special case $`M = [a, b] \subset \mathbb{R}^n` with the canonical orientation.
 
 # (Optional) The tangent and cotangent space
 
@@ -370,24 +332,6 @@ In this way we have constructed the tangent space.
 The tangent space $`T_p(M)` at a point $`p` of $`S^1`, with a tangent vector $`\vec v`.
 :::
 
-:::aside
-Mathlib carries two complementary tangent-space constructions.
-The fiber-bundle version is `TangentSpace I x`, defined as the model vector space $`E` itself (the abstract tangent vector lives in the fiber of the tangent bundle); manipulating tangent vectors algebraically goes through `Bundle.TotalSpace` and `mfderiv`.
-The derivation-based version, exactly the one defined above, is `PointDerivation I x` in `Mathlib.Geometry.Manifold.DerivationBundle`.
-
-```lean
-recall PointDerivation
-    {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H)
-    {M : Type*} [TopologicalSpace M] [ChartedSpace H M] (x : M) : Type _
-```
-
-Underneath the hood, `PointDerivation` is a special case of the algebraic `Derivation R A M` from `Mathlib.RingTheory.Derivation.Basic`: an $`R`-linear map $`A \to M` satisfying the Leibniz rule, where here $`R = 𝕜`, $`A = C^\infty(M; 𝕜)`, and $`M = 𝕜` viewed as a module over $`A` via evaluation at $`x`.
-That the two flavors agree (derivation-based and fiber-bundle-based) is morally Mathlib's `mdfderiv_eq` lemmas in the manifold library.
-:::
-
 ## The cotangent space
 
 In fact, one can show that the product rule for $`D` is equivalent to the following three conditions:
@@ -413,8 +357,6 @@ This definition is even more abstract than the one with derivations above, but h
 - it is coordinate-free, and
 - it's defined only in terms of the smooth functions $`M \to \mathbb{R}`, which will be really helpful later on in algebraic geometry when we have varieties or schemes and can repeat this definition.
 
-The "cotangent space as $`\mathfrak{m}/\mathfrak{m}^2`" picture is the one Mathlib carries on the algebraic-geometry side: `IsLocalRing.CotangentSpace` and `KaehlerDifferential` in `Mathlib.RingTheory.Kaehler.Basic` are the algebro-geometric incarnations of exactly this construction, and the smooth-manifold cotangent space is the same idea applied to $`R = C^\infty(M; \mathbb{R})`.
-
 ## Sanity check
 
 With all these equivalent definitions, the last thing I should do is check that this definition of tangent space actually gives a vector space of dimension $`n`.
@@ -438,3 +380,155 @@ and so the cotangent space, hence tangent space, indeed has dimension $`n`.
 :::PROBLEM "Zero-forms are functions"
 Show that a differential $`0`-form on a smooth manifold $`M` is the same thing as a smooth function $`M \to \mathbb{R}`.
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Topological manifolds
+
+Mathlib formalizes the atlas data as a `ChartedSpace`: a topological space $`M` together with a "model" topological space $`H` and, at every point of $`M`, a partial homeomorphism into $`H`.
+The `chartAt` field picks out a chart through any given point.
+
+```lean
+recall ChartedSpace.chartAt
+    {H : Type*} [TopologicalSpace H]
+    {M : Type*} [TopologicalSpace M] [self : ChartedSpace H M]
+    (x : M) : OpenPartialHomeomorph M H
+```
+
+For a "concrete" topological $`n`-manifold one would take $`H = \mathbb{R}^n`, but the abstract setup `ChartedSpace H M` is more flexible: we can model on $`H = \mathbb{R}^n`, on a half-space (for manifolds with boundary), or on a Banach space (for the infinite-dimensional case).
+
+The local picture — "every point has a neighborhood looking like the model" — is guaranteed by the field `mem_chart_source`, which says every point lies in the source of the chart chosen through it.
+Show it directly.
+
+```lean
+example {H : Type*} [TopologicalSpace H] {M : Type*} [TopologicalSpace M]
+    [ChartedSpace H M] (x : M) : x ∈ (chartAt H x).source := by
+  sorry
+```
+
+## Smooth manifolds
+
+Mathlib bundles "the topological manifold structure plus a smoothness compatibility" into the typeclass `IsManifold I n M`, where `I` is a *model with corners* — packaging the choice of model space (typically $`\mathbb{R}^n`) and any boundary structure — and `n : WithTop ℕ∞` records the smoothness order ($`C^k`, $`C^\infty`, or analytic).
+
+```lean
+recall IsManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H]
+    (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
+    (M : Type*) [TopologicalSpace M] [ChartedSpace H M] : Prop
+```
+
+The "transition maps are smooth" condition becomes the field saying that for any pair of charts in the atlas, the change-of-coordinates partial homeomorphism is in the $`C^n`-groupoid, which is exactly the incarnation of the requirement above.
+
+The counterpart of a smooth map is `ContMDiff I I' n f`: for every point $`x \in M`, the local expression $`\phi_j \circ f \circ \phi_i^{-1}` is $`C^n` between the relevant open subsets of model spaces.
+Constant maps are smooth, as expected.
+
+```lean
+example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+    {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+    {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
+    {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+    {n : WithTop ℕ∞} (c : M') : ContMDiff I I' n (fun _ : M => c) :=
+  contMDiff_const
+```
+
+Now show that the identity map is smooth.
+
+```lean
+example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {n : WithTop ℕ∞} :
+    ContMDiff I I n (id : M → M) := by
+  sorry
+```
+
+## Regular value theorem
+
+The regular value theorem is not yet packaged as a one-liner in Mathlib's manifold library, but its essential ingredients are.
+The implicit function theorem `HasStrictFDerivAt.implicitFunction` from `Mathlib.Analysis.Calculus.Implicit` gives the chart construction at a regular point, and the "rank $`m`" hypothesis becomes surjectivity of the differential.
+The smoothness of the resulting local inverse is packaged by `IsLocalDiffeomorphAt`: a map that near a point is a diffeomorphism onto its image.
+
+Such a local diffeomorphism is in particular smooth at the point.
+Prove it.
+
+```lean
+example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+    {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+    {H' : Type*} [TopologicalSpace H'] {J : ModelWithCorners 𝕜 E' H'}
+    {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
+    {n : WithTop ℕ∞} {f : M → N} {x : M}
+    (hf : IsLocalDiffeomorphAt I J n f x) : ContMDiffAt I J n f x := by
+  sorry
+```
+
+## Differential forms on manifolds
+
+A differential form on a manifold is a section of an exterior power of the cotangent bundle: the cotangent bundle is built as the dual of `TangentSpace I x`, and a $`k`-form is a smooth section of $`\bigwedge^k T^\ast M`.
+There is, however, no dedicated Mathlib type packaging "differential $`k`-form on a manifold" together with the chart-by-chart pullback compatibility of the definition above, so there is no honest one-liner to state here.
+
+## Stokes' theorem for manifolds
+
+Mathlib accommodates manifolds with boundary by allowing the model space to be a half-space rather than all of $`\mathbb{R}^n`; this is precisely the role of the "with corners" in `ModelWithCorners`.
+The boundary points are then those whose chart image lies on the boundary of the half-space, captured by the predicate `ModelWithCorners.IsInteriorPoint`.
+
+The full Stokes' theorem on a smooth oriented manifold remains an active formalization target in Mathlib; the closest currently formalized statement is the divergence theorem on a box, `MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable`, which corresponds to the special case $`M = [a, b] \subset \mathbb{R}^n` with the canonical orientation.
+
+## Tangent space
+
+Mathlib carries two complementary tangent-space constructions.
+The fiber-bundle version is `TangentSpace I x`, defined as the model vector space $`E` itself (the abstract tangent vector lives in the fiber of the tangent bundle); manipulating tangent vectors algebraically goes through `Bundle.TotalSpace` and `mfderiv`.
+The derivation-based version, exactly the one defined above, is `PointDerivation I x`.
+
+```lean
+recall PointDerivation
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H]
+    (I : ModelWithCorners 𝕜 E H)
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M] (x : M) : Type _
+```
+
+Underneath the hood, `PointDerivation` is a special case of the algebraic `Derivation R A M`: an $`R`-linear map $`A \to M` satisfying the Leibniz rule, where here $`R = 𝕜`, $`A = C^\infty(M; 𝕜)`, and $`M = 𝕜` viewed as a module over $`A` via evaluation at $`x`.
+
+The `mfderiv` of a map is the induced linear map on tangent spaces.
+Show that the derivative of the identity map is the identity linear map.
+
+```lean
+example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M] (x : M) :
+    mfderiv I I (id : M → M) x
+      = ContinuousLinearMap.id 𝕜 (TangentSpace I x) := by
+  sorry
+```
+
+## The cotangent space
+
+The "cotangent space as $`\mathfrak{m}/\mathfrak{m}^2`" picture is the one Mathlib carries on the algebraic-geometry side.
+For a local ring `R`, the cotangent space `IsLocalRing.CotangentSpace R` is the quotient $`\mathfrak{m}/\mathfrak{m}^2` of the maximal ideal, a vector space over the residue field.
+
+```lean
+recall IsLocalRing.CotangentSpace
+    (R : Type*) [CommRing R] [IsLocalRing R] : Type _
+```
+
+The smooth-manifold cotangent space is the same idea applied to $`R = C^\infty(M; \mathbb{R})`.
+The sanity check that a point has trivial cotangent space when there is no room to differentiate is visible on the algebraic side: a field is a local ring whose maximal ideal is $`0`, so its cotangent space is trivial.
+Show that the cotangent space of a field is a subsingleton.
+
+```lean
+example (K : Type*) [Field K] :
+    Subsingleton (IsLocalRing.CotangentSpace K) := by
+  sorry
+```

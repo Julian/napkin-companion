@@ -5,7 +5,7 @@ import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 import Mathlib.LinearAlgebra.Alternating.Basic
-import Mathlib.Geometry.Manifold.Algebra.LeftInvariantDerivation
+import Mathlib.Data.Real.Basic
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -173,17 +173,6 @@ We define a *differential $`k`-form* $`\alpha` on $`U` to be a smooth (infinitel
 (Here $`\bigwedge^k(V^\vee)` is the wedge product.)
 :::
 
-:::aside
-Mathlib's bridge to differential forms is `AlternatingMap` (and its continuous variant `ContinuousAlternatingMap`): given vector spaces, `V [⋀^ι]→ₗ[𝕜] W` is the type of alternating multilinear maps `V^ι → W`.
-A pointwise differential $`k`-form is then a map `U → V [⋀^(Fin k)]→ₗ[ℝ] ℝ`, smooth in the $`U` argument.
-For abstract manifolds, `Mathlib.Geometry.Manifold.Algebra.LeftInvariantDerivation` and the `Mathlib.Geometry.Manifold.MFDeriv.*` files give the manifold-side machinery; the wedge-algebra `Mathlib.LinearAlgebra.ExteriorAlgebra.Basic` carries `ExteriorAlgebra R M` and `ExteriorPower R M k` (`= ⋀^k M`), the algebra-side companions.
-
-```lean
-example (V : Type*) [AddCommGroup V] [Module ℝ V] (k : ℕ) :
-    Type _ := V [⋀^Fin k]→ₗ[ℝ] ℝ
-```
-:::
-
 Like with $`Df`, we'll use $`\alpha_p` instead of $`\alpha(p)`.
 
 :::EXAMPLE "k-forms for k=0,1"
@@ -213,9 +202,6 @@ For linear functions $`\xi_1, \dots, \xi_k \in V^\vee` and vectors $`v_1, \dots,
 $$`(\xi_1 \wedge \dots \wedge \xi_k)(v_1, \dots, v_k) \overset{\text{def}}{=} \det \begin{bmatrix} \xi_1(v_1) & \dots & \xi_1(v_k) \\ \vdots & \ddots & \vdots \\ \xi_k(v_1) & \dots & \xi_k(v_k) \end{bmatrix}.`
 You can check that this is well-defined under e.g. $`v \wedge w = -w \wedge v` and so on.
 :::
-
-The exterior-power machinery in `Mathlib.LinearAlgebra.Alternating.Basic` gives exactly this evaluation rule.
-The cleanest packaging is via `MultilinearMap.alternatization`, which sends an arbitrary multilinear map to its "antisymmetrize-via-determinant" — applying it to the tensor $`\xi_1 \otimes \dots \otimes \xi_k` recovers the determinant formula above.
 
 :::EXAMPLE "Evaluation of a differential form"
 Set $`V = \mathbb{R}^3`.
@@ -277,8 +263,6 @@ $$`d\alpha \overset{\text{def}}{=} \sum_I df_I \wedge d\mathbf{e}_I = \sum_I \su
 :::
 
 It turns out this doesn't depend on the choice of basis; we'll mention a basis-free definition at the end of this section.
-
-Mathlib's manifold-flavored exterior derivative lives in `Mathlib.Geometry.Manifold.IntegralCurve` and friends as `mfderiv` and the associated wedge-and-derivate machinery; the cleanest first-look is the "differential forms on a smooth manifold" abstraction `Mathlib.Geometry.Manifold.VectorBundle.Basic`-backed `M →ₛₗ[𝕜] ⋀^k T*M`.
 
 :::EXAMPLE "Computing some exterior derivatives"
 Let $`V = \mathbb{R}^3` with standard basis $`\mathbf{e}_1`, $`\mathbf{e}_2`, $`\mathbf{e}_3`.
@@ -365,8 +349,6 @@ For vector space $`V`, and element $`f = f_1 \otimes f_2 \otimes \dots \otimes f
 $$`\operatorname{Alt} f = \frac{1}{k!} \sum_{\sigma \in S_k} \operatorname{sgn}(\sigma) \cdot (f_{\sigma(1)} \otimes f_{\sigma(2)} \otimes \dots \otimes f_{\sigma(k)})`
 and extend it to all of $`T^k(V)`.
 :::
-
-This is exactly `MultilinearMap.alternatization` in Mathlib (which sends a `MultilinearMap` to an `AlternatingMap` by averaging over $`S_k`).
 
 Here, $`S_k` is the permutation group.
 Notice the similarity with the definition of the determinant.
@@ -523,11 +505,6 @@ To draw another analogy, in complex analysis Cauchy-Goursat only works when $`U`
 The "hole" in $`U` is being detected by the existence of a form $`\alpha`.
 The so-called de Rham cohomology will make this relation explicit.
 
-:::aside "De Rham cohomology in Mathlib"
-Mathlib has the algebraic side of de Rham via `Mathlib.RingTheory.Kaehler.Basic` (Kähler differentials, the algebraic-geometric incarnation of $`\Omega^1`) and the smooth-manifold version is in active development.
-The Poincaré-lemma-style "closed implies exact on contractible domains" is the topological obstruction made precise: the failure on $`\mathbb{R}^2 \setminus \{0\}` is genuinely the first nonzero $`H^1_{\mathrm{dR}}` showing up.
-:::
-
 # Problems
 
 :::PROBLEM
@@ -541,3 +518,80 @@ Establish that $`d^2 = 0`.
 
 (Hint: this is just a summation. You will need the fact that mixed partials are symmetric.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Differential forms
+
+The bridge to a pointwise differential form is `AlternatingMap`: for a real vector space $`V`, the type `V [⋀^Fin k]→ₗ[ℝ] ℝ` (also written $`\Lambda^k`) collects the alternating multilinear maps $`V^k \to \mathbb{R}`.
+A differential $`k`-form on $`U` is then a map $`U \to` `V [⋀^Fin k]→ₗ[ℝ] ℝ`, smooth in the point.
+
+```lean
+example (V : Type*) [AddCommGroup V] [Module ℝ V] (k : ℕ) :
+    Type _ := V [⋀^Fin k]→ₗ[ℝ] ℝ
+```
+
+The evaluation rule builds in the alternating law $`\alpha_p(v_1, v_2) = -\alpha_p(v_2, v_1)`, and in particular a form returns $`0` whenever two of its arguments coincide — the degenerate parallelepiped has no volume.
+Prove this for a $`2`-form: feeding the same vector twice returns zero.
+
+```lean
+example (V : Type*) [AddCommGroup V] [Module ℝ V]
+    (ω : V [⋀^Fin 2]→ₗ[ℝ] ℝ) (v : V) : ω ![v, v] = 0 := by
+  sorry
+```
+
+## Exterior derivatives
+
+The exterior derivative $`d` and the wedge of differential forms on a smooth manifold do not yet have a settled interface here, so there is no direct rendering of $`d\alpha` or of the theorem $`d^2 = 0` on forms.
+What is available is the purely algebraic shadow of $`d^2 = 0`: the fact that in the exterior algebra a wedge square vanishes, $`dx \wedge dx = 0`, packaged as `ExteriorAlgebra.ι_sq_zero`.
+
+```lean
+recall ExteriorAlgebra.ι_sq_zero {R : Type*} [CommRing R]
+    {M : Type*} [AddCommGroup M] [Module R M] (m : M) :
+    ExteriorAlgebra.ι R m * ExteriorAlgebra.ι R m = 0
+```
+
+The same relation forces anticommutativity, the sign convention $`dx \wedge dy = -\,dy \wedge dx` behind the whole theory.
+Prove it from `ExteriorAlgebra.ι_add_mul_swap`, which records $`\iota(x)\iota(y) + \iota(y)\iota(x) = 0`.
+
+```lean
+example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (x y : M) :
+    ExteriorAlgebra.ι R x * ExteriorAlgebra.ι R y
+      = -(ExteriorAlgebra.ι R y * ExteriorAlgebra.ι R x) := by
+  sorry
+```
+
+## Digression: wedge of duals versus dual of wedge
+
+The alternation operator $`\operatorname{Alt}` is `MultilinearMap.alternatization`, the additive map that antisymmetrizes an arbitrary multilinear map over the permutation group into an alternating one.
+
+```lean
+example (V : Type*) [AddCommGroup V] [Module ℝ V]
+    (m : MultilinearMap ℝ (fun _ : Fin 2 => V) ℝ) : V [⋀^Fin 2]→ₗ[ℝ] ℝ :=
+  MultilinearMap.alternatization m
+```
+
+Because the output really is alternating, it too kills a repeated argument.
+Verify that the alternatization of a bilinear map returns zero on a doubled vector.
+
+```lean
+example (V : Type*) [AddCommGroup V] [Module ℝ V]
+    (m : MultilinearMap ℝ (fun _ : Fin 2 => V) ℝ) (v : V) :
+    (MultilinearMap.alternatization m) ![v, v] = 0 := by
+  sorry
+```
+
+## Closed and exact forms
+
+De Rham cohomology of smooth manifolds — and with it a literal "exact implies closed" — is not yet formalized here; the algebraic side of de Rham lives in `Mathlib.RingTheory.Kaehler.Basic` as Kähler differentials.
+Still, the crux of "exact forms are closed" is that applying the derivative twice yields zero, and the exterior algebra models this exactly: multiplying by $`\iota(m)` twice annihilates everything, since $`\iota(m)` squares to zero.
+
+```lean
+example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    (m : M) (x : ExteriorAlgebra R M) :
+    ExteriorAlgebra.ι R m * (ExteriorAlgebra.ι R m * x) = 0 := by
+  sorry
+```

@@ -23,11 +23,6 @@ set_option pp.rawOnError true
 file := "Large-number-laws"
 %%%
 
-```lean -show
-open MeasureTheory ProbabilityTheory Filter
-open scoped ProbabilityTheory
-```
-
 # Notions of convergence
 
 ## Almost sure convergence
@@ -47,9 +42,6 @@ Let $`X_n : \{0, 1, \dots, 10\}` be the score of the $`n`th shot.
 Although the skeleton is gradually approaching perfection, there are _almost no worlds_ in which the archer misses only finitely many shots: that is $$`\mu \left( \omega : \Omega \mid \lim_n X_n(\omega) = 10 \right) = 0.`
 :::
 
-Almost sure convergence needs no new machinery to state: it is the almost-everywhere filter applied to ordinary convergence, spelled `∀ᵐ ω ∂μ, Filter.Tendsto (fun n => X n ω) Filter.atTop (nhds (X ω))`.
-This is exactly the shape in which the strong law below is stated.
-
 ## Convergence in probability
 
 Therefore, for many purposes we need a weaker notion of convergence.
@@ -66,18 +58,6 @@ In general, you can think of this as saying that for any $`\delta > 0`, the chan
 To mask $`\delta` from the definition, this is sometimes written instead as: for all $`\varepsilon` $$`\lim_{n \to \infty} \mu \left( \omega : \Omega \mid \left\lvert X_n(\omega) - X(\omega) \right\rvert < \varepsilon \right) = 1.`
 I suppose it doesn't make much difference, though I personally don't like the asymmetry.
 :::
-
-The masked form is the one Mathlib uses, phrased with the anomaly set on the left (measure tending to zero) and stated for functions into any space with an extended distance:
-
-```lean
-recall MeasureTheory.TendstoInMeasure {α ι E : Type*} [EDist E]
-    {_ : MeasurableSpace α} (μ : Measure α) (f : ι → α → E)
-    (l : Filter ι) (g : α → E) : Prop :=
-  ∀ ε, 0 < ε →
-    Filter.Tendsto (fun i => μ { x | ε ≤ edist (f i x) (g x) }) l (nhds 0)
-```
-
-The two implications you would hope for are `MeasureTheory.tendstoInMeasure_of_tendsto_ae` — almost sure convergence implies convergence in probability, for a.e.-measurable functions — and, in the other direction, `MeasureTheory.TendstoInMeasure.exists_seq_tendsto_ae`: convergence in probability gives a *subsequence* converging almost surely.
 
 :::QUESTION
 Convince yourself that the skeleton archer shows the subsequence conclusion cannot be upgraded to the full sequence.
@@ -103,9 +83,6 @@ Almost sure convergence implies convergence in probability, which in turn implie
 :::
 
 Neither implication reverses; note that convergence in law doesn't even mention the underlying $`\Omega`, so it cannot possibly remember, say, correlations between $`X_n` and $`X`.
-
-Convergence in law is `MeasureTheory.TendstoInDistribution X l Z μ`; rather than CDFs, it is defined by weak convergence of the pushforward laws inside the type `ProbabilityMeasure ℝ` (or any topological space of values), and the definition allows each `X n` to live on its own probability space, matching the definition above.
-The second implication of the hierarchy is `MeasureTheory.TendstoInMeasure.tendstoInDistribution`, and Mathlib also carries the classical partial converse ingredients, such as Slutsky's theorem (`TendstoInDistribution.prodMk_of_tendstoInMeasure_const`).
 
 # Weak law of large numbers
 
@@ -141,18 +118,6 @@ So Chebyshev's inequality gives $$`\Pr\left[ |M_n| \geq \varepsilon \right] \leq
 
 (The finite-variance hypothesis can be dropped — integrability is enough — but then the easy proof above no longer works; one can either truncate, as in the last section of this chapter, or simply cite the strong law.)
 
-Chebyshev's inequality is `ProbabilityTheory.meas_ge_le_variance_div_sq`, in the $`a`-form, with the mean-zero normalization replaced by an explicit $`X - \mathbb{E}[X]`:
-
-```lean
-recall ProbabilityTheory.meas_ge_le_variance_div_sq {Ω : Type*}
-    {mΩ : MeasurableSpace Ω} {μ : Measure Ω}
-    [MeasureTheory.IsFiniteMeasure μ] {X : Ω → ℝ}
-    (hX : MeasureTheory.MemLp X 2 μ) {c : ℝ} (hc : 0 < c) :
-    μ {ω | c ≤ |X ω - μ[X]|} ≤ ENNReal.ofReal (variance X μ / c ^ 2)
-```
-
-There is no standalone `weak_law_of_large_numbers` in Mathlib, nor a packaged in-measure corollary: the strong law `ProbabilityTheory.strong_law_ae` below implies it, and the glue — almost sure convergence implies convergence in probability — is `MeasureTheory.tendstoInMeasure_of_tendsto_ae`.
-
 ## Application: Weierstrass approximation
 
 As promised, here is an application where the weak law does all the heavy lifting.
@@ -169,8 +134,6 @@ If $`S_n` denotes the number of heads, then $`\Pr[S_n = k] = \binom nk x^k (1-x)
 But $`\frac{S_n}{n}` is exactly a partial mean of i.i.d. Bernoulli random variables with mean $`x`, so the weak law says $`\frac{S_n}{n}` converges to $`x` in probability.
 Since $`f` is continuous, $`f\left(\frac{S_n}{n}\right)` should then concentrate near $`f(x)`, and indeed splitting the expectation into the worlds where $`\left| \frac{S_n}{n} - x \right| < \delta` (where $`f` moves by less than $`\varepsilon`, by uniform continuity) and the rare remaining worlds (where $`f` is at least bounded, and Chebyshev bounds the probability by $`\frac{x(1-x)}{n\delta^2} \le \frac{1}{4n\delta^2}`, uniformly in $`x`) gives $$`\left\lvert B_n(f)(x) - f(x) \right\rvert \le \varepsilon + 2 \|f\| \cdot \frac{1}{4n\delta^2}` for all $`x` at once, which proves uniform convergence.
 :::
-
-Mathlib proves Weierstrass approximation by exactly this argument, with the probabilistic language compiled away: `bernsteinApproximation n f` is the polynomial above (as a continuous map), the coin-flip facts $`\sum_k \Pr[S_n = k] = 1` and $`\operatorname{Var}[S_n/n] = \frac{x(1-x)}{n}` appear as `bernstein.probability` and `bernstein.variance`, and the theorem is `bernsteinApproximation_uniform : Tendsto (fun n => bernsteinApproximation n f) atTop (𝓝 f)`, where the limit happens in the uniform topology on `C(I, ℝ)`.
 
 # Strong law of large numbers
 
@@ -244,23 +207,6 @@ Intuitively, you can see why:
 In other words, just like our skeleton archer, there are almost no worlds in which the $`M_n` got skewed by more than $`\frac{1}{4}` only finitely many times.
 :::
 
-The strong law is `ProbabilityTheory.strong_law_ae`, and it is stronger than the statement above in two respects: it allows random variables valued in any Banach space, and — this is Etemadi's refinement of the theorem — it only requires the $`X_i` to be *pairwise* independent:
-
-```lean
-recall ProbabilityTheory.strong_law_ae {Ω : Type*}
-    {mΩ : MeasurableSpace Ω} {μ : Measure Ω} {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
-    [MeasurableSpace E] [BorelSpace E]
-    (X : ℕ → Ω → E) (hint : MeasureTheory.Integrable (X 0) μ)
-    (hindep : Pairwise fun i j => IndepFun (X i) (X j) μ)
-    (hident : ∀ i, IdentDistrib (X i) (X 0) μ μ) :
-    ∀ᵐ ω ∂μ, Filter.Tendsto
-      (fun n : ℕ => (n : ℝ)⁻¹ • ∑ i ∈ Finset.range n, X i ω)
-      Filter.atTop (nhds (∫ ω, X 0 ω ∂μ))
-```
-
-(Note how "i.i.d. with mean $`0`" decomposes: integrability of one variable, pairwise independence, identical distribution, and the limit is stated as $`\mathbb{E}[X_0]` rather than normalizing to zero.)
-
 ## Proof for finite-variance case
 
 In practice, most distribution we ever come across has finite variance, it may be better to give a counterexample.
@@ -320,11 +266,6 @@ Combining the inequalities, we get $$`a^2 \Pr[A_i] \leq \mathbb{E}[S_n^2 \cdot \
 Summing over all $`i` gives the final result.
 :::
 
-:::aside "Kolmogorov's inequality in Mathlib"
-There is no lemma named after Kolmogorov's inequality; Mathlib subsumes it into Doob's maximal inequality for submartingales, `MeasureTheory.maximal_ineq`, applied to the submartingale $`S_i^2` — martingales are the subject of the next chapter, and the positive-correlation phenomenon in the proof above is precisely the martingale property in disguise.
-The strong law development in `Mathlib.Probability.StrongLaw` avoids the inequality altogether by following Etemadi's proof.
-:::
-
 Generalizing:
 
 :::COROLLARY
@@ -359,8 +300,6 @@ $$`M_n = \frac{(T_1-T_0) +2(T_2-T_1) + \dots + n(T_n-T_{n-1})}{n} = \frac{n T_n 
 Now this is easy: given $`T_n` converges, $`\frac{T_0+T_1+\cdots+T_{n-1}}{n}` must also converge to the same value (Cesàro mean), so $`M_n \to 0` as required.
 :::
 
-The final Cesàro step is `Filter.Tendsto.cesaro`: if $`u_n \to l` then the averages $`\frac{1}{n} \sum_{i < n} u_i \to l`.
-
 :::EXERCISE
 The converse is not true: if $`M_n \to 0`, $`T_n` does not necessarily converge.
 Find a counterexample.
@@ -370,20 +309,19 @@ Find a counterexample.
 ## The general proof
 
 The basic idea is to truncate the value of each $`X_i` so that each of them has finite variance.
-We sketch the steps, for i.i.d. $`X_i` with mean $`0`; this is Kolmogorov's original strategy, and Etemadi's proof (the one Mathlib formalizes) is a further refinement of the same truncation idea.
+We sketch the steps, for i.i.d. $`X_i` with mean $`0`; this is Kolmogorov's original strategy, and Etemadi's proof is a further refinement of the same truncation idea.
 
 Define the truncations $$`Y_n = X_n \cdot \mathbf{1}_{|X_n| \le n}.`
 
 - *The truncation is eventually invisible.*
   The events $`X_n \neq Y_n` are the events $`|X_n| > n`, and $$`\sum_n \Pr\left[ |X_n| > n \right] = \sum_n \Pr\left[ |X_1| > n \right] \le \mathbb{E}\left[ |X_1| \right] < \infty` using identical distribution.
-  By the Borel–Cantelli lemma (if a sequence of events has finite total probability, then almost surely only finitely many of them occur — this is `MeasureTheory.measure_limsup_atTop_eq_zero`), in almost every world $`X_n = Y_n` for all large $`n`, so it suffices to prove the law for the $`Y_n`.
+  By the Borel–Cantelli lemma (if a sequence of events has finite total probability, then almost surely only finitely many of them occur), in almost every world $`X_n = Y_n` for all large $`n`, so it suffices to prove the law for the $`Y_n`.
 - *The truncated means drift back to $`0`.*
   Each $`Y_n` is no longer mean-zero, but $`\mathbb{E}[Y_n] \to \mathbb{E}[X_1] = 0` by dominated convergence, so subtracting the means changes the partial averages by a quantity tending to $`0` (Cesàro again).
 - *The truncated variances are summable after division.*
   A computation with the layer-cake decomposition of $`\mathbb{E}|X_1|` shows $$`\sum_n \frac{\operatorname{Var}[Y_n]}{n^2} \le \sum_n \frac{\mathbb{E}\left[ X_1^2 \cdot \mathbf{1}_{|X_1| \le n} \right]}{n^2} < \infty,` which is exactly the hypothesis our finite-variance argument (Kolmogorov's inequality and the series $`T_n`) needs.
 
 Chaining the three steps together runs the finite-variance proof on $`Y_n - \mathbb{E}[Y_n]` and transports the conclusion back to $`X_n`, completing the theorem.
-In the Mathlib development the same skeleton is visible as the sequence of auxiliary lemmas `strong_law_aux1` through `strong_law_aux7` building to `strong_law_ae_real`, with the truncation living in `ProbabilityTheory.truncation`.
 
 # Problems
 
@@ -403,3 +341,159 @@ Prove that it's impossible to impose a metric on this space which makes the foll
 A sequence $`X_1`, $`X_2`, …, of random variables converges almost surely to $`X` if and only if $`X_i` converge to $`X` in the metric.
 :::
 ::::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+```lean -show
+open MeasureTheory ProbabilityTheory Filter
+open scoped ProbabilityTheory ENNReal
+```
+
+## Almost sure convergence
+
+Almost sure convergence needs no new machinery to state: it is the almost-everywhere filter applied to ordinary convergence, spelled `∀ᵐ ω ∂μ, Filter.Tendsto (fun n => X n ω) Filter.atTop (nhds (X ω))`.
+This is exactly the shape in which the strong law below is stated.
+
+The first implication of the hierarchy — almost sure convergence implies convergence in probability, for a.e.-measurable functions into a finite measure space — is `MeasureTheory.tendstoInMeasure_of_tendsto_ae`.
+Prove it by supplying that lemma.
+
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    {X : ℕ → Ω → ℝ} {Y : Ω → ℝ} (hX : ∀ n, AEStronglyMeasurable (X n) μ)
+    (h : ∀ᵐ ω ∂μ, Tendsto (fun n => X n ω) atTop (nhds (Y ω))) :
+    TendstoInMeasure μ X atTop Y := by
+  sorry
+```
+
+## Convergence in probability
+
+The masked form is the one Mathlib uses, phrased with the anomaly set on the left (measure tending to zero) and stated for functions into any space with an extended distance:
+
+```lean
+recall MeasureTheory.TendstoInMeasure {α ι E : Type*} [EDist E]
+    {_ : MeasurableSpace α} (μ : Measure α) (f : ι → α → E)
+    (l : Filter ι) (g : α → E) : Prop :=
+  ∀ ε, 0 < ε →
+    Filter.Tendsto (fun i => μ { x | ε ≤ edist (f i x) (g x) }) l (nhds 0)
+```
+
+The other direction is `MeasureTheory.TendstoInMeasure.exists_seq_tendsto_ae`: convergence in probability gives a *subsequence* converging almost surely.
+This is the formal counterpart of the skeleton-archer question above.
+
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    {X : ℕ → Ω → ℝ} {Y : Ω → ℝ} (h : TendstoInMeasure μ X atTop Y) :
+    ∃ ns : ℕ → ℕ, StrictMono ns ∧
+      ∀ᵐ ω ∂μ, Tendsto (fun i => X (ns i) ω) atTop (nhds (Y ω)) := by
+  sorry
+```
+
+## Convergence in law
+
+Convergence in law is `MeasureTheory.TendstoInDistribution X l Z μ`; rather than CDFs, it is defined by weak convergence of the pushforward laws inside the type `ProbabilityMeasure ℝ` (or any topological space of values), and the definition allows each `X n` to live on its own probability space, matching the definition above.
+The second implication of the hierarchy is `MeasureTheory.TendstoInMeasure.tendstoInDistribution`, and Mathlib also carries the classical partial converse ingredients, such as Slutsky's theorem (`TendstoInDistribution.prodMk_of_tendstoInMeasure_const`).
+
+Show that convergence in probability implies convergence in law for a.e.-measurable random variables on a probability space.
+
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasure μ]
+    {X : ℕ → Ω → ℝ} {Y : Ω → ℝ} (h : TendstoInMeasure μ X atTop Y)
+    (hX : ∀ i, AEMeasurable (X i) μ) :
+    TendstoInDistribution X atTop Y (fun _ => μ) μ := by
+  sorry
+```
+
+## Weak law of large numbers
+
+Chebyshev's inequality is `ProbabilityTheory.meas_ge_le_variance_div_sq`, in the $`a`-form, with the mean-zero normalization replaced by an explicit $`X - \mathbb{E}[X]`:
+
+```lean
+recall ProbabilityTheory.meas_ge_le_variance_div_sq {Ω : Type*}
+    {mΩ : MeasurableSpace Ω} {μ : Measure Ω}
+    [MeasureTheory.IsFiniteMeasure μ] {X : Ω → ℝ}
+    (hX : MeasureTheory.MemLp X 2 μ) {c : ℝ} (hc : 0 < c) :
+    μ {ω | c ≤ |X ω - μ[X]|} ≤ ENNReal.ofReal (variance X μ / c ^ 2)
+```
+
+There is no standalone `weak_law_of_large_numbers` in Mathlib, nor a packaged in-measure corollary: the strong law `ProbabilityTheory.strong_law_ae` below implies it, and the glue — almost sure convergence implies convergence in probability — is `MeasureTheory.tendstoInMeasure_of_tendsto_ae`.
+
+Prove Chebyshev's inequality by supplying the lemma above.
+
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    {X : Ω → ℝ} (hX : MemLp X 2 μ) {c : ℝ} (hc : 0 < c) :
+    μ {ω | c ≤ |X ω - μ[X]|} ≤ ENNReal.ofReal (variance X μ / c ^ 2) := by
+  sorry
+```
+
+## Application: Weierstrass approximation
+
+Mathlib proves Weierstrass approximation by exactly this argument, with the probabilistic language compiled away: `bernsteinApproximation n f` is the polynomial above (as a continuous map), the coin-flip facts $`\sum_k \Pr[S_n = k] = 1` and $`\operatorname{Var}[S_n/n] = \frac{x(1-x)}{n}` appear as `bernstein.probability` and `bernstein.variance`, and the theorem is `bernsteinApproximation_uniform : Tendsto (fun n => bernsteinApproximation n f) atTop (𝓝 f)`, where the limit happens in the uniform topology on `C(I, ℝ)`.
+
+The coin-flip fact that the probabilities $`\Pr[S_n = k]` sum to $`1` is `bernstein.probability`; establish it here.
+
+```lean
+example (n : ℕ) (x : unitInterval) :
+    (∑ k : Fin (n + 1), bernstein n k x) = 1 := by
+  sorry
+```
+
+## Strong law of large numbers
+
+The strong law is `ProbabilityTheory.strong_law_ae`, and it is stronger than the statement above in two respects: it allows random variables valued in any Banach space, and — this is Etemadi's refinement of the theorem — it only requires the $`X_i` to be *pairwise* independent:
+
+```lean
+recall ProbabilityTheory.strong_law_ae {Ω : Type*}
+    {mΩ : MeasurableSpace Ω} {μ : Measure Ω} {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+    [MeasurableSpace E] [BorelSpace E]
+    (X : ℕ → Ω → E) (hint : MeasureTheory.Integrable (X 0) μ)
+    (hindep : Pairwise fun i j => IndepFun (X i) (X j) μ)
+    (hident : ∀ i, IdentDistrib (X i) (X 0) μ μ) :
+    ∀ᵐ ω ∂μ, Filter.Tendsto
+      (fun n : ℕ => (n : ℝ)⁻¹ • ∑ i ∈ Finset.range n, X i ω)
+      Filter.atTop (nhds (∫ ω, X 0 ω ∂μ))
+```
+
+(Note how "i.i.d. with mean $`0`" decomposes: integrability of one variable, pairwise independence, identical distribution, and the limit is stated as $`\mathbb{E}[X_0]` rather than normalizing to zero.)
+Recover the mean-zero statement from the chapter: when $`\mathbb{E}[X_0] = 0`, the partial means converge almost surely to $`0`.
+
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    (X : ℕ → Ω → ℝ) (hint : Integrable (X 0) μ)
+    (hindep : Pairwise fun i j => IndepFun (X i) (X j) μ)
+    (hident : ∀ i, IdentDistrib (X i) (X 0) μ μ) (hmean : ∫ ω, X 0 ω ∂μ = 0) :
+    ∀ᵐ ω ∂μ, Tendsto (fun n : ℕ => (n : ℝ)⁻¹ • ∑ i ∈ Finset.range n, X i ω)
+      atTop (nhds 0) := by
+  sorry
+```
+
+## Proof for finite-variance case
+
+There is no lemma named after Kolmogorov's inequality; Mathlib subsumes it into Doob's maximal inequality for submartingales, `MeasureTheory.maximal_ineq`, applied to the submartingale $`S_i^2` — martingales are the subject of the next chapter, and the positive-correlation phenomenon in the proof above is precisely the martingale property in disguise.
+The strong law development in `Mathlib.Probability.StrongLaw` avoids the inequality altogether by following Etemadi's proof.
+
+The final Cesàro step — if $`u_n \to l` then the averages $`\frac{1}{n} \sum_{i < n} u_i \to l` — is `Filter.Tendsto.cesaro`.
+
+```lean
+example {u : ℕ → ℝ} {l : ℝ} (h : Tendsto u atTop (nhds l)) :
+    Tendsto (fun n : ℕ => (n⁻¹ : ℝ) * ∑ i ∈ Finset.range n, u i)
+      atTop (nhds l) := by
+  sorry
+```
+
+## The general proof
+
+The Borel–Cantelli lemma used in the truncation step — if a sequence of events has finite total probability, then almost surely only finitely many occur — is `MeasureTheory.measure_limsup_atTop_eq_zero`.
+In the Mathlib development the truncation skeleton is visible as the sequence of auxiliary lemmas `strong_law_aux1` through `strong_law_aux7` building to `strong_law_ae_real`, with the truncation living in `ProbabilityTheory.truncation`.
+
+Establish the Borel–Cantelli lemma: a summable family of events has null `limsup`.
+
+```lean
+example {α : Type*} [MeasurableSpace α] {μ : Measure α} {s : ℕ → Set α}
+    (hs : ∑' i, μ (s i) ≠ ∞) : μ (limsup s atTop) = 0 := by
+  sorry
+```

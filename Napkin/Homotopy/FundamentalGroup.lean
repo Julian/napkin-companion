@@ -14,6 +14,7 @@ open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open CategoryTheory
 open scoped Topology unitInterval ContinuousMap
 
 set_option pp.rawOnError true
@@ -61,18 +62,6 @@ The solution is that we allocate $`[0, \tfrac12]` for the first path and $`[\tfr
 Given two paths $`\gamma_1, \gamma_2 \colon [0, 1] \to X` such that $`\gamma_1(1) = \gamma_2(0)`, we define a path $`\gamma_1 \ast \gamma_2 \colon [0, 1] \to X` by $$`(\gamma_1 \ast \gamma_2)(t) = \begin{cases} \gamma_1(2t) & 0 \le t \le \tfrac12 \\ \gamma_2(2t - 1) & \tfrac12 \le t \le 1. \end{cases}`
 :::
 
-:::aside
-This is exactly Mathlib's {name}`Path.trans`, written `γ₁.trans γ₂`.
-A {name}`Path` is bundled as a continuous map out of the unit interval $`I = [0, 1]` that additionally remembers its two endpoints as part of its type, so that "$`\gamma_1(1) = \gamma_2(0)`" is enforced by the types `Path x y` and `Path y z` sharing the middle point $`y` rather than by a side hypothesis.
-The piecewise "run twice as fast" formula above is precisely how {name}`Path.trans` is defined.
-
-```lean
-noncomputable example {X : Type*} [TopologicalSpace X] {x y z : X}
-    (γ₁ : Path x y) (γ₂ : Path y z) : Path x z :=
-  γ₁.trans γ₂
-```
-:::
-
 This hack unfortunately reveals a second shortcoming: this "product" is not associative.
 If we take $`(\gamma_1 \ast \gamma_2) \ast \gamma_3` for some suitable paths, then $`[0, \tfrac14]`, $`[\tfrac14, \tfrac12]` and $`[\tfrac12, 1]` are the times allocated for $`\gamma_1`, $`\gamma_2`, $`\gamma_3`.
 
@@ -97,12 +86,6 @@ Naturally, homotopy is an equivalence relation, so paths $`\gamma` lives in some
 We'll denote this $`[\gamma]`.
 Then it makes sense to talk about $`[\alpha] \ast [\beta]`.
 Thus, *we can think of $`\ast` as an operation on homotopy classes*.
-
-:::aside
-The relation $`\simeq` is {name}`Path.Homotopic`, and the "homotopy type" $`[\gamma]` lives in the quotient {name}`Path.Homotopic.Quotient`.
-The two displayed facts — that $`\ast` is associative up to homotopy, and that it respects $`\simeq` in each argument — are exactly what let Mathlib descend {name}`Path.trans` to a genuinely associative operation on this quotient.
-It is on the quotient, not on paths themselves, that the group structure of the next section lives.
-:::
 
 # Fundamental groups
 
@@ -178,14 +161,6 @@ So we only have to check that (i) there's an identity, and (ii) there's an inver
 Hence $`\pi_1(X, x_0)` is actually a group.
 :::
 
-:::aside
-Mathlib names this group {name}`FundamentalGroup`, so that `FundamentalGroup X x₀` carries the {name}`Group` instance whose multiplication is $`\ast`, whose identity is the do-nothing loop {name}`Path.refl`, and whose inverse is the backwards loop {name}`Path.symm`.
-Under the hood it is built as the automorphism group of the point $`x_0` inside the *fundamental groupoid*, which is the single package that remembers the homotopy-composition data for every pair of endpoints at once.
-
-One convention worth flagging: Mathlib's product `p * q` composes $`q` first and then $`p`, the reverse of the reading order in "$`\gamma_1 \ast \gamma_2`".
-This is the same left-versus-right choice one meets whenever a group is realized as automorphisms under composition, and it changes nothing about the group itself.
-:::
-
 Before going any further I had better give some examples.
 
 :::EXAMPLE "Examples of fundamental groups"
@@ -257,10 +232,6 @@ End of story.
 
 This is a bigger reason why we usually only care about path-connected spaces.
 
-:::aside
-Path-connectedness is the typeclass {name}`PathConnectedSpace`, whose defining data is exactly the path $`\alpha` between any two points that the proof above conjures.
-:::
-
 :::ABUSE
 For a path-connected space $`X` we will often abbreviate $`\pi_1(X, x_0)` to just $`\pi_1(X)`, since it doesn't matter which $`x_0 \in X` we pick.
 :::
@@ -275,10 +246,6 @@ Prove that $`X` is *simply connected* if and only if $`\pi_1(X)` is the trivial 
 :::
 
 This is the "usual" definition of simply connected.
-
-:::aside
-This is close to how Mathlib chooses to *define* simple connectedness: {name}`SimplyConnectedSpace` asks that the fundamental groupoid be equivalent to a point, which for a path-connected space is the same as asking that every $`\pi_1(X, x_0)` be trivial.
-:::
 
 # Fundamental groups are invariant under homeomorphism
 
@@ -331,11 +298,6 @@ Once you have these cubes, you can merge them together on a face.
 For $`n \neq 1`, $`\pi_n` behaves somewhat differently than $`\pi_1`.
 (You might not be surprised, as $`S^n` is simply connected for all $`n \ge 2` but not when $`n = 1`.)
 In particular, it turns out that $`\pi_n(X)` is an abelian group for all $`n \ge 2`.
-
-:::aside
-Mathlib takes exactly the cube-with-boundary-fused route: {name}`GenLoop` is the type of continuous maps $`[0, 1]^n \to X` sending the whole boundary to $`x_0`, and {name}`HomotopyGroup.Pi`, written `π_ n X x`, is its set of homotopy classes.
-The two structural facts above are theorems there: there is a {name}`Group` instance on `π_ (n+1) X x`, and a {name}`CommGroup` instance once $`n \ge 1`, matching "abelian for all $`n \ge 2`".
-:::
 
 Let's see some examples.
 
@@ -412,15 +374,6 @@ Why are two homeomorphic spaces also homotopy equivalent?
 :::
 
 Intuitively, you can think of this as a more generous form of stretching and bending than homeomorphism: we are allowed to compress huge spaces into single points.
-
-:::aside
-Mathlib bundles the two maps and two homotopies of this definition into {name}`ContinuousMap.HomotopyEquiv`, written `X ≃ₕ Y`, and a space that is homotopy equivalent to a point is a {name}`ContractibleSpace`.
-
-```lean
-example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] :
-    Type _ := X ≃ₕ Y
-```
-:::
 
 :::EXAMPLE "$\\mathbb{C}$ is contractible"
 Consider the topological spaces $`\mathbb{C}` and the space consisting of the single point $`\{0\}`.
@@ -519,11 +472,6 @@ The fact that $`\pi_1` is a functor instead of merely assigns some group $`\pi_1
 - If maps $`f, g \colon (X, x_0) \to (Y, y_0)` are homotopic, then $`f_\sharp = g_\sharp`.
   This is basically the lemma that $`f_\sharp` is homotopy invariant.
 
-:::aside
-Mathlib already assembles the groupoid version of this functor: {name}`FundamentalGroupoid.fundamentalGroupoidFunctor` is a functor from the category of topological spaces to the category of groupoids, sending each space to its fundamental groupoid and each continuous map to the induced functor.
-Restricting a groupoid to the automorphisms of a chosen basepoint recovers $`\pi_1`, so this one functor packages the basepoint-wise story for all basepoints simultaneously.
-:::
-
 :::REMARK
 In fact, $`\pi_1(X, x_0)` is the set of arrows $`(S^1, 1) \to (X, x_0)` in $`\mathbf{hTop}_\ast`, so this is actually a covariant Yoneda functor, except with target $`\mathbf{Grp}` instead of $`\mathbf{Set}`.
 :::
@@ -560,3 +508,127 @@ Prove that if a sequence of moves swaps every pair of stones exactly once, then 
 How do you hang a picture frame on a wall with two nails and one string such that if you remove either nail, the picture frame will fall?
 (Hint: the idea is to look at $`aba^{-1}b^{-1}` in $`\pi_1(\text{wall with two nails})`.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Fusing paths together
+
+A {name}`Path` is bundled as a continuous map out of the unit interval $`I = [0, 1]` that additionally remembers its two endpoints as part of its type, so that "$`\gamma_1(1) = \gamma_2(0)`" is enforced by the types `Path x y` and `Path y z` sharing the middle point $`y` rather than by a side hypothesis.
+The fusion $`\gamma_1 \ast \gamma_2` is exactly {name}`Path.trans`, written `γ₁.trans γ₂`, and the piecewise "run twice as fast" formula above is precisely how it is defined.
+
+```lean
+noncomputable example {X : Type*} [TopologicalSpace X] {x y z : X}
+    (γ₁ : Path x y) (γ₂ : Path y z) : Path x z :=
+  γ₁.trans γ₂
+```
+
+The relation $`\simeq` is {name}`Path.Homotopic`, and the "homotopy type" $`[\gamma]` lives in the quotient {name}`Path.Homotopic.Quotient`, on which fusion descends to a genuinely associative operation.
+
+```lean
+example {X : Type*} [TopologicalSpace X] {x y : X} (γ : Path x y) :
+    Path.Homotopic.Quotient x y := ⟦γ⟧
+
+noncomputable example {X : Type*} [TopologicalSpace X] {x y z : X}
+    (P : Path.Homotopic.Quotient x y) (Q : Path.Homotopic.Quotient y z) :
+    Path.Homotopic.Quotient x z := P.trans Q
+```
+
+The second displayed fact of this section — that if $`\alpha_1 \simeq \alpha_2` and $`\beta_1 \simeq \beta_2` then $`\alpha_1 \ast \beta_1 \simeq \alpha_2 \ast \beta_2` — is what makes fusion well-defined on homotopy classes.
+It is {name}`Path.Homotopic.hcomp`; prove it by supplying that lemma.
+
+```lean
+example {X : Type*} [TopologicalSpace X] {x y z : X}
+    {p₀ p₁ : Path x y} {q₀ q₁ : Path y z}
+    (hp : p₀.Homotopic p₁) (hq : q₀.Homotopic q₁) :
+    (p₀.trans q₀).Homotopic (p₁.trans q₁) := by
+  sorry
+```
+
+## Fundamental groups
+
+Mathlib names the fundamental group {name}`FundamentalGroup`, so that `FundamentalGroup X x₀` carries the {name}`Group` instance whose multiplication is $`\ast`, whose identity is the do-nothing loop {name}`Path.refl`, and whose inverse is the backwards loop {name}`Path.symm`.
+Under the hood it is built as the automorphism group of the point $`x_0` inside the *fundamental groupoid*, which is the single package that remembers the homotopy-composition data for every pair of endpoints at once.
+
+```lean
+recall (X : Type*) [TopologicalSpace X] (x : X) : Group (FundamentalGroup X x)
+```
+
+Path-connectedness is the typeclass {name}`PathConnectedSpace`, whose defining data is exactly the path $`\alpha` between any two points that the basepoint-independence proof conjures; that proof is packaged as {name}`FundamentalGroup.fundamentalGroupMulEquivOfPathConnected`.
+
+```lean
+noncomputable example {X : Type*} [TopologicalSpace X] [PathConnectedSpace X]
+    (x₀ x₁ : X) : FundamentalGroup X x₀ ≃* FundamentalGroup X x₁ :=
+  FundamentalGroup.fundamentalGroupMulEquivOfPathConnected x₀ x₁
+```
+
+Mathlib defines simple connectedness by {name}`SimplyConnectedSpace`, which asks that the fundamental groupoid be equivalent to a point; for a path-connected space this is the same as asking that every $`\pi_1(X, x_0)` be trivial.
+Prove the easy direction of the exercise above: in a simply connected space, any two elements of the fundamental group are equal.
+
+```lean
+example {X : Type*} [TopologicalSpace X] [SimplyConnectedSpace X] (x : X)
+    (p q : FundamentalGroup X x) : p = q := by
+  sorry
+```
+
+## Higher homotopy groups
+
+Mathlib takes exactly the cube-with-boundary-fused route: {name}`GenLoop` is the type of continuous maps $`[0, 1]^n \to X` sending the whole boundary to $`x_0`, and {name}`HomotopyGroup.Pi`, written `π_ n X x`, is its set of homotopy classes.
+
+```lean
+example {X : Type*} [TopologicalSpace X] (x : X) (n : ℕ) : Type _ := π_ n X x
+
+recall (X : Type*) [TopologicalSpace X] (x : X) (n : ℕ) :
+    Group (π_ (n + 1) X x)
+```
+
+The structural fact that $`\pi_n(X)` is abelian for all $`n \ge 2` is a {name}`CommGroup` instance on `π_ (n + 2) X x`.
+Confirm it by proving that multiplication commutes there.
+
+```lean
+example {X : Type*} [TopologicalSpace X] (x : X) (n : ℕ)
+    (a b : π_ (n + 2) X x) : a * b = b * a := by
+  sorry
+```
+
+## Homotopy equivalent spaces
+
+Mathlib bundles the two maps and two homotopies of a homotopy equivalence into {name}`ContinuousMap.HomotopyEquiv`, written `X ≃ₕ Y`, and a space that is homotopy equivalent to a point is a {name}`ContractibleSpace`.
+
+```lean
+example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] :
+    Type _ := X ≃ₕ Y
+
+recall (X : Type*) [TopologicalSpace X] [ContractibleSpace X] :
+    SimplyConnectedSpace X
+```
+
+A homeomorphism is in particular a homotopy equivalence, which answers why homeomorphic spaces are homotopy equivalent.
+Supply the map {name}`Homeomorph.toHomotopyEquiv`.
+
+```lean
+example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    (h : X ≃ₜ Y) : X ≃ₕ Y := by
+  sorry
+```
+
+## The pointed homotopy category
+
+Mathlib already assembles the groupoid version of the functor $`\pi_1`: {name}`FundamentalGroupoid.fundamentalGroupoidFunctor` is a functor from the category of topological spaces to the category of groupoids, sending each space to its fundamental groupoid and each continuous map to the induced functor.
+Restricting a groupoid to the automorphisms of a chosen basepoint recovers $`\pi_1`, so this one functor packages the basepoint-wise story for all basepoints simultaneously.
+
+```lean
+noncomputable example : TopCat ⥤ Grpd :=
+  FundamentalGroupoid.fundamentalGroupoidFunctor
+```
+
+A contractible space is simply connected, so its fundamental group is trivial.
+Prove that any two loops there are the same class.
+
+```lean
+example {X : Type*} [TopologicalSpace X] [ContractibleSpace X] (x : X)
+    (p q : FundamentalGroup X x) : p = q := by
+  sorry
+```
