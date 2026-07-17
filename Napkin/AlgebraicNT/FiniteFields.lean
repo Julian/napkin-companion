@@ -19,10 +19,6 @@ set_option pp.rawOnError true
 file := "Finite-fields"
 %%%
 
-```lean -show
-open Module Polynomial
-```
-
 In this short chapter, we classify all fields with finitely many elements and compute the Galois groups.
 Nothing in here is very hard, and so most of the proofs are just sketches; if you like, you should check the details yourself.
 
@@ -55,9 +51,6 @@ Note that, although this field has $`9` elements, every element $`x` has the pro
 In particular, $`F` has characteristic $`3`.
 :::
 
-The base field $`\mathbb{F}_p` is `ZMod p`, whose field structure fires as soon as a `[Fact p.Prime]` hypothesis is around — the same convention we saw for the $`p`-adics.
-"Finite field" needs no bundled type: it is just a `Field F` together with `Finite F` (or `Fintype F` when we want to actually count).
-
 # Finite fields have prime power order
 
 :::LEMMA
@@ -69,8 +62,6 @@ Assume not, so $`n = ab` for $`a,b < n`.
 Then let $$`A = \underbrace{1_F + \dots + 1_F}_{a \text{ times}} \neq 0` and $$`B = \underbrace{1_F + \dots + 1_F}_{b \text{ times}} \neq 0.`
 Then $`AB = 0`, contradicting the fact that $`F` is a field.
 :::
-
-This is `CharP.char_is_prime`, which needs only that $`F` is a nontrivial ring without zero divisors — the proof above never used inverses.
 
 We like fields of characteristic zero, but unfortunately for finite fields we are doomed to have nonzero characteristic.
 
@@ -97,22 +88,12 @@ An amusing alternate proof of (c) by contradiction: if a prime $`q \neq p` divid
 Evidently $$`x \cdot ( \underbrace{1_F + \dots + 1_F}_{q \text{ times}} ) = 0` then, but $`x \neq 0`, and hence the characteristic of $`F` also divides $`q`, which is impossible.
 :::
 
-The lemma is `FiniteField.card'`:
-
-```lean
-recall FiniteField.card' (K : Type*) [Field K] [Fintype K] :
-    ∃ (p : ℕ), CharP K p ∧ ∃ (n : ℕ+),
-      Nat.Prime p ∧ Fintype.card K = p ^ (n : ℕ)
-```
-
 An important point in the above proof is that
 
 :::LEMMA "Finite fields are field extensions of 𝔽ₚ"
 If $`\left\lvert F \right\rvert = p^n` is a finite field, then there is an isomorphic copy of $`\mathbb{F}_p` sitting inside $`F`.
 Thus $`F` is a field extension of $`\mathbb{F}_p`.
 :::
-
-(The embedded copy of $`\mathbb{F}_p` is the `Algebra (ZMod p) F` instance `ZMod.algebra`, available whenever `CharP F p` holds.)
 
 We want to refer a lot to this copy of $`\mathbb{F}_p`, so in what follows:
 
@@ -135,8 +116,6 @@ Use the Binomial theorem, and the fact that $`\binom pi` is divisible by $`p` fo
 Convince yourself that this proof works.
 :::
 
-The freshman's dream is `add_pow_char`, and it holds in any commutative semiring of characteristic $`p`, not just fields.
-
 # All finite fields are isomorphic
 
 We next proceed to prove "Fermat's little theorem":
@@ -149,13 +128,6 @@ Then every element $`x : F` satisfies $$`x^{p^n} - x = 0.`
 :::PROOF
 If $`x = 0` it's true; otherwise, use Lagrange's theorem on the abelian group $`(F, \times)` to get $`x^{p^n-1} = 1_F`.
 :::
-
-This is `FiniteField.pow_card` (with `FiniteField.pow_card_sub_one_eq_one` as the intermediate step, and `ZMod.pow_card` as the special case that number theorists call Fermat's little theorem):
-
-```lean
-recall FiniteField.pow_card {K : Type*} [GroupWithZero K] [Fintype K]
-    (a : K) : a ^ Fintype.card K = a
-```
 
 We can now prove the following result, which is the "main surprise" about finite fields: that there is a unique one up to isomorphism for each size.
 
@@ -173,16 +145,6 @@ To do this, we use the derivative trick again: the derivative of this polynomial
 :::DEFINITION
 For this reason, it's customary to denote _the_ field with $`p^n` elements by $`\mathbb{F}_{p^n}`.
 :::
-
-Mathlib's $`\mathbb{F}_{p^n}` is `GaloisField p n`, and its definition _is_ the classification theorem: it is literally defined as the splitting field of $`x^{p^n} - x` over `ZMod p`.
-The "only one up to isomorphism" half is `GaloisField.algEquivGaloisField`:
-
-```lean
-recall GaloisField.algEquivGaloisField (p : ℕ) [Fact p.Prime] (n : ℕ)
-    {K : Type*} [Field K] [Algebra (ZMod p) K]
-    (h : Nat.card K = p ^ n) :
-    K ≃ₐ[ZMod p] GaloisField p n
-```
 
 Note that the polynomial $`x^{p^n}-x \pmod p` is far from irreducible, but the computation above shows that it's separable.
 
@@ -225,8 +187,6 @@ Since $`\mathbb{F}_{p^n}` is finite, this injective map is automatically bijecti
 The fact that it fixes $`\mathbb{F}_p` is Fermat's little theorem.
 ::::
 
-As a ring homomorphism the Frobenius is `frobenius F p` (defined on any commutative semiring of characteristic $`p` — there it need not be surjective!); upgraded to an element of the Galois group of an extension of finite fields it is `FiniteField.frobeniusAlgEquivOfAlgebraic`, whose underlying function is `(· ^ q)` with $`q` the cardinality of the base field.
-
 Now we're done:
 
 :::THEOREM "Galois group of the extension 𝔽ₚⁿ/𝔽ₚ"
@@ -241,8 +201,6 @@ Note that $`\sigma_p` applied $`k` times gives $`x \mapsto x^{p^k}`.
 Hence, $`\sigma_p` applied $`n` times is the identity, as all elements of $`\mathbb{F}_{p^n}` satisfy $`x^{p^n}=x`.
 But if $`k < n`, then $`\sigma_p` applied $`k` times cannot be the identity or $`x^{p^k}-x` would have too many roots.
 :::
-
-The order computation in this proof is `FiniteField.orderOf_frobeniusAlgHom`: the Frobenius has order exactly $`[\mathbb{F}_{p^n} : \mathbb{F}_p]` in the Galois group, which by the counting theorem has that same order — so the group is cyclic with the Frobenius as a generator, exactly as claimed.
 
 We can see an example of this again with the finite field of order $`9`.
 
@@ -277,8 +235,6 @@ Let $`F` be a finite field, then the multiplicative group $`F^\times` is a cycli
 :::
 
 Essentially, it says that the multiplicative group $`F^\times` is as nice as possible — the cyclic group is the simplest Abelian group!
-
-The proposition is an instance: `IsCyclic Fˣ` is inferred for any finite field (indeed for the units of any finite division ring or any finite subgroup of the units of a domain, via `subgroup_units_cyclic`), so a generator is always available as `IsCyclic.exists_generator`.
 
 If we look back at the examples above, we can see how this knowledge can help us.
 
@@ -331,3 +287,104 @@ Show the polynomial $`P(X)` is irreducible modulo $`127`; then work in the split
 Show that $`F_p=-1`, $`F_{p+1}=0`, $`F_{2p+1}=1`, $`F_{2p+2}=0`.
 (Look at the action of $`\operatorname{Gal}(\mathbb{F}_{p^2}/\mathbb{F}_p)` on the roots of $`P`.))
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+```lean -show
+open Module Polynomial
+```
+
+## Example of a finite field
+
+The base field $`\mathbb{F}_p` is `ZMod p`, whose field structure fires as soon as a `[Fact p.Prime]` hypothesis is around — the same convention we saw for the $`p`-adics.
+"Finite field" needs no bundled type: it is just a `Field F` together with `Finite F` (or `Fintype F` when we want to actually count).
+
+The base field really is a field with $`p` elements.
+Confirm that `ZMod p` has cardinality $`p`.
+
+```lean
+example (p : ℕ) [Fact p.Prime] : Fintype.card (ZMod p) = p := by
+  sorry
+```
+
+## Finite fields have prime power order
+
+This is `CharP.char_is_prime`, which needs only that $`F` is a nontrivial ring without zero divisors — the proof above never used inverses.
+
+The lemma is `FiniteField.card'`:
+
+```lean
+recall FiniteField.card' (K : Type*) [Field K] [Fintype K] :
+    ∃ (p : ℕ), CharP K p ∧ ∃ (n : ℕ+),
+      Nat.Prime p ∧ Fintype.card K = p ^ (n : ℕ)
+```
+
+(The embedded copy of $`\mathbb{F}_p` is the `Algebra (ZMod p) F` instance `ZMod.algebra`, available whenever `CharP F p` holds.)
+
+The freshman's dream is `add_pow_char`, and it holds in any commutative semiring of characteristic $`p`, not just fields.
+The exercise was to convince yourself this proof really goes through; prove it from `add_pow_char`.
+
+```lean
+example (F : Type*) [CommRing F] (p : ℕ) [Fact p.Prime] [CharP F p]
+    (a b : F) : (a + b) ^ p = a ^ p + b ^ p := by
+  sorry
+```
+
+## All finite fields are isomorphic
+
+This is `FiniteField.pow_card` (with `FiniteField.pow_card_sub_one_eq_one` as the intermediate step, and `ZMod.pow_card` as the special case that number theorists call Fermat's little theorem):
+
+```lean
+recall FiniteField.pow_card {K : Type*} [GroupWithZero K] [Fintype K]
+    (a : K) : a ^ Fintype.card K = a
+```
+
+Mathlib's $`\mathbb{F}_{p^n}` is `GaloisField p n`, and its definition _is_ the classification theorem: it is literally defined as the splitting field of $`x^{p^n} - x` over `ZMod p`.
+The "only one up to isomorphism" half is `GaloisField.algEquivGaloisField`:
+
+```lean
+recall GaloisField.algEquivGaloisField (p : ℕ) [Fact p.Prime] (n : ℕ)
+    {K : Type*} [Field K] [Algebra (ZMod p) K]
+    (h : Nat.card K = p ^ n) :
+    K ≃ₐ[ZMod p] GaloisField p n
+```
+
+The special case number theorists call Fermat's little theorem is `ZMod.pow_card`.
+Prove that every $`x : \mathbb{F}_p` satisfies $`x^p = x`.
+
+```lean
+example (p : ℕ) [Fact p.Prime] (x : ZMod p) : x ^ p = x := by
+  sorry
+```
+
+## The Galois theory of finite fields
+
+As a ring homomorphism the Frobenius is `frobenius F p` (defined on any commutative semiring of characteristic $`p` — there it need not be surjective!); upgraded to an element of the Galois group of an extension of finite fields it is `FiniteField.frobeniusAlgEquivOfAlgebraic`, whose underlying function is `(· ^ q)` with $`q` the cardinality of the base field.
+
+The order computation in this proof is `FiniteField.orderOf_frobeniusAlgHom`: the Frobenius has order exactly $`[\mathbb{F}_{p^n} : \mathbb{F}_p]` in the Galois group, which by the counting theorem has that same order — so the group is cyclic with the Frobenius as a generator, exactly as claimed.
+
+The question "Why does it respect addition?" is answered by the Frobenius being a ring homomorphism.
+Show directly that $`\sigma_p` sends $`a + b` to $`\sigma_p(a) + \sigma_p(b)`.
+
+```lean
+example (F : Type*) [CommRing F] (p : ℕ) [Fact p.Prime] [CharP F p]
+    (a b : F) :
+    frobenius F p (a + b) = frobenius F p a + frobenius F p b := by
+  sorry
+```
+
+## Extra: The multiplicative group of a finite field
+
+The proposition is an instance: `IsCyclic Fˣ` is inferred for any finite field (indeed for the units of any finite division ring or any finite subgroup of the units of a domain, via `subgroup_units_cyclic`), so a generator is always available as `IsCyclic.exists_generator`.
+
+The counting question asked how many $`x` solve $`x^d = 1`.
+Prove the sharper statement `FiniteField.forall_pow_eq_one_iff`: every unit satisfies $`x^i = 1` exactly when $`\left\lvert F \right\rvert - 1` divides $`i`.
+
+```lean
+example (K : Type*) [Field K] [Fintype K] (i : ℕ) :
+    (∀ x : Kˣ, x ^ i = 1) ↔ Fintype.card K - 1 ∣ i := by
+  sorry
+```

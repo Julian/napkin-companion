@@ -33,6 +33,7 @@ Astonishingly, the proof will use Minkowski's theorem, a result from geometry.
 
 ```lean -show
 open NumberField
+open scoped nonZeroDivisors
 ```
 
 # The class group
@@ -59,9 +60,6 @@ The class group $`\operatorname{Cl}_K` is the set of nonzero fractional ideals m
 :::
 
 You can also think of the classes as the "shapes" of the ideals, as two ideals belong to the same class if and only if they're isomorphic as $`\mathcal{O}_K`-modules.
-
-This quotient is verbatim `ClassGroup R`, defined for any integral domain: the units of `FractionalIdeal R⁰ (FractionRing R)` modulo the range of the principal-fractional-ideal homomorphism — that is, $`J_K/P_K` with $`J_K` packaged as the unit group we met at the end of the previous chapter.
-An honest integral ideal lands in the class group via `ClassGroup.mk0`, which sends a nonzero ideal of `R` to its class.
 
 ::::EXAMPLE "Ideal classes in ℚ(√−5)"
 If the field is an imaginary quadratic field, visualizing the class of an ideal is really easy: because multiplication by a complex number corresponds to a combination of a scaling and a rotation (i.e. it preserves angles), two ideals belong to the same class if they are similar, that is, you can overlap one onto the another using rotation and scaling.
@@ -136,15 +134,6 @@ $$`\Delta_K \coloneqq \det \begin{bmatrix} \sigma_1(\alpha_1) & \dots & \sigma_n
 :::
 
 This does not depend on the choice of the $`\{\alpha_i\}`; we will not prove this here.
-
-The discriminant is `NumberField.discr K`, an integer by construction:
-
-```lean
-recall NumberField.discr (K : Type*) [Field K] [NumberField K] : ℤ :=
-  Algebra.discr ℤ (NumberField.RingOfIntegers.basis K)
-```
-
-The general-purpose `Algebra.discr A b` takes any family `b` and is defined through the trace form (the "next chapter" definition!), so integrality comes for free; the basis-independence we skipped is `NumberField.discr_eq_discr`, and nonvanishing is `NumberField.discr_ne_zero`.
 
 :::EXAMPLE "Discriminant of ℚ(√2)"
 We have $`\mathcal{O}_K = \mathbb{Z}[\sqrt 2]` and as discussed above the discriminant is $$`\Delta_K = (-2 \sqrt 2)^2 = 8.`
@@ -233,15 +222,6 @@ $$`K \overset\iota\hookrightarrow \mathbb{R}^{r_1} \times \mathbb{C}^{r_2} \quad
 All we've done is omit, for the complex case, the second of the embeddings in each conjugate pair.
 This is no big deal, since they are just conjugates; the above tuple is all the information we need.
 
-The bookkeeping of "an embedding up to conjugation" has a name of its own: an *infinite place*, `NumberField.InfinitePlace K`.
-The real places are exactly the real embeddings and each complex place collapses a conjugate pair, so the signature is the pair of cardinalities `NumberField.InfinitePlace.nrRealPlaces K` and `nrComplexPlaces K`, and $`r_1 + 2r_2 = n` is the lemma `card_add_two_mul_card_eq_rank`.
-The canonical embedding itself, valued in the "mixed space" $`\mathbb{R}^{r_1} \times \mathbb{C}^{r_2}` indexed by places, is a ring homomorphism:
-
-```lean
-recall NumberField.mixedEmbedding (K : Type*) [Field K] :
-    K →+* NumberField.mixedEmbedding.mixedSpace K
-```
-
 For reasons that will become obvious in a moment, I'll let $`\tau` denote the isomorphism $$`\tau \colon \mathbb{R}^{r_1} \times \mathbb{C}^{r_2} \xrightarrow{\;\sim\;} \mathbb{R}^{r_1+2r_2} = \mathbb{R}^n`
 by breaking each complex number into its real and imaginary part, as
 $$`\alpha \mapsto \big( \sigma_1(\alpha), \dots, \sigma_{r_1}(\alpha), \operatorname{Re} \sigma_{r_1+1}(\alpha), \; \operatorname{Im} \sigma_{r_1+1}(\alpha), \dots, \operatorname{Re} \sigma_{r_1+r_2}(\alpha), \; \operatorname{Im} \sigma_{r_1+r_2}(\alpha) \big).`
@@ -327,24 +307,6 @@ So for each $`\varepsilon > 0` the set of nonzero lattice points in $`(1+\vareps
 So there has to be some point that's in $`S_\varepsilon` for every $`\varepsilon > 0` (why?), which implies it's in $`S`.
 :::
 
-Both halves are Mathlib theorems, stated for a Haar measure on any finite-dimensional real vector space, with "mesh" phrased as the measure of a fundamental domain `F` for the lattice `L`:
-
-```lean
-open MeasureTheory in
-recall exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
-    {E : Type*} [MeasurableSpace E]
-    {μ : MeasureTheory.Measure E}
-    {F s : Set E} [NormedAddCommGroup E] [NormedSpace ℝ E] [BorelSpace E]
-    [FiniteDimensional ℝ E] [μ.IsAddHaarMeasure]
-    {L : AddSubgroup E} [Countable L]
-    (fund : MeasureTheory.IsAddFundamentalDomain L F μ)
-    (h_symm : ∀ x ∈ s, -x ∈ s) (h_conv : Convex ℝ s)
-    (h : μ F * 2 ^ Module.finrank ℝ E < μ s) :
-    ∃ x ≠ 0, ((x : L) : E) ∈ s
-```
-
-The equality-plus-compactness variant (b) is `exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure`, and the pigeonhole engine of the proof is its own named theorem, Blichfeldt's `exists_pair_mem_lattice_not_disjoint_vadd`.
-
 # The trap box
 
 The last ingredient we need is a set to apply Minkowski's theorem to.
@@ -412,8 +374,6 @@ $$`M^n = M^n \cdot 2^n \cdot \frac{\text{mesh}}{\text{vol box}} = 2^n \cdot \fra
 which gives the bound after some arithmetic.
 :::
 
-This whole section is formalized: `NumberField.mixedEmbedding.minkowskiBound K I` is (up to packaging) the right-hand side for the fractional ideal `I`, the trap box is the "convex body" `convexBodyLT`, and `NumberField.mixedEmbedding.exists_ne_zero_mem_ideal_lt` produces the nonzero $`\alpha \in \mathfrak{a}` with all its embeddings small, exactly by feeding the box to the Minkowski theorem above.
-
 # The class group is finite
 
 :::DEFINITION
@@ -476,15 +436,6 @@ So you can't even touch the branches higher than $`M_K`.
 You can repeat cherries (oops), but the weight of a cherry on branch $`(p)` is definitely $`\ge p`; all this means that the number of ways to build $`\mathfrak{a}` is finite.
 ::::
 
-Finiteness for number fields is a registered instance, so `Fintype.card` of the class group simply makes sense:
-
-```lean
-recall (K : Type*) [Field K] [NumberField K] :
-    Fintype (ClassGroup (NumberField.RingOfIntegers K))
-```
-
-(Mathlib's proof of the instance runs through the general `ClassGroup.fintypeOfAdmissibleOfFinite`, an axiomatization of the finiteness argument that also covers function fields.)
-
 # Computation of class numbers
 
 :::DEFINITION
@@ -494,15 +445,6 @@ The order of $`\operatorname{Cl}_K` is called the *class number* of $`K`.
 :::REMARK
 If $`\operatorname{Cl}_K = 1`, then $`\mathcal{O}_K` is a PID, hence a UFD.
 :::
-
-The class number is `NumberField.classNumber K := Fintype.card (ClassGroup (𝓞 K))`, and the remark is an if-and-only-if:
-
-```lean
-recall NumberField.classNumber_eq_one_iff {K : Type*} [Field K]
-    [NumberField K] :
-    NumberField.classNumber K = 1 ↔
-      IsPrincipalIdealRing (NumberField.RingOfIntegers K)
-```
 
 By computing the actual value of $`M_K`, we can quite literally build the entire "cherry tree" mentioned in the previous proof.
 Let's give an example how!
@@ -549,12 +491,6 @@ Well, that's silly: we don't have any branches to pick from at all.
 In other words, we can only have $`\mathfrak{b} = (1)`.
 :::
 
-:::aside "How Mathlib knows ℤ[i] is a PID"
-Not via Minkowski!
-`GaussianInt` carries a `EuclideanDomain` instance (division with remainder by rounding), and Euclidean domains are PIDs, so the class-group machinery never gets involved.
-The Minkowski-bound style of computation above — bounding `classNumber` by inspecting ideals of small norm — has no automated Mathlib counterpart yet, though all the ingredients (`minkowskiBound`, `Ideal.absNorm`, the factoring algorithm) are individually available.
-:::
-
 Here's another example of something that still turns out to be unique factorization, but this time our cherry tree will actually have cherries that can be picked.
 
 ::::PROPOSITION "ℤ[√7] is a UFD"
@@ -595,8 +531,6 @@ By definition, $`n = \left\lvert \mathcal{O}_K / \mathfrak{b} \right\rvert`.
 Treating $`\mathcal{O}_K/\mathfrak{b}` as an (additive) abelian group and using Lagrange's theorem, we find $$`0 \equiv \underbrace{\alpha + \dots + \alpha}_{n\text{ times}} = n\alpha \pmod {\mathfrak{b}} \qquad\text{for all } \alpha \in \mathcal{O}_K.`
 Thus $`(n) \subseteq \mathfrak{b}`, done.
 :::
-
-(This is `Ideal.absNorm_mem` plus `Ideal.dvd_iff_le` in Mathlib's clothing: `absNorm I • 1 ∈ I`.)
 
 Alternatively, if you have read the Galois theory chapter: If the extension $`K/\mathbb{Q}` is Galois, we can actually prove that, analogous to the norm-as-product-of-embeddings remark from the ring of integers chapter, $`\prod_{\sigma \in \operatorname{Gal}(K/\mathbb{Q})} \sigma(\mathfrak{b}) = (n)`, implying the result $`\mathfrak{b} \mid (n)`.
 
@@ -792,8 +726,6 @@ Finish the proof.
 What is the condition on $`F(x)` such that $`x \in S`?)
 :::
 
-This second proof is the one Mathlib's development follows: the pairing $`(x,y) \mapsto \operatorname{Tr}(xy)` is `Algebra.traceForm`, its nondegeneracy (the invertible matrix above) is `traceForm_nondegenerate`, and squeezing the integral closure inside the dual basis of the trace form is how `IsIntegralClosure.isNoetherian` — and from it the `Module.Free ℤ (𝓞 K)` instance — gets proved.
-
 ## Third proof
 
 Recall that we wish to prove $`\mathcal{O}_K` is a free $`\mathbb{Z}`-module of rank $`n`.
@@ -908,3 +840,162 @@ Let $`K` be a number field and $`\mathfrak{p}` any nonzero prime ideal.
 Prove that there exists $`x \in \mathfrak{p}` such that $`x \notin \mathfrak{q}` for any other prime ideal $`\mathfrak{q}`.
 (Hint: let $`n` be a positive integer such that $`\mathfrak{p}^n` is principal.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## The class group
+
+This quotient is verbatim `ClassGroup R`, defined for any integral domain: the units of `FractionalIdeal R⁰ (FractionRing R)` modulo the range of the principal-fractional-ideal homomorphism — that is, $`J_K/P_K` with $`J_K` packaged as the unit group we met at the end of the previous chapter.
+An honest integral ideal lands in the class group via `ClassGroup.mk0`, which sends a nonzero ideal of `R` to its class.
+
+The prototype says that a principal ideal domain has trivial class group.
+Prove it: every element of the class group of a PID equals the identity.
+The lemma `ClassGroup.mk_eq_one_iff` says a fractional ideal class is trivial exactly when the ideal is principal, and `ClassGroup.induction` reduces an arbitrary class to one of the form `ClassGroup.mk _ I`.
+
+```lean
+example (R : Type*) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
+    (C : ClassGroup R) : C = 1 := by
+  sorry
+```
+
+## The discriminant of a number field
+
+The discriminant is `NumberField.discr K`, an integer by construction:
+
+```lean
+recall NumberField.discr (K : Type*) [Field K] [NumberField K] : ℤ :=
+  Algebra.discr ℤ (NumberField.RingOfIntegers.basis K)
+```
+
+The general-purpose `Algebra.discr A b` takes any family `b` and is defined through the trace form (the "next chapter" definition!), so integrality comes for free; the basis-independence we skipped is `NumberField.discr_eq_discr`, and nonvanishing is `NumberField.discr_ne_zero`.
+
+The smallest number field is $`\mathbb{Q}` itself, whose ring of integers is $`\mathbb{Z}` with the one-element basis $`\{1\}`.
+Confirm that its discriminant is $`1`.
+
+```lean
+example : NumberField.discr ℚ = 1 := by
+  sorry
+```
+
+## The signature of a number field
+
+The bookkeeping of "an embedding up to conjugation" has a name of its own: an *infinite place*, `NumberField.InfinitePlace K`.
+The real places are exactly the real embeddings and each complex place collapses a conjugate pair, so the signature is the pair of cardinalities `NumberField.InfinitePlace.nrRealPlaces K` and `nrComplexPlaces K`, and $`r_1 + 2r_2 = n` is the lemma `card_add_two_mul_card_eq_rank`.
+The canonical embedding itself, valued in the "mixed space" $`\mathbb{R}^{r_1} \times \mathbb{C}^{r_2}` indexed by places, is a ring homomorphism:
+
+```lean
+recall NumberField.mixedEmbedding (K : Type*) [Field K] :
+    K →+* NumberField.mixedEmbedding.mixedSpace K
+```
+
+Every signature satisfies $`r_1 + 2r_2 = n`.
+Prove this counting relation between the real places, complex places, and the degree.
+
+```lean
+example (K : Type*) [Field K] [NumberField K] :
+    InfinitePlace.nrRealPlaces K + 2 * InfinitePlace.nrComplexPlaces K
+      = Module.finrank ℚ K := by
+  sorry
+```
+
+## Minkowski's theorem
+
+Both halves are Mathlib theorems, stated for a Haar measure on any finite-dimensional real vector space, with "mesh" phrased as the measure of a fundamental domain `F` for the lattice `L`:
+
+```lean
+open MeasureTheory in
+recall exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
+    {E : Type*} [MeasurableSpace E]
+    {μ : MeasureTheory.Measure E}
+    {F s : Set E} [NormedAddCommGroup E] [NormedSpace ℝ E] [BorelSpace E]
+    [FiniteDimensional ℝ E] [μ.IsAddHaarMeasure]
+    {L : AddSubgroup E} [Countable L]
+    (fund : MeasureTheory.IsAddFundamentalDomain L F μ)
+    (h_symm : ∀ x ∈ s, -x ∈ s) (h_conv : Convex ℝ s)
+    (h : μ F * 2 ^ Module.finrank ℝ E < μ s) :
+    ∃ x ≠ 0, ((x : L) : E) ∈ s
+```
+
+The equality-plus-compactness variant (b) is `exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure`, and the pigeonhole engine of the proof is its own named theorem, Blichfeldt's `exists_pair_mem_lattice_not_disjoint_vadd`.
+
+The question above claimed that the hypothesis $`0 \in S` is extraneous: any nonempty, convex, centrally symmetric set already contains the origin.
+Prove it, taking any point $`x`, its reflection $`-x`, and their midpoint.
+
+```lean
+example {E : Type*} [AddCommGroup E] [Module ℝ E] (s : Set E)
+    (hne : s.Nonempty) (hconv : Convex ℝ s) (hsymm : ∀ x ∈ s, -x ∈ s) :
+    (0 : E) ∈ s := by
+  sorry
+```
+
+## The Minkowski bound
+
+This whole section is formalized: `NumberField.mixedEmbedding.minkowskiBound K I` is (up to packaging) the right-hand side for the fractional ideal `I`, the trap box is the "convex body" `convexBodyLT`, and `NumberField.mixedEmbedding.exists_ne_zero_mem_ideal_lt` produces the nonzero $`\alpha \in \mathfrak{a}` with all its embeddings small, exactly by feeding the box to the Minkowski theorem above.
+
+For the mousetrap to catch anything, the bound had better be strictly positive.
+Show that the Minkowski bound of any fractional ideal is positive.
+
+```lean
+example (K : Type*) [Field K] [NumberField K]
+    (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
+    0 < NumberField.mixedEmbedding.minkowskiBound K I := by
+  sorry
+```
+
+## The class group is finite
+
+Finiteness for number fields is a registered instance, so `Fintype.card` of the class group simply makes sense:
+
+```lean
+recall (K : Type*) [Field K] [NumberField K] :
+    Fintype (ClassGroup (NumberField.RingOfIntegers K))
+```
+
+(Mathlib's proof of the instance runs through the general `ClassGroup.fintypeOfAdmissibleOfFinite`, an axiomatization of the finiteness argument that also covers function fields.)
+
+Because the class group is a finite group, it has at least one element, so its cardinality is nonzero.
+Show that the class number is positive.
+
+```lean
+example (K : Type*) [Field K] [NumberField K] :
+    0 < NumberField.classNumber K := by
+  sorry
+```
+
+## Computation of class numbers
+
+The class number is `NumberField.classNumber K := Fintype.card (ClassGroup (𝓞 K))`, and the remark is an if-and-only-if:
+
+```lean
+recall NumberField.classNumber_eq_one_iff {K : Type*} [Field K]
+    [NumberField K] :
+    NumberField.classNumber K = 1 ↔
+      IsPrincipalIdealRing (NumberField.RingOfIntegers K)
+```
+
+The lemma that ideals divide their norms is `Ideal.absNorm_mem` plus `Ideal.dvd_iff_le` in Mathlib's clothing: `absNorm I • 1 ∈ I`.
+Since $`\mathbb{Z}[i]` is a Euclidean domain it sidesteps Minkowski entirely — `GaussianInt` carries a `EuclideanDomain` instance, and Euclidean domains are PIDs, so the class-group machinery never gets involved.
+The Minkowski-bound style of computation above — bounding `classNumber` by inspecting ideals of small norm — has no automated Mathlib counterpart yet, though all the ingredients (`minkowskiBound`, `Ideal.absNorm`, the factoring algorithm) are individually available.
+
+Prove the first half of the divides-its-norm lemma: the norm of an ideal, viewed as an element of the ring, lands inside the ideal.
+
+```lean
+example (K : Type*) [Field K] [NumberField K] (I : Ideal (𝓞 K)) :
+    (Ideal.absNorm I : 𝓞 K) ∈ I := by
+  sorry
+```
+
+## Optional: Proof that the ring of integers is a free ℤ-module
+
+This second proof is the one Mathlib's development follows: the pairing $`(x,y) \mapsto \operatorname{Tr}(xy)` is `Algebra.traceForm`, its nondegeneracy (the invertible matrix above) is `traceForm_nondegenerate`, and squeezing the integral closure inside the dual basis of the trace form is how `IsIntegralClosure.isNoetherian` — and from it the `Module.Free ℤ (𝓞 K)` instance — gets proved.
+
+The payoff is exactly the free-module theorem this section set out to prove.
+Confirm that Mathlib already registers $`\mathcal{O}_K` as a free $`\mathbb{Z}`-module.
+
+```lean
+example (K : Type*) [Field K] [NumberField K] : Module.Free ℤ (𝓞 K) := by
+  sorry
+```

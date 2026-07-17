@@ -25,27 +25,6 @@ where $`\alpha_1`, …, $`\alpha_n` is a $`\mathbb{Z}`-basis for $`K`, and the $
 
 Several examples, properties, and equivalent definitions follow.
 
-Two of the problems below are, on the Mathlib side, not exercises but the ground truth.
-The trace representation _is_ the definition — `Algebra.discr` is the determinant of the trace matrix, so `NumberField.discr` inherits integrality by construction rather than by the argument you are asked to find:
-
-```lean
-recall Algebra.discr_def (A : Type*) {B : Type*} {ι : Type*}
-    [DecidableEq ι] [CommRing A] [CommRing B] [Algebra A B]
-    [Fintype ι] (b : ι → B) :
-    Algebra.discr A b = (Algebra.traceMatrix A b).det
-```
-
-The root representation for a power basis is `Algebra.discr_powerBasis_eq_prod` (with the $`c^{2n-2}` factor absent since minimal polynomials are monic), and the cyclotomic computation asked for below is `IsCyclotomicExtension.discr_odd_prime`.
-The fourth problem is the *Hermite-Minkowski theorem*, which Mathlib states in an even sharper form:
-
-```lean
-recall NumberField.abs_discr_gt_two {K : Type*} [Field K] [NumberField K]
-    (h : 1 < Module.finrank ℚ K) :
-    2 < |NumberField.discr K|
-```
-
-(Brill's theorem and the Stickelberger theorem, on the other hand, are not yet in Mathlib.)
-
 # Problems
 
 :::PROBLEM "Discriminant of cyclotomic field"
@@ -88,3 +67,90 @@ For a number field $`K` with signature $`(r_1, r_2)`, show that $`\Delta_K > 0` 
 Let $`K` be a number field.
 Prove that $$`\Delta_K \equiv 0 \text{ or } 1 \pmod 4.`
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## The trace representation
+
+The absolute discriminant of a number field is `NumberField.discr`, an integer.
+Two of the problems in this chapter are, on the Mathlib side, not exercises but the ground truth.
+The trace representation _is_ the definition — `Algebra.discr` is the determinant of the trace matrix, so `NumberField.discr` inherits integrality by construction rather than by the argument you are asked to find.
+
+```lean
+recall Algebra.discr_def (A : Type*) {B : Type*} {ι : Type*}
+    [DecidableEq ι] [CommRing A] [CommRing B] [Algebra A B]
+    [Fintype ι] (b : ι → B) :
+    Algebra.discr A b = (Algebra.traceMatrix A b).det
+```
+
+Since $`\mathbb{Q}` has $`\mathbb{Z}` as its ring of integers, its discriminant is the determinant of a $`1 \times 1` trace matrix.
+Show that the absolute discriminant of $`\mathbb{Q}` is $`1`.
+
+```lean
+example : NumberField.discr ℚ = 1 := by
+  sorry
+```
+
+## Root representation of the discriminant
+
+For a power basis, the discriminant has the root representation `Algebra.discr_powerBasis_eq_prod`: the product of the squared differences of the images of the generator under the embeddings (with the $`c^{2n-2}` factor absent since minimal polynomials are monic).
+
+```lean
+recall Algebra.discr_powerBasis_eq_prod (K : Type*) {L : Type*} (E : Type*)
+    [Field K] [Field L] [Field E] [Algebra K L] [Algebra K E]
+    [Module.Finite K L] [IsAlgClosed E] (pb : PowerBasis K L)
+    (e : Fin pb.dim ≃ (L →ₐ[K] E)) [Algebra.IsSeparable K L] :
+    algebraMap K E (Algebra.discr K pb.basis) =
+      ∏ i : Fin pb.dim, ∏ j ∈ Finset.Ioi i, (e j pb.gen - e i pb.gen) ^ 2
+```
+
+The squared differences never all cancel: over a finite separable field extension, the discriminant of _any_ basis is nonzero.
+This is the fact that makes the discriminant a meaningful invariant.
+Show it with `Algebra.discr_not_zero_of_basis`.
+
+```lean
+example (K L : Type*) [Field K] [Field L] [Algebra K L] [Module.Finite K L]
+    [Algebra.IsSeparable K L] {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (b : Module.Basis ι K L) : Algebra.discr K b ≠ 0 := by
+  sorry
+```
+
+## Discriminant of a cyclotomic field
+
+The cyclotomic computation asked for in the first problem is `IsCyclotomicExtension.discr_odd_prime`: for an odd prime $`p`, the discriminant of the power basis of a $`p`th cyclotomic extension is $`(-1)^{\frac{p-1}{2}} p^{p-2}`.
+This is a single named result — find it and apply it.
+
+```lean
+example {p : ℕ} {K : Type*} {L : Type*} {ζ : L}
+    [Field K] [Field L] [Algebra K L]
+    [IsCyclotomicExtension {p} K L] [hp : Fact p.Prime]
+    (hζ : IsPrimitiveRoot ζ p) (hirr : Irreducible (Polynomial.cyclotomic p K))
+    (hodd : p ≠ 2) :
+    Algebra.discr K (hζ.powerBasis K).basis
+      = (-1) ^ ((p - 1) / 2) * p ^ (p - 2) := by
+  sorry
+```
+
+## The Hermite–Minkowski bound
+
+The fourth problem is a special case of the *Hermite–Minkowski theorem*, which Mathlib states in an even sharper form: a number field of degree greater than one has $`\left\lvert \Delta_K \right\rvert > 2`.
+
+```lean
+recall NumberField.abs_discr_gt_two {K : Type*} [Field K] [NumberField K]
+    (h : 1 < Module.finrank ℚ K) :
+    2 < |NumberField.discr K|
+```
+
+The problem itself only asks for $`\left\lvert \Delta_K \right\rvert > 1` when $`K \neq \mathbb{Q}`.
+Deduce it from the sharper bound above.
+
+```lean
+example (K : Type*) [Field K] [NumberField K] (h : 1 < Module.finrank ℚ K) :
+    1 < |NumberField.discr K| := by
+  sorry
+```
+
+Brill's theorem and the Stickelberger theorem, on the other hand, are not yet in Mathlib.

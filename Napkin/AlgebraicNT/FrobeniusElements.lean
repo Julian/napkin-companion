@@ -8,6 +8,9 @@ import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 import Mathlib.NumberTheory.LSeries.PrimesInAP
 import Mathlib.FieldTheory.PolynomialGaloisGroup
+import Mathlib.Algebra.CharP.Lemmas
+import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.GroupTheory.Perm.Cycle.Type
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -52,19 +55,6 @@ It is called the *Frobenius element* at $`\mathfrak{p}`, and has order $`f`.
 
 The _uniqueness_ part is pretty important: it allows us to show that a given $`\sigma \in \operatorname{Gal}(K/\mathbb{Q})` is the Frobenius element by just observing that it satisfies the above functional equation.
 
-The functional equation is a Mathlib definition, at a level of generality that takes a moment to parse: for any finite group $`G` acting on a ring $`S` whose fixed subring is $`R`, being a Frobenius at a prime `Q` of `S` is the predicate
-
-```lean
-recall IsArithFrobAt (R : Type*) {S : Type*} [CommRing R] [CommRing S]
-    [Algebra R S] {M : Type*} [Monoid M] [MulSemiringAction M S]
-    [SMulCommClass M R S] (σ : M) (Q : Ideal S) : Prop :=
-  (MulSemiringAction.toAlgHom R S σ).IsArithFrobAt Q
-```
-
-which unfolds to exactly "$`\sigma \cdot x \equiv x^{q} \pmod{Q}` for all $`x`", with $`q` the size of the downstairs residue field.
-Our chapter's setting is $`R = \mathbb{Z}`, $`S = \mathcal{O}_K`, $`G = \operatorname{Gal}(K/\mathbb{Q})` acting via `galRestrict`, and $`q = p`.
-Existence is `IsArithFrobAt.exists_of_isInvariant`, and uniqueness comes in two flavors: at unramified primes it is on the nose (`AlgHom.IsArithFrobAt.eq_of_isUnramifiedAt`), while in general two Frobenius elements at $`Q` differ by an element of the inertia group (`IsArithFrobAt.mul_inv_mem_inertia`) — which for us is trivial, since $`p` is unramified.
-
 Let's see an example of this:
 
 :::EXAMPLE "Frobenius elements of the Gaussian integers"
@@ -79,8 +69,6 @@ From this we see that $`\operatorname{Frob}_\mathfrak{p}` is the identity when $
 Note that we really only needed to compute $`\operatorname{Frob}_\mathfrak{p}` on $`i`.
 If this seems too good to be true, a philosophical reason is "freshman's dream" where $`(x+y)^p \equiv x^p + y^p \pmod{p}` (and hence mod $`\mathfrak{p}`).
 So if $`\sigma` satisfies the functional equation on generators, it satisfies the functional equation everywhere.
-
-(The root-of-unity computation in the example is `AlgHom.IsArithFrobAt.apply_of_pow_eq_one`: a Frobenius at $`Q` sends any $`m`-th root of unity $`\zeta` with $`q \nmid m` to exactly $`\zeta^q` — an honest equality, not just a congruence.)
 
 We also have an important lemma:
 
@@ -125,20 +113,6 @@ Note that this is an equation in $`G`.
 :::QUESTION
 Prove this.
 :::
-
-That computation is `IsArithFrobAt.conj`: if $`\sigma'` is a Frobenius at $`Q`, then $`\tau \sigma' \tau^{-1}` is a Frobenius at $`\tau \cdot Q`.
-
-```lean -show
-open Pointwise
-```
-
-```lean
-recall IsArithFrobAt.conj {R S : Type*} [CommRing R] [CommRing S]
-    [Algebra R S] {G : Type*} [Group G] [MulSemiringAction G S]
-    [SMulCommClass G R S] {Q : Ideal S} {σ : G}
-    (H : IsArithFrobAt R σ Q) (τ : G) :
-    IsArithFrobAt R (τ * σ * τ⁻¹) (τ • Q)
-```
 
 More generally, for a given unramified rational prime $`p`, we obtain:
 
@@ -205,11 +179,6 @@ Happily, this theorem (and preceding discussion) also works if we replace $`K/\m
 In that case, we use $`\operatorname{N}(\mathfrak{p}) \le x` rather than $`p \le x` as the way to define density.
 :::
 
-:::aside "Chebotarev in Mathlib"
-The Chebotarev density theorem is not in Mathlib.
-Its most famous special case is, though: for $`K = \mathbb{Q}(\zeta_m)` the theorem specializes to Dirichlet's theorem on primes in arithmetic progressions (a problem at the end of this chapter), and that is `Nat.infinite_setOf_prime_and_eq_mod`, proved — as the classical route goes — with Dirichlet characters and their $`L`-series rather than with Frobenius elements.
-:::
-
 # Example: Frobenius elements of cyclotomic fields
 
 Let $`q` be a prime, and consider $`L = \mathbb{Q}(\zeta_q)`, with $`\zeta_q` a primitive $`q`th root of unity.
@@ -238,8 +207,6 @@ Done by uniqueness.
 :::QUESTION
 Conclude that a rational prime $`p` splits completely in $`\mathcal{O}_L` if and only if $`p \equiv 1 \pmod q`.
 :::
-
-(The identification $`\operatorname{Gal}(L/\mathbb{Q}) \cong (\mathbb{Z}/q\mathbb{Z})^\times` is `IsCyclotomicExtension.autEquivPow`, as in the Galois theory chapter, and "check on generators" is once again `AlgHom.IsArithFrobAt.apply_of_pow_eq_one` doing all the work.)
 
 # Frobenius elements behave well with restriction
 
@@ -274,19 +241,6 @@ In short, the point of this section is that
 Frobenius elements upstairs restrict to Frobenius elements downstairs.
 :::
 
-The restriction map itself is `AlgEquiv.restrictNormalHom K : Gal(L/ℚ) →* Gal(K/ℚ)`, a surjective group homomorphism whenever $`K/\mathbb{Q}` is normal; and passing a Galois symmetry of $`L` down to a genuine ring automorphism of $`\mathcal{O}_L` (so that reducing mod $`\mathfrak{P}` even makes sense) is the equivalence `galRestrict`:
-
-```lean
-noncomputable example (A K L B : Type*) [CommRing A] [CommRing B]
-    [Algebra A B] [Field K] [Field L] [Algebra A K] [IsFractionRing A K]
-    [Algebra K L] [Algebra A L] [IsScalarTower A K L]
-    [Algebra B L] [IsScalarTower A B L] [IsIntegralClosure B A L]
-    [Algebra.IsAlgebraic K L] :
-    (L ≃ₐ[K] L) ≃* (B ≃ₐ[A] B) := galRestrict A K L B
-```
-
-(Read `A = ℤ`, `K = ℚ`, `L` the big field, `B = 𝓞 L`; the scary instance arguments say exactly "B is the integral closure of A in L".)
-
 # Application: Quadratic reciprocity
 
 We now aim to prove:
@@ -297,17 +251,6 @@ Then $$`\left( \frac pq \right)\left( \frac qp \right) = (-1)^{\frac{p-1}{2} \cd
 :::
 
 (See, e.g. Holden Lee's _Number Theory_ notes for an exposition on quadratic reciprocity, if you're not familiar with it.)
-
-The Legendre symbol and this theorem are `legendreSym` and `legendreSym.quadratic_reciprocity`:
-
-```lean
-recall legendreSym.quadratic_reciprocity {p q : ℕ} [Fact p.Prime]
-    [Fact q.Prime] (hp : p ≠ 2) (hq : q ≠ 2) (hpq : p ≠ q) :
-    legendreSym q p * legendreSym p q = (-1) ^ (p / 2 * (q / 2))
-```
-
-(the natural-division exponent `p / 2 * (q / 2)` is $`\frac{p-1}{2} \cdot \frac{q-1}{2}` in disguise).
-Mathlib's proof is by Gauss sums, so the argument below — which runs entirely on Frobenius elements — is a genuinely different road to the same theorem.
 
 ## Step 1: Setup
 
@@ -508,9 +451,6 @@ The correspondence (i) $`\iff` (ii) is a fact of Galois theory, so we omit the p
 
 All this can be done in general with $`\mathbb{Q}` replaced by $`F`; for example, in Lenstra's notes _The Chebotarev Density Theorem_.
 
-The action of the Galois group on the roots of $`f` is itself a Mathlib bundle: `Polynomial.Gal f` is the Galois group of the splitting field, and `Polynomial.Gal.galActionHom` is its (faithful!) permutation action on the roots — precisely the object whose cycle structure item 3 speaks about.
-The equivalence of the three patterns has no Mathlib incarnation yet.
-
 # Example application: IMO 2003 problem 6
 
 As an example of the power we now have at our disposal, let's prove:
@@ -562,7 +502,6 @@ With a little more group theory, we can show that in fact the density of primes 
 :::PROBLEM
 Show that for an odd prime $`p`, $$`\left( \frac 2p \right) = (-1)^{\frac 18(p^2-1)}.`
 (Hint: modify the end of the proof of quadratic reciprocity.)
-Mathlib states this supplement as `ZMod.exists_sq_eq_two_iff`: $`2` is a square mod $`p` exactly when $`p \equiv \pm 1 \pmod 8`.
 :::
 
 :::PROBLEM
@@ -590,3 +529,168 @@ Show that $`\pi` is even if and only if $`p \equiv 3 \pmod 4`.
 Let $`\zeta` be a $`(p-1)`st root of unity.
 Take $`d = \prod_{i < j} (\zeta^i - \zeta^j)`, think about $`\mathbb{Q}(d)`, and figure out how to act on it by $`x \mapsto x^3`.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Frobenius elements
+
+The functional equation is a Mathlib definition, at a level of generality that takes a moment to parse: for any finite group $`G` acting on a ring $`S` whose fixed subring is $`R`, being a Frobenius at a prime `Q` of `S` is the predicate
+
+```lean
+recall IsArithFrobAt (R : Type*) {S : Type*} [CommRing R] [CommRing S]
+    [Algebra R S] {M : Type*} [Monoid M] [MulSemiringAction M S]
+    [SMulCommClass M R S] (σ : M) (Q : Ideal S) : Prop :=
+  (MulSemiringAction.toAlgHom R S σ).IsArithFrobAt Q
+```
+
+which unfolds to exactly "$`\sigma \cdot x \equiv x^{q} \pmod{Q}` for all $`x`", with $`q` the size of the downstairs residue field.
+Our chapter's setting is $`R = \mathbb{Z}`, $`S = \mathcal{O}_K`, $`G = \operatorname{Gal}(K/\mathbb{Q})` acting via `galRestrict`, and $`q = p`.
+Existence is `IsArithFrobAt.exists_of_isInvariant`, and uniqueness comes in two flavors: at unramified primes it is on the nose (`AlgHom.IsArithFrobAt.eq_of_isUnramifiedAt`), while in general two Frobenius elements at $`Q` differ by an element of the inertia group (`IsArithFrobAt.mul_inv_mem_inertia`) — which for us is trivial, since $`p` is unramified.
+
+The root-of-unity computation in the Gaussian-integer example is `AlgHom.IsArithFrobAt.apply_of_pow_eq_one`: a Frobenius at $`Q` sends any $`m`-th root of unity $`\zeta` with $`q \nmid m` to exactly $`\zeta^q` — an honest equality, not just a congruence.
+
+That such a computation on generators suffices is the *freshman's dream*: in a commutative ring of prime characteristic $`p`, the $`p`-th power map is additive.
+Prove it from Mathlib's characteristic-$`p` API.
+
+```lean
+example (R : Type*) [CommRing R] (p : ℕ) [Fact p.Prime] [CharP R p]
+    (x y : R) : (x + y) ^ p = x ^ p + y ^ p := by
+  sorry
+```
+
+## Conjugacy classes
+
+The conjugation computation is `IsArithFrobAt.conj`: if $`\sigma'` is a Frobenius at $`Q`, then $`\tau \sigma' \tau^{-1}` is a Frobenius at $`\tau \cdot Q`.
+
+```lean -show
+open Pointwise
+```
+
+```lean
+recall IsArithFrobAt.conj {R S : Type*} [CommRing R] [CommRing S]
+    [Algebra R S] {G : Type*} [Group G] [MulSemiringAction G S]
+    [SMulCommClass G R S] {Q : Ideal S} {σ : G}
+    (H : IsArithFrobAt R σ Q) (τ : G) :
+    IsArithFrobAt R (τ * σ * τ⁻¹) (τ • Q)
+```
+
+The order of $`\operatorname{Frob}_\mathfrak{p}` — the inertial degree $`f_\mathfrak{p}` — depends only on the conjugacy class, because conjugate elements share the same order.
+Prove that conjugation preserves the order of a group element.
+
+```lean
+example {G : Type*} [Group G] (σ τ : G) :
+    orderOf (τ * σ * τ⁻¹) = orderOf σ := by
+  sorry
+```
+
+## Chebotarev density theorem
+
+The Chebotarev density theorem is not in Mathlib.
+Its most famous special case is, though: for $`K = \mathbb{Q}(\zeta_m)` the theorem specializes to Dirichlet's theorem on primes in arithmetic progressions (a problem at the end of this chapter), and that is `Nat.infinite_setOf_prime_and_eq_mod`, proved — as the classical route goes — with Dirichlet characters and their $`L`-series rather than with Frobenius elements.
+That special case is genuinely available: whenever $`a` is a unit mod $`m`, there are infinitely many primes congruent to $`a`.
+
+```lean
+example (m : ℕ) [NeZero m] (a : ZMod m) (ha : IsUnit a) :
+    {p : ℕ | p.Prime ∧ (p : ZMod m) = a}.Infinite :=
+  Nat.infinite_setOf_prime_and_eq_mod ha
+```
+
+## Example: Frobenius elements of cyclotomic fields
+
+The identification $`\operatorname{Gal}(L/\mathbb{Q}) \cong (\mathbb{Z}/q\mathbb{Z})^\times` is `IsCyclotomicExtension.autEquivPow`, as in the Galois theory chapter, and "check on generators" is once again `AlgHom.IsArithFrobAt.apply_of_pow_eq_one` doing all the work.
+
+Underlying that identification is the fact that for a prime $`q`, the group $`(\mathbb{Z}/q\mathbb{Z})^\times` is cyclic, so $`\operatorname{Gal}(L/\mathbb{Q}) \cong \mathbb{Z}/(q-1)\mathbb{Z}`.
+Confirm that Mathlib knows the unit group of a prime field is cyclic.
+
+```lean
+example (q : ℕ) [Fact q.Prime] : IsCyclic (ZMod q)ˣ := by
+  sorry
+```
+
+## Frobenius elements behave well with restriction
+
+The restriction map itself is `AlgEquiv.restrictNormalHom K : Gal(L/ℚ) →* Gal(K/ℚ)`, a surjective group homomorphism whenever $`K/\mathbb{Q}` is normal; and passing a Galois symmetry of $`L` down to a genuine ring automorphism of $`\mathcal{O}_L` (so that reducing mod $`\mathfrak{P}` even makes sense) is the equivalence `galRestrict`:
+
+```lean
+noncomputable example (A K L B : Type*) [CommRing A] [CommRing B]
+    [Algebra A B] [Field K] [Field L] [Algebra A K] [IsFractionRing A K]
+    [Algebra K L] [Algebra A L] [IsScalarTower A K L]
+    [Algebra B L] [IsScalarTower A B L] [IsIntegralClosure B A L]
+    [Algebra.IsAlgebraic K L] :
+    (L ≃ₐ[K] L) ≃* (B ≃ₐ[A] B) := galRestrict A K L B
+```
+
+(Read `A = ℤ`, `K = ℚ`, `L` the big field, `B = 𝓞 L`; the scary instance arguments say exactly "B is the integral closure of A in L".)
+
+That $`\operatorname{Frob}_{\mathfrak{P}} \restriction_K` is even well-defined uses the surjectivity of the restriction map onto $`\operatorname{Gal}(K/\mathbb{Q})` when $`K/\mathbb{Q}` is normal.
+Prove that restriction to a normal intermediate field is surjective.
+
+```lean
+example (F K₁ E : Type*) [Field F] [Field K₁] [Field E] [Algebra F K₁]
+    [Algebra F E] [Algebra K₁ E] [IsScalarTower F K₁ E] [Normal F K₁]
+    [Normal F E] :
+    Function.Surjective
+      (AlgEquiv.restrictNormalHom K₁ : (E ≃ₐ[F] E) → (K₁ ≃ₐ[F] K₁)) := by
+  sorry
+```
+
+## Application: Quadratic reciprocity
+
+The Legendre symbol and this theorem are `legendreSym` and `legendreSym.quadratic_reciprocity`:
+
+```lean
+recall legendreSym.quadratic_reciprocity {p q : ℕ} [Fact p.Prime]
+    [Fact q.Prime] (hp : p ≠ 2) (hq : q ≠ 2) (hpq : p ≠ q) :
+    legendreSym q p * legendreSym p q = (-1) ^ (p / 2 * (q / 2))
+```
+
+(the natural-division exponent `p / 2 * (q / 2)` is $`\frac{p-1}{2} \cdot \frac{q-1}{2}` in disguise).
+Mathlib's proof is by Gauss sums, so the argument above — which runs entirely on Frobenius elements — is a genuinely different road to the same theorem.
+
+One ingredient the proof leans on is the value of $`\left( \frac{-1}{p} \right)`.
+Show that $`-1` is a quadratic residue mod $`p` exactly when $`p \not\equiv 3 \pmod 4`.
+
+```lean
+example (p : ℕ) [Fact p.Prime] : IsSquare (-1 : ZMod p) ↔ p % 4 ≠ 3 := by
+  sorry
+```
+
+## Frobenius elements control factorization
+
+The action of the Galois group on the roots of $`f` is itself a Mathlib bundle: `Polynomial.Gal f` is the Galois group of the splitting field, and `Polynomial.Gal.galActionHom` is its (faithful!) permutation action on the roots — precisely the object whose cycle structure item 3 speaks about.
+The equivalence of the three patterns has no Mathlib incarnation yet.
+
+The word *faithful* is itself a theorem: over a splitting field, the permutation action on the roots is injective.
+Prove it.
+
+```lean
+example (F : Type*) [Field F] (f : Polynomial F) (E : Type*) [Field E]
+    [Algebra F E] [Fact ((f.map (algebraMap F E)).Splits)] :
+    Function.Injective (Polynomial.Gal.galActionHom f E) := by
+  sorry
+```
+
+## Example application: IMO 2003 problem 6
+
+The solution's one non-elementary group-theoretic input — used to produce an element $`\sigma \in G` of order $`p` once $`p \mid \left\lvert G \right\rvert` — is Cauchy's theorem, `exists_prime_orderOf_dvd_card`.
+State it as an exercise.
+
+```lean
+example {G : Type*} [Group G] [Fintype G] (p : ℕ) [Fact p.Prime]
+    (hdvd : p ∣ Fintype.card G) : ∃ g : G, orderOf g = p := by
+  sorry
+```
+
+## Problems
+
+The first problem's supplement — the value of $`\left( \frac 2p \right)` — is `ZMod.exists_sq_eq_two_iff`.
+Show that $`2` is a quadratic residue modulo an odd prime $`p` exactly when $`p \equiv \pm 1 \pmod 8`.
+
+```lean
+example (p : ℕ) [Fact p.Prime] (hp : p ≠ 2) :
+    IsSquare (2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 7 := by
+  sorry
+```

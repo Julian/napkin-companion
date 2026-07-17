@@ -6,6 +6,8 @@ import Napkin.Meta.Recall
 import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.Algebra.Algebra.Hom.Rat
+import Mathlib.Analysis.Complex.Polynomial.Basic
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -48,9 +50,6 @@ Show that in this context, $`\sigma(q) = q` for any rational number $`q`.
      Note that this is enough to determine the rest of the embedding.
    - An embedding which sends $`1 \mapsto 1` and $`\sqrt[3] 2 \mapsto \omega^2 \sqrt[3] 2`.
 :::
-
-An embedding in this sense is just a ring homomorphism `K →+* ℂ` — injectivity comes for free, as we will remark shortly — and once a base field is in play, a homomorphism fixing it is `K →ₐ[F] ℂ`, an "algebra homomorphism".
-The fact that fixing $`\mathbb{Q}` is automatic is also known to Mathlib: `K →+* ℂ` and `K →ₐ[ℚ] ℂ` are literally interchangeable via `RingHom.equivRatAlgHom`.
 
 I want to make several observations about these embeddings, which will form the core ideas of Galois theory.
 Pay attention here!
@@ -102,9 +101,6 @@ If $`[K:F]` is finite, we say $`K/F` is a *finite (field) extension*.
 That's really all.
 There's nothing tricky at all.
 
-Since carriers are types rather than literal subsets, "one field sitting inside another" is expressed by an `Algebra F K` instance between two fields — the data of the inclusion map — and the degree is `Module.finrank F K`, exactly the vector-space dimension the definition prescribes.
-(When both fields genuinely live inside one big field, `IntermediateField F K` is the bundled version; we will meet it at the fundamental theorem below.)
-
 :::QUESTION
 What do you call a finite extension of $`\mathbb{Q}`?
 :::
@@ -120,8 +116,6 @@ Then $$`[L:K][K:F] = [L:F].`
 Basis bash: you can find a basis of $`L` over $`K`, and then expand that into a basis $`L` over $`F`.
 (Diligent readers can fill in details.)
 :::
-
-The basis bash is `Module.finrank_mul_finrank`, which holds for any scalar tower of rings acting on a module, with the tower condition recorded by the `IsScalarTower F K L` typeclass.
 
 Next, given a field (like $`\mathbb{Q}(\sqrt[3]2)`) we want something to embed it into (in our case $`\mathbb{C}`).
 So we just want a field that contains all the roots of all the polynomials.
@@ -140,9 +134,6 @@ In fact, there is a unique such extension which is minimal by inclusion, called 
 (Here "minimal" means any other algebraically closed extension of $`F` contains an isomorphic copy of $`\overline F`.)
 It has the property that every element of $`\overline F` is indeed the root of some polynomial with coefficients in $`F`.
 :::
-
-"Algebraically closed" is the typeclass `IsAlgClosed E`, and the construction of the theorem is `AlgebraicClosure F`, a chosen algebraic closure with its `Algebra F _` instance; the two defining properties are packaged together as `IsAlgClosure F E` (algebraically closed plus algebraic over $`F`).
-Uniqueness-up-to-isomorphism is `IsAlgClosure.equiv`.
 
 :::EXAMPLE "Closures of ℝ and ℚ"
 $`\mathbb{C}` is the algebraic closure of $`\mathbb{R}` (and itself).
@@ -191,17 +182,6 @@ Multiplying these all together gives the desired $`[K:\mathbb{Q}]`.
 The primitive element theorem actually implies that $`m = 1` is sufficient; we don't need to build a whole tower.
 This simplifies the proof somewhat.
 :::
-
-The count of embeddings is `NumberField.Embeddings.card`, which we met when defining the discriminant; and the theorem in the generality we are about to develop — counting maps into any algebraically closed target — is `AlgHom.card`:
-
-```lean
-recall AlgHom.card {F E : Type*} [Field F] [Field E] [Algebra F E]
-    [FiniteDimensional F E] [Algebra.IsSeparable F E] (K : Type*)
-    [Field K] [IsAlgClosed K] [Algebra F K] :
-    Fintype.card (E →ₐ[F] K) = Module.finrank F E
-```
-
-(The `Algebra.IsSeparable` hypothesis is invisible over $`\mathbb{Q}`; it is exactly the issue the next section confronts.)
 
 It's common to see expressions like "let $`K` be a number field of degree $`n`, and $`\sigma_1, \dots, \sigma_n` its $`n` embeddings" without further explanation.
 The relation between these embeddings and the Galois conjugates is given as follows.
@@ -261,9 +241,6 @@ Show that if $`p > 0` then $`p` is a prime number.
 (A proof is given next chapter.)
 :::
 
-"$`F` has characteristic $`p`" is the typeclass `CharP F p`, with `CharZero F` as the (equivalent to `CharP F 0`, via `charP_zero_iff_charZero`) way of saying characteristic zero; the exercise is `CharP.char_is_prime`.
-Separability of a polynomial is `Polynomial.Separable`, defined as being coprime to its derivative — the derivative trick, taken as the definition.
-
 With the assumption of characteristic zero, our earlier proof works.
 
 :::LEMMA "Separability in characteristic zero"
@@ -296,17 +273,12 @@ Then it is perfect.
 Thus, we will almost never have to worry about separability since every field we see in this book is either finite or characteristic $`0`.
 So the inclusion of the word "separable" is mostly a formality.
 
-Separable extensions are the typeclass `Algebra.IsSeparable F K`, and perfectness is `PerfectField F`, with instances covering both of our cases: characteristic zero (`PerfectField.toPerfectRing`-adjacent instances fire via `CharZero`) and finite fields.
-Since the typeclass system silently discharges these hypotheses for every field in this book, the "mostly a formality" promise is taken quite literally.
-
 Proceeding onwards, we obtain
 
 :::THEOREM "The n embeddings of any separable extension"
 Let $`K/F` be a separable extension of degree $`n` and let $`\overline F` be an algebraic closure of $`F`.
 Then there are exactly $`n` field homomorphisms $`K \hookrightarrow \overline F`, say $`\sigma_1`, …, $`\sigma_n`, which fix $`F`.
 :::
-
-(This is precisely the `AlgHom.card` statement quoted earlier.)
 
 In any case, this lets us define the trace for _any_ separable normal extension.
 
@@ -336,8 +308,6 @@ This is a group under function composition!
 
 Note that this time, we have a condition that $`F` is fixed by $`\sigma`.
 (This was not there before when we considered $`F = \mathbb{Q}`, because we got it for free.)
-
-$`\operatorname{Aut}(K/F)` is the type `K ≃ₐ[F] K` of algebra self-equivalences, with its group structure already installed; it is important enough to carry the notation `Gal(K/F)` — which Mathlib uses for _any_ extension, Galois or not, in exactly the way this chapter uses $`\operatorname{Aut}`.
 
 :::EXAMPLE "Old examples of automorphism groups"
 Reprising the example at the beginning of the chapter in the new notation, we have:
@@ -389,8 +359,6 @@ The *splitting field* of $`p(x)` over $`F` is defined as $`F(\alpha_1, \dots, \a
 
 In other words, the splitting field is the smallest field in which $`p(x)` splits.
 
-The splitting field is `Polynomial.SplittingField f`, constructed abstractly (by quotienting polynomial rings rather than working inside a fixed closure), with the characterizing property available as the predicate `Polynomial.IsSplittingField F K f` so that any concrete field can be recognized as "the" splitting field via `IsSplittingField.algEquiv`.
-
 :::EXAMPLE "Examples of splitting fields"
 1. The splitting field of $`x^2 - 5` over $`\mathbb{Q}` is $`\mathbb{Q}(\sqrt 5)`.
    This is a degree $`2` extension.
@@ -427,17 +395,6 @@ The proof of this is deferred to an optional section at the end of the chapter.
 If $`K/F` is a finite extension and $`\left\lvert \operatorname{Aut}(K/F) \right\rvert = [K:F]`, we say the extension $`K/F` is *Galois*.
 In that case, we denote $`\operatorname{Aut}(K/F)` by $`\operatorname{Gal}(K/F)` instead and call this the *Galois group* of $`K/F`.
 
-Mathlib takes a different (equivalent) definition as primary: `IsGalois F K` is _defined_ as "separable and normal" — normality being the missing-no-conjugates condition, `Normal F K` — and the counting characterization we have taken as the definition is the theorem `IsGalois.card_aut_eq_finrank`:
-
-```lean
-recall IsGalois.card_aut_eq_finrank (F : Type*) [Field F]
-    (E : Type*) [Field E] [Algebra F E]
-    [FiniteDimensional F E] [IsGalois F E] :
-    Nat.card (E ≃ₐ[F] E) = Module.finrank F E
-```
-
-The splitting-field characterization in the theorem above is likewise available, as `IsGalois.of_separable_splitting_field` and its converse; so all three descriptions — the count, separable+normal, and splitting fields — are interchangeable, and the optional section at the end of this chapter is essentially the paper proof of that interchangeability.
-
 :::EXAMPLE "Examples and non-examples of Galois extensions"
 1. The extension $`\mathbb{Q}(\sqrt2) / \mathbb{Q}` is Galois, since it's the splitting field of $`x^2-2` over $`\mathbb{Q}`.
    The Galois group has order two, $`\sqrt 2 \mapsto \pm \sqrt 2`.
@@ -460,8 +417,6 @@ Actually one can check explicitly that $$`\operatorname{Gal}(K/\mathbb{Q}) \cong
 
 This example illustrates the fact that given a non-Galois field extension, one can "add in" missing conjugates to make it Galois.
 This is called taking a *Galois closure*.
-
-(The Galois closure exists in Mathlib too, as `normalClosure F K Ω` inside a big enough ambient field `Ω`.)
 
 # Fundamental theorem of Galois theory
 
@@ -511,18 +466,6 @@ Let $`K/F` be a Galois extension with Galois group $`G = \operatorname{Gal}(K/F)
    If so, $`\operatorname{Gal}(E/F) = G/H`.
 :::
 
-The bijection of part 1 is `IsGalois.intermediateFieldEquivSubgroup`, an order isomorphism between `IntermediateField F K` — the bundled "fields $`E` with $`F \subseteq E \subseteq K`" — and subgroups of the Galois group, with the order on subgroups dualized to record the inclusion reversal:
-
-```lean
-recall IsGalois.intermediateFieldEquivSubgroup {F : Type*} [Field F]
-    {E : Type*} [Field E] [Algebra F E]
-    [FiniteDimensional F E] [IsGalois F E] :
-    IntermediateField F E ≃o (Subgroup (E ≃ₐ[F] E))ᵒᵈ
-```
-
-Its two directions are the fixed field `IntermediateField.fixedField H` (our $`K^H`) and the "fixing subgroup" `IntermediateField.fixingSubgroup E` (our $`\operatorname{Gal}(K/E)`, viewed as a subgroup of $`G` — which is part 3 in disguise).
-Part 2 is `IsGalois.card_fixingSubgroup_eq_finrank`, and part 4 is the pair of instances `IsGalois.of_fixedField_normal_subgroup` and `IsGalois.fixingSubgroup_normal_of_isGalois`: normal subgroups fix Galois subextensions, and Galois subextensions have normal fixing subgroups.
-
 :::EXERCISE
 Suppose we apply this theorem for $$`K = \mathbb{Q}(\sqrt[3]2, \omega).`
 Verify that the fact $`E = \mathbb{Q}(\sqrt[3] 2)` is not Galois corresponds to the fact that $`S_3` does not have normal subgroups of order $`2`.
@@ -536,8 +479,6 @@ Let $`K = \mathbb{Q}(\zeta_p)`.
 Show that $$`\operatorname{Gal}(K/\mathbb{Q}) \cong (\mathbb{Z}/p\mathbb{Z})^\times.`
 (Hint: look at the image of $`\zeta_p`.)
 :::
-
-The cyclotomic Galois group is computed once and for all in Mathlib by `IsPrimitiveRoot.autToPow`-adjacent machinery (for instance `IsPrimitiveRoot.autToPow_injective`); the packaged form is `IsCyclotomicExtension.autEquivPow`, valid for any cyclotomic extension.
 
 :::PROBLEM
 Give an example of a degree-three Galois extension of $`\mathbb{Q}`.
@@ -572,8 +513,6 @@ Show that $`K \cong \mathbb{Q}(\gamma)` for some $`\gamma`.
 For all but finitely many rational $`\lambda`, the choice $`\gamma = \alpha + \lambda \beta` will work.)
 :::
 
-This last one is `Field.exists_primitive_element`, stated for any finite separable extension; the finitely-many-bad-$`\lambda` counting argument is visible in its proof.
-
 # (Optional) Proof that Galois extensions are splitting
 
 We prove the theorem that Galois extensions are splitting.
@@ -583,8 +522,6 @@ First, we extract a useful fragment from the fundamental theorem.
 Let $`K` be a field and $`G` a subgroup of $`\operatorname{Aut}(K)`.
 Then $`[K:K^G] = \left\lvert G \right\rvert`.
 :::
-
-(This is `IntermediateField.finrank_fixedField_eq_card` — one of the workhorses behind the fundamental theorem's Mathlib proof.)
 
 The inequality itself is not difficult:
 
@@ -636,3 +573,197 @@ Now we're basically done — pick a basis $`\omega_1`, …, $`\omega_n` of $`K/F
 Consider $`P = p_1 \dots p_n`, removing any repeated factors.
 The roots of $`P` are $`\omega_1`, …, $`\omega_n` and some other guys in $`K`.
 So $`K` is the splitting field of $`P`.
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Motivation
+
+An embedding is just a ring homomorphism `K →+* ℂ`; injectivity comes for free, since the kernel of a field homomorphism is an ideal.
+Once a base field is in play, a homomorphism fixing it is an algebra homomorphism `K →ₐ[F] ℂ`.
+The fact that fixing $`\mathbb{Q}` is automatic means that `K →+* ℂ` and `K →ₐ[ℚ] ℂ` are interchangeable, via `RingHom.equivRatAlgHom`.
+
+```lean
+noncomputable example (R S : Type*) [Field R] [Field S]
+    [Algebra ℚ R] [Algebra ℚ S] :
+    (R →+* S) ≃ (R →ₐ[ℚ] S) := RingHom.equivRatAlgHom
+```
+
+The question above asked you to show such an embedding fixes every rational number.
+Once phrased as an algebra homomorphism over $`\mathbb{Q}`, this is exactly the statement that it commutes with the inclusion of the scalars.
+
+```lean
+example (K L : Type*) [Field K] [Field L] [Algebra ℚ K] [Algebra ℚ L]
+    (φ : K →ₐ[ℚ] L) (q : ℚ) :
+    φ (algebraMap ℚ K q) = algebraMap ℚ L q := by
+  sorry
+```
+
+## Field extensions, algebraic extension, and splitting fields
+
+Since carriers are types rather than literal subsets, "one field sitting inside another" is expressed by an `Algebra F K` instance between two fields — the data of the inclusion map — and the degree $`[K:F]` is `Module.finrank F K`, exactly the vector-space dimension the definition prescribes.
+(When both fields genuinely live inside one big field, `IntermediateField F K` is the bundled version, which we meet at the fundamental theorem below.)
+
+"Algebraically closed" is the typeclass `IsAlgClosed E`, and the construction of the algebraic closure theorem is `AlgebraicClosure F`, a chosen algebraic closure carrying its `Algebra F _` instance; the two defining properties are packaged together as `IsAlgClosure F E`, with uniqueness-up-to-isomorphism recorded as `IsAlgClosure.equiv`.
+
+```lean
+example (F : Type*) [Field F] :
+    IsAlgClosed (AlgebraicClosure F) := inferInstance
+
+noncomputable example (F : Type*) [Field F] :
+    Algebra F (AlgebraicClosure F) := inferInstance
+```
+
+The "basis bash" proving degrees are multiplicative is `Module.finrank_mul_finrank`, which holds for any scalar tower of rings acting on a module, with the tower condition recorded by the `IsScalarTower F K L` typeclass.
+Fill in the proof of the multiplicative degree theorem.
+
+```lean
+example (F K L : Type*) [Field F] [Field K] [Field L]
+    [Algebra F K] [Algebra K L] [Algebra F L] [IsScalarTower F K L]
+    [FiniteDimensional F K] [FiniteDimensional K L] :
+    Module.finrank F K * Module.finrank K L = Module.finrank F L := by
+  sorry
+```
+
+## Embeddings into algebraic closures for number fields
+
+The count of embeddings is `NumberField.Embeddings.card`, which appears when defining the discriminant; the theorem in the generality developed here — counting maps into any algebraically closed target — is `AlgHom.card`.
+(The `Algebra.IsSeparable` hypothesis is invisible over $`\mathbb{Q}`; it is exactly the issue the next section confronts.)
+
+```lean
+recall AlgHom.card {F E : Type*} [Field F] [Field E] [Algebra F E]
+    [FiniteDimensional F E] [Algebra.IsSeparable F E] (K : Type*)
+    [Field K] [IsAlgClosed K] [Algebra F K] :
+    Fintype.card (E →ₐ[F] K) = Module.finrank F E
+```
+
+Specialized to a finite extension of $`\mathbb{Q}`, this says the number of embeddings into an algebraically closed target equals the degree; the separability side-condition is discharged automatically in characteristic zero.
+
+```lean
+example (K : Type*) [Field K] [Algebra ℚ K] [FiniteDimensional ℚ K]
+    (L : Type*) [Field L] [IsAlgClosed L] [Algebra ℚ L] :
+    Fintype.card (K →ₐ[ℚ] L) = Module.finrank ℚ K := by
+  sorry
+```
+
+## Everyone hates characteristic 2: separable vs irreducible
+
+"$`F` has characteristic $`p`" is the typeclass `CharP F p`, with `CharZero F` (equivalent to `CharP F 0` via `charP_zero_iff_charZero`) as the way of saying characteristic zero.
+Separability of a polynomial is `Polynomial.Separable`, defined as being coprime to its derivative — the derivative trick, taken as the definition.
+Separable extensions are the typeclass `Algebra.IsSeparable F K`, and perfectness is `PerfectField F`, with instances covering both characteristic zero and finite fields, so the typeclass system silently discharges these hypotheses for every field in this book.
+
+```lean
+example : CharZero ℚ := inferInstance
+
+example (F : Type*) [Field F] (f : Polynomial F) : Prop := f.Separable
+```
+
+The exercise asked you to show that a nonzero characteristic is prime.
+
+```lean
+example (F : Type*) [Field F] (p : ℕ) [CharP F p] (hp : p ≠ 0) : p.Prime := by
+  sorry
+```
+
+## Automorphism groups and Galois extensions
+
+$`\operatorname{Aut}(K/F)` is the type `K ≃ₐ[F] K` of algebra self-equivalences, with its group structure already installed; it carries the notation `Gal(K/F)`, which is used for _any_ extension, Galois or not, in exactly the way this chapter uses $`\operatorname{Aut}`.
+The splitting field is `Polynomial.SplittingField f`, constructed abstractly by quotienting polynomial rings rather than working inside a fixed closure, with the characterizing property available as the predicate `Polynomial.IsSplittingField F K f` so that any concrete field can be recognized as "the" splitting field via `IsSplittingField.algEquiv`.
+
+```lean
+example (F K : Type*) [Field F] [Field K] [Algebra F K] :
+    Group (K ≃ₐ[F] K) := inferInstance
+
+noncomputable example (F : Type*) [Field F] (f : Polynomial F) :
+    Type _ := f.SplittingField
+```
+
+`IsGalois F K` is _defined_ as "separable and normal" — normality being the missing-no-conjugates condition, `Normal F K` — and the counting characterization taken as the definition here is the theorem `IsGalois.card_aut_eq_finrank`.
+The splitting-field characterization is likewise available, as `IsGalois.of_separable_splitting_field` and its converse; the Galois closure exists too, as `normalClosure F K Ω` inside a big enough ambient field `Ω`.
+
+```lean
+example (F K : Type*) [Field F] [Field K] [Algebra F K] [IsGalois F K] :
+    Normal F K ∧ Algebra.IsSeparable F K := ⟨inferInstance, inferInstance⟩
+
+recall IsGalois.card_aut_eq_finrank (F : Type*) [Field F]
+    (E : Type*) [Field E] [Algebra F E]
+    [FiniteDimensional F E] [IsGalois F E] :
+    Nat.card (E ≃ₐ[F] E) = Module.finrank F E
+```
+
+The root-shuffling lemma says an automorphism sends a root of $`f` to another root of $`f`.
+
+```lean
+example (F K : Type*) [Field F] [Field K] [Algebra F K]
+    (f : Polynomial F) (α : K) (h : Polynomial.aeval α f = 0)
+    (σ : K ≃ₐ[F] K) : Polynomial.aeval (σ α) f = 0 := by
+  sorry
+```
+
+## Fundamental theorem of Galois theory
+
+The bijection of part 1 is `IsGalois.intermediateFieldEquivSubgroup`, an order isomorphism between `IntermediateField F K` — the bundled "fields $`E` with $`F \subseteq E \subseteq K`" — and subgroups of the Galois group, with the order on subgroups dualized to record the inclusion reversal.
+
+```lean
+recall IsGalois.intermediateFieldEquivSubgroup {F : Type*} [Field F]
+    {E : Type*} [Field E] [Algebra F E]
+    [FiniteDimensional F E] [IsGalois F E] :
+    IntermediateField F E ≃o (Subgroup (E ≃ₐ[F] E))ᵒᵈ
+```
+
+Its two directions are the fixed field `IntermediateField.fixedField H` (our $`K^H`) and the "fixing subgroup" `IntermediateField.fixingSubgroup E` (our $`\operatorname{Gal}(K/E)`, viewed as a subgroup of $`G`).
+Part 2 is `IsGalois.card_fixingSubgroup_eq_finrank`, and part 4 is the pair of instances `IsGalois.of_fixedField_normal_subgroup` and `IsGalois.fixingSubgroup_normal_of_isGalois`.
+
+```lean
+example (F K : Type*) [Field F] [Field K] [Algebra F K]
+    (H : Subgroup (K ≃ₐ[F] K)) : IntermediateField F K :=
+  IntermediateField.fixedField H
+
+example (F K : Type*) [Field F] [Field K] [Algebra F K]
+    (E : IntermediateField F K) : Subgroup (K ≃ₐ[F] K) :=
+  E.fixingSubgroup
+```
+
+That the two directions are mutually inverse is the crux of the correspondence.
+Show that starting from a subgroup $`H`, taking its fixed field, and then taking the fixing subgroup of that recovers $`H`.
+
+```lean
+example (F K : Type*) [Field F] [Field K] [Algebra F K] [FiniteDimensional F K]
+    (H : Subgroup (K ≃ₐ[F] K)) :
+    IntermediateField.fixingSubgroup (IntermediateField.fixedField H) = H := by
+  sorry
+```
+
+## Problems
+
+The cyclotomic Galois group is computed once and for all by `IsPrimitiveRoot.autToPow`-adjacent machinery (for instance `IsPrimitiveRoot.autToPow_injective`); the packaged form is `IsCyclotomicExtension.autEquivPow`, valid for any cyclotomic extension.
+The final problem, Artin's primitive element theorem, is `Field.exists_primitive_element`, stated for any finite separable extension; the finitely-many-bad-$`\lambda` counting argument is visible in its proof.
+Prove that a finite separable extension is generated by a single element.
+
+```lean
+example (F E : Type*) [Field F] [Field E] [Algebra F E] [FiniteDimensional F E]
+    [Algebra.IsSeparable F E] : ∃ α : E, F⟮α⟯ = ⊤ := by
+  sorry
+```
+
+## (Optional) Proof that Galois extensions are splitting
+
+The fixed field theorem is `IntermediateField.finrank_fixedField_eq_card`, one of the workhorses behind the fundamental theorem's proof.
+
+```lean
+example (F K : Type*) [Field F] [Field K] [Algebra F K] [FiniteDimensional F K]
+    (H : Subgroup (K ≃ₐ[F] K)) :
+    Module.finrank (IntermediateField.fixedField H) K = Nat.card H :=
+  IntermediateField.finrank_fixedField_eq_card H
+```
+
+The exercise asked for the inequality $`[K:F] \ge |\operatorname{Aut}(K/F)|`, available as `AlgEquiv.card_le`.
+
+```lean
+example (F K : Type*) [Field F] [Field K] [Algebra F K]
+    [FiniteDimensional F K] :
+    Fintype.card (K ≃ₐ[F] K) ≤ Module.finrank F K := by
+  sorry
+```

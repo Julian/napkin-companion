@@ -7,11 +7,14 @@ import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.NumberTheory.KummerDedekind
+import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+
+open scoped nonZeroDivisors
 
 set_option pp.rawOnError true
 
@@ -96,9 +99,6 @@ Pretty straightforward; just convince yourself that this result is correct.
 In other words, for sums you append the two sets of generators together, and for products you take products of the generators.
 Note that for principal ideals, this coincides with "normal" multiplication, for example $$`(3) \cdot (5) = (15)` in $`\mathbb{Z}`.
 
-Both operations already exist on `Ideal R`: the sum is the lattice join (`Ideal.add_eq_sup : I + J = I ⊔ J` — "smallest ideal containing both", which is the generator description), the product is the `*` from the `Mul (Ideal R)` instance, and the generator descriptions are `Ideal.span_union` and `Ideal.span_mul_span`.
-Principal-times-principal is `Ideal.span_singleton_mul_span_singleton`.
-
 :::REMARK
 Note that for an ideal $`\mathfrak{a}` and an element $`c`, the set $$`c \mathfrak{a} = \left\{ ca \mid a \in \mathfrak{a} \right\}` is equal to $`(c) \cdot \mathfrak{a}`.
 So "scaling" and "multiplying by principal ideals" are the same thing.
@@ -128,26 +128,12 @@ Note the reversal of inclusions!
 So $`(3)` divides $`(15)`, because $`(15)` is contained in $`(3)`; every multiple of $`15` is a multiple of $`3`.
 And from the example in the previous section: In $`\mathbb{Z}[\sqrt{-5}]`, $`(3,1-\sqrt{-5})` divides $`(3)` and $`(1 - \sqrt{-5})`.
 
-"To divide is to contain" is a genuine theorem rather than a definition: divisibility `I ∣ J` means literally `∃ K, J = I * K`, and in a Dedekind domain (below) the two agree:
-
-```lean
-recall Ideal.dvd_iff_le {A : Type*} [CommRing A] [IsDedekindDomain A]
-    {I J : Ideal A} :
-    I ∣ J ↔ J ≤ I
-```
-
-(In an arbitrary commutative ring only the forward direction `Ideal.le_of_dvd` survives; the reverse is one of the many superpowers Dedekind domains are about to grant us.
-Note also that `≤` on ideals is inclusion, so the reversal of inclusions is right there in the statement.)
-
 Finally, the *prime ideals* are defined as in the rings chapter: $`\mathfrak{p}` is prime if $`xy \in \mathfrak{p}` implies $`x \in \mathfrak{p}` or $`y \in \mathfrak{p}`.
 This is compatible with the definition of divisibility:
 
 :::EXERCISE
 A nonzero proper ideal $`\mathfrak{p}` is prime if and only if whenever $`\mathfrak{p}` divides $`\mathfrak{a} \mathfrak{b}`, $`\mathfrak{p}` divides one of $`\mathfrak{a}` or $`\mathfrak{b}`.
 :::
-
-The exercise is exactly the compatibility between `Ideal.IsPrime` and the general algebra predicate `Prime` (in the divisibility sense of the flavors-of-rings chapter), recorded as `Ideal.prime_iff_isPrime`.
-As mentioned in the rings chapter, this also lets us ignore multiplication by units: $`(-3) = (3)`.
 
 # Dedekind domains
 
@@ -177,15 +163,6 @@ We say $`R` is *integrally closed* if the only elements $`a \in K` which are roo
 
 The _interesting_ condition in the definition of a Dedekind domain is the last one: prime ideals and maximal ideals are the same thing.
 The other conditions are just technicalities, but "primes are maximal" has real substance.
-
-The class is assembled from the same three conditions:
-
-```lean
-recall IsDedekindDomain (A : Type*) [CommRing A] : Prop
-```
-
-extends `IsDomain A` together with `IsDedekindRing A`, which packages `IsNoetherian A A`, `IsIntegrallyClosed A`, and — for the interesting condition — `Ring.DimensionLEOne A`: every nonzero prime ideal is maximal, phrased as "Krull dimension at most one".
-(Each ingredient is its own typeclass, so partial credit like "Noetherian and integrally closed but dimension two" remains expressible.)
 
 :::EXAMPLE "ℤ is a Dedekind domain"
 The ring $`\mathbb{Z}` is a Dedekind domain.
@@ -252,12 +229,6 @@ Since finite integral domains are fields (a problem from the flavors-of-rings ch
 :::
 
 Since every nonzero prime $`\mathfrak{p}` is maximal, we now know that $`\mathcal{O}_K` is a Dedekind domain.
-And so does Mathlib, as an instance available whenever `[NumberField K]` is:
-
-```lean
-recall (K : Type*) [Field K] [NumberField K] :
-    IsDedekindDomain (NumberField.RingOfIntegers K)
-```
 
 :::REMARK
 An alternative proof for the first part is: because $`\mathfrak{p}` is an ideal, $`\alpha \cdot \mathcal{O}_K \subseteq \mathfrak{p}`, but $`\alpha \cdot \mathcal{O}_K` is a free $`\mathbb{Z}`-module of rank $`n`, so $`\mathfrak{p}` is squeezed between two free $`\mathbb{Z}`-modules of rank $`n`, by the structure theorem we must have $`\mathfrak{p}` is also free of rank $`n`.
@@ -294,15 +265,6 @@ Then $`\mathfrak{a}` can be written as a finite product of nonzero prime ideals 
 
 Moreover, $`\mathfrak{a}` divides $`\mathfrak{b}` if and only if for every prime ideal $`\mathfrak{p}`, the exponent of $`\mathfrak{p}` in $`\mathfrak{a}` is less than or equal to the corresponding exponent in $`\mathfrak{b}`.
 :::
-
-The theorem is delivered as an instance: in a Dedekind domain, the ideals — with the multiplication defined above — form a `UniqueFactorizationMonoid`, the same abstraction that expressed unique factorization of _elements_ in the flavors-of-rings chapter, now applied one level up:
-
-```lean
-recall (A : Type*) [CommRing A] [IsDedekindDomain A] :
-    UniqueFactorizationMonoid (Ideal A)
-```
-
-So everything proved about UFDs — existence and essential uniqueness of factorizations into `Prime` elements, `∣`-comparison by exponents — specializes to ideals for free, with "unit" degenerating to the single ideal $`(1)`.
 
 I won't write out the proof, but I'll describe the basic method of attack.
 Section 3 of Ullery's _Minkowski Theory and the Class Number_ does a nice job of explaining it.
@@ -417,8 +379,6 @@ In particular, if $`K` is monogenic with $`\mathcal{O}_K = \mathbb{Z}[\theta]` t
 In almost all our applications in this book, $`K` will be monogenic; i.e. $`j=1`.
 Here $`\overline{\psi}` denotes the image in $`\mathbb{F}_p[x]` of a polynomial $`\psi \in \mathbb{Z}[x]`.
 
-The theorem lives in `Mathlib.NumberTheory.KummerDedekind`, in maximum generality (any Dedekind domain downstairs, any prime not dividing the _conductor_ — the ideal-theoretic version of our $`j`): `KummerDedekind.normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` is the bijection between the prime factors of $`(p)` upstairs and the irreducible factors of $`f` mod $`p`, and `multiplicity_factors_map_eq_multiplicity` matches up the exponents $`e_i`.
-
 :::QUESTION
 There are many possible pre-images $`f_i` we could have chosen (for example if $`\overline{f_i} = x^2+1 \pmod 3`, we could pick $`f_i = x^2 + 3x + 7`.)
 Why does this not affect the value of $`\mathfrak{p}_i`?
@@ -493,9 +453,6 @@ Thus nonzero fractional ideals of $`K` form a group under multiplication with id
 This *ideal group* is denoted $`J_K`.
 :::
 
-The type is `FractionalIdeal A⁰ K` — the `A⁰` records that denominators are taken from the nonzero elements of `A` (the "non-zero-divisors") — defined for any domain, with the equivalent finitely-generated-submodule description from the problems as the actual underlying definition.
-The theorem is then the instance `FractionalIdeal.semifield`, available exactly when `A` is a Dedekind domain: nonzero fractional ideals are invertible, so `J⁻¹` and division notation just work, and $`J_K` is the unit group `(FractionalIdeal A⁰ K)ˣ`.
-
 :::EXAMPLE "$`(3)^{-1}` in $`\\mathbb{Z}`"
 Please check that in $`\mathbb{Z}` we have $$`(3)^{-1} = \left\{ \frac 13 n \mid n \in \mathbb{Z} \right\} = \frac 13 \mathbb{Z}.`
 :::
@@ -542,16 +499,6 @@ Let $`\mathfrak{a}` be a nonzero ideal of $`\mathcal{O}_K`.
 :::
 
 I unfortunately won't prove these properties, though we already did (a) in our proof that $`\mathcal{O}_K` was a Dedekind domain.
-
-The ideal norm is `Ideal.absNorm`, and its bundling repeats the trick we saw for the element norm — it is a homomorphism by construction, so property (b) is again just `map_mul`:
-
-```lean
-recall Ideal.absNorm {S : Type*} [CommRing S] [IsDedekindDomain S]
-    [Module.Free ℤ S] :
-    Ideal S →*₀ ℕ
-```
-
-Property (c) is `Ideal.absNorm_span_singleton`, connecting the two norms of this chapter and the last: $`\operatorname{N}((a))` equals the absolute value of `Algebra.norm ℤ a`.
 
 As with the case of the norm of an element, the ideal norm also has a geometrical interpretation: Recall that if $`\mathfrak{a} = (a)`, let $`\mu_a` be the multiplication-by-$`a` map, then $`\operatorname{N}_{K/\mathbb{Q}}(a) = |\det \mu_a|` measures how much $`K` is stretched under $`\mu_a` when viewed as a $`\mathbb{Q}`-vector space.
 
@@ -615,3 +562,140 @@ Let $`\mathfrak{p}` be any prime ideal above $`p` in the ring of integers of $`K
 Show that there exist indices $`i` and $`j` such that $`2025-\omega^i` and $`2026-\omega^j` are in $`\mathfrak{p}`.
 Then show that $`1+\omega^i-\omega^j` is nonzero with norm at most $`3^k`.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Ideal arithmetic
+
+Both operations already exist on `Ideal R`: the sum is the lattice join (`Ideal.add_eq_sup : I + J = I ⊔ J` — "smallest ideal containing both", which is the generator description), the product is the `*` from the `Mul (Ideal R)` instance, and the generator descriptions are `Ideal.span_union` and `Ideal.span_mul_span`.
+Principal-times-principal is `Ideal.span_singleton_mul_span_singleton`.
+
+For instance, the observation that $`(3) \cdot (5) = (15)` in $`\mathbb{Z}` is exactly principal-times-principal in action.
+Prove it.
+
+```lean
+example :
+    Ideal.span {(3 : ℤ)} * Ideal.span {(5 : ℤ)} = Ideal.span {(15 : ℤ)} := by
+  sorry
+```
+
+"To divide is to contain" is a genuine theorem rather than a definition: divisibility `I ∣ J` means literally `∃ K, J = I * K`, and in a Dedekind domain the two agree:
+
+```lean
+recall Ideal.dvd_iff_le {A : Type*} [CommRing A] [IsDedekindDomain A]
+    {I J : Ideal A} :
+    I ∣ J ↔ J ≤ I
+```
+
+(In an arbitrary commutative ring only the forward direction `Ideal.le_of_dvd` survives; the reverse is one of the many superpowers Dedekind domains are about to grant us.
+Note also that `≤` on ideals is inclusion, so the reversal of inclusions is right there in the statement.)
+
+The exercise is exactly the compatibility between `Ideal.IsPrime` and the general algebra predicate `Prime` (in the divisibility sense of the flavors-of-rings chapter), recorded as `Ideal.prime_iff_isPrime`.
+As mentioned in the rings chapter, this also lets us ignore multiplication by units: $`(-3) = (3)`.
+Show that a nonzero ideal of a Dedekind domain is `Prime` exactly when it is `IsPrime`.
+
+```lean
+example (A : Type*) [CommRing A] [IsDedekindDomain A] {p : Ideal A}
+    (hp : p ≠ ⊥) : Prime p ↔ p.IsPrime := by
+  sorry
+```
+
+## Dedekind domains
+
+The class is assembled from the same three conditions:
+
+```lean
+recall IsDedekindDomain (A : Type*) [CommRing A] : Prop
+```
+
+extends `IsDomain A` together with `IsDedekindRing A`, which packages `IsNoetherian A A`, `IsIntegrallyClosed A`, and — for the interesting condition — `Ring.DimensionLEOne A`: every nonzero prime ideal is maximal, phrased as "Krull dimension at most one".
+(Each ingredient is its own typeclass, so partial credit like "Noetherian and integrally closed but dimension two" remains expressible.)
+
+Since every nonzero prime $`\mathfrak{p}` of a ring of integers is maximal, $`\mathcal{O}_K` is a Dedekind domain, available as an instance whenever `[NumberField K]` is:
+
+```lean
+recall (K : Type*) [Field K] [NumberField K] :
+    IsDedekindDomain (NumberField.RingOfIntegers K)
+```
+
+The chapter's first example was that $`\mathbb{Z}` itself is a Dedekind domain.
+Confirm that Mathlib already knows this.
+
+```lean
+example : IsDedekindDomain ℤ := by
+  sorry
+```
+
+## Unique factorization works
+
+The theorem is delivered as an instance: in a Dedekind domain, the ideals — with the multiplication defined above — form a `UniqueFactorizationMonoid`, the same abstraction that expressed unique factorization of _elements_ in the flavors-of-rings chapter, now applied one level up:
+
+```lean
+recall (A : Type*) [CommRing A] [IsDedekindDomain A] :
+    UniqueFactorizationMonoid (Ideal A)
+```
+
+So everything proved about UFDs — existence and essential uniqueness of factorizations into `Prime` elements, `∣`-comparison by exponents — specializes to ideals for free, with "unit" degenerating to the single ideal $`(1)`.
+For example, one hallmark of the unique-factorization setting is that being irreducible and being prime coincide.
+Show that this holds for ideals of a Dedekind domain.
+
+```lean
+example (A : Type*) [CommRing A] [IsDedekindDomain A] {I : Ideal A} :
+    Irreducible I ↔ Prime I := by
+  sorry
+```
+
+## The factoring algorithm
+
+The theorem lives in `Mathlib.NumberTheory.KummerDedekind`, in maximum generality (any Dedekind domain downstairs, any prime not dividing the _conductor_ — the ideal-theoretic version of our $`j`): `KummerDedekind.normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` is the bijection between the prime factors of $`(p)` upstairs and the irreducible factors of $`f` mod $`p`, and `multiplicity_factors_map_eq_multiplicity` matches up the exponents $`e_i`.
+
+The algorithm asked you to factor $`(29)` in $`\mathbb{Z}[i]`.
+Since $`29 = (5+2i)(5-2i)` and both factors are prime, this is the splitting $`(29) = (5+2i)(5-2i)`.
+Verify the ideal identity, writing $`5 + 2i` as `⟨5, 2⟩` in Mathlib's `GaussianInt`.
+
+```lean
+example :
+    Ideal.span {(⟨5, 2⟩ : GaussianInt)} * Ideal.span {(⟨5, -2⟩ : GaussianInt)}
+      = Ideal.span {(29 : GaussianInt)} := by
+  sorry
+```
+
+## Fractional ideals
+
+The type is `FractionalIdeal A⁰ K` — the `A⁰` records that denominators are taken from the nonzero elements of `A` (the "non-zero-divisors") — defined for any domain, with the equivalent finitely-generated-submodule description from the problems as the actual underlying definition.
+The theorem is then the instance `FractionalIdeal.semifield`, available exactly when `A` is a Dedekind domain: nonzero fractional ideals are invertible, so `J⁻¹` and division notation just work, and $`J_K` is the unit group `(FractionalIdeal A⁰ K)ˣ`.
+
+The heart of the group structure is that every nonzero fractional ideal has an inverse.
+Show that $`J \cdot J^{-1} = (1)` for any nonzero fractional ideal $`J`.
+
+```lean
+example (A : Type*) [CommRing A] [IsDedekindDomain A]
+    (K : Type*) [Field K] [Algebra A K] [IsFractionRing A K]
+    (J : FractionalIdeal A⁰ K) (hJ : J ≠ 0) : J * J⁻¹ = 1 := by
+  sorry
+```
+
+## The ideal norm
+
+The ideal norm is `Ideal.absNorm`, and its bundling repeats the trick we saw for the element norm — it is a homomorphism by construction, so property (b) is again just `map_mul`:
+
+```lean
+recall Ideal.absNorm {S : Type*} [CommRing S] [IsDedekindDomain S]
+    [Module.Free ℤ S] :
+    Ideal S →*₀ ℕ
+```
+
+Property (c) is `Ideal.absNorm_span_singleton`, connecting the two norms of this chapter and the last: $`\operatorname{N}((a))` equals the absolute value of `Algebra.norm ℤ a`.
+
+The question asked which ideals have ideal norm one.
+The norm measures the size of the quotient, so norm one means the quotient is trivial — that is, the whole ring $`(1) = \top`.
+Prove this characterization.
+
+```lean
+example (S : Type*) [CommRing S] [IsDedekindDomain S] [Module.Free ℤ S]
+    {I : Ideal S} : Ideal.absNorm I = 1 ↔ I = ⊤ := by
+  sorry
+```

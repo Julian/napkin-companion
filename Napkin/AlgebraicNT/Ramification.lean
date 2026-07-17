@@ -42,8 +42,6 @@ Pictorially, you might draw this as follows:
 :::figure "figures/algebraic-nt/prime-above.svg"
 :::
 
-The primes above $`(p)` are, fittingly, `Ideal.primesOver (p) (𝓞 K)` — the set of prime ideals of the upstairs ring whose contraction is $`(p)`, with the "lies over" relation available on its own as the typeclass `Ideal.LiesOver`.
-
 Some names for various behavior that can happen:
 
 - We say $`p` is *ramified* if $`e_i > 1` for some $`i`.
@@ -82,9 +80,6 @@ Let $`p` be a rational prime and $`K` a number field.
 Then $`p` is ramified if and only if $`p` divides $`\Delta_K`.
 :::
 
-Being unramified at a prime is the predicate `Algebra.IsUnramifiedAt`, and this theorem, in contrapositive, is `NumberField.not_dvd_discr_iff_forall_mem`: a prime does not divide `NumberField.discr K` exactly when every prime above it is unramified.
-(The existence of ramified primes for $`K \neq \mathbb{Q}` — combining this with the Hermite-Minkowski bound $`|\Delta_K| > 1` from the class group chapter — is `NumberField.exists_not_isUnramifiedAt_int` in `Mathlib.NumberTheory.NumberField.ExistsRamified`.)
-
 :::EXAMPLE "Ramification in the Gaussian integers"
 Let $`K = \mathbb{Q}(i)` so $`\mathcal{O}_K = \mathbb{Z}[i]` and $`\Delta_K = -4`.
 As predicted, the only prime ramifying in $`\mathbb{Z}[i]` is $`2`, the only prime factor of $`\Delta_K`.
@@ -108,19 +103,6 @@ We conclude that $`\operatorname{Norm}(\mathfrak{p}_i) = p^{f_i}` for some integ
 :::DEFINITION
 We say $`f_i` is the *inertial degree* of $`\mathfrak{p}_i`, and $`e_i` is the *ramification index*.
 :::
-
-Both quantities carry their expected names:
-
-```lean
-recall Ideal.ramificationIdx {R : Type*} [CommRing R] {S : Type*}
-    [CommRing S] [Algebra R S] (p : Ideal R) (P : Ideal S) : ℕ
-
-recall Ideal.inertiaDeg {R : Type*} [CommRing R] {S : Type*}
-    [CommRing S] [Algebra R S] (p : Ideal R) (P : Ideal S) : ℕ
-```
-
-with `ramificationIdx` defined as the largest $`n` with $`p \cdot S \subseteq P^n`, `inertiaDeg` as the degree of the residue field extension $`(S/P) / (R/p)` — that's the "roomy" description again, in logarithmic form — and junk value $`0` whenever the setup is degenerate.
-The identity $`n = \sum e_i f_i` is the *fundamental identity* `Ideal.sum_ramification_inertia`, summing over `IsDedekindDomain.primesOverFinset`.
 
 :::EXAMPLE "Examples of inertial degrees"
 Work in $`\mathbb{Z}[i]`, which is degree $`2`.
@@ -157,8 +139,6 @@ The notation $`\sigma^{\mathrm{img}}(\mathfrak{p})` is hideous in this context, 
 :::ABUSE
 Let $`\sigma\mathfrak{p}` be shorthand for $`\sigma^{\mathrm{img}}(\mathfrak{p})`.
 :::
-
-This action is set up in `Mathlib.NumberTheory.RamificationInertia.Galois`, as a `MulAction Gal(L/K) (primesOver p B)` instance — with the smashing-together of $`\sigma` and the ideal image written `σ • P`, the standard notation for any group action.
 
 Since the $`\sigma`'s are all bijections (they are automorphisms!), it should come as no surprise that the prime ideals which are in the same orbit are closely related.
 But miraculously, it turns out there is only one orbit!
@@ -212,8 +192,6 @@ But by the way we selected $`x`, we have within the factors of $`p`, $`x` is div
 So $`\sigma^{-1}\mathfrak{p}_2 = \mathfrak{p}_1`, and we're done.
 :::
 
-Transitivity is `Ideal.exists_smul_eq_of_isGaloisGroup` (packaged as the `MulAction.IsPretransitive` instance `Ideal.isPretransitive_of_isGaloisGroup`), proved for any Galois extension of Dedekind domains by essentially the argument above.
-
 ::::THEOREM "Inertial degree and ramification indices are all equal"
 Assume $`K/\mathbb{Q}` is Galois.
 Then for any rational prime $`p` we have $$`p \cdot \mathcal{O}_K = \left( \mathfrak{p}_1 \mathfrak{p}_2 \dots \mathfrak{p}_g \right)^e` for some $`e`, where the $`\mathfrak{p}_i` are distinct prime ideals with the same inertial degree $`f`.
@@ -231,8 +209,6 @@ Using the fact that $`\sigma \in \operatorname{Gal}(K/\mathbb{Q})`, show that $$
 So for every $`\sigma`, we have that $`p \cdot \mathcal{O}_K = \prod \mathfrak{p}_i^{e_i} = \prod (\sigma\mathfrak{p}_i)^{e_i}`.
 Since the action is transitive, all $`e_i` are equal.
 ::::
-
-The two halves are `Ideal.ramificationIdx_eq_of_isGaloisGroup` and `Ideal.inertiaDeg_eq_of_isGaloisGroup`, and the common values even get their own names, `Ideal.ramificationIdxIn` and `Ideal.inertiaDegIn`, so that $`[K:\mathbb{Q}] = efg` can be stated without choosing a prime above $`p`.
 
 Let's see an illustration of this.
 
@@ -280,8 +256,6 @@ We say $`D_\mathfrak{p}` is the *decomposition group* of $`\mathfrak{p}`.
 :::
 
 Note that this definition is in fact equivalent to the set of $`\sigma` such that $`\sigma(\mathfrak{p}) \subseteq \mathfrak{p}`, because a field isomorphism fixes the ideal norm $`\operatorname{Norm}(\mathfrak{p})`.
-
-Since Mathlib carries the group action on `primesOver p (𝓞 K)`, the decomposition group needs no new definition either: it is `MulAction.stabilizer Gal(K/ℚ) 𝔭`, the completely general stabilizer-of-a-point subgroup from the group actions chapter.
 
 So there's a natural map $$`D_\mathfrak{p} \xrightarrow{\theta} \operatorname{Gal}\left( (\mathcal{O}_K/\mathfrak{p}) / \mathbb{F}_p \right)` by declaring $`\theta(\sigma)` to just be "$`\sigma \pmod \mathfrak{p}`".
 The fact that $`\sigma \in D_\mathfrak{p}` (i.e. $`\sigma` fixes $`\mathfrak{p}`) ensures this map is well-defined.
@@ -333,11 +307,6 @@ To draw this in the picture, we get
 
 In any case, in the "typical" case that there is no ramification, we just have $`K^I = K`.
 
-:::aside "Formalization status of the decomposition machinery"
-The surjectivity theorem for $`\theta` and the named inertia group are the one part of this chapter without a polished Mathlib incarnation yet: the action, its transitivity, and the stabilizer are all there, but the map $`D_\mathfrak{p} \to \operatorname{Gal}((\mathcal{O}_K/\mathfrak{p})/\mathbb{F}_p)` and the tower $`K^I/K^D` story are, at the time of writing, work in progress in the community's Frobenius-element development.
-The next chapter's protagonist depends on exactly this machinery, so the gap is actively being closed.
-:::
-
 :::EXAMPLE "Primes split before remaining inert"
 Let $`K = \mathbb{Q}[\zeta_5]` where $`\zeta_5` is a primitive 5th root of unity.
 From the cyclotomic problem of the Galois theory chapter, we know that the Galois group $`\operatorname{Gal}(K/\mathbb{Q})` is isomorphic to $`(\mathbb{Z}/5\mathbb{Z})^\times \cong \mathbb{Z}/4\mathbb{Z}`.
@@ -382,8 +351,6 @@ Instead of $`\mathbb{F}_p` we would have $`\mathcal{O}_F/\mathfrak{p}`.
 
 The reason I choose to work with $`F = \mathbb{Q}` is that capital Gothic $`P`'s ($`\mathfrak{P}`) look _really_ terrifying.
 
-(This relative generality is the one Mathlib states everything in from the start: the results quoted above are all phrased for an extension of Dedekind domains $`B/A`, with $`\mathbb{Z}` and $`\mathcal{O}_K` as a special case.)
-
 # Problems
 
 :::PROBLEM
@@ -403,3 +370,129 @@ Let $`p` be an odd prime and $`\zeta_p` a primitive $`p`th root of unity.
 Show that in $`K = \mathbb{Q}(\zeta_p)` the prime $`p` is _totally ramified_: $$`(p) = (1 - \zeta_p)^{p-1}.`
 (Hint: plug $`x = 1` into $`x^{p-1} + \dots + 1 = \prod_k (x - \zeta_p^k)`, and show the ideals $`(1 - \zeta_p^k)` are all equal.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Ramified / inert / split primes
+
+The primes above $`(p)` are, fittingly, `Ideal.primesOver (p) (𝓞 K)` — the set of prime ideals of the upstairs ring whose contraction is $`(p)`, with the "lies over" relation available on its own as the typeclass `Ideal.LiesOver`.
+By definition, membership in `Ideal.primesOver p B` unfolds to being prime and lying over `p`.
+
+```lean
+example (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
+    (p : Ideal A) (P : Ideal B) :
+    P ∈ Ideal.primesOver p B ↔ P.IsPrime ∧ P.LiesOver p := Iff.rfl
+```
+
+The "lies over" relation says exactly that $`(p)` is the contraction of $`P` back down to the base ring; that is `p = P.under A`.
+Show that a prime lying over `p` recovers `p` as its contraction.
+
+```lean
+example (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
+    (p : Ideal A) (P : Ideal B) [P.LiesOver p] : p = P.under A := by
+  sorry
+```
+
+## Primes ramify if and only if they divide the discriminant
+
+Being unramified at a prime is the predicate `Algebra.IsUnramifiedAt`, and the theorem above, in contrapositive, is `NumberField.not_dvd_discr_iff_forall_mem`: a prime does not divide `NumberField.discr K` exactly when every prime above it is unramified.
+(The existence of ramified primes for $`K \neq \mathbb{Q}` — combining this with the Hermite-Minkowski bound $`|\Delta_K| > 1` from the class group chapter — is `NumberField.exists_not_isUnramifiedAt_int` in `Mathlib.NumberTheory.NumberField.ExistsRamified`.)
+
+State the contrapositive form for yourself: a rational prime avoids the discriminant exactly when every prime containing it is unramified.
+
+```lean
+example (K 𝒪 : Type*) [Field K] [NumberField K] [CommRing 𝒪]
+    [Algebra 𝒪 K] [IsFractionRing 𝒪 K] [IsDedekindDomain 𝒪] [CharZero 𝒪]
+    [Module.Finite ℤ 𝒪] [IsIntegralClosure 𝒪 ℤ K] {p : ℤ} (hp : Prime p) :
+    ¬ p ∣ NumberField.discr K ↔
+      ∀ (P : Ideal 𝒪) (_ : P.IsPrime),
+        (p : 𝒪) ∈ P → Algebra.IsUnramifiedAt ℤ P := by
+  sorry
+```
+
+## Inertial degrees
+
+Both quantities carry their expected names:
+
+```lean
+recall Ideal.ramificationIdx {R : Type*} [CommRing R] {S : Type*}
+    [CommRing S] [Algebra R S] (p : Ideal R) (P : Ideal S) : ℕ
+
+recall Ideal.inertiaDeg {R : Type*} [CommRing R] {S : Type*}
+    [CommRing S] [Algebra R S] (p : Ideal R) (P : Ideal S) : ℕ
+```
+
+with `ramificationIdx` defined as the largest $`n` with $`p \cdot S \subseteq P^n`, `inertiaDeg` as the degree of the residue field extension $`(S/P) / (R/p)` — that's the "roomy" description again, in logarithmic form — and junk value $`0` whenever the setup is degenerate.
+The identity $`n = \sum e_i f_i` is the *fundamental identity* `Ideal.sum_ramification_inertia`, summing over `IsDedekindDomain.primesOverFinset`.
+
+Prove the fundamental identity: over a maximal $`p`, the sum of $`e_i f_i` across the primes above it equals the degree of the extension of fraction fields.
+
+```lean
+example {R : Type*} [CommRing R] {S : Type*} [CommRing S] [Algebra R S]
+    [IsDedekindDomain S] (K L : Type*) [Field K] [Field L] [IsDedekindDomain R]
+    [Algebra R K] [IsFractionRing R K] [Algebra S L] [IsFractionRing S L]
+    [Algebra K L] [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L]
+    [Module.Finite R S] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
+    ∑ P ∈ IsDedekindDomain.primesOverFinset p S,
+        Ideal.ramificationIdx p P * Ideal.inertiaDeg p P
+          = Module.finrank K L := by
+  sorry
+```
+
+## The magic of Galois extensions
+
+The Galois group's action on the primes above $`p` is set up in `Mathlib.NumberTheory.RamificationInertia.Galois`, as a `MulAction Gal(L/K) (primesOver p B)` instance — with the smashing-together of $`\sigma` and the ideal image written `σ • P`, the standard notation for any group action.
+Transitivity is `Ideal.exists_smul_eq_of_isGaloisGroup` (packaged as the `MulAction.IsPretransitive` instance `Ideal.isPretransitive_of_isGaloisGroup`), proved for any Galois extension of Dedekind domains by essentially the argument above.
+That the inertial degrees and ramification indices then coincide are `Ideal.ramificationIdx_eq_of_isGaloisGroup` and `Ideal.inertiaDeg_eq_of_isGaloisGroup`, and the common values even get their own names, `Ideal.ramificationIdxIn` and `Ideal.inertiaDegIn`, so that $`[K:\mathbb{Q}] = efg` can be stated without choosing a prime above $`p`.
+
+Here the ramification indices of two primes above the same $`p` agree.
+
+```lean
+example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+    (p : Ideal A) (P Q : Ideal B)
+    [P.IsPrime] [P.LiesOver p] [Q.IsPrime] [Q.LiesOver p]
+    (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
+    [IsGaloisGroup G A B] :
+    P.ramificationIdx' A = Q.ramificationIdx' A :=
+  Ideal.ramificationIdx_eq_of_isGaloisGroup p P Q G
+```
+
+Use transitivity to show that any two primes above $`p` are related by some element of the Galois group.
+
+```lean
+example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] (p : Ideal A)
+    (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
+    [IsGaloisGroup G A B]
+    (P Q : Ideal.primesOver p B) : ∃ σ : G, σ • P = Q := by
+  sorry
+```
+
+## (Optional) Decomposition and inertia groups
+
+Since the group action on `primesOver p (𝓞 K)` is already available, the decomposition group needs no new definition either: it is `MulAction.stabilizer Gal(K/ℚ) 𝔭`, the completely general stabilizer-of-a-point subgroup from the group actions chapter.
+
+```lean
+example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] {p : Ideal A}
+    (G : Type*) [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
+    (P : Ideal.primesOver p B) : Subgroup G := MulAction.stabilizer G P
+```
+
+Confirm that an automorphism lies in the decomposition group exactly when it fixes $`\mathfrak{p}`.
+
+```lean
+example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] {p : Ideal A}
+    (G : Type*) [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
+    (P : Ideal.primesOver p B) (σ : G) :
+    σ ∈ MulAction.stabilizer G P ↔ σ • P = P := by
+  sorry
+```
+
+The surjectivity theorem for $`\theta` and the named inertia group are the one part of this chapter without a polished Mathlib incarnation yet: the action, its transitivity, and the stabilizer are all there, but the map $`D_\mathfrak{p} \to \operatorname{Gal}((\mathcal{O}_K/\mathfrak{p})/\mathbb{F}_p)` and the tower $`K^I/K^D` story are, at the time of writing, work in progress in the community's Frobenius-element development.
+The next chapter's protagonist depends on exactly this machinery, so the gap is actively being closed.
+
+## More general Galois extensions
+
+This relative generality is the one that everything above is stated in from the start: the results quoted are all phrased for an extension of Dedekind domains $`B/A`, with $`\mathbb{Z}` and $`\mathcal{O}_K` as a special case.

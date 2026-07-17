@@ -5,7 +5,11 @@ import Napkin.Meta.Citations
 import Napkin.Meta.Recall
 import Mathlib.RingTheory.Norm.Basic
 import Mathlib.RingTheory.Trace.Basic
+import Mathlib.RingTheory.PowerBasis
+import Mathlib.FieldTheory.Separable
 import Mathlib.NumberTheory.NumberField.Basic
+import Mathlib.NumberTheory.NumberField.Norm
+import Mathlib.NumberTheory.NumberField.Units.Basic
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -58,8 +62,6 @@ Yet $`g` divides $`f`, contradiction to the fact that $`f` should be irreducible
 :::
 
 Hence $`\alpha` has exactly as many conjugates as the degree of $`\alpha`.
-
-"No repeated roots" is the notion of a _separable_ polynomial, `Polynomial.Separable` — defined, in the same derivative-flavored spirit as the proof, by asking $`f` and $`f'` to be coprime — and the lemma is `Irreducible.separable`, valid over any field of characteristic zero.
 
 Now, we would _like_ to define the _norm_ of an element $`\operatorname{N}(\alpha)` as the product of its conjugates.
 For example, we want $`2+i` to have norm $`(2+i)(2-i) = 5`, and in general for $`a+bi` to have norm $`a^2+b^2`.
@@ -140,21 +142,6 @@ That is, given a parallelepiped with volume $`v` in $`\mathbb{Q}^n`, it will be 
 Since the trace and determinant don't depend on the choice of basis, you can pick whatever basis you want and use whatever definition you got in high school.
 Fantastic, right?
 
-The "morally correct definition" is Mathlib's actual definition: `Algebra.norm R` is _defined_ as the determinant of multiplication, for any algebra over any commutative ring at once, and likewise for `Algebra.trace`.
-
-```lean
-recall Algebra.norm (R : Type*) {S : Type*} [CommRing R] [Ring S]
-    [Algebra R S] : S →* R
-
-recall Algebra.norm_apply {R S : Type*} [CommRing R] [Ring S]
-    [Algebra R S] (x : S) :
-    Algebra.norm R x = LinearMap.det (Algebra.lmul R S x)
-```
-
-Notice the bundling: `Algebra.norm R : S →* R` is a _monoid homomorphism_, so multiplicativity — the theorem this section has been building to — is not a separate lemma but the very type of the definition; you use it as `map_mul (Algebra.norm ℚ)`.
-The trace is bundled as a linear map `Algebra.trace R S : S →ₗ[R] R` for the same reason: additivity is `map_add`.
-The chapter's conjugate-product definition is then the theorem `Algebra.norm_eq_prod_embeddings` (and `trace_eq_sum_embeddings`), matching the remark above rather than the $`k`-corrected formula — the embeddings viewpoint is the one that generalizes.
-
 :::EXAMPLE "Explicit computation of matrices for a + b√2"
 Let $`K = \mathbb{Q}(\sqrt2)`, and let $`1`, $`\sqrt 2` be the basis of $`K`.
 Let $$`\alpha = a + b \sqrt 2` (possibly even $`b = 0`), and notice that $$`\left( a+b\sqrt2 \right) \left(x+y\sqrt2 \right) = (ax+2yb) + (bx+ay)\sqrt2.`
@@ -198,8 +185,6 @@ Thus $`\det \mu_\alpha = (\det M)^k`, as needed.
 Verify the result for traces as well.
 :::
 
-The matrix $`M` above — Mathlib calls the general recipe `Algebra.leftMulMatrix` — with the minimal polynomial's coefficients down the last column is the _companion matrix_ of the minimal polynomial, and the $`k=1` computation is `Algebra.norm_eq_matrix_det` combined with `PowerBasis` machinery.
-
 From this it follows immediately that $$`\operatorname{N}_{K/\mathbb{Q}}(\alpha\beta) = \operatorname{N}_{K/\mathbb{Q}}(\alpha)\operatorname{N}_{K/\mathbb{Q}}(\beta)` because by definition we have $$`\mu_{\alpha\beta} = \mu_\alpha \circ \mu_\beta,` and that the determinant is multiplicative.
 In the same way, the trace is additive.
 
@@ -216,9 +201,6 @@ In the same way, focusing on the _algebraic integers_ of $`K` gives us some real
 :::DEFINITION
 Given a number field $`K`, we define $$`\mathcal{O}_K \coloneqq K \cap \overline{\mathbb{Z}}` to be the *ring of integers* of $`K`; in other words $`\mathcal{O}_K` consists of the algebraic integers of $`K`.
 :::
-
-This is `NumberField.RingOfIntegers K`, with scoped notation `𝓞 K`, defined as `integralClosure ℤ K` — the subalgebra of elements of `K` satisfying `IsIntegral ℤ`, which is exactly "the algebraic integers of $`K`" without needing an ambient $`\mathbb{C}`.
-(It is set up as its own type rather than a subtype, so that `𝓞 K` gets its own ring structure, and statements about it don't drag membership proofs around.)
 
 We do the classical example of a quadratic field now.
 Before proceeding, I need to write a silly number theory fact.
@@ -252,8 +234,6 @@ This reflects the fact that $`\frac{1+\sqrt5}{2}` is the root of $`x^2-x-1 = 0`;
 In general, the ring of integers of $`K = \mathbb{Q}(\sqrt d)` is
 $$`\mathcal{O}_K = \begin{cases} \mathbb{Z}[\sqrt d] & d\equiv 2,3 \pmod 4 \\ \mathbb{Z}\left[ \frac{1+\sqrt d}{2} \right] & d \equiv 1 \pmod 4. \end{cases}`
 
-(The $`d < 0`, $`d \equiv 2, 3` cases have concrete Mathlib incarnations: `Zsqrtd d` is the ring $`\mathbb{Z}[\sqrt d]` built directly from pairs of integers, `GaussianInt` is the special case $`\mathbb{Z}[i]`, and `Zsqrtd.toReal` connects them back to the abstract story.)
-
 What we're going to show is that $`\mathcal{O}_K` behaves in $`K` a lot like the integers do in $`\mathbb{Q}`.
 First we show $`K` consists of quotients of numbers in $`\mathcal{O}_K`.
 In fact, we can do better:
@@ -277,15 +257,6 @@ Prove this yourself.
 Alternatively, take the norm.)
 :::
 
-This is the instance `IsFractionRing (𝓞 K) K`:
-
-```lean
-recall (K : Type*) [Field K] [NumberField K] :
-    IsFractionRing (NumberField.RingOfIntegers K) K
-```
-
-so all the localization machinery from commutative algebra applies verbatim, with $`K` playing for $`\mathcal{O}_K` the role $`\mathbb{Q}` plays for $`\mathbb{Z}`.
-
 Now we are going to show $`\mathcal{O}_K` is a ring; we'll check it is closed under addition and multiplication.
 To do so, the easiest route is:
 
@@ -304,8 +275,6 @@ Viewing the $`b_i` as polynomials in $`\alpha`, we can select a large integer $`
 The above gives us a monic polynomial in $`\alpha`, and the choice of $`N` guarantees it is not zero.
 So $`\alpha` is an algebraic integer.
 :::
-
-The two directions are `IsIntegral.fg_adjoin_singleton` and (essentially) `IsIntegral.of_mem_of_fg`; this finite-generation characterization is _the_ workhorse of the integral-closure files, for exactly the reason about to be demonstrated.
 
 :::EXAMPLE "One half isn't an algebraic integer"
 We already know $`\frac{1}{2}` isn't an algebraic integer.
@@ -333,8 +302,6 @@ Now $`\mathbb{Z}[\alpha \pm \beta]` and $`\mathbb{Z}[\alpha \beta]` are subsets 
 Hence $`\alpha \pm \beta` and $`\alpha\beta` are algebraic integers.
 :::
 
-This is the proof of `IsIntegral.add` and `IsIntegral.mul`, and the promised ring structure of the previous chapter: `integralClosure ℤ K` is a `Subalgebra`, whose very construction requires exactly these closure properties.
-
 In fact, something even better is true.
 As you saw, for $`\mathbb{Q}(\sqrt 3)` we had $`\mathcal{O}_K = \mathbb{Z}[\sqrt 3]`; in other words, $`\mathcal{O}_K` was generated by $`1` and $`\sqrt 3`.
 Something similar was true for $`\mathbb{Q}(\sqrt 5)`.
@@ -347,14 +314,6 @@ In other words, $`\mathcal{O}_K` has a $`\mathbb{Z}`-basis of $`n` elements as $
 :::
 
 The proof will be postponed to the chapter on the discriminant.
-
-Freeness is the instance `Module.Free ℤ (𝓞 K)`, a choice of basis is `NumberField.RingOfIntegers.basis K`, and the rank statement is:
-
-```lean
-recall NumberField.RingOfIntegers.rank (K : Type*) [Field K]
-    [NumberField K] :
-    Module.finrank ℤ (NumberField.RingOfIntegers K) = Module.finrank ℚ K
-```
 
 This last theorem shows that in many ways $`\mathcal{O}_K` is a "lattice" in $`K`.
 That is, for a number field $`K` we can find $`\alpha_1`, …, $`\alpha_n` in $`\mathcal{O}_K` such that
@@ -377,8 +336,6 @@ Unfortunately, it is not true in general: the first counterexample is $`K=\mathb
 
 We call an extension with this nice property *monogenic*.
 As we'll later see, monogenic extensions have a really nice factoring algorithm, the factoring algorithm of the next chapter.
-
-("Power basis" is a first-class notion: `PowerBasis ℤ (𝓞 K)` bundles a $`\theta` together with the proof that its powers form a basis, and much of the norm/trace/discriminant API is stated against an arbitrary `PowerBasis` for exactly this reason.)
 
 :::REMARK "What went wrong with the counterexample?"
 As we have just mentioned above, as an abelian group, $`\mathcal{O}_K \cong \mathbb{Z}^3`, so it's generated by finitely many elements.
@@ -425,3 +382,100 @@ Prove that $`\mathcal{O}_K = \mathbb{Z}[\zeta_p]`.
 Show that for any $`\alpha \in \mathcal{O}_K`, the trace of $`\alpha(1-\zeta_p)` is divisible by $`p`.
 Given $`x = a_0 + a_1\zeta_p + \dots + a_{p-2}\zeta^{p-2} \in \mathcal{O}_K` (where $`a_i \in \mathbb{Q}`), consider $`(1-\zeta_p)x`.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Norms and traces
+
+"No repeated roots" is the notion of a _separable_ polynomial, `Polynomial.Separable` — defined, in the same derivative-flavored spirit as the proof, by asking $`f` and $`f'` to be coprime — and the lemma is `Irreducible.separable`, valid over any field of characteristic zero.
+
+```lean
+example (f : Polynomial ℚ) (hf : Irreducible f) : f.Separable :=
+  hf.separable
+```
+
+The "morally correct definition" is Mathlib's actual definition: `Algebra.norm R` is _defined_ as the determinant of multiplication, for any algebra over any commutative ring at once, and likewise for `Algebra.trace`.
+
+```lean
+recall Algebra.norm (R : Type*) {S : Type*} [CommRing R] [Ring S]
+    [Algebra R S] : S →* R
+
+recall Algebra.norm_apply {R S : Type*} [CommRing R] [Ring S]
+    [Algebra R S] (x : S) :
+    Algebra.norm R x = LinearMap.det (Algebra.lmul R S x)
+```
+
+Notice the bundling: `Algebra.norm R : S →* R` is a _monoid homomorphism_, so multiplicativity — the theorem this section has been building to — is not a separate lemma but the very type of the definition; you use it as `map_mul (Algebra.norm ℚ)`.
+The trace is bundled as a linear map `Algebra.trace R S : S →ₗ[R] R` for the same reason: additivity is `map_add`.
+The chapter's conjugate-product definition is then the theorem `Algebra.norm_eq_prod_embeddings` (and `trace_eq_sum_embeddings`), matching the remark above rather than the $`k`-corrected formula — the embeddings viewpoint is the one that generalizes.
+
+The matrix $`M` above — Mathlib calls the general recipe `Algebra.leftMulMatrix` — with the minimal polynomial's coefficients down the last column is the _companion matrix_ of the minimal polynomial, and the $`k=1` computation is `Algebra.norm_eq_matrix_det` combined with `PowerBasis` machinery.
+
+The "corrective factor" is exactly `Algebra.norm_algebraMap`: an element coming from the base field $`\mathbb{Q}` has norm equal to itself raised to the degree of the extension, which is why $`5`, viewed inside $`\mathbb{Q}(i)`, acquires norm $`5^2 = 25`.
+
+```lean
+example (K : Type*) [Field K] [NumberField K] (r : ℚ) :
+    Algebra.norm ℚ (algebraMap ℚ K r) = r ^ Module.finrank ℚ K :=
+  Algebra.norm_algebraMap r
+```
+
+The whole section has been building to the multiplicativity of the norm.
+Since `Algebra.norm ℚ` is bundled as a monoid homomorphism, prove $`\operatorname{N}(\alpha\beta) = \operatorname{N}(\alpha)\operatorname{N}(\beta)` by extracting what that bundling already gives you.
+
+```lean
+example (K : Type*) [Field K] [NumberField K] (α β : K) :
+    Algebra.norm ℚ (α * β) = Algebra.norm ℚ α * Algebra.norm ℚ β := by
+  sorry
+```
+
+## The ring of integers
+
+This is `NumberField.RingOfIntegers K`, with scoped notation `𝓞 K`, defined as `integralClosure ℤ K` — the subalgebra of elements of `K` satisfying `IsIntegral ℤ`, which is exactly "the algebraic integers of $`K`" without needing an ambient $`\mathbb{C}`.
+(It is set up as its own type rather than a subtype, so that `𝓞 K` gets its own ring structure, and statements about it don't drag membership proofs around.)
+
+The $`d < 0`, $`d \equiv 2, 3` cases have concrete Mathlib incarnations: `Zsqrtd d` is the ring $`\mathbb{Z}[\sqrt d]` built directly from pairs of integers, `GaussianInt` is the special case $`\mathbb{Z}[i]`, and `Zsqrtd.toReal` connects them back to the abstract story.
+
+That $`K` is the fraction field of $`\mathcal{O}_K` is the instance `IsFractionRing (𝓞 K) K`, so all the localization machinery from commutative algebra applies verbatim, with $`K` playing for $`\mathcal{O}_K` the role $`\mathbb{Q}` plays for $`\mathbb{Z}`.
+
+```lean
+recall (K : Type*) [Field K] [NumberField K] :
+    IsFractionRing (NumberField.RingOfIntegers K) K
+```
+
+The finite-generation characterization of integrality has two directions, `IsIntegral.fg_adjoin_singleton` and (essentially) `IsIntegral.of_mem_of_fg`; this is _the_ workhorse of the integral-closure files.
+Closure under addition and multiplication is then `IsIntegral.add` and `IsIntegral.mul`, and this is the promised ring structure: `integralClosure ℤ K` is a `Subalgebra`, whose very construction requires exactly these closure properties.
+
+Freeness is the instance `Module.Free ℤ (𝓞 K)`, a choice of basis is `NumberField.RingOfIntegers.basis K`, and the rank statement is:
+
+```lean
+recall NumberField.RingOfIntegers.rank (K : Type*) [Field K]
+    [NumberField K] :
+    Module.finrank ℤ (NumberField.RingOfIntegers K) = Module.finrank ℚ K
+```
+
+The first problem characterizes the units of $`\mathcal{O}_K` by their norm.
+Prove that $`x` is a unit exactly when its norm is $`\pm 1` (so that $`|\operatorname{N}(x)| = 1`), then compare with `NumberField.isUnit_iff_norm`.
+
+```lean
+example (K : Type*) [Field K] [NumberField K]
+    (x : NumberField.RingOfIntegers K) :
+    IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1 := by
+  sorry
+```
+
+## On monogenic extensions
+
+"Power basis" is a first-class notion: `PowerBasis ℤ (𝓞 K)` bundles a $`\theta` together with the proof that its powers form a basis, and much of the norm/trace/discriminant API is stated against an arbitrary `PowerBasis` for exactly this reason.
+
+A power basis records how many basis elements it has as its dimension.
+Show that this dimension is forced to be the rank of $`\mathcal{O}_K` as a $`\mathbb{Z}`-module.
+
+```lean
+example (K : Type*) [Field K] [NumberField K]
+    (pb : PowerBasis ℤ (NumberField.RingOfIntegers K)) :
+    Module.finrank ℤ (NumberField.RingOfIntegers K) = pb.dim := by
+  sorry
+```
