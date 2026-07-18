@@ -22,10 +22,6 @@ file := "Pells-equation"
 This is an optional aside, and can be safely ignored.
 (On the other hand, it's pretty short.)
 
-```lean -show
-open NumberField NumberField.Units
-```
-
 # Units
 
 :::PROTOTYPE
@@ -39,14 +35,6 @@ We let $`\mathcal{O}_K^\times` denote the set of units of $`\mathcal{O}_K`.
 Show that $`\mathcal{O}_K^\times` is a group under multiplication.
 Hence we name it the *unit group* of $`\mathcal{O}_K`.
 :::
-
-The unit group is `((𝓞 K)ˣ` — the `Mˣ` construction from all the way back in the groups chapter, which is a group by its very design — and the invertibility criterion is on the books, with $`\pm 1` phrased as an absolute value:
-
-```lean
-recall NumberField.isUnit_iff_norm {K : Type*} [Field K] [NumberField K]
-    {x : NumberField.RingOfIntegers K} :
-    IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1
-```
 
 What are some examples of units?
 
@@ -97,8 +85,6 @@ Show that we always have that $`\mu(\mathcal{O}_K)` comprises the roots to $`x^n
 (First, show it is a finite group under multiplication.)
 :::
 
-$`\mu(\mathcal{O}_K)` is `NumberField.Units.torsion K`, the subgroup of elements of finite order in `(𝓞 K)ˣ`; your exercise is the pair of Mathlib facts that it is finite and cyclic (both registered as instances) together with `NumberField.Units.rootsOfUnity_eq_torsion`, which identifies it with the roots of $`x^n - 1` for $`n` the `torsionOrder`.
-
 We now quote, without proof, the so-called Dirichlet's unit theorem, which gives us a much more complete picture of what the units in $`\mathcal{O}_K` are.
 Legend says that Dirichlet found the proof of this theorem during an Easter concert in the Sistine Chapel.
 
@@ -114,19 +100,6 @@ We have $`\mathcal{O}_K^\times \cong \mathbb{Z}^{r_1+r_2-1} \times \mu(\mathcal{
 :::
 
 A choice of $`u_1`, …, $`u_s` is called a choice of *fundamental units*.
-
-Dirichlet's theorem is fully formalized.
-The number $`s` is `NumberField.Units.rank K` (defined as the number of infinite places minus one, which is $`r_1 + r_2 - 1`), a system of fundamental units is `NumberField.Units.fundSystem K`, and the unique-decomposition statement is stated exactly as the theorem above:
-
-```lean
-recall NumberField.Units.exist_unique_eq_mul_prod {K : Type*} [Field K]
-    [NumberField K] (x : (NumberField.RingOfIntegers K)ˣ) :
-    ∃! ζe : NumberField.Units.torsion K ×
-        (Fin (NumberField.Units.rank K) → ℤ),
-      x = ζe.1 * ∏ i, (NumberField.Units.fundSystem K i) ^ (ζe.2 i)
-```
-
-(Behind it sits the actual geometry: the logarithmic embedding of the units is a full-rank lattice in a hyperplane of $`\mathbb{R}^{r_1+r_2}`, and `basisModTorsion` extracts a $`\mathbb{Z}`-basis of the units modulo torsion.)
 
 Here are some example applications.
 
@@ -190,17 +163,6 @@ It's a bit weirder in the $`d \equiv 1 \pmod 4` case, since in that case $`K = \
 (For example, when $`d = 5`, we get the solution $`(\frac{1}{2}, \frac{1}{2})`.)
 Nonetheless, all _integer_ solutions are eventually generated.
 
-Mathlib develops Pell's equation in exactly this spirit: `Pell.Solution₁ d` is _defined_ as the group of norm-one elements of `ℤ√d`, existence of a nontrivial solution for positive nonsquare $`d` is `Pell.exists_of_not_isSquare`, a minimal positive solution is a `Pell.IsFundamental` solution (it exists, `Pell.IsFundamental.exists_of_not_isSquare`), and the fundamental solution generates everything:
-
-```lean
-recall Pell.IsFundamental.eq_zpow_or_neg_zpow {d : ℤ}
-    {a₁ : Pell.Solution₁ d} (h : Pell.IsFundamental a₁)
-    (a : Pell.Solution₁ d) :
-    ∃ n : ℤ, a = a₁ ^ n ∨ a = -a₁ ^ n
-```
-
-Note the fine print: Mathlib's `Solution₁` is the norm $`+1` equation only, so it captures the subgroup of the unit group with norm exactly $`1`; the norm $`-1` solutions and the half-integer bookkeeping of the theorem above are not formalized yet.
-
 To make this all concrete, here's a simple example.
 
 :::EXAMPLE "$`x^2-5y^2 = \\pm 1`"
@@ -246,3 +208,97 @@ Show that either $`u \in \mathbb{Z}[\sqrt d]`, or $`u^n \in \mathbb{Z}[\sqrt d] 
 :::PROBLEM
 Show that there are no integer solutions to $$`x^2 - 34y^2 = -1` despite the fact that $`-1` is a quadratic residue mod $`34`.
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+```lean -show
+open NumberField NumberField.Units
+```
+
+## Units
+
+The unit group is `(𝓞 K)ˣ` — the `Mˣ` construction from all the way back in the groups chapter, which is a group by its very design — and the invertibility criterion is on the books, with $`\pm 1` phrased as an absolute value:
+
+```lean
+recall NumberField.isUnit_iff_norm {K : Type*} [Field K] [NumberField K]
+    {x : NumberField.RingOfIntegers K} :
+    IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1
+```
+
+The question asked you to verify that powers of units are units.
+Show that if $`x` is a unit of $`\mathcal{O}_K`, then so is every power $`x^n`.
+
+```lean
+example {K : Type*} [Field K] [NumberField K] (x : 𝓞 K) (h : IsUnit x)
+    (n : ℕ) : IsUnit (x ^ n) := by
+  sorry
+```
+
+## Dirichlet's unit theorem
+
+$`\mu(\mathcal{O}_K)` is `torsion K`, the subgroup of elements of finite order in `(𝓞 K)ˣ`; it is finite and cyclic (both registered as instances), and `rootsOfUnity_eq_torsion` identifies it with the roots of $`x^n - 1` for $`n` the `torsionOrder`.
+
+Dirichlet's theorem itself is fully formalized.
+The number $`s` is `rank K` (defined as the number of infinite places minus one, which is $`r_1 + r_2 - 1`), a system of fundamental units is `fundSystem K`, and the unique-decomposition statement is stated exactly as the theorem above:
+
+```lean
+recall NumberField.Units.exist_unique_eq_mul_prod {K : Type*} [Field K]
+    [NumberField K] (x : (NumberField.RingOfIntegers K)ˣ) :
+    ∃! ζe : NumberField.Units.torsion K ×
+        (Fin (NumberField.Units.rank K) → ℤ),
+      x = ζe.1 * ∏ i, (NumberField.Units.fundSystem K i) ^ (ζe.2 i)
+```
+
+Behind it sits the actual geometry: the logarithmic embedding of the units is a full-rank lattice in a hyperplane of $`\mathbb{R}^{r_1+r_2}`, and `basisModTorsion` extracts a $`\mathbb{Z}`-basis of the units modulo torsion.
+
+The exercise asked you to show that $`\mu(\mathcal{O}_K)` is a finite group — in fact a cyclic one.
+Confirm that the torsion subgroup is cyclic.
+
+```lean
+example {K : Type*} [Field K] [NumberField K] : IsCyclic (torsion K) := by
+  sorry
+```
+
+## Finding fundamental units
+
+Pell's equation makes the notion of a fundamental unit fully concrete.
+`Pell.Solution₁ d` is _defined_ as the group of norm-one elements of `ℤ√d`, and a minimal positive solution is a `Pell.IsFundamental` solution.
+When $`d` is positive and not a perfect square, such a fundamental solution always exists:
+
+```lean
+example {d : ℤ} (h₀ : 0 < d) (hd : ¬ IsSquare d) :
+    ∃ a : Pell.Solution₁ d, Pell.IsFundamental a :=
+  Pell.IsFundamental.exists_of_not_isSquare h₀ hd
+```
+
+The whole method rested on there being a _single_ fundamental solution to verify a candidate against.
+Show that a fundamental solution, if it exists, is unique.
+
+```lean
+example {d : ℤ} {a b : Pell.Solution₁ d} (ha : Pell.IsFundamental a)
+    (hb : Pell.IsFundamental b) : a = b := by
+  sorry
+```
+
+## Pell's equation
+
+Mathlib develops Pell's equation in exactly this spirit: `Pell.Solution₁ d` is the group of norm-one elements of `ℤ√d`, existence of a nontrivial solution for positive nonsquare $`d` is `Pell.exists_of_not_isSquare`, and the fundamental solution generates everything:
+
+```lean
+recall Pell.IsFundamental.eq_zpow_or_neg_zpow {d : ℤ}
+    {a₁ : Pell.Solution₁ d} (h : Pell.IsFundamental a₁)
+    (a : Pell.Solution₁ d) :
+    ∃ n : ℤ, a = a₁ ^ n ∨ a = -a₁ ^ n
+```
+
+Note the fine print: Mathlib's `Solution₁` is the norm $`+1` equation only, so it captures the subgroup of the unit group with norm exactly $`1`; the norm $`-1` solutions and the half-integer bookkeeping of the theorem above are not formalized yet.
+
+The example tabulated the powers of the fundamental unit for $`d = 5`, whose first solution with norm $`+1` was $`(9, 4)`.
+Build the corresponding element of `Pell.Solution₁ 5` by checking that $`9^2 - 5 \cdot 4^2 = 1`.
+
+```lean
+example : Pell.Solution₁ 5 := Pell.Solution₁.mk 9 4 (by sorry)
+```

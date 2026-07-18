@@ -2,6 +2,7 @@ import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
+import Mathlib.ModelTheory.Semantics
 import Mathlib.ModelTheory.Satisfiability
 import Mathlib.ModelTheory.ElementarySubstructures
 import Mathlib.SetTheory.ZFC.Basic
@@ -10,6 +11,8 @@ open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+
+open FirstOrder Language
 
 set_option pp.rawOnError true
 
@@ -23,12 +26,6 @@ Model theory is _really_ meta, so you will have to pay attention here.
 
 Roughly, a "model of ZFC" is a set with a binary relation that satisfies the ZFC axioms, just as a group is a set with a binary operation that satisfies the group axioms.
 Unfortunately, unlike with groups, it is very hard for me to give interesting examples of models, for the simple reason that we are literally trying to model the entire universe.
-
-:::aside
-Mathlib has a general theory of first-order models — {name}`FirstOrder.Language`, a structure on a type is {name}`FirstOrder.Language.Structure`, sentences are {name}`FirstOrder.Language.Sentence`, and "$`\mathcal{M}` satisfies $`\varphi`" is {name}`FirstOrder.Language.Sentence.Realize`, written `M ⊨ φ`; a model of a {name}`FirstOrder.Language.Theory` is recorded by {name}`FirstOrder.Language.Theory.Model`.
-That framework is the abstract backdrop for this chapter.
-Models of ZFC _specifically_ — transitive models, inner models, absoluteness, the Levy hierarchy, and everything downstream — are not part of Mathlib's library, so the discussion here stays on paper.
-:::
 
 # Models
 
@@ -168,11 +165,6 @@ If $`M` is a transitive set, the model $`(M, \in)` will be abbreviated to just $
 An *inner model* of ZFC is a transitive model satisfying ZFC.
 :::
 
-:::aside
-The interpretation "$`\mathcal{M} \vDash \phi[\vec b]`" defined by induction on formula complexity is precisely what Mathlib's {name}`FirstOrder.Language.BoundedFormula.Realize` does, and the closed-formula case recovers `M ⊨ φ`.
-What has no Mathlib counterpart is fixing the language to a single membership relation and asking the structure to be a _transitive set of sets_ under actual $`\in`.
-:::
-
 # The Levy hierarchy
 
 :::PROTOTYPE
@@ -253,10 +245,6 @@ We say $`\mathcal{M}_1 \prec \mathcal{M}_2`, or $`\mathcal{M}_1` is an *elementa
 In other words, $`\mathcal{M}_1` and $`\mathcal{M}_2` agree on every sentence possible.
 Note that the $`b_i` have to come from $`\mathcal{M}_1`; if the $`b_i` came from $`\mathcal{M}_2` then asking something of $`\mathcal{M}_1` wouldn't make sense.
 
-:::aside
-Elementary substructures and elementary equivalence are general model-theory notions Mathlib does have: {name}`FirstOrder.Language.ElementarySubstructure` and the relation {name}`FirstOrder.Language.ElementarilyEquivalent` (written `M ≅[L] N`), packaged through {name}`FirstOrder.Language.ElementaryEmbedding`.
-:::
-
 Let's ask now: how would $`\mathcal{M}_1 \prec \mathcal{M}_2` fail to be true?
 If we look at the possible sentences, none of the atomic formulas, nor the "$`\land`" and "$`\neg`", are going to cause issues.
 
@@ -317,11 +305,6 @@ Verify (1)–(4) above.
 
 :::REMARK
 Converses to the statements of the lemma are true for all claims other than (6).
-:::
-
-:::aside
-Individual transitive sets and the $\in$-relation on them are available as {name}`ZFSet` with its membership, and one can state these closure conditions (`ZFSet.powerset`, `ZFSet.sUnion`, `ZFSet.omega`, …).
-But "$`M \vDash` Replacement" quantifies over $`M`-definable classes, which is a schema in the metatheory rather than a single Lean proposition, so the lemma as a whole is not something Mathlib phrases.
 :::
 
 # Mostowski collapse
@@ -435,11 +418,6 @@ Prove this.
 (Exactly the same proof as before.)
 :::
 
-:::aside
-The Löwenheim–Skolem theorems are in Mathlib for general first-order structures: {name}`FirstOrder.Language.exists_elementaryEmbedding_card_eq` produces an elementary embedding into a model of a prescribed cardinality.
-The set-theoretic dressing (taking the Skolem hull inside a model of ZFC and then Mostowski-collapsing) is what stays informal.
-:::
-
 # FAQ's on countable models
 
 The most common one is "how is this possible?", with runner-up "what just happened?".
@@ -529,3 +507,135 @@ Prove that $`V_\kappa` is a model of ZFC.
 (Hint: use the transitive-sets-inheriting-ZFC lemma.
 To prove $`V_\kappa \vDash` Power Set you need $`\kappa` to be a strong limit cardinal, and to prove $`V_\kappa \vDash` Replacement you need $`\kappa` to be inaccessible — this is why we cared about cofinality and inaccessibility.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+A warning before we start.
+Mathlib has a rich theory of *first-order models* in general — languages, structures, sentences, satisfaction, elementary substructures, compactness, and Löwenheim–Skolem.
+That framework is exactly the abstract backdrop of this chapter, and we will exercise it below.
+But the specifically set-theoretic story — transitive models of ZFC, absoluteness, the Levy hierarchy, Mostowski collapse, countable transitive models, and everything downstream — is *not* in Mathlib, and for good reasons we point out as we go.
+So the companion here formalizes the general model theory and is honest about where the paper mathematics leaves the library behind.
+
+## Models
+
+A first-order language is `FirstOrder.Language`, a structure interpreting that language on a type `M` is `L.Structure M`, a closed formula is a term of `L.Sentence`, and "$`\mathcal{M}` satisfies $`\varphi`" is written `M ⊨ φ`.
+A model of a whole theory `L.Theory` is again `M ⊨ T`.
+
+```lean
+example (L : Language) : Type _ := L.Sentence
+
+example (L : Language) (M : Type*) [L.Structure M] (φ : L.Sentence) : Prop := M ⊨ φ
+
+example (L : Language) (M : Type*) [L.Structure M] (T : L.Theory) : Prop := M ⊨ T
+```
+
+The "model" of the chapter — a single set $`M` with one binary relation $`E` reading as $`\in`, required to be a transitive set of actual sets — has no Mathlib counterpart; it fixes the language to one membership symbol and imposes conditions ($`E` is real $`\in`, $`M` transitive) that live outside the general framework.
+As a first taste of the general framework, show that every structure satisfies the trivially true sentence $`\top`.
+
+```lean
+example (L : Language) (M : Type*) [L.Structure M] : M ⊨ (⊤ : L.Sentence) := by
+  sorry
+```
+
+## Sentences and satisfaction
+
+The inductive definition of $`\mathcal{M} \vDash \phi[\vec b]` by induction on formula complexity is exactly what Mathlib's `FirstOrder.Language.BoundedFormula.Realize` computes, and the closed-formula case recovers `M ⊨ φ`.
+The clauses for the connectives are lemmas: negation flips satisfaction, and a disjunction holds exactly when one disjunct does.
+
+```lean
+example (L : Language) (M : Type*) [L.Structure M] (φ : L.Sentence) :
+    M ⊨ φ.not ↔ ¬ M ⊨ φ := Sentence.realize_not M
+
+example (L : Language) (M : Type*) [L.Structure M] (φ ψ : L.Sentence) :
+    M ⊨ φ ⊔ ψ ↔ M ⊨ φ ∨ M ⊨ ψ := Sentence.realize_sup M
+```
+
+The chapter's question was where $`\land` and $`\forall` went; the answer is that they are *derived*, with $`\land` built from $`\neg` and $`\lor`.
+Confirm the corresponding satisfaction clause: a conjunction holds exactly when both conjuncts do.
+
+```lean
+example (L : Language) (M : Type*) [L.Structure M] (φ ψ : L.Sentence) :
+    M ⊨ φ ⊓ ψ ↔ M ⊨ φ ∧ M ⊨ ψ := by
+  sorry
+```
+
+## The Levy hierarchy
+
+This is one of the places where the library stops short.
+Mathlib does track a syntactic notion of quantifier complexity (`FirstOrder.Language.BoundedFormula.IsQF` for quantifier-free formulas, and prenex forms), which is the general-model-theory cousin of $`\Delta_0`.
+But the Levy hierarchy proper — $`\Sigma_n`/$`\Pi_n` counted by *unbounded* quantifiers over a model of set theory — together with the accompanying theory of *absoluteness* over transitive models is a set-theoretic development that Mathlib does not carry.
+So there is nothing to formalize here beyond the paper discussion.
+
+## Substructures, and Tarski–Vaught
+
+Elementary substructures and elementary equivalence *are* general model theory, and Mathlib has them: `L.ElementarySubstructure M`, the relation `M ≅[L] N` of `FirstOrder.Language.ElementarilyEquivalent`, and the underlying `FirstOrder.Language.ElementaryEmbedding` written `M ↪ₑ[L] N`.
+An elementary substructure is, in particular, elementarily equivalent to the ambient model.
+
+```lean
+example (L : Language) (M : Type*) [L.Structure M] (S : L.ElementarySubstructure M) :
+    S ≅[L] M := S.elementarilyEquivalent
+```
+
+Unwinding that equivalence recovers the defining property of $`\prec`: the substructure and the model agree on every sentence.
+Prove it.
+
+```lean
+example (L : Language) (M : Type*) [L.Structure M] (S : L.ElementarySubstructure M)
+    (φ : L.Sentence) : (S ⊨ φ) ↔ M ⊨ φ := by
+  sorry
+```
+
+The Tarski–Vaught test itself is stated and proved in Mathlib for general structures, but only inside the proof that the Löwenheim–Skolem construction lands in an elementary substructure; there is no standalone ZFC-flavored version.
+
+## Obtaining the axioms of ZFC
+
+Individual transitive sets under the real $`\in` *are* available, as `ZFSet`, and the closure operations the lemma talks about are functions on it: `ZFSet.powerset`, `ZFSet.sUnion`, and the set $`\omega` as `ZFSet.omega`.
+Their membership characterizations are exactly the axioms read externally.
+
+```lean
+example (x y : ZFSet) : y ∈ x.powerset ↔ y ⊆ x := ZFSet.mem_powerset
+
+example (x y : ZFSet) : y ∈ x.sUnion ↔ ∃ z ∈ x, y ∈ z := ZFSet.mem_sUnion
+
+example : (∅ : ZFSet) ∈ ZFSet.omega := ZFSet.omega_zero
+```
+
+What Mathlib does *not* phrase is the lemma as a whole: "$`M \vDash` Replacement" quantifies over $`M`-definable classes, which is a schema in the metatheory rather than one Lean proposition, and the whole point of a transitive *model* — a `ZFSet` closed under these operations that then satisfies ZFC internally — is not set up.
+Here is a concrete external fact you *can* prove: every set is a member of its own power set.
+
+```lean
+example (x : ZFSet) : x ∈ x.powerset := by
+  sorry
+```
+
+## Mostowski collapse
+
+Again outside the library.
+Mathlib's `ZFSet` is *already* the transitive von Neumann universe, so it never needs collapsing; but the Mostowski collapse *lemma* — given an arbitrary extensional well-founded $`(X, E)`, producing the isomorphic transitive $`(M, \in)` — is a theorem about models of set theory that Mathlib does not state or prove.
+
+## Adding an inaccessible, and countable models
+
+The general engine behind the countable transitive model — the downward Löwenheim–Skolem theorem — is in Mathlib as `FirstOrder.Language.exists_elementarySubstructure_card_eq`, and it rests on compactness.
+Compactness says a theory is satisfiable exactly when every finite subset is, and the empty theory is (vacuously) satisfiable.
+
+```lean
+example (L : Language) : (∅ : L.Theory).IsSatisfiable := Theory.isSatisfiable_empty L
+
+example (L : Language) (T : L.Theory) :
+    T.IsSatisfiable ↔ T.IsFinitelySatisfiable :=
+  Theory.isSatisfiable_iff_isFinitelySatisfiable
+```
+
+Read one direction of that equivalence off as an exercise: a satisfiable theory is finitely satisfiable.
+
+```lean
+example (L : Language) (T : L.Theory) (h : T.IsSatisfiable) :
+    T.IsFinitelySatisfiable := by
+  sorry
+```
+
+Everything genuinely set-theoretic in this section, though, stays on paper.
+That there is no model of ZFC provable in ZFC (Gödel's second incompleteness theorem, `Con(ZFC)`), that $`V_\kappa` is a model for $`\kappa` inaccessible, that a *countable transitive* model of ZFC then exists, the Skolem-function packaging of Choice, and forcing — none of these is in Mathlib.

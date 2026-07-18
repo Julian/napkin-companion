@@ -4,6 +4,10 @@ import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.Order.Basic
 import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Cofinal
+import Mathlib.Order.Ideal
+import Mathlib.Order.PFilter
+import Mathlib.Order.RelClasses
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -38,12 +42,6 @@ Essentially, the difficulty is that "$`\kappa` is a cardinal" is a $`\Pi_1` stat
 In the case of the Continuum Hypothesis, we'll introduce a $`\mathbb{P}` such that any generic subset $`G` will "encode" $`\aleph_2^M` real numbers.
 We'll then show cardinal collapse does not occur, meaning $`\aleph_2^{M[G]} = \aleph_2^M`.
 Thus $`M[G]` will have $`\aleph_2^{M[G]}` real numbers, as desired.
-
-:::aside
-Forcing has no counterpart in Mathlib: transitive models of ZFC, generic filters, $`\mathbb{P}`-names, the generic extension $`M[G]`, and the forcing relation are all beyond the current library.
-Only the underlying order-theoretic scaffolding — a poset is a {name}`PartialOrder`, and density/bounds live in `Order` — is formalized.
-So this chapter is developed entirely on paper; where a genuinely order-theoretic notion has a Mathlib name we point it out, but the set-theoretic content stays informal.
-:::
 
 # Setting up posets
 
@@ -428,3 +426,111 @@ For a filter $`G` and $`M` a transitive model of ZFC, show that $`M[G] \vDash` U
 Show that in a countable transitive model $`M` of ZFC, one can find an $`M`-generic filter on any partial order.
 (Hint: let $`D_1, D_2, \dots` be the dense sets — there are countably many of them — and descend through them one at a time.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+The forcing machinery itself is absent from Mathlib.
+Transitive models of ZFC, generic filters, $`\mathbb{P}`-names, the generic extension $`M[G]`, and the forcing relation $`\Vdash` are all beyond the current library, so the heart of this chapter is developed entirely on paper.
+What _is_ formalized is the order-theoretic scaffolding underneath: a poset is a `PartialOrder`, dense sets and filters live in `Order`, and — remarkably — the Rasiowa–Sikorski lemma appears verbatim.
+Where a genuinely order-theoretic notion has a Mathlib name, we point it out below; everything else stays informal.
+
+## Setting up posets
+
+A poset $`(\mathbb{P}, \le)` is exactly a `PartialOrder`.
+The "infinite unary tree" $`(\mathbb{N}, \ge)` is the order dual `ℕᵒᵈ`.
+
+```lean
+example : PartialOrder ℕᵒᵈ := inferInstance
+```
+
+A subset $`D \subseteq \mathbb{P}` is dense when for every $`p` there is a $`q \in D` with $`q \le p`.
+This is a plain proposition, and the whole space $`\mathbb{P}` is trivially dense.
+
+```lean
+example (P : Type*) [PartialOrder P] :
+    ∀ p : P, ∃ q ∈ (Set.univ : Set P), q ≤ p :=
+  fun p => ⟨p, Set.mem_univ p, le_rfl⟩
+```
+
+Mathlib records the _order-dual_ of this notion — "arbitrarily large" rather than "arbitrarily small" — as `IsCofinal` (and its bundled form `Order.Cofinal`), which its own documentation flags as "the dense sets used in forcing", read in $`\mathbb{P}^{\mathrm{op}}`.
+The whole space is cofinal.
+
+```lean
+example (P : Type*) [PartialOrder P] :
+    IsCofinal (Set.univ : Set P) := IsCofinal.univ
+```
+
+Two conditions $`p`, $`q` are compatible when some $`r` lies below both; every condition is compatible with itself.
+
+```lean
+example (P : Type*) [PartialOrder P] (p : P) : ∃ r : P, r ≤ p ∧ r ≤ p :=
+  ⟨p, le_rfl, le_rfl⟩
+```
+
+A filter — nonempty, upward-closed, and downward-directed — is `Order.PFilter`, which coerces to its underlying set of conditions.
+
+```lean
+example (P : Type*) [PartialOrder P] (F : Order.PFilter P) : Set P := F
+```
+
+The first question asked you to show that a filter always contains the maximum condition $`1_\mathbb{P}`.
+With a top element `⊤` standing in for $`1_\mathbb{P}`, prove it: pick any element of the filter and push it up.
+
+```lean
+example (P : Type*) [PartialOrder P] [OrderTop P] (F : Order.PFilter P) :
+    ⊤ ∈ F := by
+  sorry
+```
+
+## More properties of posets
+
+For a _countable_ model, the Rasiowa–Sikorski lemma guarantees a generic filter, and this is one of the few genuinely set-theoretic statements of the chapter that Mathlib does have — as `Order.idealOfCofinals`.
+Given a starting condition and a countable family of cofinal (dense) sets, it builds an ideal meeting every one of them.
+
+```lean
+example (P : Type*) [Preorder P] (p : P) {ι : Type*} [Encodable ι]
+    (𝒟 : ι → Order.Cofinal P) : Order.Ideal P :=
+  Order.idealOfCofinals p 𝒟
+```
+
+The resulting ideal contains the chosen condition and is generic: it meets each cofinal set in the family.
+
+```lean
+example (P : Type*) [Preorder P] (p : P) {ι : Type*} [Encodable ι]
+    (𝒟 : ι → Order.Cofinal P) : p ∈ Order.idealOfCofinals p 𝒟 :=
+  Order.mem_idealOfCofinals p 𝒟
+
+example (P : Type*) [Preorder P] (p : P) {ι : Type*} [Encodable ι]
+    (𝒟 : ι → Order.Cofinal P) (i : ι) :
+    ∃ x : P, x ∈ 𝒟 i ∧ x ∈ Order.idealOfCofinals p 𝒟 :=
+  Order.cofinal_meets_idealOfCofinals p 𝒟 i
+```
+
+The chapter noted that any superset of a dense set is again dense.
+Prove the cofinal analogue: a set containing a cofinal set is cofinal.
+
+```lean
+example (P : Type*) [Preorder P] (s t : Set P) (hst : s ⊆ t)
+    (hs : IsCofinal s) : IsCofinal t := by
+  sorry
+```
+
+## Names, and the generic extension
+
+The name hierarchy $`\mathrm{Name}_\alpha` and facts like $`(\check x)^G = x` are proved by _rank induction_, the transfinite induction principle backing well-founded orders.
+Mathlib packages "the order $`<` is well-founded" as `WellFoundedLT`, and $`\mathbb{N}` has it.
+
+```lean
+example : WellFoundedLT ℕ := inferInstance
+```
+
+Rank induction is available precisely because every element is _accessible_ under such an order.
+Prove that in any `WellFoundedLT` order each element is `Acc`essible.
+
+```lean
+example (α : Type*) [Preorder α] [WellFoundedLT α] (a : α) : Acc (· < ·) a := by
+  sorry
+```

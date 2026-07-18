@@ -2,8 +2,13 @@ import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
+import Mathlib.NumberTheory.NumberField.Basic
+import Mathlib.NumberTheory.NumberField.ClassNumber
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 import Mathlib.NumberTheory.LegendreSymbol.Basic
+import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
+import Mathlib.NumberTheory.Cyclotomic.Gal
+import Mathlib.NumberTheory.SumTwoSquares
 import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.RingTheory.ClassGroup.Basic
 
@@ -11,6 +16,8 @@ open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+
+open scoped NumberField
 
 set_option pp.rawOnError true
 
@@ -92,16 +99,6 @@ We say $`K` is *totally real* (resp *totally complex*) if all its infinite prime
   Hence totally real.
 :::
 
-:::aside
-Infinite primes are one of the parts of this story Mathlib does have: they are {name}`NumberField.InfinitePlace`, the absolute values on $`K` coming from an embedding into $`\mathbb C`, split by the predicates {name}`NumberField.InfinitePlace.IsReal` and {name}`NumberField.InfinitePlace.IsComplex` into exactly the real and complex primes above.
-The signature $`(r, s)` is then the pair of cardinalities of those two kinds of place.
-
-```lean
-example (K : Type*) [Field K] [NumberField K] : Type _ :=
-  NumberField.InfinitePlace K
-```
-:::
-
 # Modular arithmetic with infinite primes
 
 A *modulus* (or *module*) of $`K` is a formal product $$`\mathfrak m = \prod_{\mathfrak p} \mathfrak p^{\nu(\mathfrak p)}`
@@ -146,11 +143,6 @@ A *congruence subgroup* of $`\mathfrak m` is a subgroup $`H` with $$`P_K(\mathfr
 :::
 
 Thus $`C_K(\mathfrak m)` is a group which contains a lattice of various quotients $`I_K(\mathfrak m) / H`, where $`H` is a congruence subgroup.
-
-:::aside
-Here the formalization stops keeping up: the moduli, rays $`P_K(\mathfrak m)`, ray class groups $`C_K(\mathfrak m)`, and congruence subgroups of this section are _not_ in Mathlib.
-The one endpoint it does have is the special case $`\mathfrak m = 1`: the ordinary ideal class group $`C_K(1)`, which is {name}`ClassGroup` of the ring of integers.
-:::
 
 This definition takes a while to get used to, so here are examples.
 
@@ -306,11 +298,6 @@ Similarly, it also generalizes the cubic Legendre symbol.
 To see this, assume $`\theta` is a primary prime in $`K = \mathbb Q(\sqrt{-3}) = \mathbb Q(\omega)` (thus $`\mathcal O_K = \mathbb Z[\omega]` is the Eisenstein integers).
 Then for example $$`\left( \frac{K(\sqrt[3]2)/K}{\theta \mathcal O_K} \right) \left( \sqrt[3]2 \right) \equiv \left( \sqrt[3]2 \right)^{\operatorname{Norm}(\theta)} \equiv 2^{\frac{\operatorname{Norm}(\theta)-1}{3}} \cdot \sqrt[3]2 \equiv \left( \frac{2}{\theta} \right)_3 \sqrt[3]2 \pmod{\mathfrak P}`
 where $`\mathfrak P` is above $`(\theta)` in $`K(\sqrt[3]2)`.
-:::
-
-:::aside
-The Frobenius element itself is the subject of the previous chapter, and its rational-prime incarnation is in Mathlib; the quadratic Legendre symbol it generalizes here is {name}`legendreSym`.
-The Artin symbol and Artin map of this chapter — the assembly of these Frobenius elements into a homomorphism out of the fractional ideals of a modulus — are not part of Mathlib, so from here on the theorems are stated mathematically.
 :::
 
 # Artin reciprocity
@@ -641,3 +628,143 @@ There is no positive integer $`m` such that whether a prime number $`p \nmid m` 
 Guess why.
 (Hint: the extension $`L/\mathbb Q` is not abelian.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+Class field theory is the one place where this book runs well ahead of Mathlib: the central objects of this chapter — moduli, ray class groups, congruence subgroups, the Artin symbol, the Artin map, and the conductor — are simply not there yet, and no amount of clever searching will turn them up.
+What *is* there are the pieces the chapter builds on and generalizes: infinite primes, the ideal class group, the Legendre symbol, quadratic reciprocity, and cyclotomic Galois groups.
+So the models below stay honest and work with those, flagging each spot where the general theory drops off.
+
+## Infinite primes
+
+Infinite primes are one of the parts of this story Mathlib does have: they are {name}`NumberField.InfinitePlace`, the absolute values on $`K` coming from an embedding into $`\mathbb C`, split by the predicates {name}`NumberField.InfinitePlace.IsReal` and {name}`NumberField.InfinitePlace.IsComplex` into exactly the real and complex primes above.
+
+```lean
+example (K : Type*) [Field K] [NumberField K] : Type _ :=
+  NumberField.InfinitePlace K
+
+example (K : Type*) [Field K] [NumberField K]
+    (w : NumberField.InfinitePlace K) : Prop :=
+  w.IsReal
+
+example (K : Type*) [Field K] [NumberField K]
+    (w : NumberField.InfinitePlace K) : Prop :=
+  w.IsComplex
+```
+
+The signature $`(r, s)` is the pair of cardinalities of those two kinds of place, and the identity $`r + 2s = n` from the chapter is recorded as `card_add_two_mul_card_eq_rank`.
+
+```lean
+example (K : Type*) [Field K] [NumberField K] :
+    NumberField.InfinitePlace.nrRealPlaces K
+      + 2 * NumberField.InfinitePlace.nrComplexPlaces K
+      = Module.finrank ℚ K :=
+  NumberField.InfinitePlace.card_add_two_mul_card_eq_rank K
+```
+
+The chapter split the infinite primes cleanly into the real ones and the complex ones, with nothing left over.
+Show that every infinite place really is one or the other.
+
+```lean
+example (K : Type*) [Field K] [NumberField K]
+    (w : NumberField.InfinitePlace K) :
+    w.IsReal ∨ w.IsComplex := by
+  sorry
+```
+
+## Modular arithmetic with infinite primes
+
+Here the formalization stops keeping up: the moduli, rays $`P_K(\mathfrak m)`, ray class groups $`C_K(\mathfrak m)`, and congruence subgroups of this section are _not_ in Mathlib.
+The one endpoint it does have is the special case $`\mathfrak m = 1`: the ordinary ideal class group $`C_K(1)`, which is {name}`ClassGroup` of the ring of integers.
+As the section promised, it is an abelian group under multiplication, and for a number field it is finite.
+
+```lean
+noncomputable example (K : Type*) [Field K] [NumberField K] :
+    CommGroup (ClassGroup (𝓞 K)) :=
+  inferInstance
+
+noncomputable example (K : Type*) [Field K] [NumberField K] :
+    Fintype (ClassGroup (𝓞 K)) :=
+  inferInstance
+```
+
+The class group of $`\mathbb Z`, whose fractional ideals are all principal, is trivial — the base case $`C_{\mathbb Q}(1)` of the section's first example.
+Confirm it has a single element.
+
+```lean
+example : Fintype.card (ClassGroup ℤ) = 1 := by
+  sorry
+```
+
+## Frobenius element and Artin symbol
+
+The Frobenius element itself is the subject of the previous chapter, and its rational-prime incarnation is in Mathlib; the quadratic Legendre symbol it generalizes here is {name}`legendreSym`.
+The Artin symbol and Artin map of this chapter — the assembly of these Frobenius elements into a homomorphism out of the fractional ideals of a modulus — are not part of Mathlib, so the theorems below are stated mathematically.
+
+```lean
+example (p : ℕ) [Fact p.Prime] (a : ℤ) : ℤ := legendreSym p a
+```
+
+The cyclotomic example is the one place the Frobenius picture is fully formalized.
+For a cyclotomic extension, {name}`IsCyclotomicExtension.autEquivPow` identifies $`\operatorname{Gal}(\mathbb Q(\zeta)/\mathbb Q)` with $`(\mathbb Z/m\mathbb Z)^\times`, and it is the isomorphism under which $`\operatorname{Frob}_p` becomes $`p \bmod m`.
+
+```lean
+noncomputable example (n : ℕ) [NeZero n] (K L : Type*) [Field K] [Field L]
+    [Algebra K L] [IsCyclotomicExtension {n} K L]
+    (h : Irreducible (Polynomial.cyclotomic n K)) :
+    (L ≃ₐ[K] L) ≃* (ZMod n)ˣ :=
+  IsCyclotomicExtension.autEquivPow L h
+```
+
+Class field theory only becomes this clean for *abelian* extensions, where each Frobenius conjugacy class is a single element.
+The cyclotomic case is abelian; show it, by transporting the commutativity of $`(\mathbb Z/n\mathbb Z)^\times` across the isomorphism above.
+
+```lean
+example (n : ℕ) [NeZero n] (K L : Type*) [Field K] [Field L] [Algebra K L]
+    [IsCyclotomicExtension {n} K L]
+    (h : Irreducible (Polynomial.cyclotomic n K))
+    (f g : L ≃ₐ[K] L) : f * g = g * f := by
+  sorry
+```
+
+## Artin reciprocity
+
+Artin reciprocity, the Artin map, and the conductor are not in Mathlib.
+What Mathlib does have is the abelian prototype this whole chapter points back to: the law of quadratic reciprocity for the Legendre symbol, {name}`legendreSym.quadratic_reciprocity`.
+
+```lean
+example (p q : ℕ) [Fact p.Prime] [Fact q.Prime]
+    (hp : p ≠ 2) (hq : q ≠ 2) (hpq : p ≠ q) :
+    legendreSym q p * legendreSym p q = (-1) ^ (p / 2 * (q / 2)) :=
+  legendreSym.quadratic_reciprocity hp hq hpq
+```
+
+When $`p \equiv 1 \pmod 4` the sign on the right disappears and the symbol becomes symmetric: $`\left( \frac qp \right) = \left( \frac pq \right)`.
+Derive this special case.
+
+```lean
+example (p q : ℕ) [Fact p.Prime] [Fact q.Prime] (hp : p % 4 = 1) (hq : q ≠ 2) :
+    legendreSym q p = legendreSym p q := by
+  sorry
+```
+
+## Application: Generalization of sum of two squares
+
+The classical theorem that opens this section — an odd prime is a sum of two squares exactly when it is $`1 \pmod 4` — is {name}`Nat.Prime.sq_add_sq`, stated for every prime that is not $`3 \pmod 4`.
+
+```lean
+example (p : ℕ) [Fact p.Prime] (hp : p % 4 ≠ 3) :
+    ∃ a b : ℕ, a ^ 2 + b ^ 2 = p :=
+  Nat.Prime.sq_add_sq hp
+```
+
+Specialize to the interesting direction: an odd prime $`p \equiv 1 \pmod 4` is a sum of two squares.
+
+```lean
+example (p : ℕ) [Fact p.Prime] (hp : p % 4 = 1) :
+    ∃ a b : ℕ, a ^ 2 + b ^ 2 = p := by
+  sorry
+```

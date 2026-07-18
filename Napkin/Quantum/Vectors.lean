@@ -3,10 +3,12 @@ import Napkin.Meta.Lean
 import Napkin.Meta.Recall
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
+import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.Analysis.InnerProductSpace.TensorProduct
 import Mathlib.LinearAlgebra.Matrix.Hermitian
+import Mathlib.LinearAlgebra.Dimension.Constructions
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -63,16 +65,6 @@ Instead of allowing just the states $`|0\rangle` and $`|1\rangle`, we allow any 
 
 More generally, if $`\dim H = n`, then the possible states are nonzero elements $$`c_0 |0\rangle + c_1 |1\rangle + \dots + c_{n-1} |n-1\rangle` which we usually normalize so that $`|c_0|^2 + |c_1|^2 + \dots + |c_{n-1}|^2 = 1`.
 
-The space $`\mathbb{C}^{\oplus n}` with its standard Hermitian form is `EuclideanSpace ℂ (Fin n)`: definitionally just `Fin n → ℂ`, but carrying the inner product, norm, and finite-dimensional Hilbert structure that the chapter assumes.
-
-```lean
-recall : Module ℂ (EuclideanSpace ℂ (Fin 2))
-recall : InnerProductSpace ℂ (EuclideanSpace ℂ (Fin 2))
-recall : FiniteDimensional ℂ (EuclideanSpace ℂ (Fin 2))
-```
-
-The orthonormal basis $`|0\rangle, \dots, |n-1\rangle` is `EuclideanSpace.basisFun (Fin n) ℂ`, and the squared norm $`\langle\psi|\psi\rangle = |c_0|^2 + \dots + |c_{n-1}|^2` is `EuclideanSpace.norm_eq`.
-
 # Observations
 
 :::PROTOTYPE
@@ -92,18 +84,6 @@ For a map $`T \colon V \to V`, the following conditions are equivalent:
 A map $`T` satisfying these conditions is called *Hermitian*.
 :::
 
-`LinearMap.IsSymmetric` packages the first formulation — the inner-product equation — for an arbitrary linear map between inner product spaces; the name is Mathlib's, despite "Hermitian" being the common term over $`\mathbb{C}`.
-
-```lean
-recall LinearMap.IsSymmetric {𝕜 E : Type*} [RCLike 𝕜]
-    [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-    (T : E →ₗ[𝕜] E) : Prop :=
-  ∀ x y, inner 𝕜 (T x) y = inner 𝕜 x (T y)
-```
-
-For matrices the parallel notion is `Matrix.IsHermitian A`, defined as `Aᴴ = A` (where `Aᴴ` is the conjugate transpose).
-The two pictures agree once we identify a Hermitian matrix with the linear map it represents on `EuclideanSpace ℂ (Fin n)`.
-
 :::QUESTION
 Show that $`T` is normal.
 :::
@@ -112,17 +92,6 @@ Thus, we know that $`T` is diagonalizable with respect to the inner form, so for
 As we've said, this is fantastic: not only do we have a basis of eigenvectors, but the eigenvectors are pairwise orthogonal, and so they form an orthonormal basis of $`V`.
 
 This is the *finite-dimensional spectral theorem*.
-Mathlib bundles the orthonormal eigenvector basis as `LinearMap.IsSymmetric.eigenvectorBasis`; applying $`T` to a basis vector returns that vector scaled by an eigenvalue:
-
-```lean
-recall LinearMap.IsSymmetric.apply_eigenvectorBasis
-    {𝕜 : Type*} [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E]
-    [InnerProductSpace 𝕜 E] {T : E →ₗ[𝕜] E}
-    [FiniteDimensional 𝕜 E] {n : ℕ}
-    (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) (i : Fin n) :
-    T (hT.eigenvectorBasis hn i)
-      = (hT.eigenvalues hn i : 𝕜) • hT.eigenvectorBasis hn i
-```
 
 :::QUESTION
 Show that all eigenvalues of $`T` are real.
@@ -222,15 +191,6 @@ If you think that's weird, well, it gets worse.
 Qubits don't just act independently: they can talk to each other by means of a *tensor product*.
 Explicitly, consider $$`H = \mathbb{C}^{\oplus 2} \otimes \mathbb{C}^{\oplus 2}` endowed with the natural inner-product norm on tensor products.
 
-`Mathlib.Analysis.InnerProductSpace.TensorProduct` lifts the inner product on each factor to `E ⊗[𝕜] F`, so the tensor product of two finite-dimensional Hilbert spaces is again a finite-dimensional Hilbert space — no extra work needed.
-
-```lean
-recall {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
-    [InnerProductSpace 𝕜 E] [NormedAddCommGroup F]
-    [InnerProductSpace 𝕜 F] :
-    InnerProductSpace 𝕜 (TensorProduct 𝕜 E F)
-```
-
 One should think of this as a qubit $`A` in a space $`H_A` along with a second qubit $`B` in a different space $`H_B`, which have been allowed to interact in some way, and $`H = H_A \otimes H_B` is the set of possible states of *both* qubits.
 Thus $$`|0\rangle_A \otimes |0\rangle_B, \quad |0\rangle_A \otimes |1\rangle_B, \quad |1\rangle_A \otimes |0\rangle_B, \quad |1\rangle_A \otimes |1\rangle_B` is an orthonormal basis of $`H`; here $`|i\rangle_A` is the basis of the first $`\mathbb{C}^{\oplus 2}` while $`|i\rangle_B` is the basis of the second $`\mathbb{C}^{\oplus 2}`, so these vectors should be thought of as "unrelated" just as with any tensor product.
 The pure tensors mean exactly what you want: for example $`|0\rangle_A \otimes |1\rangle_B` means "$`0` for qubit $`A` and $`1` for qubit $`B`".
@@ -319,3 +279,108 @@ Consider the state in $`(\mathbb{C}^{\oplus 2})^{\otimes 3}` $$`|\Psi\rangle_{\t
 Find the value of the measurements along each of $$`\sigma_y^A \otimes \sigma_y^B \otimes \sigma_x^C, \quad \sigma_y^A \otimes \sigma_x^B \otimes \sigma_y^C, \quad \sigma_x^A \otimes \sigma_y^B \otimes \sigma_y^C, \quad \sigma_x^A \otimes \sigma_x^B \otimes \sigma_x^C.`
 As for the paradox: what happens if you multiply all these measurements together?
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Bra-ket notation
+
+The bra-ket $`\langle\psi|\phi\rangle` is exactly the inner product of `EuclideanSpace ℂ (Fin n)`, which Mathlib writes `inner ℂ ψ φ`.
+The bra $`\langle\psi|` is the conjugate of the ket, so swapping the two sides conjugates the value: $`\langle\phi|\psi\rangle = \overline{\langle\psi|\phi\rangle}`.
+This is `inner_conj_symm`.
+
+```lean
+example (n : ℕ) (φ ψ : EuclideanSpace ℂ (Fin n)) :
+    (starRingEnd ℂ) (inner ℂ ψ φ) = inner ℂ φ ψ :=
+  inner_conj_symm φ ψ
+```
+
+The chapter notes that the squared norm of $`|\psi\rangle` is just $`\langle\psi|\psi\rangle`.
+Show that this inner product of a vector with itself really is the square of its norm.
+
+```lean
+example (n : ℕ) (ψ : EuclideanSpace ℂ (Fin n)) :
+    inner ℂ ψ ψ = (‖ψ‖ : ℂ) ^ 2 := by
+  sorry
+```
+
+## The state space
+
+The space $`\mathbb{C}^{\oplus n}` with its standard Hermitian form is `EuclideanSpace ℂ (Fin n)`: definitionally just `Fin n → ℂ`, but carrying the inner product, norm, and finite-dimensional Hilbert structure that the chapter assumes.
+
+```lean
+recall : Module ℂ (EuclideanSpace ℂ (Fin 2))
+recall : InnerProductSpace ℂ (EuclideanSpace ℂ (Fin 2))
+recall : FiniteDimensional ℂ (EuclideanSpace ℂ (Fin 2))
+```
+
+The orthonormal basis $`|0\rangle, \dots, |n-1\rangle` is `EuclideanSpace.basisFun (Fin n) ℂ`, and the squared norm $`\langle\psi|\psi\rangle = |c_0|^2 + \dots + |c_{n-1}|^2` is `EuclideanSpace.norm_eq`.
+
+When $`\dim H = n` there are $`n` basis states $`|0\rangle, \dots, |n-1\rangle`; confirm that the dimension of the state space is indeed $`n`.
+
+```lean
+example (n : ℕ) : Module.finrank ℂ (EuclideanSpace ℂ (Fin n)) = n := by
+  sorry
+```
+
+## Observations
+
+`LinearMap.IsSymmetric` packages the first formulation — the inner-product equation — for an arbitrary linear map between inner product spaces; the name is Mathlib's, despite "Hermitian" being the common term over $`\mathbb{C}`.
+
+```lean
+recall LinearMap.IsSymmetric {𝕜 E : Type*} [RCLike 𝕜]
+    [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+    (T : E →ₗ[𝕜] E) : Prop :=
+  ∀ x y, inner 𝕜 (T x) y = inner 𝕜 x (T y)
+```
+
+For matrices the parallel notion is `Matrix.IsHermitian A`, defined as `Aᴴ = A` (where `Aᴴ` is the conjugate transpose).
+The two pictures agree once we identify a Hermitian matrix with the linear map it represents on `EuclideanSpace ℂ (Fin n)`.
+
+Mathlib bundles the orthonormal eigenvector basis as `LinearMap.IsSymmetric.eigenvectorBasis`; applying $`T` to a basis vector returns that vector scaled by an eigenvalue:
+
+```lean
+recall LinearMap.IsSymmetric.apply_eigenvectorBasis
+    {𝕜 : Type*} [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E]
+    [InnerProductSpace 𝕜 E] {T : E →ₗ[𝕜] E}
+    [FiniteDimensional 𝕜 E] {n : ℕ}
+    (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) (i : Fin n) :
+    T (hT.eigenvectorBasis hn i)
+      = (hT.eigenvalues hn i : 𝕜) • hT.eigenvectorBasis hn i
+```
+
+The chapter asks you to show that the eigenvalues of a Hermitian $`T` are real.
+The key step is that the "Rayleigh quotient" $`\langle Tx|x\rangle` is its own conjugate, hence a real number.
+Prove this using the symmetry of $`T`.
+
+```lean
+example {n : ℕ}
+    (T : EuclideanSpace ℂ (Fin n) →ₗ[ℂ] EuclideanSpace ℂ (Fin n))
+    (hT : T.IsSymmetric) (x : EuclideanSpace ℂ (Fin n)) :
+    (starRingEnd ℂ) (inner ℂ (T x) x) = inner ℂ (T x) x := by
+  sorry
+```
+
+## Entanglement
+
+`Mathlib.Analysis.InnerProductSpace.TensorProduct` lifts the inner product on each factor to `E ⊗[𝕜] F`, so the tensor product of two finite-dimensional Hilbert spaces is again a finite-dimensional Hilbert space — no extra work needed.
+
+```lean
+recall {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
+    [InnerProductSpace 𝕜 E] [NormedAddCommGroup F]
+    [InnerProductSpace 𝕜 F] :
+    InnerProductSpace 𝕜 (TensorProduct 𝕜 E F)
+```
+
+The two-qubit space $`\mathbb{C}^{\oplus 2} \otimes \mathbb{C}^{\oplus 2}` has the four-element orthonormal basis $`|00\rangle, |01\rangle, |10\rangle, |11\rangle`.
+Confirm that its dimension is therefore $`4`.
+
+```lean
+example :
+    Module.finrank ℂ
+      (TensorProduct ℂ (EuclideanSpace ℂ (Fin 2)) (EuclideanSpace ℂ (Fin 2)))
+      = 4 := by
+  sorry
+```
