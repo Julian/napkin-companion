@@ -35,11 +35,6 @@ As another example, all the lemmas about prime ideals from our study of localiza
 
 In everything that follows, $`k` is any field.
 
-:::aside
-Every space in this chapter is a {name}`PrimeSpectrum` of some explicit ring, so it is worth reading the examples with the earlier `PrimeSpectrum` and {name}`Localization` API in mind: quotients cut out closed subspaces, localizations away from an element cut out distinguished opens, and localizations at a prime "zoom in" to a stalk.
-The residue fields $`\kappa(\mathfrak{p})` that recur below are the {name}`IsLocalRing.ResidueField` of the stalk, equivalently the {name}`IsFractionRing` of $`A/\mathfrak{p}`.
-:::
-
 # Spec k, a single point
 
 This one is easy: for any field $`k`, $`X = \operatorname{Spec} k` has a single point, corresponding to the only proper ideal $`(0)`.
@@ -48,14 +43,6 @@ There is only way to put a topology on it.
 As for the sheaf, $`\mathcal{O}_X(X) = \mathcal{O}_{X, (0)} = k`.
 So the space is remembering what field it wants to be over.
 If we are complex analysts, the set of functions on a single point is $`\mathbb{C}`; if we are number theorists, maybe the set of functions on a single point is $`\mathbb{Q}`.
-
-:::aside
-That $`\operatorname{Spec} k` is a single point is recorded as the {name}`Unique` instance on `PrimeSpectrum K` for a field $`K`: there is exactly one prime ideal.
-
-```lean
-example (K : Type) [Field K] : Unique (PrimeSpectrum K) := inferInstance
-```
-:::
 
 # Spec ℂ\[x\], a one-dimensional line
 
@@ -71,17 +58,6 @@ It consists of two types of points:
 
 As for the Zariski topology, every open set contains $`(0)`, which captures the idea it is close to everywhere: no matter where you stand, you can still hear the buzzing of the fly!
 True to the irreducibility of this space, the open sets are huge: the proper _closed sets_ consist of finitely many closed points.
-
-:::aside
-The closed sets are the vanishing loci {name}`PrimeSpectrum.zeroLocus`, and each distinguished open $`D(r)` is its complement, packaged as {name}`PrimeSpectrum.basicOpen`.
-
-```lean
-example (R : Type) [CommRing R] (r : R) :
-    (PrimeSpectrum.basicOpen r : Set (PrimeSpectrum R))
-      = (PrimeSpectrum.zeroLocus {r})ᶜ :=
-  PrimeSpectrum.basicOpen_eq_zeroLocus_compl r
-```
-:::
 
 The notion of "value at $`\mathfrak{p}`" works as expected.
 For example, $`f = x^2 + 5` is a global section of $`\mathbb{C}[x]`.
@@ -293,20 +269,6 @@ This holds much more generally:
 Show that if $`I` is an ideal of a ring $`A`, then $`\operatorname{Spec} A/I` is homeomorphic as a topological space to the closed subset $`\mathbb{V}(I)` of $`\operatorname{Spec} A`.
 :::
 
-:::aside
-The map on spectra induced by the quotient $`A \twoheadrightarrow A/I` is {name}`PrimeSpectrum.comap`, and since it comes from a surjection it is a closed embedding {name}`PrimeSpectrum.isClosedEmbedding_comap_of_surjective` whose image is exactly $`\mathbb{V}(I)`.
-
-```lean
-example (A : Type) [CommRing A] (I : Ideal A) :
-    IsClosedEmbedding (comap (Ideal.Quotient.mk I)) :=
-  isClosedEmbedding_comap_of_surjective _ _ Ideal.Quotient.mk_surjective
-
-example (A : Type) [CommRing A] (I : Ideal A) :
-    Set.range (comap (Ideal.Quotient.mk I)) = zeroLocus I := by
-  rw [range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective, Ideal.mk_ker]
-```
-:::
-
 So this is the notion of "closed embedding": the parabola, which was a closed subset of $`\operatorname{Spec} k[x, y]`, is itself a scheme.
 
 The sheaf on this scheme only remembers the functions on the parabola, though: the stalks are not "inherited", so to speak.
@@ -359,22 +321,6 @@ Therefore we expect that $`D(x)` "is" just $`\operatorname{Spec} k[x]` with the 
 Indeed, $$`\mathcal{O}_{\operatorname{Spec} k[x, y]/(xy)} (D(x)) \cong (k[x, y]/(xy))[1/x] \cong k[x, x^{-1}, y] / (y) \cong k[x, x^{-1}]`
 where $`(xy) = (y)` follows from $`x` being a unit.
 Everything as planned.
-
-:::aside
-Localizing away from $`r` realizes $`\operatorname{Spec} A[1/r]` as the distinguished open $`D(r)`: the induced {name}`PrimeSpectrum.comap` is an open embedding {name}`PrimeSpectrum.localization_away_isOpenEmbedding` with image the {name}`PrimeSpectrum.basicOpen` of $`r`.
-
-```lean
-example (A : Type) [CommRing A] (r : A) (S : Type) [CommRing S] [Algebra A S]
-    [IsLocalization.Away r S] :
-    Set.range (comap (algebraMap A S)) = PrimeSpectrum.basicOpen r :=
-  localization_away_comap_range S r
-
-example (A : Type) [CommRing A] (r : A) (S : Type) [CommRing S] [Algebra A S]
-    [IsLocalization.Away r S] :
-    IsOpenEmbedding (comap (algebraMap A S)) :=
-  localization_away_isOpenEmbedding S r
-```
-:::
 
 ## Stalks above some points
 
@@ -508,3 +454,95 @@ Show that it is not connected as a topological space.
 Let $`A = k[x, y]_{(y - x^2)}`.
 Draw a picture of $`\operatorname{Spec} A`.
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+Every space in this chapter is a `PrimeSpectrum` of some explicit ring, so it is worth reading the examples with the earlier `PrimeSpectrum` and `Localization` API in mind: quotients cut out closed subspaces, localizations away from an element cut out distinguished opens, and localizations at a prime "zoom in" to a stalk.
+The residue fields $`\kappa(\mathfrak{p})` that recur below are the `IsLocalRing.ResidueField` of the stalk, equivalently the `IsFractionRing` of $`A/\mathfrak{p}`.
+
+## Spec k, a single point
+
+That $`\operatorname{Spec} k` is a single point is recorded as the `Unique` instance on `PrimeSpectrum K` for a field $`K`: there is exactly one prime ideal.
+
+```lean
+example (K : Type) [Field K] : Unique (PrimeSpectrum K) := inferInstance
+```
+
+That single point is the zero ideal $`(0)`, the only proper ideal of a field.
+Show that every point of $`\operatorname{Spec} K` has underlying ideal `⊥`.
+
+```lean
+example (K : Type) [Field K] (x : PrimeSpectrum K) : x.asIdeal = ⊥ := by
+  sorry
+```
+
+## Spec ℂ\[x\], a one-dimensional line
+
+The closed sets are the vanishing loci `PrimeSpectrum.zeroLocus`, and each distinguished open $`D(r)` is its complement, packaged as `PrimeSpectrum.basicOpen`.
+
+```lean
+example (R : Type) [CommRing R] (r : R) :
+    (PrimeSpectrum.basicOpen r : Set (PrimeSpectrum R))
+      = (PrimeSpectrum.zeroLocus {r})ᶜ :=
+  PrimeSpectrum.basicOpen_eq_zeroLocus_compl r
+```
+
+The zero function vanishes everywhere, so its distinguished open $`D(0)` is empty.
+Show that `basicOpen 0` is the bottom open set `⊥`.
+
+```lean
+example (R : Type) [CommRing R] : PrimeSpectrum.basicOpen (0 : R) = ⊥ := by
+  sorry
+```
+
+## Spec k\[x,y\]/(y-x²), the parabola
+
+The map on spectra induced by the quotient $`A \twoheadrightarrow A/I` is `PrimeSpectrum.comap`, and since it comes from a surjection it is a closed embedding `PrimeSpectrum.isClosedEmbedding_comap_of_surjective` whose image is exactly $`\mathbb{V}(I)`.
+
+```lean
+example (A : Type) [CommRing A] (I : Ideal A) :
+    IsClosedEmbedding (comap (Ideal.Quotient.mk I)) :=
+  isClosedEmbedding_comap_of_surjective _ _ Ideal.Quotient.mk_surjective
+
+example (A : Type) [CommRing A] (I : Ideal A) :
+    Set.range (comap (Ideal.Quotient.mk I)) = zeroLocus I := by
+  rw [range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective, Ideal.mk_ker]
+```
+
+Part of that homeomorphism onto $`\mathbb{V}(I)` is that the points of $`\operatorname{Spec} A/I` inject into $`\operatorname{Spec} A`.
+Show that the induced map is injective.
+
+```lean
+example (A : Type) [CommRing A] (I : Ideal A) :
+    Function.Injective (comap (Ideal.Quotient.mk I)) := by
+  sorry
+```
+
+## Long example: Spec k\[x,y\]/(xy), two axes
+
+Localizing away from $`r` realizes $`\operatorname{Spec} A[1/r]` as the distinguished open $`D(r)`: the induced `PrimeSpectrum.comap` is an open embedding `PrimeSpectrum.localization_away_isOpenEmbedding` with image the `PrimeSpectrum.basicOpen` of $`r`.
+
+```lean
+example (A : Type) [CommRing A] (r : A) (S : Type) [CommRing S] [Algebra A S]
+    [IsLocalization.Away r S] :
+    Set.range (comap (algebraMap A S)) = PrimeSpectrum.basicOpen r :=
+  localization_away_comap_range S r
+
+example (A : Type) [CommRing A] (r : A) (S : Type) [CommRing S] [Algebra A S]
+    [IsLocalization.Away r S] :
+    IsOpenEmbedding (comap (algebraMap A S)) :=
+  localization_away_isOpenEmbedding S r
+```
+
+Because that open embedding identifies $`D(r)` with a subspace of $`\operatorname{Spec} A`, the induced map is in particular injective.
+Show that localizing away from $`r` gives an injective map on spectra.
+
+```lean
+example (A : Type) [CommRing A] (r : A) (S : Type) [CommRing S] [Algebra A S]
+    [IsLocalization.Away r S] :
+    Function.Injective (comap (algebraMap A S)) := by
+  sorry
+```

@@ -7,6 +7,8 @@ import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Ideal
+import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -80,11 +82,6 @@ Addition and multiplication in this ring are defined in the obvious way.
 In particular, if $`0 \in S` then $`S^{-1} A` is the zero ring.
 So we usually only take situations where $`0 \notin S`.
 
-:::aside
-A multiplicative set is precisely a {name}`Submonoid` of $`A` under multiplication, and the localization is Mathlib's {name}`Localization` of that submonoid; the fraction-equality rule above is exactly its defining relation.
-The abstract characterization "$`B` is _a_ localization of $`A` at $`S`" — a universal property rather than a specific model — is {name}`IsLocalization`, which every concrete construction below satisfies.
-:::
-
 We give in brief now two examples which will be motivating forces for the construction of the affine scheme.
 
 :::EXAMPLE "Localizations of $\\mathbb{C}[x]$"
@@ -117,10 +114,6 @@ Let $`A` be an integral domain and $`S = A \setminus \{0\}`.
 Then $`S^{-1} A = \operatorname{Frac}(A)`.
 :::
 
-:::aside
-This last example is {name}`FractionRing`, Mathlib's chosen model of the field of fractions of an integral domain, and the property of being _a_ field of fractions is {name}`IsFractionRing`.
-:::
-
 # Localization away from an element
 
 :::PROTOTYPE
@@ -138,14 +131,6 @@ For $`f \in A`, we define the *localization of $`A` away from $`f`*, denoted $`A
 In the literature it is more common to see the notation $`A_f` instead of $`A[1/f]`.
 This is confusing, because in the next section we define $`A_\mathfrak{p}` which is almost the opposite.
 So I prefer this more suggestive (but longer) notation.
-:::
-
-:::aside
-This is {name}`Localization.Away`, the localization at the submonoid of powers of $`f`.
-
-```lean
-example (A : Type*) [CommRing A] (f : A) : Type _ := Localization.Away f
-```
 :::
 
 :::EXAMPLE "Some arithmetic examples of localizations"
@@ -190,15 +175,6 @@ This is called the *localization at $`\mathfrak{p}`*.
 
 :::QUESTION
 Why is $`S = A \setminus \mathfrak{p}` multiplicative in the above definition?
-:::
-
-:::aside
-This is {name}`Localization.AtPrime`; that $`A \setminus \mathfrak{p}` is a submonoid is exactly what primality of $`\mathfrak{p}` buys you (its complement is closed under multiplication).
-
-```lean
-example (A : Type*) [CommRing A] (p : Ideal A) [p.IsPrime] : Type _ :=
-  Localization.AtPrime p
-```
 :::
 
 This special case is important because we will see that stalks of schemes will all be of this shape.
@@ -274,10 +250,6 @@ Conversely, for any prime ideal $`\mathfrak{p} \subseteq A` not meeting $`S`, $`
 An annoying check shows that this produces the required bijection.
 :::
 
-:::aside
-This inclusion-preserving bijection is Mathlib's {name}`IsLocalization.orderIsoOfPrime`: an order isomorphism between the primes of the localization and the primes of $`A` disjoint from $`S`.
-:::
-
 In practice, we will almost always use the corollary where $`S` is one of the two special cases we discussed at length:
 
 :::COROLLARY "Spectrums of localizations"
@@ -330,10 +302,6 @@ For any prime ideal $`\mathfrak{q} \subseteq A/I`, its pre-image $`\psi^{-1}(\ma
 Conversely, for any prime ideal $`\mathfrak{p}` with $`I \subseteq \mathfrak{p} \subseteq A`, we get a prime ideal of $`A/I` by looking at $`\mathfrak{p} \pmod I`.
 An annoying check shows that this produces the required bijection.
 It is also inclusion-preserving — from which the same statement holds for maximal ideals.
-:::
-
-:::aside
-The two directions of this bijection are {name}`Ideal.comap` and {name}`Ideal.map` along the quotient map {name}`Ideal.Quotient.mk`, and comap along a surjection carries prime ideals to prime ideals containing the kernel.
 :::
 
 :::EXAMPLE "Prime ideals of $\\mathbb{Z}/60\\mathbb{Z}$"
@@ -418,3 +386,126 @@ Must $`A` be an integral domain?
 (Hint: no.
 Use a product ring.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## The definition
+
+A multiplicative set is exactly a `Submonoid` of $`A` under multiplication, and the localization $`S^{-1} A` is Mathlib's `Localization` of that submonoid; the fraction-equality rule is its defining relation.
+
+```lean
+example (A : Type*) [CommRing A] (S : Submonoid A) : Type _ := Localization S
+```
+
+The abstract characterization "$`B` is _a_ localization of $`A` at $`S`" — a universal property rather than one specific model — is the `IsLocalization` predicate, and the concrete `Localization S` satisfies it.
+
+```lean
+example (A : Type*) [CommRing A] (S : Submonoid A) :
+    IsLocalization S (Localization S) := Localization.isLocalization
+```
+
+The field of fractions of an integral domain is `FractionRing`, the localization at all nonzero elements; being _a_ field of fractions is the `IsFractionRing` predicate.
+
+```lean
+example (A : Type*) [CommRing A] [IsDomain A] : Type _ := FractionRing A
+
+example (A : Type*) [CommRing A] [IsDomain A] :
+    IsFractionRing A (FractionRing A) := inferInstance
+```
+
+One of the end-of-chapter problems asks for necessary and sufficient conditions for the map $`A \to S^{-1} A` to be injective; the answer is that $`S` should contain no zero divisors.
+Prove the sufficient direction: if $`S` sits inside the non-zero-divisors, then $`A \to S^{-1} A` is injective.
+
+```lean
+example (A : Type*) [CommRing A] (S : Submonoid A) (B : Type*) [CommRing B]
+    [Algebra A B] [IsLocalization S B] (hS : S ≤ nonZeroDivisors A) :
+    Function.Injective (algebraMap A B) := by
+  sorry
+```
+
+## Localization away from an element
+
+Localizing away from an element $`f` is localizing at the submonoid `Submonoid.powers f` of powers of $`f`, recorded as `Localization.Away f`.
+
+```lean
+example (A : Type*) [CommRing A] (f : A) : Type _ := Localization.Away f
+
+example (A : Type*) [CommRing A] (f : A) :
+    IsLocalization.Away f (Localization.Away f) := Localization.isLocalization
+```
+
+The whole point of adding the denominator $`1/f` is that $`f` becomes invertible.
+Show that the image of $`f` in $`A[f^{-1}]` is a unit.
+
+```lean
+example (A : Type*) [CommRing A] (f : A) :
+    IsUnit (algebraMap A (Localization.Away f) f) := by
+  sorry
+```
+
+## Localization at a prime ideal
+
+Localizing at a prime ideal $`\mathfrak{p}` is localizing at its complement, which the primality of $`\mathfrak{p}` makes a submonoid `Ideal.primeCompl`; the resulting ring is `Localization.AtPrime`.
+
+```lean
+example (A : Type*) [CommRing A] (p : Ideal A) [p.IsPrime] : Type _ :=
+  Localization.AtPrime p
+```
+
+This answers the section's question of why $`S = A \setminus \mathfrak{p}` is multiplicative: a product lands in a prime ideal only if one of its factors does, so the complement is closed under multiplication.
+Prove that closure directly.
+
+```lean
+example (A : Type*) [CommRing A] (p : Ideal A) [p.IsPrime]
+    {x y : A} (hx : x ∉ p) (hy : y ∉ p) : x * y ∉ p := by
+  sorry
+```
+
+## Prime ideals of localizations
+
+The inclusion-preserving bijection between the primes of $`S^{-1} A` and the primes of $`A` disjoint from $`S` is `IsLocalization.orderIsoOfPrime`, packaged as an order isomorphism.
+
+```lean
+example (A : Type*) [CommRing A] (S : Submonoid A) (B : Type*) [CommRing B]
+    [Algebra A B] [IsLocalization S B] :
+    {p : Ideal B // p.IsPrime} ≃o
+      {p : Ideal A // p.IsPrime ∧ Disjoint (S : Set A) ↑p} :=
+  IsLocalization.orderIsoOfPrime S B
+```
+
+One direction of that correspondence is contraction along $`\iota \colon A \to S^{-1} A`.
+Show that the preimage of a prime ideal of the localization is a prime ideal of $`A`.
+
+```lean
+example (A : Type*) [CommRing A] (S : Submonoid A) (B : Type*) [CommRing B]
+    [Algebra A B] [IsLocalization S B] (q : Ideal B) [q.IsPrime] :
+    (q.comap (algebraMap A B)).IsPrime := by
+  sorry
+```
+
+## Prime ideals of quotients
+
+The two directions of the bijection for a quotient $`A/I` are `Ideal.comap` and `Ideal.map` along the quotient map `Ideal.Quotient.mk`.
+
+```lean
+example (A : Type*) [CommRing A] (I : Ideal A) : A →+* A ⧸ I :=
+  Ideal.Quotient.mk I
+
+example (A : Type*) [CommRing A] (I : Ideal A) (J : Ideal (A ⧸ I)) : Ideal A :=
+  J.comap (Ideal.Quotient.mk I)
+
+example (A : Type*) [CommRing A] (I : Ideal A) (J : Ideal A) : Ideal (A ⧸ I) :=
+  J.map (Ideal.Quotient.mk I)
+```
+
+Contraction along the quotient map carries a prime ideal of $`A/I` to a prime ideal of $`A` (which necessarily contains $`I`).
+Show that the preimage of a prime ideal of $`A/I` is prime.
+
+```lean
+example (A : Type*) [CommRing A] (I : Ideal A) (q : Ideal (A ⧸ I)) [q.IsPrime] :
+    (q.comap (Ideal.Quotient.mk I)).IsPrime := by
+  sorry
+```

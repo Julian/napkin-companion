@@ -3,6 +3,7 @@ import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.AlgebraicGeometry.StructureSheaf
+import Mathlib.AlgebraicGeometry.Spec
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.RingTheory.Nilpotent.Lemmas
@@ -66,10 +67,6 @@ Then $`\operatorname{Spec} A` is made into a ringed space by setting $$`\mathcal
 That is, it consists of sequence $`(f_\mathfrak{p})_{\mathfrak{p} \in U}`, with each $`f_\mathfrak{p} \in A_\mathfrak{p}`, such that for every point $`\mathfrak{p}` there is an open neighborhood $`U_\mathfrak{p}` and an $`f, g \in A` such that $`f_\mathfrak{q} = \frac fg \in A_\mathfrak{q}` for all $`\mathfrak{q} \in U_\mathfrak{p}`.
 :::
 
-:::aside
-This "locally quotients" version is exactly the one Mathlib takes as its definition: {name}`AlgebraicGeometry.Spec.structureSheaf` is built as the sheaf of dependent functions $`\mathfrak{p} \mapsto f_\mathfrak{p} \in A_\mathfrak{p}` that are locally of the form $`\frac fg`, so no separate sheafification step is even needed.
-:::
-
 We will now *basically forget about this definition*, because we will never use it in practice.
 In the next two sections, we will show you:
 
@@ -107,10 +104,6 @@ Let $`U` be an open set; suppose it is the complement of closed set $`V(I)`.
 Then verify that $`U = \bigcup_{f \in I} D(f)`.
 :::
 
-:::aside
-The distinguished open set is {name}`PrimeSpectrum.basicOpen`, and that these form a basis of the Zariski topology is part of the same `PrimeSpectrum` API.
-:::
-
 ## Sections are computable
 
 The second critical fact is that the sections on distinguished open sets can be computed explicitly.
@@ -136,11 +129,6 @@ The ring of global sections of $`\operatorname{Spec} A` is $`A`.
 
 :::PROOF
 By previous theorem, $`\mathcal{O}_{\operatorname{Spec} A}(\operatorname{Spec} A) = \mathcal{O}_{\operatorname{Spec} A}(D(1)) = A[1/1] = A`.
-:::
-
-:::aside
-That the global sections recover $`A` is {name}`AlgebraicGeometry.StructureSheaf.globalSectionsIso`, the ring isomorphism $`A \cong \Gamma(\operatorname{Spec} A, \mathcal{O})`.
-This is one half of the equivalence "commutative rings are the opposite of affine schemes".
 :::
 
 ## They are affine
@@ -208,10 +196,6 @@ We show injectivity and surjectivity:
 - Surjective: let $`U = D(g)`.
 :::
 
-:::aside
-The stalk is Mathlib's {name}`Localization.AtPrime`, and the isomorphism identifying the structure-sheaf stalk with it is part of the `StructureSheaf` API; that {name}`Localization.AtPrime` is a local ring is exactly the "locally ringed" conclusion, formalized as an {name}`IsLocalRing` instance.
-:::
-
 :::EXAMPLE "Denominators not divisible by $x$"
 We have seen this example so many times that I will only write it in the new notation, and make no further comment: if $`X = \operatorname{Spec} \mathbb{C}[x]` then $$`\mathcal{O}_{X, (x)} = \mathbb{C}[x]_{(x)} = \left\{ \frac fg \mid g(0) \neq 0 \right\}.`
 :::
@@ -263,15 +247,6 @@ The *residue field* is the quotient $`A / \mathfrak{m}`.
 
 :::QUESTION
 Are fields local rings?
-:::
-
-:::aside
-The predicate is {name}`IsLocalRing`, its distinguished maximal ideal is {name}`IsLocalRing.maximalIdeal`, and the residue field is {name}`IsLocalRing.ResidueField`.
-
-```lean
-example (A : Type*) [CommRing A] (p : Ideal A) [p.IsPrime] :
-    IsLocalRing (Localization.AtPrime p) := inferInstance
-```
 :::
 
 Thus what we find is that:
@@ -406,10 +381,6 @@ We say $`A` is *reduced* if $`0` is the only nilpotent, i.e. $`\sqrt{(0)} = (0)`
 Are integral domains reduced?
 :::
 
-:::aside
-The nilradical is {name}`nilradical`, and it is a theorem there that it equals the intersection of all prime ideals, so "reduced" is the statement that this intersection is trivial.
-:::
-
 Then our above discussion gives:
 
 :::THEOREM "Nilpotents are the only issue"
@@ -446,3 +417,119 @@ Let $`A` be a ring, and $`\mathfrak{m}` a maximal ideal.
 Consider $`\mathfrak{m}` as a point of $`\operatorname{Spec} A`.
 Show that $`\kappa(\mathfrak{m}) \cong A/\mathfrak{m}`.
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## A useless definition of the structure sheaf
+
+The "locally quotients" version is exactly the one Mathlib takes as its definition: `AlgebraicGeometry.Spec.structureSheaf A` is the sheaf of dependent functions $`\mathfrak{p} \mapsto f_\mathfrak{p} \in A_\mathfrak{p}` that are locally of the form $`\frac fg`, packaged as a `TopCat.Sheaf` of commutative rings on `PrimeSpectrum.Top A`.
+
+```lean
+noncomputable example (A : Type*) [CommRing A] :
+    TopCat.Sheaf CommRingCat (PrimeSpectrum.Top A) := Spec.structureSheaf A
+```
+
+Because it is built directly as a sheaf of compatible germs, no separate sheafification step is even needed: the bundled object already carries the sheaf condition on its nose.
+Extract that condition from the structure sheaf.
+
+```lean
+example (A : Type*) [CommRing A] :
+    TopCat.Presheaf.IsSheaf (Spec.structureSheaf A).presheaf := by
+  sorry
+```
+
+## The value of distinguished open sets
+
+The distinguished open set $`D(f)` is `PrimeSpectrum.basicOpen f`, an element of the lattice of opens of `PrimeSpectrum A`, and `PrimeSpectrum.isBasis_basic_opens` records that these form a basis of the Zariski topology.
+
+```lean
+example (A : Type*) [CommRing A] (f : A) :
+    TopologicalSpace.Opens (PrimeSpectrum A) := PrimeSpectrum.basicOpen f
+
+recall PrimeSpectrum.isBasis_basic_opens {R : Type*} [CommSemiring R] :
+    TopologicalSpace.Opens.IsBasis (Set.range (@PrimeSpectrum.basicOpen R _))
+```
+
+That the global sections recover $`A` is `AlgebraicGeometry.StructureSheaf.globalSectionsIso`, the ring isomorphism $`A \cong \Gamma(\operatorname{Spec} A, \mathcal{O})` — one half of the equivalence "commutative rings are the opposite of affine schemes".
+
+```lean
+noncomputable example (A : CommRingCat) :
+    CommRingCat.of A ≅ (Spec.structureSheaf A).presheaf.obj (Opposite.op ⊤) :=
+  StructureSheaf.globalSectionsIso A
+```
+
+The prose observed that $`D(x) \cap D(y) = D(xy)`.
+Prove the general identity that intersecting two distinguished opens multiplies their defining elements.
+
+```lean
+example (A : Type*) [CommRing A] (f g : A) :
+    PrimeSpectrum.basicOpen (f * g)
+      = PrimeSpectrum.basicOpen f ⊓ PrimeSpectrum.basicOpen g := by
+  sorry
+```
+
+## The stalks of the structure sheaf
+
+The stalk of $`\operatorname{Spec} A` at $`\mathfrak{p}` is Mathlib's `Localization.AtPrime`, the localization $`A_\mathfrak{p}`, and it is automatically a local ring — exactly the "locally ringed" conclusion.
+
+```lean
+example (A : Type*) [CommRing A] (p : Ideal A) [p.IsPrime] :
+    IsLocalRing (Localization.AtPrime p) := inferInstance
+```
+
+The isomorphism identifying the structure-sheaf stalk with this localization is `StructureSheaf.stalkIso`.
+Reconstruct it: the stalk of the structure presheaf at a point is $`A_\mathfrak{p}`, as an `A`-algebra isomorphism.
+
+```lean
+noncomputable example (A : Type*) [CommRing A] (p : PrimeSpectrum A) :
+    Localization.AtPrime p.asIdeal ≃ₐ[A]
+      (structurePresheafInCommRingCat A).stalk p := by
+  sorry
+```
+
+## Local rings and residue fields
+
+The predicate is `IsLocalRing`, its distinguished maximal ideal is `IsLocalRing.maximalIdeal`, and the residue field $`A/\mathfrak{m}` is `IsLocalRing.ResidueField`.
+
+```lean
+example (A : Type*) [CommRing A] (p : Ideal A) [p.IsPrime] :
+    Ideal (Localization.AtPrime p) := IsLocalRing.maximalIdeal _
+
+noncomputable example (A : Type*) [CommRing A] (p : Ideal A) [p.IsPrime] :
+    Type _ := IsLocalRing.ResidueField (Localization.AtPrime p)
+```
+
+The characterization from the problems — that in a local ring, for any $`a` either $`a` or $`1 - a` is a unit — is `IsLocalRing.isUnit_or_isUnit_one_sub_self`.
+
+```lean
+example (R : Type*) [CommRing R] [IsLocalRing R] (a : R) :
+    IsUnit a ∨ IsUnit (1 - a) := IsLocalRing.isUnit_or_isUnit_one_sub_self a
+```
+
+The chapter asked whether fields are local rings.
+A field has exactly the two ideals $`(0)` and the whole field, so its unique maximal ideal is $`(0)`; confirm Mathlib already knows a field is a local ring.
+
+```lean
+example (K : Type*) [Field K] : IsLocalRing K := by
+  sorry
+```
+
+## Functions are determined by germs, not values
+
+The nilradical $`\sqrt{(0)}` is `nilradical`, and `nilradical_eq_sInf` is the theorem that it equals the intersection of all prime ideals; "reduced" is then the statement that this intersection is trivial.
+
+```lean
+example (A : Type*) [CommRing A] :
+    nilradical A = sInf { J : Ideal A | J.IsPrime } := nilradical_eq_sInf A
+```
+
+The chapter asked whether integral domains are reduced.
+In a domain the only nilpotent is $`0`, since $`a^n = 0` forces $`a = 0`; confirm a domain is reduced.
+
+```lean
+example (A : Type*) [CommRing A] [IsDomain A] : IsReduced A := by
+  sorry
+```

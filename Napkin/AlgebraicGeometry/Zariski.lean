@@ -3,8 +3,12 @@ import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.RingTheory.Spectrum.Prime.Topology
+import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.Geometry.RingedSpace.Basic
+import Mathlib.RingTheory.Nullstellensatz
+import Mathlib.RingTheory.Ideal.Quotient.Basic
+import Mathlib.Analysis.Complex.Polynomial.Basic
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -125,15 +129,6 @@ That is, I need to verify briefly that
 
 Well, closed sets are the same as affine varieties, so we already know this!
 
-:::aside
-The scheme-theoretic home of the Zariski topology is the {name}`PrimeSpectrum` of a ring: its {name}`PrimeSpectrum.zariskiTopology` declares a set closed exactly when it is the {name}`PrimeSpectrum.zeroLocus` of some collection of ring elements — the same "$`\mathbb{V}(I)`" recipe, now with prime ideals as the points.
-
-```lean
-example (R : Type*) [CommRing R] : TopologicalSpace (PrimeSpectrum R) :=
-  PrimeSpectrum.zariskiTopology
-```
-:::
-
 # The Zariski topology on affine varieties
 
 :::PROTOTYPE
@@ -189,11 +184,6 @@ If $`V = \mathbb{A}^2`, then $`D(x)` is the plane minus the $`y`-axis, and $`D(y
 What is $`D(xy)`?
 :::
 
-:::aside
-The distinguished opens are {name}`PrimeSpectrum.basicOpen`: `basicOpen r` is the locus of primes not containing $`r`, and these sets form a basis for the Zariski topology.
-The two properties above are {name}`PrimeSpectrum.basicOpen_mul` (that $`D(fg) = D(f) \cap D(g)`) and the inclusion criterion {name}`PrimeSpectrum.basicOpen_le_basicOpen_iff`.
-:::
-
 # Coordinate rings
 
 :::PROTOTYPE
@@ -233,10 +223,6 @@ and the kernel is $`I`.
 :::
 
 Thus properties of a variety $`V` correspond to properties of the ring $`\mathbb{C}[V]`.
-
-:::aside
-Since the coordinate ring is presented as the quotient $`\mathbb{C}[x_1, \dots, x_n]/I`, it is literally a Mathlib quotient ring `MvPolynomial σ ℂ ⧸ I`, and the scheme attached to a variety is the {name}`PrimeSpectrum` of exactly this quotient — the intrinsic object that no longer remembers the embedding into $`\mathbb{A}^n`.
-:::
 
 # The sheaf of regular functions
 
@@ -355,10 +341,6 @@ This just observes by noting that for any $`q \in U`, we have $$`f \tilde g_q - 
 This means that the _global_ regular functions are just the same as those in the coordinate ring: you don't gain anything new by allowing it to be locally a quotient.
 (The same goes for distinguished open sets.)
 
-:::aside
-The ring $`\left\{ f/g^k \right\}` is exactly the localization of $`\mathbb{C}[V]` away from $`g`, the property {name}`IsLocalization.Away`, and this identification is how the structure sheaf on an affine scheme is computed: its sections over a basic open $`D(g)` are the localization $`\mathbb{C}[V][1/g]`.
-:::
-
 :::EXAMPLE "Regular functions on distinguished open sets, revisited"
 1. As said already, taking $`g = 1` we recover $`\mathcal{O}_V(V) \cong \mathbb{C}[V]` for any affine variety $`V`.
 2. Let $`V = \mathbb{A}^1`, $`U_0 = V \setminus \{0\}`.
@@ -405,10 +387,6 @@ Anyways, affine varieties are baby ringed spaces $`(V, \mathcal{O}_V)`.
 In the next chapter we'll meet projective and quasi-projective varieties, which give more such examples of (baby) ringed spaces.
 With these examples in mind, we will finally lay down the complete definition of a ringed space, and use this to define a scheme.
 
-:::aside
-The full definition the chapter is deferring to is Mathlib's {name}`AlgebraicGeometry.RingedSpace`: a topological space together with a sheaf of _commutative rings_ (not merely rings of $`\mathbb{C}`-valued functions), which is precisely the "grown-up" version of the baby ringed space above.
-:::
-
 # Problems
 
 :::PROBLEM
@@ -427,3 +405,156 @@ Let $`V` be an affine variety, and consider its Zariski topology.
 Let $`V = \mathbb{A}^2` and let $`X = \mathbb{A}^2 \setminus \{(0, 0)\}` be the punctured plane (which is an open set of $`V`).
 Compute $`\mathcal{O}_V(X)`.
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## The Zariski topology on affine space
+
+The scheme-theoretic home of the Zariski topology is the `PrimeSpectrum` of a ring: its `PrimeSpectrum.zariskiTopology` declares a set closed exactly when it is the `PrimeSpectrum.zeroLocus` of some collection of ring elements — the same "$`\mathbb{V}(I)`" recipe, now with prime ideals as the points.
+
+```lean
+example (R : Type*) [CommRing R] : TopologicalSpace (PrimeSpectrum R) :=
+  PrimeSpectrum.zariskiTopology
+```
+
+There is also a more classical bookkeeping that stays closer to the picture of points of $`\mathbb{A}^n`.
+Over a coefficient field, `MvPolynomial.zeroLocus` sends an ideal of $`\mathbb{C}[x_1, \dots, x_n]` to its common vanishing set of honest points $`\sigma \to \mathbb{C}`, and `MvPolynomial.vanishingIdeal` goes back the other way.
+
+```lean
+noncomputable example {σ : Type*} (I : Ideal (MvPolynomial σ ℂ)) :
+    Set (σ → ℂ) :=
+  MvPolynomial.zeroLocus ℂ I
+
+noncomputable example {σ : Type*} (V : Set (σ → ℂ)) :
+    Ideal (MvPolynomial σ ℂ) :=
+  MvPolynomial.vanishingIdeal ℂ V
+```
+
+The bridge between these two directions is the Nullstellensatz.
+Because $`\mathbb{C}` is algebraically closed, the ideal of functions vanishing on the zero locus of $`I` is exactly the radical of $`I`, recorded as `MvPolynomial.vanishingIdeal_zeroLocus_eq_radical`.
+
+```lean
+example {σ : Type*} [Finite σ] (I : Ideal (MvPolynomial σ ℂ)) :
+    MvPolynomial.vanishingIdeal ℂ (MvPolynomial.zeroLocus ℂ I) = I.radical :=
+  MvPolynomial.vanishingIdeal_zeroLocus_eq_radical I
+```
+
+The chapter verifies that the closed sets really do form a topology, and later problems ask you to show this topology has no infinite strictly-descending chain of closed sets.
+That property is `TopologicalSpace.NoetherianSpace`, and Mathlib already knows it whenever the ring is Noetherian — so a coordinate ring of an affine variety qualifies.
+
+```lean
+example (R : Type*) [CommRing R] [IsNoetherianRing R] :
+    TopologicalSpace.NoetherianSpace (PrimeSpectrum R) := by
+  sorry
+```
+
+## The Zariski topology on affine varieties
+
+The distinguished opens are `PrimeSpectrum.basicOpen`: `basicOpen r` is the locus of primes not containing $`r`, and these sets form a basis for the Zariski topology.
+
+```lean
+noncomputable example {σ : Type*} (f : MvPolynomial σ ℂ) :
+    TopologicalSpace.Opens (PrimeSpectrum (MvPolynomial σ ℂ)) :=
+  PrimeSpectrum.basicOpen f
+```
+
+The inclusion-preserving behaviour of $`D` is the criterion `PrimeSpectrum.basicOpen_le_basicOpen_iff`: $`D(f) \subseteq D(g)` exactly when $`f` lies in the radical of $`(g)` (which for the divisibility statement $`g \mid f` is the relevant condition).
+
+```lean
+example (R : Type*) [CommRing R] (f g : R) :
+    PrimeSpectrum.basicOpen f ≤ PrimeSpectrum.basicOpen g ↔
+      f ∈ (Ideal.span ({g} : Set R)).radical :=
+  PrimeSpectrum.basicOpen_le_basicOpen_iff f g
+```
+
+The chapter asks what $`D(xy)` is.
+Prove that it is $`D(x) \cap D(y)`, the meet of the two distinguished opens.
+
+```lean
+example {σ : Type*} (x y : MvPolynomial σ ℂ) :
+    PrimeSpectrum.basicOpen (x * y) =
+      PrimeSpectrum.basicOpen x ⊓ PrimeSpectrum.basicOpen y := by
+  sorry
+```
+
+## Coordinate rings
+
+Since the coordinate ring is presented as the quotient $`\mathbb{C}[x_1, \dots, x_n]/I`, it is literally the Mathlib quotient ring `MvPolynomial σ ℂ ⧸ I`, again a commutative ring, and the intrinsic object attached to a variety is the `PrimeSpectrum` of exactly this quotient — no longer remembering the embedding into $`\mathbb{A}^n`.
+
+```lean
+noncomputable example {σ : Type*} (I : Ideal (MvPolynomial σ ℂ)) :
+    CommRing (MvPolynomial σ ℂ ⧸ I) := inferInstance
+
+example {σ : Type*} (I : Ideal (MvPolynomial σ ℂ)) : Type _ :=
+  PrimeSpectrum (MvPolynomial σ ℂ ⧸ I)
+```
+
+The theorem that coordinate rings correspond to ideals asked for a *radical* ideal $`I`.
+The reason is the Nullstellensatz: for a radical ideal, passing to the zero locus and back returns $`I` unchanged.
+Prove this recovery.
+
+```lean
+example {σ : Type*} [Finite σ] (I : Ideal (MvPolynomial σ ℂ))
+    (h : I.IsRadical) :
+    MvPolynomial.vanishingIdeal ℂ (MvPolynomial.zeroLocus ℂ I) = I := by
+  sorry
+```
+
+## The sheaf of regular functions
+
+A rational function $`f/g` is defined away from the zeros of its denominator.
+That domain is a distinguished open, and membership in it is exactly non-vanishing, spelled out by `PrimeSpectrum.mem_basicOpen`.
+
+```lean
+example (R : Type*) [CommRing R] (f : R) (x : PrimeSpectrum R) :
+    x ∈ PrimeSpectrum.basicOpen f ↔ f ∉ x.asIdeal :=
+  PrimeSpectrum.mem_basicOpen f x
+```
+
+The chapter asks you to check that the set on which $`f/g` is well-defined is open.
+It is the distinguished open of the denominator, so prove it is open.
+
+```lean
+example {σ : Type*} (g : MvPolynomial σ ℂ) :
+    IsOpen (PrimeSpectrum.basicOpen g :
+      Set (PrimeSpectrum (MvPolynomial σ ℂ))) := by
+  sorry
+```
+
+## Regular functions on distinguished open sets
+
+The ring $`\left\{ f/g^k \right\}` of regular functions on $`D(g)` is exactly the localization of $`\mathbb{C}[V]` away from $`g`, the property `IsLocalization.Away`; this identification is how the structure sheaf on an affine scheme computes its sections over a basic open.
+
+```lean
+example (R : Type*) [CommRing R] (g : R) (S : Type*) [CommRing S]
+    [Algebra R S] : Prop :=
+  IsLocalization.Away g S
+```
+
+The denominators $`g^k` appearing in these fractions all cut out the same open set, since raising to a positive power does not change a distinguished open.
+Prove $`D(g^n) = D(g)`.
+
+```lean
+example {σ : Type*} (g : MvPolynomial σ ℂ) (n : ℕ) (hn : 0 < n) :
+    PrimeSpectrum.basicOpen (g ^ n) = PrimeSpectrum.basicOpen g := by
+  sorry
+```
+
+## Baby ringed spaces
+
+The full definition the chapter is deferring to is `AlgebraicGeometry.RingedSpace`: a topological space together with a sheaf of _commutative rings_ (not merely rings of $`\mathbb{C}`-valued functions), the "grown-up" version of the baby ringed space above.
+
+```lean
+example : Type _ := AlgebraicGeometry.RingedSpace
+```
+
+A later problem shows every affine variety is topologically compact.
+On the intrinsic object this is already available: the prime spectrum of any commutative ring is a compact space.
+
+```lean
+example (R : Type*) [CommRing R] : CompactSpace (PrimeSpectrum R) := by
+  sorry
+```
