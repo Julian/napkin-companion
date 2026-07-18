@@ -9,6 +9,9 @@ open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open CategoryTheory
+open AlgebraicGeometry
+open Topology
 
 set_option pp.rawOnError true
 
@@ -76,11 +79,6 @@ Two baby ringed spaces are *isomorphic* if there are mutually inverse morphisms 
 In particular, the pullback gives us a (reversed) _ring homomorphism_ $$`f^\sharp \colon \mathcal{O}_Y(U) \to \mathcal{O}_X(f^{-1}(U))`
 for _every_ $`U`; thus our morphisms package a lot of information.
 
-:::aside
-This is exactly the shape of a morphism of Mathlib's {name}`AlgebraicGeometry.LocallyRingedSpace` (the grown-up ringed space of the previous chapter): a {name}`AlgebraicGeometry.LocallyRingedSpace.Hom` bundles a continuous map of the underlying spaces together with a morphism of structure sheaves going the _other_ way — precisely the reversed ring homomorphism $`f^\sharp` above — subject to a compatibility on stalks.
-Isomorphisms are then just the isomorphisms of the resulting category.
-:::
-
 :::EXAMPLE "The pullback of $\\frac{1}{y-25}$ under $t \\mapsto t^2$"
 The map $$`f \colon X = \mathbb{A}^1 \to Y = \mathbb{A}^1 \quad\text{by}\quad t \mapsto t^2`
 is a morphism of varieties.
@@ -135,10 +133,6 @@ Thus we need $`f \circ \pi_1` to be regular on $`X`.
 
 But for affine varieties $`\mathcal{O}_X(X)` is just the coordinate ring $`\mathbb{C}[X]` and so we know there is a polynomial $`P_1` such that $`f \circ \pi_1 = P_1`.
 Similarly for the other coordinates.
-:::
-
-:::aside
-This "morphisms of affines are exactly ring maps of coordinate rings" is the anti-equivalence at the heart of the subject: on the scheme side it is the equivalence of {name}`AlgebraicGeometry.AffineScheme` with the opposite of `CommRingCat`, so a morphism of affine varieties is a $`\mathbb{C}`-algebra homomorphism {name}`AlgHom` between their coordinate rings, going the other way.
 :::
 
 ## Projective classification
@@ -219,10 +213,6 @@ Every affine variety is isomorphic to a quasi-projective one (i.e. every affine 
 
 So quasi-projective varieties generalize both types of varieties we have seen.
 
-:::aside
-Mathlib does not carry a separate "quasi-projective variety" type; the same generalization is achieved by working with an arbitrary open subscheme of a {name}`AlgebraicGeometry.Scheme` (via {name}`AlgebraicGeometry.Scheme.Opens` and open immersions), of which affine and `Proj` schemes are the special cases.
-:::
-
 # The hyperbola effect
 
 :::PROTOTYPE
@@ -271,11 +261,6 @@ Then $`X \cong W`.
 
 For lack of a better name, I will dub this the *hyperbola effect*, and it will play a significant role later on.
 
-:::aside
-This is a theorem Mathlib has, in scheme language: a basic open $`D(f)` of an affine scheme is itself affine, {name}`AlgebraicGeometry.IsAffineOpen.basicOpen`, and its ring of functions is the localization $`\mathbb{C}[V][1/f]` — matching the "adjoin $`1/f`" trick $`y \cdot f = 1` above.
-The notion of an affine open is {name}`AlgebraicGeometry.IsAffineOpen`.
-:::
-
 Therefore, if we wish to find an example of a quasi-projective variety which is not affine, one good place to look would be an open set of an affine space which is not distinguished open.
 If you are ambitious now, you can try to prove the punctured plane (that is, $`\mathbb{A}^2` minus the origin) works.
 We will see that example once again later in the next chapter, so you will have a second chance to do so.
@@ -309,3 +294,93 @@ Thus we may write $`\mathcal{O}_V(V) = \mathbb{C}[a, b]`, where $`f^\sharp(a) = 
 Let $`f(p) = q` where $`\mathbb{V}(a, b) = \{q\}`.
 Use the definition of pullback to prove $`p \in \mathbb{V}(x, y)`, contradiction.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+Much of this chapter has no bespoke counterpart in Mathlib: there is no standalone "quasi-projective variety", no "morphism of baby ringed spaces", and the general theory of projective morphisms is developed elsewhere.
+Instead all of this content is carried by the theory of _schemes_: morphisms of `LocallyRingedSpace` and `Scheme`, the anti-equivalence of affine schemes with rings, open subschemes and open immersions, and the affineness of basic opens.
+The models and exercises below stay within those genuinely-present pieces.
+
+## Defining morphisms of baby ringed spaces
+
+A morphism of Mathlib's `LocallyRingedSpace` (the grown-up baby ringed space) bundles a continuous map of the underlying spaces together with a morphism of structure sheaves going the _other_ way — precisely the reversed ring homomorphism $`f^\sharp` from the definition — subject to a compatibility on stalks.
+Isomorphisms are then just the isomorphisms of the resulting category, so in particular every space carries its identity morphism.
+
+```lean
+noncomputable example (X : LocallyRingedSpace) : X ⟶ X := 𝟙 X
+```
+
+A morphism of schemes `f : X ⟶ Y` still remembers its underlying continuous map on points, recovered as `f.base`.
+
+```lean
+example {X Y : Scheme} (f : X ⟶ Y) : X → Y := f.base
+```
+
+Composing two morphisms composes their underlying point maps, in the same order.
+Show that the base map of a composite is the composite of the base maps.
+
+```lean
+example {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+    (f ≫ g).base x = g.base (f.base x) := by
+  sorry
+```
+
+## Classifying the simplest examples
+
+That "morphisms of affines are exactly ring maps of coordinate rings" is the anti-equivalence at the heart of the subject: on the scheme side it is the equivalence of `AlgebraicGeometry.AffineScheme` with the opposite of `CommRingCat`.
+Taking `Spec` of a ring produces a scheme, and a ring homomorphism `f : R ⟶ S` induces a morphism the _other_ way, `Spec.map f : Spec S ⟶ Spec R`.
+
+```lean
+noncomputable example (R : CommRingCat) : Scheme := Spec R
+
+noncomputable example {R S : CommRingCat} (f : R ⟶ S) :
+    Spec S ⟶ Spec R := Spec.map f
+```
+
+Because this correspondence is (contravariantly) functorial, the identity ring homomorphism induces the identity morphism of schemes.
+Show that `Spec.map` sends `𝟙 R` to `𝟙 (Spec R)`.
+
+```lean
+example (R : CommRingCat) : Spec.map (𝟙 R) = 𝟙 (Spec R) := by
+  sorry
+```
+
+## Some more applications and examples
+
+Mathlib does not carry a separate "quasi-projective variety" type; the same generalization is achieved by working with an arbitrary open subset of a `Scheme`.
+Such an open `U : X.Opens` is itself a scheme, `U.toScheme`, and its inclusion `U.ι` back into `X` is an open immersion — of which affine and `Proj` charts are the special cases.
+
+```lean
+noncomputable example (X : Scheme) (U : X.Opens) : Scheme := U.toScheme
+
+example (X : Scheme) (U : X.Opens) : IsOpenImmersion U.ι := inferInstance
+```
+
+An open immersion is in particular an open embedding on points, hence injective.
+Show that the inclusion of an open subscheme is injective on points.
+
+```lean
+example (X : Scheme) (U : X.Opens) : Function.Injective U.ι.base := by
+  sorry
+```
+
+## The hyperbola effect
+
+In scheme language the hyperbola effect is a theorem Mathlib has: a basic open $`D(f)` of an affine scheme is itself affine, and its ring of functions is the localization $`\mathbb{C}[V][1/f]` — matching the "adjoin $`1/f`" trick $`y \cdot f = 1` from the theorem.
+The witness is `IsAffineOpen.basicOpen`: if `U` is an affine open and `f` a section on it, then `X.basicOpen f` is again affine.
+
+```lean
+example {X : Scheme} {U : X.Opens} (hU : IsAffineOpen U) (f : Γ(X, U)) :
+    IsAffineOpen (X.basicOpen f) := hU.basicOpen f
+```
+
+The starting point of the trick is that the whole affine space is itself a (distinguished) affine open.
+Show that the top open of $`\operatorname{Spec} R` is affine.
+
+```lean
+example (R : CommRingCat) : IsAffineOpen (⊤ : (Spec R).Opens) := by
+  sorry
+```

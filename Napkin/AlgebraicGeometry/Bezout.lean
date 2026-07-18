@@ -5,11 +5,18 @@ import Napkin.Meta.Citations
 import Mathlib.RingTheory.Polynomial.HilbertPoly
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.RingTheory.Bezout
+import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Algebra.Polynomial.Splits
+import Mathlib.FieldTheory.IsAlgClosed.Basic
+import Mathlib.Analysis.Complex.Polynomial.Basic
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+
+open Polynomial
 
 set_option pp.rawOnError true
 
@@ -108,11 +115,6 @@ From these examples we see that if $`I` is an ideal, then the Hilbert function a
 Let's prove this.
 Before proceeding we briefly remind the reader of short exact sequences: a sequence of maps $`0 \to V \hookrightarrow W \twoheadrightarrow X \to 0` is one such that the $`\operatorname{img}(V \hookrightarrow W) = \ker(W \twoheadrightarrow X)` (and of course the maps $`V \hookrightarrow W` and $`W \twoheadrightarrow X` are injective and surjective).
 If $`V`, $`W`, $`X` are finite-dimensional vector spaces over $`\mathbb{C}` this implies that $`\dim W = \dim V + \dim X`.
-
-:::aside
-A short exact sequence is Mathlib's {name}`CategoryTheory.ShortComplex.ShortExact`: a two-map complex whose left map is mono, right map is epi, and which is exact in the middle.
-The dimension-additivity used throughout this chapter is the fact that such a sequence of finite-dimensional vector spaces splits, so ranks add.
-:::
 
 :::PROPOSITION "Hilbert functions of $I \\cap J$ and $I+J$"
 Let $`I` and $`J` be homogeneous ideals in $`\mathbb{C}[x_0, \dots, x_n]`.
@@ -217,11 +219,6 @@ for some integers $`c_0, \dots, c_{m-1}`.
 Then we are done by the theory of *finite differences* of polynomials.
 :::
 
-:::aside
-The "eventually a polynomial" phenomenon is captured abstractly by Mathlib's {name}`Polynomial.hilbertPoly`: from the numerator of a rational generating function it produces a numerical polynomial that agrees with the coefficients for large degree, exactly the $`\chi_I` above.
-The classical geometric refinements — that its degree is $`\dim \mathbb{V}_+(I)` and its leading term the degree of the variety — are not developed in Mathlib in this projective-variety form.
-:::
-
 # Bézout's theorem
 
 :::DEFINITION
@@ -289,11 +286,6 @@ This time the exact sequence is $$`0 \to \left[ S/I \right]^{d-k} \hookrightarro
 We leave this olympiad-esque exercise as a problem.
 :::
 
-:::aside
-Beware of a name clash: Mathlib's {name}`IsBezout` is the notion of a _Bézout domain_ (every finitely generated ideal is principal), which is a commutative-algebra property unrelated to the intersection theorem of this chapter.
-The projective Bézout theorem, and the degree of a projective variety, are not part of Mathlib's algebraic-geometry library, which develops intersection theory scheme-theoretically instead.
-:::
-
 # Applications
 
 First, we show that the notion of degree is what we expect.
@@ -358,3 +350,107 @@ Let $`A_1`, $`B_1`, $`C_1` be projections of $`P` onto triangle sides $`BC`, $`C
 Find the locus of points $`P` such that $`AA_1`, $`BB_1`, $`CC_1` are concurrent and $`\angle PAB + \angle PBC + \angle PCA = 90^{\circ}`.
 (Hint: you will need to know about complex numbers in Euclidean geometry to solve this problem.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Non-radical ideals
+
+The whole chapter turns on distinguishing an ideal from its radical, e.g. the double point $`(x^2, y)` from the reduced point $`(x, y) = \sqrt{(x^2, y)}`.
+Mathlib records the radical of an ideal as `Ideal.radical`, together with the predicate `Ideal.IsRadical`.
+
+```lean
+example (R : Type*) [CommRing R] (I : Ideal R) : Ideal R := I.radical
+
+example (R : Type*) [CommRing R] (I : Ideal R) : I ≤ I.radical :=
+  Ideal.le_radical
+
+example (R : Type*) [CommRing R] (I : Ideal R) : I.radical = I ↔ I.IsRadical :=
+  Ideal.radical_eq_iff
+```
+
+The reduced ideal $`(x, y)` is prime, and every prime ideal is radical.
+Show that a prime ideal is radical.
+
+```lean
+example (R : Type*) [CommRing R] (I : Ideal R) (hI : I.IsPrime) :
+    I.IsRadical := by
+  sorry
+```
+
+## Hilbert functions of finitely many points
+
+The dimension-additivity $`h_{I \cap J} + h_{I+J} = h_I + h_J` comes from a short exact sequence of graded pieces.
+A short exact sequence is {name}`CategoryTheory.ShortComplex.ShortExact`: a two-map complex whose left map is mono, right map is epi, and which is exact in the middle; for finite-dimensional vector spaces such a sequence splits, so ranks add.
+
+The one-variable shadow of this additivity is that the roots of a product are the (multiset) union of the roots of the factors, so a two-point configuration carries "count $`2`".
+
+```lean
+example (F : Type*) [Field F] (p q : F[X]) (h : p * q ≠ 0) :
+    (p * q).roots = p.roots + q.roots := roots_mul h
+```
+
+The two distinct points $`a \neq b` of the union example above cut out the polynomial $`(x - a)(x - b)`, whose root set has exactly two elements.
+Show that its set of roots has size $`2`.
+
+```lean
+example (a b : ℂ) (h : a ≠ b) :
+    (((X - C a) * (X - C b)).roots).toFinset.card = 2 := by
+  sorry
+```
+
+## Hilbert polynomials
+
+The "eventually a polynomial" phenomenon is captured abstractly by {name}`Polynomial.hilbertPoly`: from the numerator of a rational generating function it produces a numerical polynomial that agrees with the coefficients for large degree, exactly the $`\chi_I` above.
+The classical geometric refinements — that its degree is $`\dim \mathbb{V}_+(I)` and its leading term the degree of the variety — are not developed in this projective-variety form.
+
+```lean
+example (F : Type*) [Field F] (p : F[X]) : hilbertPoly p 0 = 0 :=
+  hilbertPoly_zero_right p
+```
+
+The empty variety has the zero Hilbert polynomial; the degenerate input mirrors this.
+Show that the Hilbert polynomial attached to the zero series is zero in every degree.
+
+```lean
+example (F : Type*) [Field F] (d : ℕ) : hilbertPoly (0 : F[X]) d = 0 := by
+  sorry
+```
+
+## Bézout's theorem
+
+Beware of a name clash: {name}`IsBezout` is the notion of a _Bézout domain_ (every finitely generated ideal is principal), a commutative-algebra property unrelated to the intersection theorem of this chapter.
+
+```lean
+example (R : Type*) [CommRing R] : Prop := IsBezout R
+```
+
+The projective Bézout theorem, and the degree of a projective variety, are not part of the algebraic-geometry library, which develops intersection theory scheme-theoretically instead.
+What _is_ available is the one-dimensional case: a curve $`\mathbb{V}(f)` of degree $`k` meets a line in at most $`k` points, which is the statement that a nonzero polynomial of degree $`k` has at most $`k` roots.
+Show that the number of roots (with multiplicity) is bounded by the degree.
+
+```lean
+example (F : Type*) [Field F] (p : F[X]) :
+    Multiset.card p.roots ≤ p.natDegree := by
+  sorry
+```
+
+## Applications
+
+The special case $`\left\lvert X \cap Y \right\rvert \le \deg X \cdot \deg Y` in $`\mathbb{CP}^2` says a finite set of common zeros is bounded by the degree.
+Its univariate shadow is that any finite set contained in the roots of a polynomial has size at most the degree.
+
+```lean
+example (F : Type*) [Field F] (p : F[X]) (Z : Finset F) (h : Z.val ⊆ p.roots) :
+    Z.card ≤ p.natDegree := card_le_degree_of_subset_roots h
+```
+
+Over $`\mathbb{C}`, which is algebraically closed, this bound is an equality: every nonzero polynomial splits, so it has exactly $`\deg p` roots counted with multiplicity.
+Show that the number of roots equals the degree.
+
+```lean
+example (p : ℂ[X]) : Multiset.card p.roots = p.natDegree := by
+  sorry
+```

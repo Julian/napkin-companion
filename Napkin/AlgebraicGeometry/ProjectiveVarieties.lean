@@ -4,7 +4,11 @@ import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
+import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
+import Mathlib.LinearAlgebra.Projectivization.Basic
+import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
+import Mathlib.Data.Complex.Basic
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -53,11 +57,6 @@ The notation $`\deg r` is abusive in the case $`r = 0`; note that $`0 \in R^d` f
 So it makes sense to talk about "the" degree of $`r` except when $`r = 0`.
 :::
 
-:::aside
-A grading of a ring by an index monoid is Mathlib's {name}`GradedRing` (a `GradedAlgebra` when a base field is remembered): the data of the homogeneous pieces $`R^d` as submodules, together with a `DirectSum.Decomposition` witnessing $`R = \bigoplus_d R^d` and the multiplicativity $`R^d \cdot R^e \subseteq R^{d+e}`.
-The irrelevant ideal is {name}`HomogeneousIdeal.irrelevant`.
-:::
-
 We will frequently refer to homogeneous ideals:
 
 :::DEFINITION
@@ -86,10 +85,6 @@ Let $`R = \mathbb{C}[x, y]` and set $`I = (x^3, y^2)`.
 Let $`S = R/I`.
 Then $$`S^0 = \mathbb{C}, \quad S^1 = \mathbb{C} x \oplus \mathbb{C} y, \quad S^2 = \mathbb{C} x^2 \oplus \mathbb{C} xy, \quad S^3 = \mathbb{C} x^2 y, \quad S^d = 0 \ (d \ge 4).`
 So in fact $`S = R/I` is graded, and is a six-dimensional $`\mathbb{C}`-vector space.
-:::
-
-:::aside
-Homogeneity of an ideal is {name}`Ideal.IsHomogeneous`, and such ideals are bundled as {name}`HomogeneousIdeal`; that the second description via $`\bigoplus_d (R^d \cap I)` agrees is {name}`Ideal.IsHomogeneous.iff_eq`, and the induced grading on the quotient is what makes `HomogeneousIdeal` the right notion.
 :::
 
 # The ambient space
@@ -170,11 +165,6 @@ That said, over $`\mathbb{C}` a hyperbola and circle are the same thing; I'm che
 :::QUESTION
 Draw the intersection of the cone above with the $`z = 1` plane, and check that you do in fact get a circle.
 (This geometric picture will be crucial later.)
-:::
-
-:::aside
-The points-of-a-graded-ring analogue of the affine spectrum is Mathlib's {name}`ProjectiveSpectrum` of a graded algebra: it consists of the _relevant_ homogeneous prime ideals — those not containing the irrelevant ideal — which is exactly the "throw away the origin" bookkeeping that projective space needs.
-The projective vanishing locus $`\mathbb{V}_+(-)` is {name}`ProjectiveSpectrum.zeroLocus`.
 :::
 
 # Homogeneous ideals
@@ -289,11 +279,6 @@ We denote the set of all regular functions on $`U` by $`\mathcal{O}_V(U)`.
 Of course, the rational functions from the previous example are examples of regular functions as well.
 This completes the definition of a projective variety $`V` as a baby ringed space.
 
-:::aside
-The "quotient of two homogeneous elements of the same degree" is exactly the degree-zero part of a localization, and Mathlib packages it as {name}`HomogeneousLocalization`: its elements are fractions $`f/g` with $`f`, $`g` homogeneous of matching degree, which is what makes them honest functions on the projective variety.
-This is the ring the structure sheaf of the projective spectrum assigns to a basic open.
-:::
-
 # Examples of regular functions
 
 Naturally, I ought to tell you what the regular functions on distinguished open sets are; this is an analog to the affine result from last time.
@@ -343,3 +328,162 @@ Let $`V = \mathbb{CP}^1`, with coordinates $`(s : t)`.
 Let $`\mathbb{CP}^2` have coordinates $`(x : y : z)` and let $`U_0 = \left\{ (x : y : 1) \in \mathbb{CP}^2 \right\}` be the distinguished open set $`D(z)`.
 Then in the same vein, $$`\mathcal{O}_{\mathbb{CP}^2}(U_0) = \left\{ \frac{P(x, y)}{z^n} \mid \deg P = n \right\} \cong \left\{ P(x/z, y/z) \mid P \in \mathbb{C}[x, y] \right\}.`
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Graded rings
+
+A grading of a ring by an index monoid is Mathlib's `GradedRing` (a `GradedAlgebra` when a base field is remembered): the data of the homogeneous pieces $`R^d` as submodules, together with a `DirectSum.Decomposition` witnessing $`R = \bigoplus_d R^d` and the multiplicativity $`R^d \cdot R^e \subseteq R^{d+e}`.
+For a polynomial ring the grading is by degree: a polynomial is homogeneous of degree $`n` exactly when `MvPolynomial.IsHomogeneous` holds, each variable $`x_i` has degree $`1`, and a constant has degree $`0`.
+
+```lean
+example (σ : Type*) (φ : MvPolynomial σ ℂ) (n : ℕ) : Prop := φ.IsHomogeneous n
+
+example (σ : Type*) (i : σ) :
+    (MvPolynomial.X i : MvPolynomial σ ℂ).IsHomogeneous 1 :=
+  MvPolynomial.isHomogeneous_X ℂ i
+
+example (σ : Type*) (c : ℂ) :
+    (MvPolynomial.C c : MvPolynomial σ ℂ).IsHomogeneous 0 :=
+  MvPolynomial.isHomogeneous_C σ c
+```
+
+Homogeneity of an ideal is `Ideal.IsHomogeneous`, and such ideals are bundled as `HomogeneousIdeal`; the induced grading on the quotient is what makes `HomogeneousIdeal` the right notion, and the irrelevant ideal $`R^+` is `HomogeneousIdeal.irrelevant`.
+
+```lean
+example {A σ : Type*} [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]
+    (𝒜 : ℕ → σ) [GradedRing 𝒜] (I : Ideal A) : Prop := I.IsHomogeneous 𝒜
+
+example {A σ : Type*} [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]
+    (𝒜 : ℕ → σ) [GradedRing 𝒜] :
+    HomogeneousIdeal 𝒜 := HomogeneousIdeal.irrelevant 𝒜
+```
+
+The defining feature of the grading is that a product of homogeneous elements is homogeneous, with degrees adding.
+Show that in $`\mathbb{C}[x_0, \dots, x_n]` the product $`x_i x_j` is homogeneous of degree $`2`.
+
+```lean
+example {σ : Type*} (i j : σ) :
+    (MvPolynomial.X i * MvPolynomial.X j :
+      MvPolynomial σ ℂ).IsHomogeneous 2 := by
+  sorry
+```
+
+## The ambient space
+
+Projective space $`\mathbb{CP}^n` — nonzero vectors up to scaling, equivalently lines through the origin — is Mathlib's `Projectivization`, with a point named from a nonzero vector by `Projectivization.mk`.
+The defining scaling relation is `Projectivization.mk_eq_mk_iff'`: two nonzero vectors give the same point exactly when one is a scalar multiple of the other.
+
+```lean
+example (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V] : Type _ :=
+  Projectivization K V
+
+example {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
+    (v : V) (hv : v ≠ 0) : Projectivization K V := Projectivization.mk K v hv
+
+example {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
+    (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) :
+    Projectivization.mk K v hv = Projectivization.mk K w hw
+      ↔ ∃ a : K, a • w = v :=
+  Projectivization.mk_eq_mk_iff' K v w hv hw
+```
+
+The points-of-a-graded-ring analogue of the affine spectrum is Mathlib's `ProjectiveSpectrum` of a graded algebra: it consists of the _relevant_ homogeneous prime ideals — those not containing the irrelevant ideal — which is exactly the "throw away the origin" bookkeeping that projective space needs.
+The projective vanishing locus $`\mathbb{V}_+(-)` is `ProjectiveSpectrum.zeroLocus`, and it is this Proj that carries the Zariski topology.
+
+```lean
+example {A σ : Type*} [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]
+    (𝒜 : ℕ → σ) [GradedRing 𝒜] : Type _ := ProjectiveSpectrum 𝒜
+
+example {A σ : Type*} [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]
+    (𝒜 : ℕ → σ) [GradedRing 𝒜] (s : Set A) : Set (ProjectiveSpectrum 𝒜) :=
+  ProjectiveSpectrum.zeroLocus 𝒜 s
+
+recall {A σ : Type*} [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]
+    (𝒜 : ℕ → σ) [GradedRing 𝒜] : TopologicalSpace (ProjectiveSpectrum 𝒜)
+```
+
+A caution about the point set $`\mathbb{CP}^n` itself: Mathlib puts a topology on `Projectivization` only in the projective-line case $`\mathbb{CP}^1`, transported from the one-point compactification `OnePoint K` through `OnePoint.equivProjectivization`.
+The Zariski topology used throughout this chapter lives on `ProjectiveSpectrum`, not on `Projectivization`.
+
+```lean
+example (K : Type*) [Field K] [DecidableEq K] :
+    OnePoint K ≃ Projectivization K (Fin 2 → K) :=
+  OnePoint.equivProjectivization K
+```
+
+The prototypical fact is that a point is unchanged under rescaling, so that $`(x_0 : \dots : x_n) = (5x_0 : \dots : 5x_n)`.
+Show that scaling a nonzero vector by a nonzero scalar names the same point of projective space.
+
+```lean
+example {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
+    (v : V) (hv : v ≠ 0) (c : K) (hc : c ≠ 0) :
+    Projectivization.mk K (c • v) (smul_ne_zero hc hv)
+      = Projectivization.mk K v hv := by
+  sorry
+```
+
+## Homogeneous ideals
+
+The vanishing locus of an ideal has an adjoint, `ProjectiveSpectrum.vanishingIdeal`, recording the homogeneous ideal of "functions" vanishing on a set of points.
+The two form a Galois connection, and in particular $`\mathbb{V}_+(-)` is inclusion-reversing.
+
+```lean
+example {A σ : Type*} [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]
+    (𝒜 : ℕ → σ) [GradedRing 𝒜]
+    (t : Set (ProjectiveSpectrum 𝒜)) : HomogeneousIdeal 𝒜 :=
+  ProjectiveSpectrum.vanishingIdeal t
+```
+
+Show the inclusion-reversing property: if $`I \subseteq J` are homogeneous ideals then $`\mathbb{V}_+(J) \subseteq \mathbb{V}_+(I)`.
+
+```lean
+example {A σ : Type*} [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]
+    (𝒜 : ℕ → σ) [GradedRing 𝒜] (I J : HomogeneousIdeal 𝒜) (h : I ≤ J) :
+    ProjectiveSpectrum.zeroLocus 𝒜 (J : Set A)
+      ⊆ ProjectiveSpectrum.zeroLocus 𝒜 (I : Set A) := by
+  sorry
+```
+
+## As ringed spaces
+
+The "quotient of two homogeneous elements of the same degree" is exactly the degree-zero part of a localization, and Mathlib packages it as `HomogeneousLocalization`: its elements are fractions $`f/g` with $`f`, $`g` homogeneous of matching degree, which is what makes them honest functions on the projective variety.
+This is the commutative ring the structure sheaf of the projective spectrum assigns to a basic open, and `HomogeneousLocalization.val` sends such a fraction to its value in the ordinary localization.
+
+```lean
+example {ι A σ : Type*} [AddCommMonoid ι] [DecidableEq ι]
+    [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
+    (𝒜 : ι → σ) [GradedRing 𝒜] (x : Submonoid A) :
+    Type _ := HomogeneousLocalization 𝒜 x
+
+recall {ι A σ : Type*} [AddCommMonoid ι] [DecidableEq ι]
+    [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
+    (𝒜 : ι → σ) [GradedRing 𝒜] (x : Submonoid A) :
+    CommRing (HomogeneousLocalization 𝒜 x)
+```
+
+Because these fractions add like fractions, taking the value commutes with addition.
+Show that `HomogeneousLocalization.val` respects the ring addition.
+
+```lean
+example {ι A σ : Type*} [AddCommMonoid ι] [DecidableEq ι]
+    [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
+    (𝒜 : ι → σ) [GradedRing 𝒜] (x : Submonoid A)
+    (a b : HomogeneousLocalization 𝒜 x) : (a + b).val = a.val + b.val := by
+  sorry
+```
+
+## Examples of regular functions
+
+The numerators appearing in these regular functions are homogeneous polynomials of a fixed degree, so a sum like $`s^2 + 9t^2` from the $`\mathbb{CP}^1` example is again homogeneous of that degree.
+Show that $`s^2 + 9t^2` is homogeneous of degree $`2`, writing $`s = x_0` and $`t = x_1`.
+
+```lean
+example :
+    (MvPolynomial.X 0 ^ 2 + MvPolynomial.C 9 * MvPolynomial.X 1 ^ 2 :
+      MvPolynomial (Fin 2) ℂ).IsHomogeneous 2 := by
+  sorry
+```

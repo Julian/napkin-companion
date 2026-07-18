@@ -6,12 +6,15 @@ import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Sheaves.Sheaf
 import Mathlib.Topology.Sheaves.Stalks
 import Mathlib.Topology.Sheaves.Sheafify
+import Mathlib.Algebra.Category.Ring.Limits
+import Mathlib.Algebra.Category.Ring.Colimits
+import Mathlib.Algebra.Category.Ring.FilteredColimits
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
-open CategoryTheory
+open CategoryTheory TopologicalSpace
 
 set_option pp.rawOnError true
 
@@ -141,17 +144,6 @@ Check that these definitions are equivalent.
 In particular, it is possible to replace $`\mathbf{Rings}` with any category we want.
 We will not need to do so any time soon, but it's worth mentioning.
 
-:::aside
-This categorical definition is verbatim how Mathlib defines it: {name}`TopCat.Presheaf` is literally the functor category $`(\operatorname{Opens} X)^{\operatorname{op}} \to C`, for any value category $`C`, and the restriction map for an inclusion is just the functor applied to that inclusion (an arrow in $`(\operatorname{Opens} X)^{\operatorname{op}}`), so the two restriction axioms come for free from functoriality.
-
-```lean
-example {C : Type*} [Category C] (X : TopCat) (ℱ : TopCat.Presheaf C X)
-    {U V : (TopologicalSpace.Opens X)ᵒᵖ} (i : U ⟶ V) :
-    ℱ.obj U ⟶ ℱ.obj V :=
-  ℱ.map i
-```
-:::
-
 # Stalks and germs
 
 :::PROTOTYPE
@@ -195,11 +187,6 @@ A sheaf pictured through several stalks, each carrying the germ of $`s` above it
 
 :::DEFINITION
 The stalk $`\mathcal{F}_p` can itself be regarded as a ring: for example, addition is done by $$`\left( s_1, U_1 \right) + \left( s_2, U_2 \right) = \left( s_1 \restriction_{U_1 \cap U_2} + s_2 \restriction_{U_1 \cap U_2}, U_1 \cap U_2 \right).`
-:::
-
-:::aside
-Mathlib builds the stalk as {name}`TopCat.Presheaf.stalk`, defined exactly as the colimit (see the category-lover's remark below) over the open neighborhoods of $`p`, and the germ map is {name}`TopCat.Presheaf.germ`, sending a section to its class in the stalk.
-When the value category is rings, the stalk is a ring and the germ maps are ring homomorphisms automatically.
 :::
 
 :::EXAMPLE "Germs of real smooth functions"
@@ -250,11 +237,6 @@ Now we claim that the map $`\mathcal{O}_{V, p} \to \text{desired RHS}` by $`\lef
 
 - Injectivity: We are working with complex polynomials, so we know that a rational function is determined by its behavior on any open neighborhood of $`p`; thus two germ representatives $`(\frac{f_1}{g_1}, U_1)` and $`(\frac{f_2}{g_2}, U_2)` agree on $`U_1 \cap U_2` if and only if they are actually the same quotient.
 - Surjectivity: take $`U = D(g)`.
-:::
-
-:::aside
-The right-hand side is the localization of $`\mathbb{C}[V]` at the maximal ideal of $`p`, so this theorem is the statement that the stalk of the structure sheaf is a local ring — the localization studied in the next chapter.
-Mathlib takes the same route in reverse: it _defines_ the structure sheaf so that its stalk at a prime is the localization, which is why the ringed spaces to come are called _locally_ ringed.
 :::
 
 :::EXAMPLE "Stalks of your favorite varieties at the origin"
@@ -328,11 +310,6 @@ Show that the square with corners $`\mathcal{F}(U \cup V)`, $`\mathcal{F}(U)`, $
 
 :::figure "figures/algebraic-geometry/sheaves-pullback-square.svg"
 The gluing square is a pullback square.
-:::
-
-:::aside
-Mathlib's {name}`TopCat.Sheaf` is a pre-sheaf bundled with exactly this local condition (packaged through the general theory of Grothendieck topologies, but for a topological space it unwinds to the identity-and-gluing axioms above).
-The pullback-square exercise is genuinely how the sheaf condition is often stated there — as an equalizer/limit over a cover.
 :::
 
 Now for the examples.
@@ -473,10 +450,6 @@ Then the isomorphism is given by $`\left( (g_p)_{p \in U}, U \right) \mapsto g_q
 The inverse map is given by for each $`g = (s, U) \in \mathcal{F}_q` by $`g \mapsto \left( (g)_{p \in U}, U \right) \in (\mathcal{F}^{\operatorname{sh}})_q`, i.e. the sequence of germs is the constant sequence.
 :::
 
-:::aside
-For a Type-valued pre-sheaf, this is exactly Mathlib's {name}`TopCat.Presheaf.sheafify`, whose sections over $`U` are the "locally germ" dependent functions $`p \mapsto g_p`; the comparison map $`\mathcal{F} \to \mathcal{F}^{\operatorname{sh}}` is {name}`TopCat.Presheaf.toSheafify`, and the stalk-preservation lemma above is realized through {name}`TopCat.Presheaf.stalkToFiber`.
-:::
-
 We will use sheafification in the future to economically construct sheaves.
 However, in practice, the details of the construction will often not matter.
 
@@ -513,3 +486,131 @@ Define the *support* of $`s` as $$`Z = \left\{ p \in X \mid [s]_p \neq 0 \in \ma
 Show that $`Z` is a closed set of $`X`.
 (Hint: show that the complement $`\{ p \mid [s]_p = 0 \}` is open.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Pre-sheaves
+
+Mathlib takes the categorical definition as primary.
+For a value category `C`, a `TopCat.Presheaf C X` is literally a functor `(Opens X)ᵒᵖ ⥤ C`: each open set is sent to an object of `C`, and each inclusion `U ⟶ V` of opens (an arrow in `(Opens X)ᵒᵖ`) is sent to the restriction map `ℱ.map i`.
+
+```lean
+example {C : Type*} [Category C] (X : TopCat) (ℱ : TopCat.Presheaf C X)
+    {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) :
+    ℱ.obj U ⟶ ℱ.obj V :=
+  ℱ.map i
+```
+
+Because a pre-sheaf is packaged as a functor, the two restriction axioms come for free from functoriality: restricting along the identity inclusion is the identity map, `ℱ.map (𝟙 U) = 𝟙 (ℱ.obj U)`, and restricting through an intermediate open agrees with restricting directly.
+Confirm the first of these — the `res_{U,U}` axiom — directly.
+
+```lean
+example {C : Type*} [Category C] (X : TopCat) (ℱ : TopCat.Presheaf C X)
+    (U : (Opens X)ᵒᵖ) :
+    ℱ.map (𝟙 U) = 𝟙 (ℱ.obj U) := by
+  sorry
+```
+
+## Stalks and germs
+
+Mathlib builds the stalk `ℱ.stalk x` as the colimit over the open neighborhoods of `x`, exactly the $`\varinjlim_{U \ni p} \mathcal{F}(U)` of the category-lover's remark; this requires the value category to have colimits.
+The germ map `ℱ.germ U x hx` sends a section over `U` to its class in the stalk.
+
+```lean
+noncomputable example {C : Type*} [Category C] [Limits.HasColimits C]
+    (X : TopCat) (ℱ : TopCat.Presheaf C X) (x : X) :
+    C := ℱ.stalk x
+
+noncomputable example {C : Type*} [Category C] [Limits.HasColimits C]
+    (X : TopCat) (ℱ : TopCat.Presheaf C X) (U : Opens X) (x : X) (hx : x ∈ U) :
+    ℱ.obj (Opposite.op U) ⟶ ℱ.stalk x :=
+  ℱ.germ U x hx
+```
+
+Germs are compatible with restriction: taking a section over `V`, restricting it to a smaller `U`, and then taking its germ at a point `x ∈ U` gives the same germ as taking the germ of the original section directly.
+Prove this compatibility.
+
+```lean
+example {C : Type*} [Category C] [Limits.HasColimits C]
+    (X : TopCat) (F : TopCat.Presheaf C X)
+    {U V : Opens X} (i : U ⟶ V) (x : X) (hx : x ∈ U) :
+    F.map i.op ≫ F.germ U x hx = F.germ V x (i.le hx) := by
+  sorry
+```
+
+## Sheaves
+
+A `TopCat.Sheaf C X` is a pre-sheaf bundled with the sheaf condition `TopCat.Presheaf.IsSheaf`.
+The condition is packaged through the general theory of Grothendieck topologies, but for a topological space it unwinds to the identity-and-gluing axioms above.
+The underlying pre-sheaf of a sheaf is `F.presheaf`, and its sheaf condition is the second component.
+
+```lean
+example {C : Type*} [Category C] (X : TopCat) (F : TopCat.Sheaf C X) :
+    F.presheaf.IsSheaf := F.2
+```
+
+Since the sheaf condition is stated for pre-sheaves, it is invariant under isomorphism: if `F` is a sheaf and `G` is isomorphic to `F`, then `G` is a sheaf too.
+Prove it.
+
+```lean
+example {C : Type*} [Category C] (X : TopCat) {F G : TopCat.Presheaf C X}
+    (α : F ≅ G) (hF : F.IsSheaf) : G.IsSheaf := by
+  sorry
+```
+
+## For sheaves, sections "are" sequences of germs
+
+For a sheaf of rings, take the value category to be `CommRingCat`.
+Each germ map `F.presheaf.germ U x hx` is then a ring homomorphism from the sections over `U` into the stalk at `x`.
+
+```lean
+noncomputable example (X : TopCat) (F : TopCat.Sheaf CommRingCat X)
+    (U : Opens X) (x : X) (hx : x ∈ U) :
+    F.presheaf.obj (Opposite.op U) ⟶ F.presheaf.stalk x :=
+  F.presheaf.germ U x hx
+```
+
+The exercise "sections are determined by stalks" asks you to show the map $`\mathcal{F}(U) \to \prod_{p \in U} \mathcal{F}_p` sending a section to its germs is injective.
+Concretely: two sections `s` and `t` over `U` whose germs agree at every point of `U` must be equal.
+Prove it — `TopCat.Presheaf.section_ext` is the relevant lemma.
+
+```lean
+example (X : TopCat) (F : TopCat.Sheaf CommRingCat X) (U : Opens X)
+    (s t : F.presheaf.obj (Opposite.op U))
+    (h : ∀ (x : X) (hx : x ∈ U),
+      F.presheaf.germ U x hx s = F.presheaf.germ U x hx t) :
+    s = t := by
+  sorry
+```
+
+## Sheafification (optional)
+
+For a `Type`-valued pre-sheaf, `TopCat.Presheaf.sheafify` is exactly the construction above: its sections over `U` are the locally-germ dependent functions $`p \mapsto g_p`.
+The comparison map $`\mathcal{F} \to \mathcal{F}^{\operatorname{sh}}` is `TopCat.Presheaf.toSheafify`, and the stalk-preservation lemma is realized by `TopCat.Presheaf.stalkToFiber`, whose promotion to an isomorphism $`(\mathcal{F}^{\operatorname{sh}})_q \cong \mathcal{F}_q` is `TopCat.Presheaf.sheafifyStalkIso`.
+
+```lean
+noncomputable example (X : TopCat) (F : TopCat.Presheaf (Type _) X) :
+    TopCat.Sheaf (Type _) X := F.sheafify
+
+noncomputable example (X : TopCat) (F : TopCat.Presheaf (Type _) X) :
+    F ⟶ F.sheafify.1 := F.toSheafify
+
+noncomputable example (X : TopCat) (F : TopCat.Presheaf (Type _) X) (x : X) :
+    F.sheafify.presheaf.stalk x ⟶ F.stalk x := F.stalkToFiber x
+
+noncomputable example (X : TopCat) (F : TopCat.Presheaf (Type _) X) (x : X) :
+    F.sheafify.presheaf.stalk x ≅ F.stalk x :=
+  F.sheafifyStalkIso x
+```
+
+The stalk-preservation lemma says this last map is an isomorphism, so in particular the underlying function is a bijection.
+Prove that `F.stalkToFiber x` is bijective, using that it is both injective and surjective.
+
+```lean
+example (X : TopCat) (F : TopCat.Presheaf (Type _) X) (x : X) :
+    Function.Bijective (F.stalkToFiber x) := by
+  sorry
+```
