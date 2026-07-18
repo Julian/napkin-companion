@@ -5,6 +5,8 @@ import Napkin.Meta.Citations
 import Mathlib.Order.Zorn
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.Data.Real.Basic
+import Mathlib.Algebra.Algebra.Rat
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -139,11 +141,6 @@ Similarly, transfinite recursion often is split into cases too.
 
 In both situations, finite induction only does the first two cases, but if we're able to do the third case we can climb far above the barrier $`\omega`.
 
-:::aside
-This three-case split is precisely the shape of Mathlib's {name}`Ordinal.limitRecOn`, the recursor on ordinals: to define something at every ordinal you supply a zero case, a successor case built from the predecessor, and a limit case built from all smaller values.
-It is the transfinite analogue of the ordinary recursor on $`\mathbb{N}`.
-:::
-
 # Wrapping up functional equations
 
 Let's return to solving our problem.
@@ -166,11 +163,6 @@ When do we stop?
 We'd like to stop when we have a set $`S_{\text{something}}` that's so big, every real number can be written in terms of the independent numbers.
 (This notion also has a name: it's called a $`\mathbb{Q}`-basis.)
 Let's call such a set *spanning*; we stop once we hit a spanning set.
-
-:::aside
-"Independent over $`\mathbb{Q}`" is {name}`LinearIndependent` for the $`\mathbb{Q}`-vector space $`\mathbb{R}`, and a spanning independent set is a {name}`Module.Basis` — the *Hamel basis* of $`\mathbb{R}` over $`\mathbb{Q}`.
-That one exists at all is the content of {name}`Module.Basis.ofVectorSpace`, which hands you a basis of any vector space over any field; the entire climbing argument below is one proof of it.
-:::
 
 The idea that we can induct still seems okay: suppose $`S_\alpha` isn't spanning.
 Then there's some number that is independent of $`S_\alpha`, say $`\sqrt{2015}\pi` or something.
@@ -227,11 +219,6 @@ In this language, Zorn's lemma states that
 :::THEOREM "Zorn's lemma"
 Let $`\mathbb{P}` be a nonempty partially ordered set.
 If every chain has an upper bound, then $`\mathbb{P}` has a local maximum.
-:::
-
-:::aside
-Mathlib's version is {name}`zorn_le`: if every chain in a partial order is bounded above, then a maximal element ({name}`IsMax`) exists.
-The inclusion-poset phrasing used in this chapter — chains of _sets_ bounded by their union — is the specialized {name}`zorn_subset`.
 :::
 
 Chains with length equal to a successor ordinal always have upper bounds, but this is not true in the limit case.
@@ -293,3 +280,77 @@ Assume that for any set $`A`, the set $`A` is in $`\mathcal F` if and only if al
 
 Prove that there exists a maximal set $`Y \in \mathcal F` (i.e. $`Y` not contained in any other set of $`\mathcal F`).
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Transfinite induction
+
+Transfinite induction is `Ordinal.induction`: to prove a statement `p` at every ordinal, it is enough to prove `p j` whenever `p k` already holds for all `k < j`.
+
+```lean
+recall Ordinal.induction {p : Ordinal.{u} → Prop} (i : Ordinal.{u})
+    (h : ∀ j, (∀ k, k < j → p k) → p j) : p i
+```
+
+The three-case split — zero, successor, limit — is precisely the shape of Mathlib's `Ordinal.limitRecOn`, the recursor on ordinals: to define something at every ordinal you supply a zero case, a successor case built from the predecessor, and a limit case built from all smaller values.
+It is the transfinite analogue of the ordinary recursor on $`\mathbb{N}`.
+
+```lean
+noncomputable example {motive : Ordinal → Sort*} (o : Ordinal)
+    (zero : motive 0) (succ : ∀ o, motive o → motive (Order.succ o))
+    (lim : ∀ o, Order.IsSuccLimit o → (∀ o' < o, motive o') → motive o) :
+    motive o :=
+  Ordinal.limitRecOn o zero succ lim
+```
+
+The chapter observed that no matter how large the ordinals grow, there is no infinite descending chain: from any ordinal you can only jump down finitely many times before reaching $`0`.
+This is exactly the well-foundedness `Ordinal.lt_wf` of `<` on the ordinals.
+Show that there is no strictly descending sequence of ordinals indexed by $`\mathbb{N}`.
+
+```lean
+example : ¬ ∃ f : ℕ → Ordinal, ∀ n, f (n + 1) < f n := by
+  sorry
+```
+
+## Wrapping up functional equations
+
+"Independent over $`\mathbb{Q}`" is `LinearIndependent` for the $`\mathbb{Q}`-vector space $`\mathbb{R}`, and a spanning independent set is a `Module.Basis` — the *Hamel basis* of $`\mathbb{R}` over $`\mathbb{Q}`.
+That one exists at all is the content of `Module.Basis.ofVectorSpace`, which hands you a basis of any vector space over any field; the entire climbing argument of this chapter is one proof of it.
+
+```lean
+noncomputable example :
+    Module.Basis (Module.Basis.ofVectorSpaceIndex ℚ ℝ) ℚ ℝ :=
+  Module.Basis.ofVectorSpace ℚ ℝ
+```
+
+The whole point of the construction was that the basis elements stay independent over $`\mathbb{Q}`.
+Confirm this: the Hamel basis is `LinearIndependent` over $`\mathbb{Q}`.
+
+```lean
+example : LinearIndependent ℚ (Module.Basis.ofVectorSpace ℚ ℝ) := by
+  sorry
+```
+
+## Zorn's lemma
+
+Mathlib's version is `zorn_le`: if every chain in a partial order is bounded above, then a maximal element (`IsMax`) exists.
+The inclusion-poset phrasing used in this chapter — chains of _sets_ bounded by their union — is the specialized `zorn_subset`.
+
+```lean
+example {P : Type*} [PartialOrder P]
+    (h : ∀ c : Set P, IsChain (· ≤ ·) c → BddAbove c) : ∃ m : P, IsMax m :=
+  zorn_le h
+```
+
+The chapter phrased the hypothesis as "every chain has an upper bound", meaning an element greater than or equal to every member of the chain.
+Deduce a local maximum from that phrasing.
+
+```lean
+example {P : Type*} [PartialOrder P]
+    (h : ∀ c : Set P, IsChain (· ≤ ·) c → ∃ ub, ∀ p ∈ c, p ≤ ub) :
+    ∃ m : P, IsMax m := by
+  sorry
+```

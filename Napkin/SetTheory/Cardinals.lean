@@ -2,6 +2,8 @@ import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
+import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.SetTheory.Cardinal.Order
 import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.SetTheory.Cardinal.Aleph
 import Mathlib.SetTheory.Cardinal.Regular
@@ -11,6 +13,7 @@ open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Cardinal
 
 set_option pp.rawOnError true
 
@@ -87,11 +90,6 @@ Let $`X` and $`Y` be sets.
 
 Diligent readers are invited to try and prove this.
 
-:::aside
-Mathlib takes the "cardinality as an abstract quotient" route rather than "least ordinal of that size": a {name}`Cardinal` is a set-up-to-bijection, and the cardinality $`\left\lvert X \right\rvert` is {name}`Cardinal.mk` (written `#X`).
-Equinumerosity is bijection of types, and the two clauses of the proposition are Mathlib's `Cardinal.mk`-injectivity and the characterization of `≤` on cardinals by injections.
-:::
-
 # Aleph numbers
 
 :::PROTOTYPE
@@ -106,10 +104,6 @@ We have $`\left\lvert X \right\rvert < \left\lvert \mathcal{P}(X) \right\rvert` 
 
 :::PROOF
 There is an injective map $`X \hookrightarrow \mathcal{P}(X)` but there is no injective map $`\mathcal{P}(X) \hookrightarrow X` by Cantor's diagonal argument.
-:::
-
-:::aside
-This is {name}`Cardinal.cantor`: for every cardinal $`c`, one has $`c < 2^c`.
 :::
 
 Thus we can define:
@@ -156,11 +150,6 @@ So there must be some $`\gamma < \lambda` with $`\aleph_\gamma > \kappa`, which 
 :::DEFINITION
 An infinite cardinal which is not a successor cardinal is called a *limit cardinal*.
 It is exactly those cardinals of the form $`\aleph_\lambda`, for $`\lambda` a limit ordinal, plus $`\aleph_0`.
-:::
-
-:::aside
-The aleph function is {name}`Cardinal.aleph`, an order embedding of the ordinals into the cardinals, with $`\aleph_0` being {name}`Cardinal.aleph0` (notation `ℵ₀`).
-That every infinite cardinal is some $`\aleph_\alpha` is exactly the statement that this embedding's range is all the infinite cardinals.
 :::
 
 # Cardinal arithmetic
@@ -239,11 +228,6 @@ Given cardinals $`\kappa` and $`\mu`, one of which is infinite, we have $$`\kapp
 :::PROOF
 The point is that both of these are less than the square of the maximum.
 Writing out the details: $$`\max \left\{ \kappa, \mu \right\} \le \kappa + \mu \le \kappa \cdot \mu \le \max \left\{ \kappa, \mu \right\} \cdot \max \left\{ \kappa, \mu \right\} = \max\left\{ \kappa, \mu \right\}.`
-:::
-
-:::aside
-The squaring theorem is {name}`Cardinal.mul_eq_self` (for $`\aleph_0 \le \kappa`), and the "arithmetic is trivial" collapse is {name}`Cardinal.mul_eq_max` together with {name}`Cardinal.add_eq_max`.
-So on the infinite cardinals, both `+` and `*` are just `max`.
 :::
 
 # Cardinal exponentiation
@@ -342,11 +326,6 @@ The number of elements in the union is at most $$`\#\text{sets} \cdot \#\text{el
 and hence $`\left\lvert \Lambda \right\rvert \le \overline\kappa < \kappa`.
 :::
 
-:::aside
-Cofinality is {name}`Ordinal.cof`, and "equal to its own cofinality, and infinite" is exactly the predicate {name}`Cardinal.IsRegular`.
-That successor cardinals and $`\aleph_0` are regular are theorems `Cardinal.isRegular_succ` and `Cardinal.isRegular_aleph0` about it.
-:::
-
 # Inaccessible cardinals
 
 So, what about limit cardinals?
@@ -381,11 +360,6 @@ If you compare it with the definition of strong limit cardinals, you can see the
 
 A regular strong limit cardinal other than $`\aleph_0` is called *strongly inaccessible*.
 
-:::aside
-Mathlib bundles a strongly inaccessible cardinal as {name}`Cardinal.IsInaccessible`: uncountable, equal to its own cofinality, and a strong limit.
-It is the hypothesis behind the $`\mathsf{ZFC}^+` used elsewhere in this book to build a Grothendieck universe.
-:::
-
 # Problems
 
 :::PROBLEM
@@ -406,3 +380,123 @@ Show that for any strongly inaccessible $`\kappa`, we have $`\left\lvert V_\kapp
 Show that $$`\kappa^{\operatorname{cof}(\kappa)} > \kappa`
 for every infinite cardinal $`\kappa`.
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Cardinalities
+
+Mathlib takes the "cardinality as an abstract quotient" route rather than "least ordinal of that size": a `Cardinal` is a set considered up to bijection, and the cardinality $`\left\lvert X \right\rvert` is `Cardinal.mk`, written `#X`.
+Equinumerosity $`X \approx Y` is a bijection of types, and the two clauses of the proposition become the characterization of `=` and of `≤` on cardinals.
+
+```lean
+example (X : Type*) : Cardinal := #X
+
+example (α β : Type u) : #α = #β ↔ Nonempty (α ≃ β) := Cardinal.eq
+
+example (α β : Type u) : #α ≤ #β ↔ Nonempty (α ↪ β) := Cardinal.le_def α β
+```
+
+The proposition's first clause says $`X \approx Y` exactly when $`\left\lvert X \right\rvert = \left\lvert Y \right\rvert`.
+One half of this is the Schröder–Bernstein theorem, which appears here as antisymmetry of `≤`: injections both ways force the two cardinalities to be equal.
+
+```lean
+example (α β : Type u) (h1 : #α ≤ #β) (h2 : #β ≤ #α) : #α = #β := by
+  sorry
+```
+
+## Aleph numbers
+
+Cantor's theorem is `Cardinal.cantor`: for every cardinal $`c`, one has $`c < 2^c`.
+The aleph function is `Cardinal.aleph`, an order embedding of the ordinals into the cardinals, with $`\aleph_0` being `Cardinal.aleph0`, written `ℵ₀`.
+
+```lean
+example (c : Cardinal) : c < 2 ^ c := Cardinal.cantor c
+
+example : Cardinal := Cardinal.aleph0
+
+example : Cardinal.aleph 0 = Cardinal.aleph0 := Cardinal.aleph_zero
+```
+
+Cantor's theorem is what lets cardinals grow without bound: the power set of any type is strictly larger than the type itself.
+Prove it, using that the cardinality of $`\mathcal{P}(X)` is $`2^{\left\lvert X \right\rvert}`.
+
+```lean
+example (α : Type*) : #α < #(Set α) := by
+  sorry
+```
+
+## Cardinal arithmetic
+
+The squaring theorem is `Cardinal.mul_eq_self` (for $`\aleph_0 \le \kappa`), and the "arithmetic is trivial" collapse is `Cardinal.mul_eq_max` together with `Cardinal.add_eq_max`.
+So on the infinite cardinals, both `+` and `*` are just `max`.
+
+```lean
+example (κ : Cardinal) (h : ℵ₀ ≤ κ) : κ * κ = κ := Cardinal.mul_eq_self h
+
+example (a b : Cardinal) (ha : ℵ₀ ≤ a) (hb : ℵ₀ ≤ b) : a * b = max a b :=
+  Cardinal.mul_eq_max ha hb
+
+example (a b : Cardinal) (ha : ℵ₀ ≤ a) : a + b = max a b :=
+  Cardinal.add_eq_max ha
+```
+
+Since addition collapses to `max`, an infinite cardinal added to itself is unchanged.
+Show that $`\kappa + \kappa = \kappa` for every infinite $`\kappa`.
+
+```lean
+example (κ : Cardinal) (h : ℵ₀ ≤ κ) : κ + κ = κ := by
+  sorry
+```
+
+## Cardinal exponentiation
+
+Exponentiation of cardinals is the operation `HPow.hPow`, and the prototype $`2^\kappa = \left\lvert \mathcal{P}(\kappa) \right\rvert` is `Cardinal.mk_set`.
+
+```lean
+example (α : Type*) : #(Set α) = 2 ^ #α := Cardinal.mk_set
+```
+
+In particular $`2^{\aleph_0} > \aleph_0`, so the continuum is uncountable — a special case of Cantor's theorem.
+
+```lean
+example : ℵ₀ < 2 ^ ℵ₀ := by
+  sorry
+```
+
+## Cofinality
+
+Cofinality is `Ordinal.cof`, and "equal to its own cofinality, and infinite" is exactly the predicate `Cardinal.IsRegular`.
+That $`\aleph_0` is regular is the theorem `Cardinal.isRegular_aleph0`.
+
+```lean
+noncomputable example (o : Ordinal) : Cardinal := Ordinal.cof o
+
+example : Cardinal.IsRegular ℵ₀ := Cardinal.isRegular_aleph0
+```
+
+The theorem above was that successor cardinals are regular.
+Show that $`\kappa^+` is regular whenever $`\kappa` is infinite, where `Order.succ` is the successor cardinal.
+
+```lean
+example (κ : Cardinal) (h : ℵ₀ ≤ κ) : (Order.succ κ).IsRegular := by
+  sorry
+```
+
+## Inaccessible cardinals
+
+Mathlib bundles a strongly inaccessible cardinal as `Cardinal.IsInaccessible`: uncountable, equal to its own cofinality, and a strong limit.
+
+```lean
+example (κ : Cardinal) : Prop := κ.IsInaccessible
+```
+
+By definition an inaccessible cardinal is regular.
+Extract that fact from the bundled predicate.
+
+```lean
+example (κ : Cardinal) (h : κ.IsInaccessible) : κ.IsRegular := by
+  sorry
+```

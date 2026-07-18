@@ -586,18 +586,16 @@ Once a base field is in play, a homomorphism fixing it is an algebra homomorphis
 The fact that fixing $`\mathbb{Q}` is automatic means that `K →+* ℂ` and `K →ₐ[ℚ] ℂ` are interchangeable, via `RingHom.equivRatAlgHom`.
 
 ```lean
-noncomputable example (R S : Type*) [Field R] [Field S]
-    [Algebra ℚ R] [Algebra ℚ S] :
-    (R →+* S) ≃ (R →ₐ[ℚ] S) := RingHom.equivRatAlgHom
+noncomputable example (K : Type*) [Field K] [Algebra ℚ K] :
+    (K →+* ℂ) ≃ (K →ₐ[ℚ] ℂ) := RingHom.equivRatAlgHom
 ```
 
 The question above asked you to show such an embedding fixes every rational number.
 Once phrased as an algebra homomorphism over $`\mathbb{Q}`, this is exactly the statement that it commutes with the inclusion of the scalars.
 
 ```lean
-example (K L : Type*) [Field K] [Field L] [Algebra ℚ K] [Algebra ℚ L]
-    (φ : K →ₐ[ℚ] L) (q : ℚ) :
-    φ (algebraMap ℚ K q) = algebraMap ℚ L q := by
+example (K : Type*) [Field K] [Algebra ℚ K] (φ : K →ₐ[ℚ] ℂ) (q : ℚ) :
+    φ (algebraMap ℚ K q) = algebraMap ℚ ℂ q := by
   sorry
 ```
 
@@ -609,6 +607,8 @@ Since carriers are types rather than literal subsets, "one field sitting inside 
 "Algebraically closed" is the typeclass `IsAlgClosed E`, and the construction of the algebraic closure theorem is `AlgebraicClosure F`, a chosen algebraic closure carrying its `Algebra F _` instance; the two defining properties are packaged together as `IsAlgClosure F E`, with uniqueness-up-to-isomorphism recorded as `IsAlgClosure.equiv`.
 
 ```lean
+example : IsAlgClosed ℂ := inferInstance
+
 example (F : Type*) [Field F] :
     IsAlgClosed (AlgebraicClosure F) := inferInstance
 
@@ -639,12 +639,11 @@ recall AlgHom.card {F E : Type*} [Field F] [Field E] [Algebra F E]
     Fintype.card (E →ₐ[F] K) = Module.finrank F E
 ```
 
-Specialized to a finite extension of $`\mathbb{Q}`, this says the number of embeddings into an algebraically closed target equals the degree; the separability side-condition is discharged automatically in characteristic zero.
+Specialized to a number field, this says the number of embeddings into $`\mathbb{C}` equals the degree; the separability side-condition is discharged automatically in characteristic zero.
 
 ```lean
-example (K : Type*) [Field K] [Algebra ℚ K] [FiniteDimensional ℚ K]
-    (L : Type*) [Field L] [IsAlgClosed L] [Algebra ℚ L] :
-    Fintype.card (K →ₐ[ℚ] L) = Module.finrank ℚ K := by
+example (K : Type*) [Field K] [Algebra ℚ K] [FiniteDimensional ℚ K] :
+    Fintype.card (K →ₐ[ℚ] ℂ) = Module.finrank ℚ K := by
   sorry
 ```
 

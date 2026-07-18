@@ -86,16 +86,6 @@ Formally, as motivated above, we define $$`B = \left\{ x \mid x \notin j(x) \rig
 By construction, $`B \subseteq X` is not in the image of $`j`, which is a contradiction since $`j` was supposed to be surjective.
 :::
 
-:::aside
-This is exactly {name}`Function.cantor_injective`: for any type $`X`, no map $`\mathcal{P}(X) \to X` is injective (with its companion {name}`Function.cantor_surjective` for the surjection form).
-The diagonal set $`B` above is the witness the Mathlib proof builds.
-
-```lean
-example {X : Type*} (ι : Set X → X) : ¬ Function.Injective ι :=
-  Function.cantor_injective ι
-```
-:::
-
 Now if you're not a set theorist, you could probably just brush this off, saying "oh well, I guess you can't look at certain sets".
 But if you're a set theorist, this worries you, because you realize it means that you can't just define a set as "a collection of objects", because then everything would blow up.
 Something more is necessary.
@@ -143,11 +133,6 @@ So now it makes sense to talk about whether something is a set or not: $`\exists
 In other words, we've rephrased the problem of deciding whether something is a set to whether it exists, which makes it easier to deal with in our formal language.
 That means that our axiom system had better find some way to let us show a lot of things exist, without letting us prove $$`\exists S \, \forall x : x \in S.`
 For if we prove this formula, then we have our "bad" set that caused us to go down the rabbit hole in the first place.
-
-:::aside
-Mathlib takes exactly this "everything is a set" stance: {name}`ZFSet` is a single type whose every element is itself a `ZFSet`, and membership is a relation `ZFSet → ZFSet → Prop` — the formal $`\in`.
-The whole chapter's universe of sets is this one type.
-:::
 
 # The axioms of ZFC
 
@@ -212,11 +197,6 @@ This will not really matter to us for now, but later on, it will matter in model
 
 We postpone discussion of the Axiom of Choice momentarily.
 
-:::aside
-Every one of these axioms is a concrete operation on {name}`ZFSet`: the empty set {name}`ZFSet.empty`, pairing {name}`ZFSet.pair`, union {name}`ZFSet.sUnion`, power set {name}`ZFSet.powerset`, the comprehension schema {name}`ZFSet.sep` (which builds $`\{x \in X \mid \phi(x)\}`), the replacement schema {name}`ZFSet.image`, and the axiom of infinity's witness {name}`ZFSet.omega`.
-Foundation and extensionality are theorems about the type rather than constructions.
-:::
-
 # Encoding
 
 Now that we have this rickety universe of sets, we can start re-building math.
@@ -280,10 +260,6 @@ Assuming Choice, for every set we can place some well-ordering on it.
 
 In fact, the well-ordering theorem is actually equivalent to the axiom of choice.
 
-:::aside
-Mathlib packages the well-ordering theorem constructively: for any type $`\alpha` there is a relation {name}`WellOrderingRel`, and the instance `WellOrderingRel.isWellOrder` supplies the {name}`IsWellOrder` proof — a well-order on $`\alpha` out of nothing but the ambient axiom of choice.
-:::
-
 # Sets vs classes
 
 :::PROTOTYPE
@@ -327,11 +303,6 @@ For example, $`x \in V` means "$`x` is a set".
 It does not mean $`x` is an element of $`V` — this doesn't make sense as $`V` is not a set.
 :::
 
-:::aside
-Mathlib's {name}`Class` is literally a `Set ZFSet`, a predicate on sets, and the von Neumann universe is {name}`Class.univ`.
-The distinction the abuse warns about — "$`x` satisfies the defining property" versus "$`x` is an element" — is the difference between `Class` membership and `ZFSet` membership, kept separate by the two types.
-:::
-
 # Problems
 
 :::PROBLEM
@@ -359,3 +330,127 @@ Simultaneously each person guesses the color of their hat.
 Show that they can form a strategy such that at most finitely many people guess their color incorrectly.
 (Hint: this is an application of Axiom of Choice.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Cantor's paradox
+
+The diagonal argument is `Function.cantor_injective`: for any type $`X`, no map $`\mathcal{P}(X) \to X` is injective.
+The diagonal set $`B` from the proof is the witness Mathlib builds.
+
+```lean
+example {X : Type*} (ι : Set X → X) : ¬ Function.Injective ι :=
+  Function.cantor_injective ι
+```
+
+The proof above first passed through the surjective form: there is no surjection $`X \twoheadrightarrow \mathcal{P}(X)`.
+Prove this using `Function.cantor_surjective`.
+
+```lean
+example {X : Type*} (f : X → Set X) : ¬ Function.Surjective f := by
+  sorry
+```
+
+## The language of set theory
+
+Mathlib takes the "everything is a set" stance literally: `ZFSet` is a single type whose every element is itself a `ZFSet`, and membership is a relation `ZFSet → ZFSet → Prop`, the formal $`\in`.
+The whole chapter's universe of sets is this one type.
+
+```lean
+example (x y : ZFSet) : Prop := x ∈ y
+```
+
+Extensionality is the theorem `ZFSet.ext`: two sets with the same elements are equal.
+Prove it from the hypothesis that $`x` and $`y` have exactly the same members.
+
+```lean
+example (x y : ZFSet) (h : ∀ z : ZFSet, z ∈ x ↔ z ∈ y) : x = y := by
+  sorry
+```
+
+## The axioms of ZFC
+
+Every set-building axiom is a concrete operation on `ZFSet`: the empty set `ZFSet.empty`, pairing `{x, y}`, union `ZFSet.sUnion`, power set `ZFSet.powerset`, the comprehension schema `ZFSet.sep` (which builds $`\{x \in X \mid \phi(x)\}`), the replacement schema `ZFSet.image`, and the axiom of infinity's witness `ZFSet.omega`.
+
+```lean
+example : ZFSet := ZFSet.empty
+example (x y : ZFSet) : ZFSet := ({x, y} : ZFSet)
+example (x : ZFSet) : ZFSet := ZFSet.sUnion x
+example (x : ZFSet) : ZFSet := ZFSet.powerset x
+example (p : ZFSet → Prop) (x : ZFSet) : ZFSet := ZFSet.sep p x
+example : ZFSet := ZFSet.omega
+```
+
+Each axiom is accompanied by a membership lemma spelling out what its elements are.
+
+```lean
+example (x y : ZFSet) : y ∈ ZFSet.powerset x ↔ y ⊆ x := ZFSet.mem_powerset
+example (x y : ZFSet) : y ∈ ZFSet.sUnion x ↔ ∃ z ∈ x, y ∈ z := ZFSet.mem_sUnion
+example (p : ZFSet → Prop) (x y : ZFSet) :
+    y ∈ ZFSet.sep p x ↔ y ∈ x ∧ p y := ZFSet.mem_sep
+```
+
+Foundation is not a construction but a theorem about the type, and it delivers the promised consequence that no set contains itself.
+Prove it using `ZFSet.mem_irrefl`.
+
+```lean
+example (x : ZFSet) : x ∉ x := by
+  sorry
+```
+
+## Encoding
+
+An ordered pair $`(x, y) = \{\{x\}, \{x, y\}\}` is `ZFSet.pair`, and the natural numbers live inside `ZFSet.omega`, which by `ZFSet.omega_zero` contains $`0 = \varnothing`.
+
+```lean
+example (x y : ZFSet) : ZFSet := ZFSet.pair x y
+example : ∅ ∈ ZFSet.omega := ZFSet.omega_zero
+```
+
+The point of the encoding is that $`(x, y) = (a, b)` exactly when $`x = a` and $`y = b`.
+Prove this using `ZFSet.pair_inj`.
+
+```lean
+example (x y a b : ZFSet) :
+    ZFSet.pair x y = ZFSet.pair a b ↔ x = a ∧ y = b := by
+  sorry
+```
+
+## Choice and well-ordering
+
+Mathlib packages the well-ordering theorem constructively: for any type $`\alpha` there is a relation `WellOrderingRel`, and `WellOrderingRel.isWellOrder` supplies the `IsWellOrder` proof — a well-order out of nothing but the ambient axiom of choice.
+
+```lean
+example (α : Type*) : α → α → Prop := WellOrderingRel
+example (α : Type*) : IsWellOrder α WellOrderingRel :=
+  WellOrderingRel.isWellOrder
+```
+
+A well-ordering has no infinite descending chains, i.e. it is well-founded.
+Extract this `WellFounded` proof from the `IsWellOrder` instance.
+
+```lean
+example (α : Type*) : WellFounded (WellOrderingRel : α → α → Prop) := by
+  sorry
+```
+
+## Sets vs classes
+
+Mathlib's `Class` is literally a `Set ZFSet`, a predicate on sets, and the von Neumann universe $`V` is `Class.univ`.
+A set coerces into the class of things equal to it, keeping `Class` membership and `ZFSet` membership separate through the two types.
+
+```lean
+example : Class := Class.univ
+example (x : ZFSet) : Class := (x : Class)
+```
+
+The theorem that $`V` is a proper class is `Class.univ_notMem_univ`: there is no set of all sets.
+Prove $`V \notin V`.
+
+```lean
+example : Class.univ ∉ Class.univ := by
+  sorry
+```

@@ -3,6 +3,8 @@ import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.SetTheory.Ordinal.Principal
+import Mathlib.Order.OrderIsoNat
 import Mathlib.SetTheory.ZFC.VonNeumann
 import Mathlib.SetTheory.ZFC.Rank
 
@@ -154,12 +156,6 @@ Then there exists a unique ordinal $`\alpha` such that there is a bijection $`\a
 Thus ordinals represent the possible _equivalence classes_ of order types.
 Any time you have a well-ordered set, it is isomorphic to a unique ordinal.
 
-:::aside
-This last theorem is the very definition Mathlib takes: {name}`Ordinal` is the type of _order-isomorphism classes of well-ordered types_, so "every well-order is isomorphic to a unique ordinal" holds by construction rather than as a theorem.
-The transitive-∈-set picture of this chapter and Mathlib's order-type picture are the two standard equivalent presentations; the bridge back to genuine ∈-sets is {name}`ZFSet.rank`, met at the end of the chapter.
-The first infinite ordinal $`\omega` is {name}`Ordinal.omega0`.
-:::
-
 We now formalize the "$`+1`" operation we were doing:
 
 :::DEFINITION
@@ -173,10 +169,6 @@ If $`\lambda` is an ordinal which is neither zero nor a successor ordinal, then 
 
 :::EXAMPLE "Successor and limit ordinals"
 $`7`, $`\omega + 3`, $`\omega \cdot 2 + 2015` are successor ordinals, but $`\omega` and $`\omega \cdot 2` are limit ordinals.
-:::
-
-:::aside
-Mathlib's successor is the general order-successor `Order.succ` (which on ordinals really is $`\alpha \cup \{\alpha\}`), and a limit ordinal is {name}`Order.IsSuccLimit`: an ordinal that is neither zero nor any successor.
 :::
 
 # Ordinals are "tall"
@@ -261,11 +253,6 @@ Similarly, transfinite recursion is often split into cases too.
 
 In both situations, finite induction only does the first two cases, but if we're able to do the third case we can climb above the barrier $`\omega`.
 
-:::aside
-The three-case recursor is Mathlib's {name}`Ordinal.limitRecOn`, and the induction principle is available through the well-foundedness of $`<` on {name}`Ordinal`.
-Every definition in the next section is an instance of it.
-:::
-
 # Ordinal arithmetic
 
 :::PROTOTYPE
@@ -335,11 +322,6 @@ Otherwise: $$`\begin{aligned} \alpha^0 &= 1 \\ \alpha^{\beta + 1} &= \alpha^{\be
 Verify that $`2^\omega = \omega`.
 :::
 
-:::aside
-Mathlib puts all three operations on {name}`Ordinal` — addition, multiplication, and exponentiation — as the notations `+`, `*`, `^`, defined by exactly these recursions (the power is named `opow` in lemma names to disambiguate it).
-Their non-commutativity is a fact of life there too, so the multiplicative structure is a {name}`Monoid`, never a `CommMonoid`.
-:::
-
 # The hierarchy of sets
 
 We now define the *von Neumann Hierarchy* by transfinite recursion.
@@ -389,10 +371,6 @@ Since it is a set of ordinals, it is bounded.
 So there is some large ordinal $`\alpha` such that $`y \in V_\alpha` for all $`y \in x`, i.e. $`x \subseteq V_\alpha`, so $`x \in V_{\alpha + 1}`.
 :::
 
-:::aside
-The hierarchy is {name}`ZFSet.vonNeumann` (with notation `V_`), and the rank function is {name}`ZFSet.rank`; the completeness theorem — that every set has a rank — is the fact making `rank` total.
-:::
-
 :::figure "figures/set-theory/vonneumann-universe.svg"
 The von Neumann hierarchy: $`V` is built in layers $`V_0 = \varnothing \subseteq V_1 \subseteq V_2 \subseteq \dots` indexed by the ordinals.
 :::
@@ -432,3 +410,131 @@ For example, if $`a_2 = 11` we have $$`\begin{aligned} a_2 &= 2^{3} + 2 + 1 = 2^
 and so on.
 Prove that $`a_N = 0` for some integer $`N > 2`.
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Definition of an ordinal
+
+Rather than the transitive-∈-set picture of this chapter, `Ordinal` is built as the type of order-isomorphism classes of well-ordered types.
+The two presentations are equivalent, and this one makes "every well-order is isomorphic to a unique ordinal" true by construction: `Ordinal.type` takes a well-order to the ordinal it represents.
+
+```lean
+recall Ordinal.type {α : Type u} (r : α → α → Prop) [IsWellOrder α r] : Ordinal
+```
+
+The first infinite ordinal $`\omega` is `Ordinal.omega0`.
+
+```lean
+recall Ordinal.omega0 : Ordinal
+```
+
+The successor $`\alpha + 1 = \alpha \cup \{\alpha\}` is the general order-successor `Order.succ`, which on ordinals really is $`\alpha + 1`, and a limit ordinal is `Order.IsSuccLimit`: neither zero nor any successor.
+
+```lean
+example (a : Ordinal) : Order.succ a = a + 1 := Order.succ_eq_add_one a
+
+example (a : Ordinal) : Prop := Order.IsSuccLimit a
+```
+
+The chapter lists $`\omega` among the limit ordinals.
+Confirm it: $`\omega` is neither zero nor a successor.
+
+```lean
+example : Order.IsSuccLimit Ordinal.omega0 := by
+  sorry
+```
+
+## Ordinals are "tall"
+
+Because $`\operatorname{On}` is a proper class, there is no largest ordinal: past every ordinal there is a strictly greater one, namely its successor.
+
+```lean
+example (α : Ordinal) : ∃ β, α < β := by
+  sorry
+```
+
+## Transfinite induction and recursion
+
+The three-case recursor is `Ordinal.limitRecOn`: to define something at every ordinal it is enough to give the zero case, the successor step, and the limit step.
+
+```lean
+recall Ordinal.limitRecOn {motive : Ordinal → Sort u} (o : Ordinal)
+    (zero : motive 0) (succ : ∀ o, motive o → motive (o + 1))
+    (isSuccLimit :
+      ∀ o, Order.IsSuccLimit o → (∀ o' < o, motive o') → motive o) :
+    motive o
+```
+
+The matching induction principle comes from the well-foundedness of $`<` on `Ordinal`: to prove $`P(\alpha)` for all $`\alpha` it suffices to prove $`P(\beta)` assuming $`P(\alpha)` for every $`\alpha < \beta`.
+
+```lean
+example (p : Ordinal → Prop) (i : Ordinal)
+    (h : ∀ j, (∀ k, k < j → p k) → p j) : p i := WellFoundedLT.induction i h
+```
+
+The important exercise was to convince yourself there are no infinite descending chains of ordinals.
+That is exactly this well-foundedness: no sequence can strictly decrease forever.
+
+```lean
+example : ¬ ∃ f : ℕ → Ordinal, ∀ n, f (n + 1) < f n := by
+  sorry
+```
+
+## Ordinal arithmetic
+
+All three operations live on `Ordinal` as the notations `+`, `*`, `^`, defined by exactly the recursions above.
+Because they are not commutative, the multiplicative structure is only a `Monoid`, never a `CommMonoid`.
+
+```lean
+recall : Monoid Ordinal
+```
+
+The successor clauses of those recursions are theorems here.
+
+```lean
+example (a : Ordinal) : a + 0 = a := add_zero a
+
+example (a b : Ordinal) : a + (b + 1) = (a + b) + 1 := (add_assoc a b 1).symm
+
+example (a b : Ordinal) : a * (b + 1) = a * b + a := mul_add_one a b
+```
+
+Non-commutativity is a fact of life: $`1 + \omega = \omega`, which is not $`\omega + 1`.
+
+```lean
+example : (1 : Ordinal) + Ordinal.omega0 ≠ Ordinal.omega0 + 1 := by
+  rw [Ordinal.one_add_omega0]
+  exact (lt_add_one Ordinal.omega0).ne
+```
+
+The chapter asked you to verify that $`2^\omega = \omega`.
+
+```lean
+example : (2 : Ordinal) ^ Ordinal.omega0 = Ordinal.omega0 := by
+  sorry
+```
+
+## The hierarchy of sets
+
+Back in genuine ∈-sets, the von Neumann hierarchy is `ZFSet.vonNeumann` (with notation `V_ `), and the rank of a set is `ZFSet.rank`; the completeness theorem — every set has a rank — is the fact making `rank` total.
+
+```lean
+recall ZFSet.vonNeumann (o : Ordinal.{u}) : ZFSet.{u}
+
+recall ZFSet.rank : ZFSet.{u} → Ordinal.{u}
+
+example (o : Ordinal) :
+    ZFSet.vonNeumann (o + 1) = (ZFSet.vonNeumann o).powerset :=
+  ZFSet.vonNeumann_add_one o
+```
+
+The rank is what makes the completeness proof go: it strictly increases along membership, so a $`\in`-minimal counterexample cannot exist.
+Show that if $`y \in x` then $`\operatorname{rank}(y) < \operatorname{rank}(x)`.
+
+```lean
+example (x y : ZFSet) (h : y ∈ x) : ZFSet.rank y < ZFSet.rank x := by
+  sorry
+```

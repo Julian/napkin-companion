@@ -25,26 +25,6 @@ We now use the technique of forcing to break the Continuum Hypothesis by choosin
 As I mentioned earlier, one can also build a model where the Continuum Hypothesis is true; this is called the _constructible universe_ $`L`.
 However, I think it's more fun when things break…
 
-:::aside
-Like the previous chapter, the machinery here — generic extensions, cardinal collapse, the constructible universe $`L`, and the independence of CH itself — is beyond Mathlib's library.
-What _is_ formalized is the cardinal-arithmetic backdrop: the aleph function {name}`Cardinal.aleph`, cofinality {name}`Ordinal.cof`, and regularity {name}`Cardinal.IsRegular`.
-So the combinatorial cardinal facts this chapter leans on have Lean counterparts even though the forcing argument that uses them does not.
-:::
-
-The size of the continuum $`\mathfrak{c} = 2^{\aleph_0}` is {name}`Cardinal.continuum`, and that it really is $`2^{\aleph_0}` is {name}`Cardinal.two_power_aleph0`; the first two aleph numbers $`\aleph_0` and $`\aleph_1` are {lean}`aleph 0` and {lean}`aleph 1`, with {name}`Cardinal.aleph_zero` identifying $`\aleph_0` with $`\omega`.
-
-```lean
-example : (2 : Cardinal) ^ ℵ₀ = 𝔠 := two_power_aleph0
-example : aleph 0 = ℵ₀ := aleph_zero
-example : ℵ₀ < ℵ₁ := aleph0_lt_aleph_one
-```
-
-The Continuum Hypothesis is the assertion $`\mathfrak{c} = \aleph_1`, which we can name as a proposition even though it is provable neither in ZFC nor its negation:
-
-```lean
-def ContinuumHypothesis : Prop := continuum.{0} = aleph 1
-```
-
 # Adding in reals
 
 Starting with a _countable_ transitive model $`M`.
@@ -171,15 +151,6 @@ Intuition: in a model $`M`, it's possible that two cardinals which are in biject
 Similarly, it might be the case that some cardinal $`\kappa \in M` is regular, but stops being regular in $`V` because some function $`f \colon \overline\kappa \to \kappa` is cofinal but happened to only exist in $`V`.
 In still other words, "$`\kappa` is a regular cardinal" turns out to be a $`\Pi_1` statement too.
 
-Regularity of a cardinal is {name}`Cardinal.IsRegular`, and both $`\aleph_0` and $`\aleph_1` are regular — the latter is {name}`Cardinal.isRegular_aleph_one` — as is every successor aleph $`\aleph_{o+1}`:
-
-```lean
-example : Cardinal.IsRegular ℵ₀ := isRegular_aleph0
-example : Cardinal.IsRegular ℵ₁ := isRegular_aleph_one
-example (o : Ordinal) : Cardinal.IsRegular (aleph (o + 1)) :=
-  isRegular_aleph_add_one o
-```
-
 Fortunately, each implies the other.
 We quote the following without proof.
 
@@ -263,3 +234,100 @@ Suppose $`M` satisfies the sentence "$`\mathbb{P}` has the $`\kappa`-chain condi
 Show that $`\mathbb{P}` preserves regularity greater than or equal to $`\kappa`.
 (Hint: assume not, and take $`\lambda > \kappa` regular in $`M`; if $`f \colon \overline\lambda \to \lambda` is cofinal, use the Possible Values Argument on $`f` to generate a function in $`M` that breaks the cofinality of $`\lambda`.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+:::aside
+Like the previous chapter, the machinery here — generic extensions, cardinal collapse, the constructible universe $`L`, and the independence of CH itself — is beyond Mathlib's library.
+What _is_ formalized is the cardinal-arithmetic backdrop: the aleph function {name}`Cardinal.aleph`, cofinality {name}`Ordinal.cof`, and regularity {name}`Cardinal.IsRegular`.
+So the combinatorial cardinal facts this chapter leans on have Lean counterparts even though the forcing argument that uses them does not.
+:::
+
+## The continuum and the aleph numbers
+
+The size of the continuum $`\mathfrak{c} = 2^{\aleph_0}` is {name}`Cardinal.continuum`, and that it really is $`2^{\aleph_0}` is {name}`Cardinal.two_power_aleph0`; the first two aleph numbers $`\aleph_0` and $`\aleph_1` are {lean}`aleph 0` and {lean}`aleph 1`, with {name}`Cardinal.aleph_zero` identifying $`\aleph_0` with $`\omega`.
+
+```lean
+example : (2 : Cardinal) ^ ℵ₀ = 𝔠 := two_power_aleph0
+example : aleph 0 = ℵ₀ := aleph_zero
+example : ℵ₀ < ℵ₁ := aleph0_lt_aleph_one
+```
+
+The Continuum Hypothesis is the assertion $`\mathfrak{c} = \aleph_1`, which we can name as a proposition even though it is provable neither in ZFC nor its negation:
+
+```lean
+def ContinuumHypothesis : Prop := continuum.{0} = aleph 1
+```
+
+Only one direction of that equality is a theorem of ZFC: the continuum is always at least $`\aleph_1`, since $`\aleph_1` is the very next cardinal past $`\aleph_0`.
+Prove this provable half, $`\aleph_1 \le \mathfrak{c}`.
+
+```lean
+example : ℵ₁ ≤ 𝔠 := by
+  sorry
+```
+
+## Adding in reals
+
+A generic branch $`G \colon \omega \to 2` encodes one real number, and each $`G_\alpha` was read off as a subset of $`\mathbb{N}`.
+The type of all such subsets $`\mathcal{P}(\mathbb{N})` has cardinality exactly $`\mathfrak{c}`.
+
+```lean
+example : #(Set ℕ) = 𝔠 := mk_set_nat
+```
+
+The branches themselves are the functions $`\omega \to 2`, of which there are again $`2^{\aleph_0} = \mathfrak{c}` many.
+Show that the type of binary branches has size continuum.
+
+```lean
+example : #(ℕ → Bool) = 𝔠 := by
+  sorry
+```
+
+## The countable chain condition
+
+The countable chain condition asks that every strong antichain be countable, and "countable" is exactly "cardinality below $`\aleph_1`": a cardinal lies below $`\aleph_1` precisely when it is at most $`\aleph_0`.
+
+```lean
+example (c : Cardinal) : c < ℵ₁ ↔ c ≤ ℵ₀ := lt_aleph_one_iff
+```
+
+Rephrase this as the statement that a set is countable exactly when its cardinality is below $`\aleph_1`.
+
+```lean
+example {α : Type} (s : Set α) : s.Countable ↔ #s < ℵ₁ := by
+  sorry
+```
+
+## Preserving cardinals
+
+Regularity of a cardinal is {name}`Cardinal.IsRegular`, and both $`\aleph_0` and $`\aleph_1` are regular — the latter is {name}`Cardinal.isRegular_aleph_one` — as is every successor aleph $`\aleph_{o+1}`:
+
+```lean
+example : Cardinal.IsRegular ℵ₀ := isRegular_aleph0
+example : Cardinal.IsRegular ℵ₁ := isRegular_aleph_one
+example (o : Ordinal) : Cardinal.IsRegular (aleph (o + 1)) :=
+  isRegular_aleph_add_one o
+```
+
+The forcing above adds $`\aleph_2` many reals and needs $`\aleph_2` to survive as a regular cardinal.
+Since $`\aleph_2 = \aleph_{1+1}` is a successor aleph, show that it is regular.
+
+```lean
+example : Cardinal.IsRegular (aleph 2) := by
+  sorry
+```
+
+## Infinite combinatorics
+
+The $`\Delta`-system lemma and the strong-antichain combinatorics of $`\operatorname{Add}(\omega, \kappa)` have no counterpart in Mathlib.
+What the argument does use at the cardinal level is that the antichain $`\{ p_\alpha \mid \alpha < \omega_1 \}` is uncountable, i.e. of size at least $`\aleph_1`.
+Show that any cardinal which is not at most $`\aleph_0` is at least $`\aleph_1`.
+
+```lean
+example (c : Cardinal) (h : ¬ c ≤ ℵ₀) : ℵ₁ ≤ c := by
+  sorry
+```
