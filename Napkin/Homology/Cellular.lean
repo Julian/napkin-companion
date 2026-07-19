@@ -3,6 +3,7 @@ import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.Topology.CWComplex.Classical.Basic
+import Mathlib.Data.ZMod.Basic
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Algebra.Category.ModuleCat.Abelian
@@ -111,15 +112,6 @@ where $`\operatorname{Cells}_0(X) = H_0(X^0, \varnothing) = H_0(X^0)` by convent
 So $`\operatorname{Cells}_k(X)` is an abelian group with basis given by the $`k`-cells of $`X`.
 :::
 
-:::aside
-Being free abelian on its $`k`-cells, $`\operatorname{Cells}_k(X)` is modelled by the finitely supported functions from the set $`\sigma` of cells into $`\mathbb{Z}`, whose standard basis {name}`Finsupp.basisSingleOne` sends each cell to its indicator.
-
-```lean
-noncomputable example (σ : Type) : Module.Basis σ ℤ (σ →₀ ℤ) :=
-  Finsupp.basisSingleOne
-```
-:::
-
 Now, using $`\operatorname{Cells}_k = H_k(X^k, X^{k-1})` let's use our long exact sequence and try to string together maps between these.
 Consider the following diagram.
 
@@ -137,16 +129,6 @@ Show that the composition of two adjacent maps $`d_k` is zero.
 So we can read off a sequence of arrows $$`\dots \xrightarrow{d_5} \operatorname{Cells}_4(X) \xrightarrow{d_4} \operatorname{Cells}_3(X) \xrightarrow{d_3} \operatorname{Cells}_2(X) \xrightarrow{d_2} \operatorname{Cells}_1(X) \xrightarrow{d_1} \operatorname{Cells}_0(X) \xrightarrow{d_0} 0.`
 This is a chain complex, called the *cellular chain complex*; as mentioned before all the homology groups are free, but these ones are especially nice because for most reasonable CW complexes, they are also finitely generated (unlike the massive $`C_\bullet(X)` that we had earlier).
 
-:::aside
-Packaged as a {name}`ChainComplex` of $`\mathbb{Z}`-modules, the cellular complex has for each $`i` a homology group {name}`HomologicalComplex.homology`, computed by the very same cycles-modulo-boundaries recipe used for singular homology.
-
-```lean
-noncomputable example (K : ChainComplex (ModuleCat ℤ) ℕ) (i : ℕ) :
-    ModuleCat ℤ :=
-  K.homology i
-```
-:::
-
 The other reason we care is that in fact:
 
 :::THEOREM "Cellular chain complex gives $H_n(X)$"
@@ -155,16 +137,6 @@ The $`k`th homology group of the cellular chain complex is isomorphic to $`H_k(X
 
 :::PROOF
 Follows from the diagram; see the problems.
-:::
-
-:::aside
-Mathlib's CW complexes are the predicate {name}`Topology.CWComplex` on a set, carrying the cells and attaching maps.
-
-```lean
-example {X : Type} [TopologicalSpace X] (C : Set X) [CWComplex C] : Prop := True
-```
-
-The cellular chain complex itself, its identification with singular homology, and the degree/Euler-characteristic machinery of this chapter are not yet part of Mathlib, so the computations here are carried out by hand.
 :::
 
 # Digression: why are the homology groups equal?
@@ -198,16 +170,6 @@ For any finite CW complex $`X` we have $$`\chi(X) = \sum_n (-1)^n \operatorname{
 Thus $`\chi(X)` does not depend on the choice of CW decomposition.
 The numbers $`b_n = \operatorname{rank} H_n(X)` are called the *Betti numbers* of $`X`.
 In fact, we can use this to define $`\chi(X)` for any reasonable space; we are happy because in the (frequent) case that $`X` is a CW complex, the definition coincides with the normal definition of the Euler characteristic.
-
-:::aside
-The rank of a free $`\mathbb{Z}`-module is {name}`Module.finrank`; for the torus the group $`H_1 \cong \mathbb{Z}^2` has Betti number $`b_1 = 2`, and the alternating sum of $`b_0, b_1, b_2 = 1, 2, 1` is the Euler characteristic $`0`.
-
-```lean
-example : Module.finrank ℤ (Fin 2 → ℤ) = 2 := by rw [Module.finrank_pi]; rfl
-
-example : (1 : ℤ) - 2 + 1 = 0 := by ring
-```
-:::
 
 ::::PROOF
 We quote the fact that if $`0 \to A \to B \to C \to D \to 0` is exact then $`\operatorname{rank} B + \operatorname{rank} D = \operatorname{rank} A + \operatorname{rank} C`.
@@ -313,14 +275,6 @@ So we get that $`H_0(X) \cong \mathbb{Z}`, but $$`H_1(X) \cong \mathbb{Z} \oplus
 this time (it is $`\mathbb{Z}^{\oplus 2}` modulo a copy of $`2\mathbb{Z}`).
 Also, $`\ker d_2 = 0`, and so now $`H_2(X) = 0`.
 
-:::aside
-The summand $`\mathbb{Z}/2` of $`H_1` is genuine torsion, absent from the torus: an element like the class $`(0, 1)` is nonzero, yet twice it vanishes.
-
-```lean
-example : (2 : ℕ) • ((0, 1) : ℤ × ZMod 2) = 0 := by decide
-```
-:::
-
 Let us sanity check that this makes sense — that is, there is some cycle that is not a boundary, but when doubled it becomes a boundary.
 Actually, most cycles work; consider a horizontal path across the square.
 
@@ -374,3 +328,91 @@ Show that $$`H_k(\mathbb{RP}^n) \cong \begin{cases} \mathbb{Z} & k = 0 \text{ or
 (Hint: there is one cell of each dimension.
 Show that the degree of $`d_k` is $`\deg(\operatorname{id}) + \deg(-\operatorname{id})`, hence $`d_k` is zero or $`\cdot 2` depending on whether $`k` is even or odd.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Degrees
+
+The degree of a self-map of a sphere is not yet part of Mathlib: it requires the identification $`H_n(S^n) \cong \mathbb{Z}` together with the induced map on homology, neither of which is available here.
+What we can still capture is its algebraic shadow.
+The induced map $`f_\ast \colon H_n(S^n) \to H_n(S^n)` is, after the identification $`H_n(S^n) \cong \mathbb{Z}`, just multiplication by the integer $`\deg f`, and composing two such maps multiplies the constants.
+
+Modelling $`f_\ast` and $`g_\ast` as the multiplication maps $`x \mapsto (\deg f) x` and $`x \mapsto (\deg g) x` on $`\mathbb{Z}`, show that their composite is multiplication by $`(\deg f)(\deg g)` — which is exactly the multiplicativity $`\deg(f \circ g) = \deg(f)\deg(g)`.
+
+```lean
+example (df dg : ℤ) :
+    (fun x : ℤ => df * x) ∘ (fun x : ℤ => dg * x)
+      = fun x : ℤ => df * dg * x := by
+  sorry
+```
+
+## Cellular chain complex
+
+Mathlib's CW complexes are the predicate {name}`Topology.CWComplex` on a set, carrying the cells and attaching maps.
+
+```lean
+example {X : Type} [TopologicalSpace X] (C : Set X) [CWComplex C] : Prop := True
+```
+
+Being free abelian on its $`k`-cells, $`\operatorname{Cells}_k(X)` is modelled by the finitely supported functions from the set $`\sigma` of cells into $`\mathbb{Z}`, whose standard basis {name}`Finsupp.basisSingleOne` sends each cell to its indicator.
+
+```lean
+noncomputable example (σ : Type) : Module.Basis σ ℤ (σ →₀ ℤ) :=
+  Finsupp.basisSingleOne
+```
+
+Packaged as a {name}`ChainComplex` of $`\mathbb{Z}`-modules, the cellular complex has for each $`i` a homology group {name}`HomologicalComplex.homology`, computed by the very same cycles-modulo-boundaries recipe used for singular homology.
+
+```lean
+noncomputable example (K : ChainComplex (ModuleCat ℤ) ℕ) (i : ℕ) :
+    ModuleCat ℤ :=
+  K.homology i
+```
+
+The cellular chain complex itself, its identification with singular homology, and the degree/Euler-characteristic machinery of this chapter are not yet part of Mathlib, so the computations here are carried out by hand.
+
+The chapter asked you to check that the composition of two adjacent maps $`d_k` is zero — the very condition that makes $`\operatorname{Cells}_\bullet(X)` a chain complex.
+In any chain complex the two boundary maps out of adjacent degrees compose to zero.
+
+```lean
+example (K : ChainComplex (ModuleCat ℤ) ℕ) (i j k : ℕ) :
+    K.d i j ≫ K.d j k = 0 := by
+  sorry
+```
+
+## Application: Euler characteristic via Betti numbers
+
+The rank of a free $`\mathbb{Z}`-module is {name}`Module.finrank`; for the torus the group $`H_1 \cong \mathbb{Z}^2` has Betti number $`b_1 = 2`, and the alternating sum of $`b_0, b_1, b_2 = 1, 2, 1` is the Euler characteristic $`0`.
+
+```lean
+example : Module.finrank ℤ (Fin 2 → ℤ) = 2 := by rw [Module.finrank_pi]; rfl
+
+example : (1 : ℤ) - 2 + 1 = 0 := by ring
+```
+
+Reading the ranks of $`H_0, H_1, H_2 \cong \mathbb{Z}, \mathbb{Z}^2, \mathbb{Z}` straight off the free modules, compute the alternating sum $`b_0 - b_1 + b_2` and confirm the torus has Euler characteristic $`0`.
+
+```lean
+example :
+    (Module.finrank ℤ (Fin 1 → ℤ) : ℤ) - Module.finrank ℤ (Fin 2 → ℤ)
+      + Module.finrank ℤ (Fin 1 → ℤ) = 0 := by
+  sorry
+```
+
+## The cellular boundary formula
+
+The summand $`\mathbb{Z}/2` of $`H_1` of the Klein bottle is genuine torsion, absent from the torus: an element like the class $`(0, 1)` is nonzero, yet twice it vanishes.
+
+```lean
+example : (2 : ℕ) • ((0, 1) : ℤ × ZMod 2) = 0 := by decide
+```
+
+Make the torsion precise: show that this class is nonzero and yet is killed by $`2`.
+
+```lean
+example : ((0, 1) : ℤ × ZMod 2) ≠ 0 ∧ (2 : ℕ) • ((0, 1) : ℤ × ZMod 2) = 0 := by
+  sorry
+```

@@ -4,6 +4,8 @@ import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.Algebra.Homology.Homotopy
+import Mathlib.Algebra.Homology.Augment
+import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.AlgebraicTopology.SingularSet
 import Mathlib.AlgebraicTopology.TopologicalSimplex
 import Mathlib.AlgebraicTopology.SingularHomology.Basic
@@ -56,11 +58,6 @@ One usually decorates the edges with arrows, to help keep track of the "order" o
 The singular simplices $`\sigma^0`, $`\sigma^1`, $`\sigma^2` drawn in a space $`X`.
 :::
 
-:::aside
-The standard topological $`n`-simplex is Mathlib's {name}`SimplexCategory.toTop`, the geometric-realization functor sending the abstract simplex $`[n]` to the space $`\Delta^n`.
-Bundling all of the singular simplices of a space into one object is exactly the *singular simplicial set* {name}`TopCat.toSSet`: its $`n`-simplices are precisely the maps $`\Delta^n \to X`.
-:::
-
 Now we're going to do something much like when we were talking about Stokes' theorem: we'll put a boundary $`\partial` operator on the singular $`n`-simplices.
 This will give us a formal linear sums of $`n`-simplices $`\sum_k a_k \sigma_k`, which we call an *$`n`-chain*.
 
@@ -92,17 +89,6 @@ For any chain $`c`, $`\partial(\partial(c)) = 0`.
 :::PROOF
 This is just a matter of writing down a bunch of $`\sum` signs.
 Diligent readers are welcome to try the computation.
-:::
-
-:::aside
-This $`\partial^2 = 0` is what it means to be a *chain complex*, and once the singular chains are packaged as one, Mathlib's {name}`singularChainComplexFunctor` produces it functorially from the space.
-The vanishing itself is the field {name}`HomologicalComplex.d_comp_d`, available for _every_ complex, singular or not.
-
-```lean
-example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
-    (C : ChainComplex V ℕ) (i j k : ℕ) : C.d i j ≫ C.d j k = 0 :=
-  C.d_comp_d i j k
-```
 :::
 
 :::REMARK
@@ -164,11 +150,6 @@ The key point is that we can now define:
 
 :::DEFINITION
 The *$`n`th homology group* $`H_n(X)` is defined as $$`H_n(X) \coloneqq Z_n(X) / B_n(X).`
-:::
-
-:::aside
-For an abstract complex, this cycles-modulo-boundaries recipe is {name}`HomologicalComplex.homology`, and applied to the singular complex it assembles into the functor {name}`singularHomologyFunctor` — Mathlib's $`H_n`, taking a coefficient object and returning a functor from spaces to that category.
-So the whole "$`Z_n / B_n`" story is available, both for a single space and naturally in the space at once.
 :::
 
 :::EXAMPLE "The zeroth homology group"
@@ -327,11 +308,6 @@ Cycles and boundaries are defined in the same way as before.
 
 Obviously, this is just an algebraic generalization of the structure we previously looked at, rid of all its original geometric context.
 
-:::aside
-This abstraction is Mathlib's {name}`HomologicalComplex`, of which {name}`ChainComplex` is the special case whose differential drops the degree by one.
-It is stated over an arbitrary category with zero morphisms, exactly matching "it works in any category, not just abelian groups".
-:::
-
 :::DEFINITION
 A *morphism of chain complexes* (or chain map) $`f \colon A_\bullet \to B_\bullet` is a sequence of maps $`f_n` for every $`n` such that each square with $`\partial_A`, $`f_n`, $`f_{n-1}`, $`\partial_B` commutes.
 Under this definition, the set of chain complexes becomes a category, which we denote $`\mathbf{Cmplx}`.
@@ -371,16 +347,6 @@ We can draw a picture to illustrate this: the maps $`P_n` are diagonal arrows go
 
 :::figure "figures/homology/singular-chain-homotopy.svg"
 The chain homotopy $`P`, whose slanted parallelograms yield $`g - f`; the dotted diagonals do not commute with the other arrows.
-:::
-
-:::aside
-This is precisely Mathlib's {name}`Homotopy`, whose data is exactly a family of degree-raising maps satisfying the displayed identity.
-
-```lean
-example {V : Type*} [Category V] [Preadditive V] {C D : ChainComplex V ℕ}
-    (f g : C ⟶ D) : Type _ :=
-  Homotopy f g
-```
 :::
 
 :::REMARK
@@ -540,3 +506,110 @@ cannot be the identity map on $`S^{n-1}` for any continuous $`F`.
 Use the previous problem to prove that any continuous function $`f \colon D^n \to D^n` has a fixed point.
 (Hint: build $`F` as follows: draw the ray from $`x` through $`f(x)` and intersect it with the boundary $`S^{n-1}`.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Simplices and boundaries
+
+The standard topological $`n`-simplex is Mathlib's {name}`SimplexCategory.toTop`, the geometric-realization functor sending the abstract simplex $`[n]` to the space $`\Delta^n`.
+Bundling all of the singular simplices of a space into one object is exactly the *singular simplicial set* {name}`TopCat.toSSet`: its $`n`-simplices are precisely the maps $`\Delta^n \to X`.
+Assembling the singular chains of a space is {name}`singularChainComplexFunctor`, which produces the singular chain complex functorially from the space.
+
+The property $`\partial^2 = 0` is exactly what it means to be a *chain complex*.
+That vanishing is the field {name}`HomologicalComplex.d_comp_d`, available for _every_ complex, singular or not.
+
+```lean
+example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
+    (C : ChainComplex V ℕ) (i j k : ℕ) : C.d i j ≫ C.d j k = 0 :=
+  C.d_comp_d i j k
+```
+
+The chapter noted that a $`0`-chain has empty boundary, i.e. $`\partial \colon C_0(X) \to 0` is the zero map.
+This is one instance of a differential vanishing whenever the complex shape does not relate its two degrees: a $`\mathbb{N}`-indexed chain complex has its degree drop by one, and nothing sits below degree $`0`.
+Show that the boundary out of degree $`0` is zero.
+
+```lean
+example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
+    (C : ChainComplex V ℕ) (j : ℕ) : C.d 0 j = 0 := by
+  sorry
+```
+
+## The singular homology groups
+
+For an abstract complex, the cycles-modulo-boundaries recipe $`Z_n / B_n` is {name}`HomologicalComplex.homology`.
+Applied to the singular complex it assembles into the functor {name}`singularHomologyFunctor` — Mathlib's $`H_n`, taking a coefficient object and returning a functor from spaces to that category.
+Working over a category with all homology, the $`n`th homology of a chain complex is a genuine object.
+
+```lean
+noncomputable example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
+    [CategoryWithHomology V] (C : ChainComplex V ℕ) (i : ℕ) : V :=
+  C.homology i
+```
+
+A cycle of $`A_n` is sent to a cycle, and a boundary to a boundary, so every chain map $`f \colon A_\bullet \to B_\bullet` induces a map $`f_\ast \colon H_n(A) \to H_n(B)` on homology.
+Produce that induced map from a chain map.
+
+```lean
+noncomputable example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
+    [CategoryWithHomology V] {C D : ChainComplex V ℕ} (f : C ⟶ D) (i : ℕ) :
+    C.homology i ⟶ D.homology i := by
+  sorry
+```
+
+The topological payoff — that $`H_n` is a homotopy-invariant functor on spaces, and concrete computations such as $`H_n(S^m)` — relies on the geometric input (the prism operator, excision) that is not yet packaged in Mathlib for a general space, so the exercises here stay on the chain-complex side, which is complete.
+
+## The homology functor and chain complexes
+
+This abstraction is Mathlib's {name}`HomologicalComplex`, of which {name}`ChainComplex` is the special case whose differential drops the degree by one.
+It is stated over an arbitrary category with zero morphisms, exactly matching "it works in any category, not just abelian groups".
+
+A *chain homotopy* is precisely Mathlib's {name}`Homotopy`, whose data is exactly a family of degree-raising maps satisfying the displayed identity.
+
+```lean
+example {V : Type*} [Category V] [Preadditive V] {C D : ChainComplex V ℕ}
+    (f g : C ⟶ D) : Type _ :=
+  Homotopy f g
+```
+
+Interpreting $`H_n` as a functor $`\mathbf{Cmplx} \to \mathbf{Ab}` is {name}`HomologicalComplex.homologyFunctor`.
+
+```lean
+noncomputable example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
+    [CategoryWithHomology V] (i : ℕ) : ChainComplex V ℕ ⥤ V :=
+  HomologicalComplex.homologyFunctor V _ i
+```
+
+The key proposition was that chain homotopic maps induce the *same* map on homology.
+Given a chain homotopy between $`f` and $`g`, show their induced maps on homology coincide.
+
+```lean
+example {V : Type*} [Category V] [Preadditive V] [CategoryWithHomology V]
+    {C D : ChainComplex V ℕ} (f g : C ⟶ D) (h : Homotopy f g) (i : ℕ) :
+    HomologicalComplex.homologyMap f i =
+      HomologicalComplex.homologyMap g i := by
+  sorry
+```
+
+## More examples of chain complexes
+
+The augmented singular complex $`\widetilde C_\bullet(X)`, which appends a copy of $`\mathbb{Z}` in degree $`-1`, is an instance of Mathlib's {name}`ChainComplex.augment`: it inserts a chosen object below degree $`0` along an augmentation map whose composite with $`\partial` vanishes.
+
+```lean
+noncomputable example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
+    (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0) :
+    ChainComplex V ℕ :=
+  ChainComplex.augment C f w
+```
+
+In the augmented complex, the new differential out of degree $`0` is exactly the augmentation map $`\varepsilon`.
+Show that the boundary $`\widetilde C_0(X) \to \widetilde C_{-1}(X)` of the augmented complex is the augmentation map it was built from.
+
+```lean
+example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
+    (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0) :
+    (ChainComplex.augment C f w).d 1 0 = f := by
+  sorry
+```

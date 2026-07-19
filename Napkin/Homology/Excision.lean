@@ -29,14 +29,6 @@ This allowed us to algebraically make computations on $`H_n(X)`.
 In this chapter, we turn our attention to the long exact sequence associated to the chain complex $$`0 \to C_n(A) \hookrightarrow C_n(X) \twoheadrightarrow C_n(X, A) \to 0.`
 The setup will look a lot like the previous two chapters, except in addition to $`H_n \colon \mathbf{hTop} \to \mathbf{Grp}` we will have a functor $`H_n \colon \mathbf{hPairTop} \to \mathbf{Grp}` which takes a pair $`(X, A)` to $`H_n(X, A)`.
 
-A three-term sequence like the one above is short exact exactly when the left map is injective, the right map is surjective, and the composite kernel-image data is exact in the middle; this is packaged as {name}`CategoryTheory.ShortComplex.ShortExact`, whose three fields are precisely exactness together with $`\mathsf{f}` a monomorphism and $`\mathsf{g}` an epimorphism.
-
-```lean (name := shortExact)
-example {C : Type*} [Category C] [Limits.HasZeroMorphisms C]
-    (S : ShortComplex C) (h : S.ShortExact) :
-    S.Exact ∧ Mono S.f ∧ Epi S.g :=
-  ⟨h.exact, h.mono_f, h.epi_g⟩
-```
 Then, we state (again without proof) the key geometric result, and use this to make deductions.
 
 # Motivation
@@ -104,22 +96,6 @@ Recall that the sequences $$`\dots \to H_n(A) \to H_n(X) \to H_n(X, A) \to H_{n-
 and $$`\dots \to \widetilde H_n(A) \to \widetilde H_n(X) \to H_n(X, A) \to \widetilde H_{n-1}(A) \to \dots`
 are long exact.
 
-Purely algebraically, any short exact sequence of chain complexes produces a connecting map $`\partial \colon H_n(\text{third}) \to H_{n-1}(\text{first})` lowering degree, and the resulting long sequence is exact at every term.
-The connecting map is {name}`CategoryTheory.ShortComplex.ShortExact.δ`, and its exactness at the third term is recorded by {name}`CategoryTheory.ShortComplex.ShortExact.homology_exact₃`.
-
-```lean (name := connecting)
-noncomputable example {C ι : Type*} [Category C] [Abelian C]
-    {c : ComplexShape ι} {S : ShortComplex (HomologicalComplex C c)}
-    (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j) :
-    S.X₃.homology i ⟶ S.X₁.homology j :=
-  hS.δ i j hij
-
-example {C ι : Type*} [Category C] [Abelian C]
-    {c : ComplexShape ι} {S : ShortComplex (HomologicalComplex C c)}
-    (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j) :
-    (ShortComplex.mk _ _ (ShortComplex.ShortExact.comp_δ hS i j hij)).Exact :=
-  hS.homology_exact₃ i j hij
-```
 By the triple long exact sequence problem we even have a long exact sequence $$`\dots \to H_n(B, A) \to H_n(X, A) \to H_n(X, B) \to H_{n-1}(B, A) \to \dots.`
 for $`A \subseteq B \subseteq X`.
 
@@ -139,19 +115,6 @@ Since $`A` is contractible, we have $`\widetilde H_n(A) = 0` for every $`n`.
 For each $`n` there's a segment of the long exact sequence given by $$`\dots \to \underbrace{\widetilde H_n(A)}_{= 0} \to \widetilde H_n(X) \to H_n(X, A) \to \underbrace{\widetilde H_{n-1}(A)}_{= 0} \to \dots.`
 So since $`0 \to \widetilde H_n(X) \to H_n(X, A) \to 0` is exact, this means $`H_n(X, A) \cong \widetilde H_n(X)`.
 :::
-
-The hypothesis on $`A` here is contractibility, meaning $`A` is homotopy equivalent to a one-point space; this is exactly {name}`ContractibleSpace`, which asserts a homotopy equivalence $`A \simeq \ast` valued in $`\mathsf{Unit}` via {name}`ContractibleSpace.hequiv_unit`.
-Contractibility also transports across a homotopy equivalence $`X \simeq Y`, recorded by {name}`ContinuousMap.HomotopyEquiv.contractibleSpace`.
-
-```lean (name := contractible)
-example (X : Type) [TopologicalSpace X] [ContractibleSpace X] :
-    Nonempty (X ≃ₕ Unit) :=
-  ContractibleSpace.hequiv_unit X
-
-example {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
-    [ContractibleSpace Y] (e : X ≃ₕ Y) : ContractibleSpace X :=
-  e.contractibleSpace
-```
 
 In particular, the theorem applies if $`A` is a single point.
 The case $`A = \varnothing` is also worth noting.
@@ -197,11 +160,6 @@ An isomorphism of $`\mathbf{hPairTop}` is a *pair-homotopy equivalence*.
 :::REMARK
 Pair-homotopy equivalence of pairs is the natural generalization of homotopy equivalence of spaces.
 In fact, if $`A = B = \varnothing` then we have $`X` is homotopy equivalent to $`Y` if and only if $`(X, \varnothing)` is pair-homotopy equivalent to $`(Y, \varnothing)`.
-:::
-
-:::aside
-The underlying single-space notion, homotopy equivalence, is Mathlib's {name}`ContinuousMap.HomotopyEquiv` (written `X ≃ₕ Y`).
-The category of pairs $`\mathbf{hPairTop}`, relative singular homology $`H_n(X, A)`, and the excision theorem below are not part of Mathlib's current algebraic-topology library, so this chapter's constructions are described mathematically rather than in code.
 :::
 
 We can do the same song and dance as before with the prism operator to obtain:
@@ -367,3 +325,80 @@ Let $`X \subseteq \mathbb{R}^n` be a subset which is homeomorphic to $`S^{n-1}`.
 Prove that $`\mathbb{R}^n \setminus X` has exactly two path-connected components.
 (Hint: for any $`n`, prove by induction for $`k = 1, \dots, n-1` that (a) if $`X` is a subset of $`S^n` homeomorphic to $`D^k` then $`\widetilde H_i(S^n \setminus X) = 0`; (b) if $`X` is a subset of $`S^n` homeomorphic to $`S^k` then $`\widetilde H_i(S^n \setminus X) = \mathbb{Z}` for $`i = n - k - 1` and $`0` otherwise.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## The long exact sequences
+
+A three-term sequence like the one above is short exact exactly when the left map is injective, the right map is surjective, and the composite kernel-image data is exact in the middle; this is packaged as {name}`CategoryTheory.ShortComplex.ShortExact`, whose three fields are precisely exactness together with $`\mathsf{f}` a monomorphism and $`\mathsf{g}` an epimorphism.
+
+```lean (name := shortExact)
+example {C : Type*} [Category C] [Limits.HasZeroMorphisms C]
+    (S : ShortComplex C) (h : S.ShortExact) :
+    S.Exact ∧ Mono S.f ∧ Epi S.g :=
+  ⟨h.exact, h.mono_f, h.epi_g⟩
+```
+
+Purely algebraically, any short exact sequence of chain complexes produces a connecting map $`\partial \colon H_n(\text{third}) \to H_{n-1}(\text{first})` lowering degree, and the resulting long sequence is exact at every term.
+The connecting map is {name}`CategoryTheory.ShortComplex.ShortExact.δ`, and its exactness at the third term is recorded by {name}`CategoryTheory.ShortComplex.ShortExact.homology_exact₃`.
+
+```lean (name := connecting)
+noncomputable example {C ι : Type*} [Category C] [Abelian C]
+    {c : ComplexShape ι} {S : ShortComplex (HomologicalComplex C c)}
+    (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j) :
+    S.X₃.homology i ⟶ S.X₁.homology j :=
+  hS.δ i j hij
+
+example {C ι : Type*} [Category C] [Abelian C]
+    {c : ComplexShape ι} {S : ShortComplex (HomologicalComplex C c)}
+    (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j) :
+    (ShortComplex.mk _ _ (ShortComplex.ShortExact.comp_δ hS i j hij)).Exact :=
+  hS.homology_exact₃ i j hij
+```
+
+Underlying all of this is the "image lies inside kernel" relation: in any short complex the composite of the two maps vanishes.
+Verify it.
+
+```lean (name := shortComplexZero)
+example {C : Type*} [Category C] [Limits.HasZeroMorphisms C]
+    (S : ShortComplex C) : S.f ≫ S.g = 0 := by
+  sorry
+```
+
+The hypothesis on $`A` here is contractibility, meaning $`A` is homotopy equivalent to a one-point space; this is exactly {name}`ContractibleSpace`, which asserts a homotopy equivalence $`A \simeq \ast` valued in $`\mathsf{Unit}` via {name}`ContractibleSpace.hequiv_unit`.
+Contractibility also transports across a homotopy equivalence $`X \simeq Y`, recorded by {name}`ContinuousMap.HomotopyEquiv.contractibleSpace`.
+
+```lean (name := contractible)
+example (X : Type) [TopologicalSpace X] [ContractibleSpace X] :
+    Nonempty (X ≃ₕ Unit) :=
+  ContractibleSpace.hequiv_unit X
+
+example {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
+    [ContractibleSpace Y] (e : X ≃ₕ Y) : ContractibleSpace X :=
+  e.contractibleSpace
+```
+
+The worked example transported contractibility from $`Y` to $`X` along $`X \simeq Y`.
+Since a homotopy equivalence can be reversed, the same conclusion holds in the other direction: show that if $`X` is contractible then so is $`Y`.
+
+```lean (name := contractibleSymm)
+example {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
+    [ContractibleSpace X] (e : X ≃ₕ Y) : ContractibleSpace Y := by
+  sorry
+```
+
+## The category of pairs
+
+The underlying single-space notion, homotopy equivalence, is Mathlib's {name}`ContinuousMap.HomotopyEquiv` (written `X ≃ₕ Y`).
+The category of pairs $`\mathbf{hPairTop}`, relative singular homology $`H_n(X, A)`, and the excision theorem are not part of Mathlib's current algebraic-topology library, so this chapter's constructions are described mathematically rather than in code.
+
+Homotopy equivalence is reflexive: every space is homotopy equivalent to itself.
+Construct this identity homotopy equivalence.
+
+```lean (name := hequivRefl)
+example (X : Type) [TopologicalSpace X] : X ≃ₕ X := by
+  sorry
+```

@@ -4,6 +4,8 @@ import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+import Mathlib.LinearAlgebra.Dual.Defs
+import Mathlib.LinearAlgebra.Dual.Lemmas
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -40,16 +42,6 @@ So it is a sequence of abelian groups $$`\dots \xrightarrow{\delta} A^{n-1} \xri
 such that $`\delta^2 = 0`.
 Notation-wise, we're now using superscripts, and use $`\delta` rather $`\partial`.
 We define the *cohomology groups* by $$`H^n(A^\bullet) = \ker\left( A^n \xrightarrow{\delta} A^{n+1} \right) / \operatorname{img}\left( A^{n-1} \xrightarrow{\delta} A^n \right).`
-:::
-
-:::aside
-In Mathlib this is {name}`CochainComplex`, the special case of {name}`HomologicalComplex` whose differential _raises_ the degree by one — the mirror image of {name}`ChainComplex`.
-Its cohomology is computed by the very same {name}`HomologicalComplex.homology`.
-
-```lean
-example {V : Type*} [Category V] [Limits.HasZeroMorphisms V] :
-    Type _ := CochainComplex V ℕ
-```
 :::
 
 :::EXAMPLE "de Rham cohomology"
@@ -158,11 +150,6 @@ It turns out that $`\operatorname{Ext}(-, G)` is the so-called *Ext functor*, de
 Let $`H` be an abelian group, and consider a *free resolution* of $`H`, by which we mean an exact sequence $$`\dots \xrightarrow{f_2} F_1 \xrightarrow{f_1} F_0 \xrightarrow{f_0} H \to 0`
 with each $`F_i` free.
 Then we can apply $`\operatorname{Hom}(-, G)` to get a cochain complex which _need not be exact_, and we define $`\operatorname{Ext}(H, G) \coloneqq \ker(f_2^\vee) / \operatorname{img}(f_1^\vee)`; it's a theorem that this doesn't depend on the choice of the free resolution.
-
-:::aside
-Mathlib does have $`\operatorname{Ext}` groups (in `Mathlib.Algebra.Homology.DerivedCategory.Ext`), but they are set up in the general derived-category framework rather than the one-step free-resolution recipe used here, and the universal coefficient theorem itself is not part of the library.
-So the $`\operatorname{Ext}` computations of this chapter are carried out concretely by choosing free resolutions.
-:::
 
 :::LEMMA "Computing the $\\operatorname{Ext}$ functor"
 For any abelian groups $`G`, $`H`, $`H'` we have
@@ -399,3 +386,89 @@ Thus over fields cohomology is the dual of homology.
 :::PROBLEM "$\\mathbb{Z}/2$-cohomology of $\\mathbb{RP}^n$"
 Prove that $$`H^m(\mathbb{RP}^n, \mathbb{Z}/2) \cong \begin{cases} \mathbb{Z} & m = 0, \text{ or } m \text{ is odd and } m = n \\ \mathbb{Z}/2 & 0 < m < n \text{ and } m \text{ is odd} \\ 0 & \text{otherwise}. \end{cases}`
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Cochain complexes
+
+Mathlib's `CochainComplex` is the special case of `HomologicalComplex` whose differential _raises_ the degree by one — the mirror image of `ChainComplex`.
+Fixing an ambient category `V` with a zero morphism, a cochain complex indexed by $`\mathbb{N}` is a term of `CochainComplex V ℕ`.
+
+```lean
+example {V : Type*} [Category V] [Limits.HasZeroMorphisms V] :
+    Type _ := CochainComplex V ℕ
+```
+
+Because the indexing is set up so that consecutive degrees compose to zero, the defining relation $`\delta^2 = 0` holds for any three degrees, recorded as `HomologicalComplex.d_comp_d`.
+Its cohomology is computed by the very same `HomologicalComplex.homology` used for chain complexes.
+
+```lean
+noncomputable example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
+    [CategoryWithHomology V] (A : CochainComplex V ℕ) (n : ℕ) : V :=
+  A.homology n
+```
+
+Show that the differentials of a cochain complex compose to zero.
+
+```lean
+example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
+    (A : CochainComplex V ℕ) (i j k : ℕ) :
+    A.d i j ≫ A.d j k = 0 := by
+  sorry
+```
+
+## Cohomology of spaces
+
+Mathlib does not build the singular cochain complex $`C^\bullet(X; G)` of a topological space, nor the singular cohomology groups $`H^n(X; G)`, so the cohomology of a _space_ has no direct counterpart here.
+What is available is the algebraic engine behind it: dualizing by $`\operatorname{Hom}(-, G)`.
+Over a commutative ring `R` the dual $`\operatorname{Hom}(M, R)` is `Module.Dual R M`, and a linear map $`M \to N` dualizes — reversing direction — to `LinearMap.dualMap`.
+
+```lean
+example (R M N : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] (f : M →ₗ[R] N) :
+    Module.Dual R N →ₗ[R] Module.Dual R M := f.dualMap
+```
+
+Evaluating a dualized functional recovers "evaluate the cochain on the image of the chain": $`f^\vee(g)` sends `x` to $`g(f\,x)`, which is `LinearMap.dualMap_apply`.
+
+```lean
+example (R M N : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] (f : M →ₗ[R] N)
+    (g : Module.Dual R N) (x : M) : f.dualMap g x = g (f x) :=
+  LinearMap.dualMap_apply f g x
+```
+
+The exercise on functoriality asked you to read $`\operatorname{Hom}(-, G)` as a contravariant functor: a composite $`g \circ f` dualizes with the order reversed.
+Prove that dualization is contravariant.
+
+```lean
+example (R M N P : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
+    (f : M →ₗ[R] N) (g : N →ₗ[R] P) :
+    (g.comp f).dualMap = f.dualMap.comp g.dualMap := by
+  sorry
+```
+
+## Universal coefficient theorem
+
+Mathlib does have $`\operatorname{Ext}` groups (in `Mathlib.Algebra.Homology.DerivedCategory.Ext`), but they are set up in the general derived-category framework rather than the one-step free-resolution recipe used here, and the universal coefficient theorem itself is not part of the library.
+The short exact sequence it produces lives, abstractly, in the type of three-term complexes `ShortComplex`.
+
+```lean
+example {V : Type*} [Category V] [Limits.HasZeroMorphisms V] :
+    Type _ := ShortComplex V
+```
+
+Over a field the $`\operatorname{Ext}` term vanishes, so cohomology is exactly the dual of homology — the content of the problem "cohomology over a field is a dual".
+The algebraic fact that makes this an honest isomorphism for finitely generated homology is that a finite-dimensional vector space and its dual have the same dimension.
+Prove it.
+
+```lean
+example (F V : Type*) [Field F] [AddCommGroup V] [Module F V]
+    [FiniteDimensional F V] :
+    Module.finrank F (Module.Dual F V) = Module.finrank F V := by
+  sorry
+```

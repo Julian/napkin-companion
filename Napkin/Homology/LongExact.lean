@@ -4,6 +4,7 @@ import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Homology.ShortComplex.Exact
+import Mathlib.Algebra.Homology.HomologySequence
 import Mathlib.CategoryTheory.Abelian.Basic
 
 open Verso.Genre Manual
@@ -31,16 +32,6 @@ In particular,
 
 (On that note: what do you call a chain complex whose homology groups are all trivial?)
 A short exact sequence is one of the form $`0 \to A \hookrightarrow B \twoheadrightarrow C \to 0`.
-
-:::aside
-Mathlib works with these one degree at a time.
-A three-term complex $`A \to B \to C` is a {name}`CategoryTheory.ShortComplex`, and {name}`CategoryTheory.ShortComplex.Exact` is the predicate that its single spot is exact; {name}`CategoryTheory.ShortComplex.ShortExact` bundles this together with $`A \to B` mono and $`B \to C` epi, exactly the "$`0 \to A \hookrightarrow B \twoheadrightarrow C \to 0`" above.
-
-```lean
-example {C : Type*} [Category C] [Abelian C] (S : ShortComplex C) : Prop :=
-  S.ShortExact
-```
-:::
 
 # Short exact sequences and four examples
 
@@ -121,11 +112,6 @@ The connecting maps $`\partial` weave the grid into a single zigzag long exact s
 :::PROOF
 A very long diagram chase, valid over any abelian category.
 (Alternatively, it's actually possible to use the snake lemma twice.)
-:::
-
-:::aside
-This is one of the anchor theorems of homological algebra in Mathlib.
-From a short exact sequence of homological complexes, the connecting maps $`\partial` and the exactness of the resulting sequence are assembled in `Mathlib.Algebra.Homology.HomologySequence`; the connecting map itself is built from the snake lemma, which lives as {name}`CategoryTheory.ShortComplex.Exact` data for the relevant diagrams.
 :::
 
 :::REMARK
@@ -359,15 +345,6 @@ An exact sequence which splits let us obtain $`B` given $`A` and $`C`.
 In particular, for $`C = \mathbb{Z}` or any free abelian group, condition (b) is necessarily true.
 So, once we obtained the short exact sequence $`0 \to \mathbb{Z} \to \widetilde H_1(X) \to \mathbb{Z} \to 0`, we were done.
 
-:::aside
-The splitting lemma is Mathlib's {name}`CategoryTheory.ShortComplex.Splitting`: a splitting of a short complex is exactly the retraction/section data of clauses (a) and (b), and it exhibits the middle object as the biproduct $`A \oplus C` of clause (c).
-
-```lean
-example {C : Type*} [Category C] [Abelian C] (S : ShortComplex C) : Type _ :=
-  S.Splitting
-```
-:::
-
 :::REMARK
 Unfortunately, not all exact sequences split.
 An example of a short exact sequence which doesn't split is $$`0 \to \mathbb{Z}/2 \xhookrightarrow{\times 2} \mathbb{Z}/4 \twoheadrightarrow \mathbb{Z}/2 \to 0`
@@ -424,3 +401,86 @@ Let $`A \subseteq B \subseteq X` be subspaces.
 Show that there is a long exact sequence $$`\dots \to H_n(B, A) \to H_n(X, A) \to H_n(X, B) \to H_{n-1}(B, A) \to \dots.`
 (Hint: find a new short exact sequence to apply the long-exact-sequence theorem to.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Short exact sequences and four examples
+
+Mathlib works with these one degree at a time.
+A three-term complex $`A \to B \to C` is a {name}`CategoryTheory.ShortComplex`, and {name}`CategoryTheory.ShortComplex.Exact` is the predicate that its single spot is exact.
+
+```lean
+example {C : Type*} [Category C] [Abelian C] (S : ShortComplex C) : Prop :=
+  S.Exact
+```
+
+The predicate {name}`CategoryTheory.ShortComplex.ShortExact` bundles this together with $`A \to B` mono and $`B \to C` epi, exactly the "$`0 \to A \hookrightarrow B \twoheadrightarrow C \to 0`" from the start of the chapter.
+
+```lean
+example {C : Type*} [Category C] [Abelian C] (S : ShortComplex C) : Prop :=
+  S.ShortExact
+```
+
+A short exact sequence bakes in that its first map is injective.
+Extract from `S.ShortExact` the fact that $`A \to B` is a monomorphism.
+
+```lean
+example {C : Type*} [Category C] [Abelian C] (S : ShortComplex C)
+    (hS : S.ShortExact) : Mono S.f := by
+  sorry
+```
+
+## The long exact sequence of homology groups
+
+This is one of the anchor theorems of homological algebra in Mathlib.
+From a short exact sequence of homological complexes, the connecting map $`\partial` is assembled in `Mathlib.Algebra.Homology.HomologySequence` as `ShortComplex.ShortExact.δ`, built from the snake lemma; it sends the homology at $`C_\bullet` in one degree to the homology at $`A_\bullet` in the next.
+
+```lean
+noncomputable example {C ι : Type*} [Category C] [Abelian C]
+    {c : ComplexShape ι}
+    {S : ShortComplex (HomologicalComplex C c)} (hS : S.ShortExact)
+    (i j : ι) (hij : c.Rel i j) : S.X₃.homology i ⟶ S.X₁.homology j :=
+  hS.δ i j hij
+```
+
+Exactness of the resulting sequence is recorded degreewise; `homology_exact₃` is exactness of the stretch $`H_n(B_\bullet) \xrightarrow{g_\ast} H_n(C_\bullet) \xrightarrow{\partial} H_{n-1}(A_\bullet)`.
+
+```lean
+example {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
+    {S : ShortComplex (HomologicalComplex C c)} (hS : S.ShortExact)
+    (i j : ι) (hij : c.Rel i j) :
+    (ShortComplex.mk _ _ (hS.comp_δ i j hij)).Exact :=
+  hS.homology_exact₃ i j hij
+```
+
+Part of that exactness is that consecutive maps compose to zero.
+Show that going $`H_n(B_\bullet) \xrightarrow{g_\ast} H_n(C_\bullet) \xrightarrow{\partial} H_{n-1}(A_\bullet)` is the zero map.
+
+```lean
+example {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
+    {S : ShortComplex (HomologicalComplex C c)} (hS : S.ShortExact)
+    (i j : ι) (hij : c.Rel i j) :
+    HomologicalComplex.homologyMap S.g i ≫ hS.δ i j hij = 0 := by
+  sorry
+```
+
+## The Mayer–Vietoris sequence
+
+The splitting lemma is Mathlib's {name}`CategoryTheory.ShortComplex.Splitting`: a splitting of a short complex is exactly the retraction/section data of clauses (a) and (b), and it exhibits the middle object as the biproduct $`A \oplus C` of clause (c).
+
+```lean
+example {C : Type*} [Category C] [Abelian C] (S : ShortComplex C) : Type _ :=
+  S.Splitting
+```
+
+The section $`s \colon C \to B` of clause (b) is a genuine one-sided inverse to $`g`.
+Show that $`C \xrightarrow{s} B \xrightarrow{g} C` is the identity.
+
+```lean
+example {C : Type*} [Category C] [Abelian C] {S : ShortComplex C}
+    (s : S.Splitting) : s.s ≫ S.g = 𝟙 S.X₃ := by
+  sorry
+```
