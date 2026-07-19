@@ -6,11 +6,13 @@ import Mathlib.LinearAlgebra.Matrix.Notation
 import VersoManual
 
 import Napkin.Meta
+import Napkin.Missing.Quantum
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
 
 open scoped Matrix
 
@@ -496,5 +498,40 @@ Confirm that this space has dimension $`2^{n+1}`, one amplitude per basis string
 example (n : ℕ) :
     Module.finrank ℂ (EuclideanSpace ℂ (Fin (2 ^ (n + 1))))
       = 2 ^ (n + 1) := by
+  sorry
+```
+
+## Measurement
+
+The register of $`n` qubits lives in the Hilbert space `QubitState n`, and a gate is a unitary operator on it — `QuantumGate n`.
+Neither name is in the library; both are recorded in `Napkin.Missing.Quantum` as thin wrappers around `EuclideanSpace ℂ (Fin (2 ^ n))` and `Matrix.unitaryGroup (Fin (2 ^ n)) ℂ`, to be retired the day Mathlib adopts a quantum-computing vocabulary.
+
+```lean
+example : QubitState 2 = EuclideanSpace ℂ (Fin 4) := rfl
+```
+
+Measurement is the one postulate with no Mathlib counterpart at all, so `Napkin.Missing.Quantum` supplies it directly.
+The *Born rule* reads a probability off each amplitude: measuring $`\psi` in the computational basis returns the outcome $`i` with probability $`|\psi_i|^2`, which is `bornProb ψ i`.
+This is a genuine probability distribution exactly when $`\psi` is a unit vector — `Normalized ψ` — in which case the outcome probabilities sum to $`1`.
+
+```lean
+example {n : ℕ} (ψ : QubitState n) (h : Normalized ψ) :
+    ∑ i, bornProb ψ i = 1 :=
+  sum_bornProb_normalized ψ h
+```
+
+A probability is never negative; show that every Born probability is at least $`0`.
+
+```lean
+example {n : ℕ} (ψ : QubitState n) (i : Fin (2 ^ n)) :
+    0 ≤ bornProb ψ i := by
+  sorry
+```
+
+No single outcome can be more likely than certain: for a normalized state, the probability of any one basis string is at most $`1` — it is one term of a sum of nonnegative numbers that totals $`1`.
+
+```lean
+example {n : ℕ} (ψ : QubitState n) (h : Normalized ψ)
+    (i : Fin (2 ^ n)) : bornProb ψ i ≤ 1 := by
   sorry
 ```
