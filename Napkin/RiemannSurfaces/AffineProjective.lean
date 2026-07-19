@@ -6,11 +6,16 @@ import Napkin.Meta.Citations
 import Mathlib.LinearAlgebra.Projectivization.Basic
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.Analysis.Calculus.Implicit
+import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
+import Mathlib.Algebra.MvPolynomial.PDeriv
+import Mathlib.Analysis.Complex.Basic
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+
+open MvPolynomial
 
 set_option pp.rawOnError true
 
@@ -83,9 +88,6 @@ In fact, more is true: with the same notation,
 - if $`\frac{\partial f}{\partial y} \neq 0` at $`(x, y)`, then near $`(x, y)`, $`X` can be parametrized as $`y = h(x)` for some analytic $`h`.
 
 This is the implicit function theorem.
-
-In Mathlib, the implicit function theorem lives in `Mathlib.Analysis.Calculus.Implicit`.
-The bundled-data version `ImplicitFunctionData.implicitFunction` lets the user choose a complement; the unbundled `HasStrictFDerivAt.implicitFunction` packages the textbook statement: if $`f \colon E \to F` has strict derivative $`f'` at $`a` whose range is the whole codomain, then there is a function $`g` with $`g(f(a), 0) = a` defined and smooth on a neighborhood, and $`f \circ g(\cdot, 0)` is locally the identity.
 
 :::EXERCISE
 Check the smoothness criterion on the circle $`x^2 + y^2 = 1` at the points $`(0, 1)` and $`(1, 0)`.
@@ -192,16 +194,6 @@ As you might have guessed by the name: as a set of points, $`\mathbb{CP}^1` is t
 
 As a topological complex manifold, fortunately, it is still easy — $`\mathbb{C}^2 \setminus \{0\}` has a natural topology, and $`\mathbb{CP}^1` gets the quotient topology.
 
-:::aside
-The Mathlib formalization of $`\mathbb{P}(V)` for a vector space $`V` over a field $`K` is `Projectivization K V` in `Mathlib.LinearAlgebra.Projectivization.Basic`, defined as the quotient of $`\{v \in V \mid v \neq 0\}` by scalar equivalence.
-The standard projective line $`\mathbb{CP}^1` is `Projectivization ℂ (ℂ × ℂ)` (more commonly `ℙ ℂ (Fin 2 → ℂ)`).
-
-```lean
-recall Projectivization
-    (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V] : Type _
-```
-:::
-
 :::EXERCISE
 Define the topology on the space $`\mathbb{RP}^1` analogously.
 :::
@@ -257,16 +249,6 @@ Convince yourself that this complex manifold structure is the correct one.
 Then, a projective plane curve $`X` is defined to be the set of points $`(x, y, z)` such that $`f(x, y, z) = 0` — again, satisfying certain smoothness and connectedness conditions.
 Unfortunately, if the polynomial were e.g. $`f(x, y, z) = x - 1`, it will not be well-defined, as $`f(1, 0, 0) = 0` but $`f(2, 0, 0) = 1`.
 So we require that $`f` is *homogeneous* — that way, $`f(x, y, z)` is still not well-defined, but at least we know whether $`f(x, y, z) = 0`.
-
-:::aside
-Mathlib's notion lives in `Mathlib.RingTheory.MvPolynomial.Homogeneous`: `MvPolynomial.IsHomogeneous φ n` says that the multivariate polynomial $`\varphi` has every monomial of total degree exactly $`n`.
-
-```lean
-recall MvPolynomial.IsHomogeneous
-    {σ : Type*} {R : Type*} [CommSemiring R]
-    (φ : MvPolynomial σ R) (n : ℕ) : Prop
-```
-:::
 
 The complex structure on a projective plane curve is similarly defined by the universal property.
 
@@ -338,3 +320,123 @@ This is the geometric content of the homogenization $`f \rightsquigarrow g` we u
 
 The example $`x^2 - y^2 = 0` from the start of the chapter has a *node* at the origin: locally it is two smooth branches crossing transversally.
 Nodes are the simplest kind of singularity a plane curve can have, and there is a general theory of resolving such singularities to recover a (nonsingular) Riemann surface; we mention this only for orientation.
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Affine plane curves
+
+A polynomial in two variables over $`\mathbb{C}` is `MvPolynomial (Fin 2) ℂ`, and its zero set is the corresponding subset of the complex plane $`\mathbb{C} \times \mathbb{C}`.
+Taking the circle $`z^2 + w^2 = 1` as our running example, we can describe the locus both as a subset and as the polynomial cutting it out.
+
+```lean
+example : Set (ℂ × ℂ) := {p | p.1 ^ 2 + p.2 ^ 2 = 1}
+
+example :
+    MvPolynomial.eval ![1, 0]
+      (X 0 ^ 2 + X 1 ^ 2 - 1 : MvPolynomial (Fin 2) ℂ) = 0 := by
+  simp
+```
+
+The Jacobian condition is phrased with partial derivatives, which are `MvPolynomial.pderiv i`.
+Differentiating $`z^2 + w^2 - 1` in the first variable returns $`2z`, exactly as expected.
+
+```lean
+example :
+    pderiv 0 (X 0 ^ 2 + X 1 ^ 2 - 1 : MvPolynomial (Fin 2) ℂ) = 2 * X 0 := by
+  simp [pderiv_X]
+```
+
+The implicit function theorem is `Mathlib.Analysis.Calculus.Implicit`.
+The bundled-data version `ImplicitFunctionData.implicitFunction` lets you choose a complement, while the unbundled `HasStrictFDerivAt.implicitFunction` packages the textbook statement: if $`f \colon E \to F` has strict derivative $`f'` at $`a` whose range is the whole codomain, then there is a function $`g` with $`g(f(a), 0) = a`, defined and smooth on a neighborhood, that locally inverts $`f`.
+That reconstruction property is `implicitFunction_apply_image`.
+
+```lean
+example {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
+    [NormedAddCommGroup F] [NormedSpace ℂ F] [FiniteDimensional ℂ F]
+    {f : E → F} {f' : E →L[ℂ] F} {a : E}
+    (hf : HasStrictFDerivAt f f' a) (hf' : f'.range = ⊤) :
+    hf.implicitFunction f f' hf' (f a) 0 = a :=
+  hf.implicitFunction_apply_image hf'
+```
+
+The exercise asked you to check the smoothness criterion on the circle at $`(1, 0)`.
+Concretely, verify that the partial derivative $`\partial f / \partial z = 2z` does not vanish there, so the circle is smooth at $`(1, 0)`.
+
+```lean
+example :
+    MvPolynomial.eval ![1, 0]
+      (pderiv 0 (X 0 ^ 2 + X 1 ^ 2 - 1 : MvPolynomial (Fin 2) ℂ)) ≠ 0 := by
+  sorry
+```
+
+## The projective line ℂP¹
+
+The projectivization $`\mathbb{P}(V)` of a vector space $`V` over a field $`K` is `Projectivization K V`, the quotient of $`\{v \in V \mid v \neq 0\}` by scalar equivalence.
+The standard projective line $`\mathbb{CP}^1` is `Projectivization ℂ (Fin 2 → ℂ)`.
+
+```lean
+recall Projectivization
+    (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V] : Type _
+
+example : Type := Projectivization ℂ (Fin 2 → ℂ)
+```
+
+The general `Projectivization` carries no topology, so the quotient topology described above is not yet available at this level of generality.
+For the projective line specifically there is the one-point compactification: `OnePoint.equivProjectivization` is the equivalence $`\mathbb{C}_\infty \simeq \mathbb{CP}^1` identifying the projective line with the Riemann sphere, exactly the isomorphism promised in the prose.
+
+```lean
+noncomputable example :
+    OnePoint ℂ ≃ Projectivization ℂ (Fin 2 → ℂ) :=
+  OnePoint.equivProjectivization ℂ
+```
+
+Two nonzero vectors describe the same point of $`\mathbb{CP}^1` exactly when one is a scalar multiple of the other, recorded as `Projectivization.mk_eq_mk_iff'`.
+Use it to confirm that $`(x, y) \sim (\lambda x, \lambda y)`.
+
+```lean
+example (v w : Fin 2 → ℂ) (hv : v ≠ 0) (hw : w ≠ 0) (a : ℂ) (ha : a • w = v) :
+    Projectivization.mk ℂ v hv = Projectivization.mk ℂ w hw := by
+  sorry
+```
+
+## Projective plane curves
+
+Homogeneity is `MvPolynomial.IsHomogeneous φ n`, which says that every monomial of $`\varphi` has total degree exactly $`n`.
+
+```lean
+recall MvPolynomial.IsHomogeneous
+    {σ : Type*} {R : Type*} [CommSemiring R]
+    (φ : MvPolynomial σ R) (n : ℕ) : Prop
+```
+
+The homogenization $`g(x, y, z) = x^3 - x z^2 - y^2 z` of the elliptic curve is homogeneous of degree $`3`.
+It is built up from the generators `isHomogeneous_X` using `IsHomogeneous.pow`, `IsHomogeneous.mul`, and `IsHomogeneous.sub`.
+
+```lean
+example : (X 0 ^ 3 - X 0 * X 2 ^ 2 - X 1 ^ 2 * X 2 :
+    MvPolynomial (Fin 3) ℂ).IsHomogeneous 3 := by
+  have hX : ∀ i : Fin 3, (X i : MvPolynomial (Fin 3) ℂ).IsHomogeneous 1 :=
+    fun i => isHomogeneous_X ℂ i
+  have h0 : (X 0 ^ 3 : MvPolynomial (Fin 3) ℂ).IsHomogeneous 3 := by
+    simpa using (hX 0).pow 3
+  have h1 : (X 0 * X 2 ^ 2 : MvPolynomial (Fin 3) ℂ).IsHomogeneous 3 := by
+    simpa using (hX 0).mul ((hX 2).pow 2)
+  have h2 : (X 1 ^ 2 * X 2 : MvPolynomial (Fin 3) ℂ).IsHomogeneous 3 := by
+    simpa using ((hX 1).pow 2).mul (hX 2)
+  exact (h0.sub h1).sub h2
+```
+
+As a reader exercise, show that the single monomial $`x^2 y` is homogeneous of degree $`3`.
+
+```lean
+example : (X 0 ^ 2 * X 1 : MvPolynomial (Fin 3) ℂ).IsHomogeneous 3 := by
+  sorry
+```
+
+## Nodes of a plane curve
+
+There is no dedicated notion of a *node* or of the resolution of singularities in the installed library, so the discussion above stays informal.
+The transversal crossing at the origin is the failure of the smoothness criterion from the first section: at a node both partial derivatives vanish, so the Jacobian condition that guarantees a chart is not met there.

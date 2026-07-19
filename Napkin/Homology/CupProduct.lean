@@ -3,9 +3,13 @@ import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
+import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.Algebra.Ring.Prod
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
+
+open scoped TensorProduct
 
 open Napkin
 
@@ -134,17 +138,6 @@ A graded (pseudo-)ring $`R` is *anticommutative* if for any homogeneous $`r` and
    This is an *anticommutative ring*.
 
 All four examples have a multiplicative identity.
-:::
-
-:::aside
-Mathlib formalizes graded rings as {name}`GradedRing`, a decomposition $`R = \bigoplus_i R_i` compatible with the multiplication; graded-commutative algebras and the exterior algebra $`\bigwedge^\bullet(V)` of example (c) are instances, the latter as {name}`ExteriorAlgebra` with its $`\mathbb{N}`-grading.
-
-```lean
-example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] :
-    Type _ := ExteriorAlgebra R M
-```
-
-The cohomology ring, cup product, Poincaré duality, and Künneth formula of this chapter are topological constructions that Mathlib does not yet carry, so they are presented here mathematically.
 :::
 
 Returning to $`\Omega^\bullet(M)`, we claim that the wedge product induces a map $`\wedge \colon H_{\mathrm{dR}}^k(M) \times H_{\mathrm{dR}}^\ell(M) \to H_{\mathrm{dR}}^{k+\ell}(M)`, using the Leibniz identity $`d(\alpha \wedge \beta) = (d\alpha) \wedge \beta + (-1)^{|\alpha|}\alpha \wedge (d\beta)` to check that the product of closed forms is closed and the product with an exact form is exact.
@@ -576,3 +569,114 @@ Show that $`S^m \vee S^n` is not a deformation retract of $`S^m \times S^n` for 
 (Hint: assume that $`r \colon S^m \times S^n \to S^m \vee S^n` is such a map.
 Show that the induced map $`H^\bullet(S^m \vee S^n; \mathbb{Z}) \to H^\bullet(S^m \times S^n; \mathbb{Z})` between their cohomology rings is monic.)
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+The cohomology ring, cup product, cross product, Poincaré duality, and Künneth formula of this chapter are topological constructions that Mathlib does not yet carry, so those sections are presented here mathematically only.
+What Mathlib does formalize is the *algebraic* skeleton underneath: graded rings, the exterior algebra $`\bigwedge^\bullet(V)`, product rings, and the tensor products that make the cross product and Künneth formula tick.
+The sections below exercise exactly that skeleton.
+
+## Poincaré duality
+
+Poincaré duality relates the cohomology of a smooth oriented compact manifold to its homology, and neither singular cohomology of a space nor the orientation machinery it needs is available in Mathlib.
+There is nothing to formalize here directly.
+
+## de Rham cohomology
+
+The de Rham complex $`\Omega^\bullet(M) \xrightarrow{d} \Omega^{\bullet+1}(M)` and its cohomology are not carried by Mathlib either, so de Rham's theorem lives entirely in the prose above.
+
+## Graded rings
+
+Mathlib's `GradedRing` records a decomposition $`R = \bigoplus_i R_i` compatible with the multiplication, so that a product of homogeneous pieces lands in the summand of added degree.
+The exterior algebra $`\bigwedge^\bullet(V)` of example (c) is one such graded structure: `ExteriorAlgebra R M` is graded by the exterior powers $`\bigwedge^i M`, written `⋀[R]^i M`.
+
+```lean
+example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] :
+    Type _ := ExteriorAlgebra R M
+
+recall (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] :
+    GradedAlgebra (fun i : ℕ ↦ ⋀[R]^i M)
+```
+
+The anticommutativity from the definition shows up concretely on the degree-one generators $`\iota(m) \in \bigwedge^1 M`.
+Each one squares to zero, mirroring the relation $`\alpha \smile \alpha = 0` seen for the cohomology of a sphere.
+
+```lean
+example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (m : M) :
+    ExteriorAlgebra.ι R m * ExteriorAlgebra.ι R m = 0 :=
+  ExteriorAlgebra.ι_sq_zero m
+```
+
+Show that two degree-one generators anticommute, i.e. $`\iota(x) \wedge \iota(y) = -\iota(y) \wedge \iota(x)`.
+
+```lean
+example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (x y : M) :
+    ExteriorAlgebra.ι R x * ExteriorAlgebra.ι R y
+      = -(ExteriorAlgebra.ι R y * ExteriorAlgebra.ι R x) := by
+  sorry
+```
+
+## Cup products
+
+The cup product $`\smile` on singular cochains, and the graded ring $`H^\bullet(X; R)` it induces, are topological and not present in Mathlib.
+The purely algebraic shadow — an anticommutative graded ring built from exterior powers — is exactly the exterior algebra of the previous section, so there is no separate construction to formalize here.
+
+## Wedge sums
+
+The product pseudo-ring is just the graded version of the ordinary product ring, and Mathlib's `R × S` carries the componentwise ring structure.
+Multiplication and the identity are componentwise on the nose.
+
+```lean
+example (R S : Type*) [CommRing R] [CommRing S] (r r' : R) (s s' : S) :
+    (r, s) * (r', s') = (r * r', s * s') := rfl
+```
+
+Confirm that the multiplicative identity of $`R \times S` is the pair $`(1, 1)`.
+
+```lean
+example (R S : Type*) [CommRing R] [CommRing S] : (1 : R × S) = (1, 1) := by
+  sorry
+```
+
+## Cross product
+
+The cross product $`\times \colon C_m(X) \times C_n(Y) \to C_{m+n}(X \times Y)` fails to be a homomorphism on the product, and the fix in the prose is to route it through the tensor product $`C_m(X) \otimes_{\mathbb{Z}} C_n(Y)`, on which it becomes linear.
+Mathlib's `TensorProduct R M N`, with elementary tensors written `a ⊗ₜ b`, is precisely this construction, and its defining bilinearity is what makes the cross product a homomorphism.
+
+```lean
+example (R M N : Type*) [CommRing R] [AddCommGroup M] [AddCommGroup N]
+    [Module R M] [Module R N] (a b : M) (c : N) :
+    (a + b) ⊗ₜ[R] c = a ⊗ₜ[R] c + b ⊗ₜ[R] c :=
+  TensorProduct.add_tmul a b c
+```
+
+Prove the companion law in the second slot: $`a \otimes (b + c) = a \otimes b + a \otimes c`.
+
+```lean
+example (R M N : Type*) [CommRing R] [AddCommGroup M] [AddCommGroup N]
+    [Module R M] [Module R N] (a : M) (b c : N) :
+    a ⊗ₜ[R] (b + c) = a ⊗ₜ[R] b + a ⊗ₜ[R] c := by
+  sorry
+```
+
+## Künneth formula
+
+The Künneth formula computes $`H^\bullet(X \times Y; R)` as a tensor product of graded rings, and while the cohomology rings are unavailable, the algebraic operation it uses is standard: Mathlib's `A ⊗[R] B` is the tensor product of two `R`-algebras, again an `R`-algebra.
+Its multiplication is componentwise on elementary tensors, exactly the rule $`(a_1 \otimes b_1)(a_2 \otimes b_2) = (a_1 a_2) \otimes (b_1 b_2)` from the definition.
+
+```lean
+example (R A B : Type*) [CommRing R] [CommRing A] [CommRing B]
+    [Algebra R A] [Algebra R B] : Type _ := A ⊗[R] B
+```
+
+Prove that multiplication in $`A \otimes_R B` multiplies the two factors separately.
+
+```lean
+example (R A B : Type*) [CommRing R] [CommRing A] [CommRing B]
+    [Algebra R A] [Algebra R B] (a₁ a₂ : A) (b₁ b₂ : B) :
+    (a₁ ⊗ₜ[R] b₁) * (a₂ ⊗ₜ[R] b₂) = (a₁ * a₂) ⊗ₜ[R] (b₁ * b₂) := by
+  sorry
+```

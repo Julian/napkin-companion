@@ -4,6 +4,9 @@ import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.AlgebraicGeometry.AffineScheme
+import Mathlib.AlgebraicGeometry.Limits
+import Mathlib.AlgebraicGeometry.Over
+import Mathlib.Data.Complex.Basic
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -60,10 +63,6 @@ We will abbreviate $`(\pi, \pi^\sharp) \colon (X, \mathcal{O}_X) \to (Y, \mathca
 
 There is an obvious identity map, and so we can also define isomorphism etc. in the categorical way.
 
-:::aside
-The data "$`\pi` plus $`\pi^\sharp`" is exactly a morphism of the underlying ringed (in fact sheafed) spaces in Mathlib; the map $`\pi^\sharp_U` in the direction $`\mathcal{O}_Y(U) \to \mathcal{O}_X(\pi^{-1}(U))` is the component of a morphism of sheaves, phrased there through the inverse-image sheaf so that all the restriction squares are handled once and for all.
-:::
-
 # Morphisms of ringed spaces via stalks
 
 Unsurprisingly, the sections are clumsier to work with than the stalks, now that we have grown to love localization.
@@ -86,10 +85,6 @@ The analogy is not perfect since the stalks at $`q` and $`p` may be different ri
 
 :::PROOF
 If $`(s, U)` is a germ at $`q`, then $`(\pi^\sharp(s), \pi^{-1}(U))` is a germ at $`p`, and this is a well-defined morphism because of compatibility with restrictions.
-:::
-
-:::aside
-This induced map on stalks is Mathlib's {name}`AlgebraicGeometry.Scheme.Hom.stalkMap`, going $`\mathcal{O}_{Y, \pi(p)} \to \mathcal{O}_{X, p}` — the opposite direction to $`\pi` on points, as a pullback of functions should.
 :::
 
 We already obviously have uniqueness in the following senes.
@@ -136,11 +131,6 @@ Show that this is equivalent to requiring $`(\pi^\sharp_p)(\mathfrak{m}_{Y, q}) 
 
 I don't like this formulation $`(\pi^\sharp)(\mathfrak{m}_{Y, q}) \subseteq \mathfrak{m}_{X, p}` as much since it hides the geometric intuition behind a lot of symbols: that we want the notion of "value at a point" to be preserved in some way.
 
-:::aside
-The "local ring homomorphism" condition is Mathlib's {name}`IsLocalHom` predicate on the stalk maps, and a {name}`AlgebraicGeometry.LocallyRingedSpace` morphism is by definition a sheafed-space morphism all of whose stalk maps are local in this sense.
-A scheme morphism ({name}`AlgebraicGeometry.Scheme.Hom`) is just such a morphism between schemes.
-:::
-
 At this point, we can state the definition of a scheme, and we do so, although we won't really use it for a few more sections.
 
 :::DEFINITION
@@ -150,15 +140,6 @@ A morphism of schemes is just a morphism of locally ringed spaces.
 
 In particular, $`\operatorname{Spec} A` is a scheme (the open neighborhood being the entire space!).
 And so let's start by looking at those.
-
-:::aside
-This is verbatim Mathlib's {name}`AlgebraicGeometry.Scheme`: a {name}`AlgebraicGeometry.LocallyRingedSpace` with a local affine cover.
-The affine scheme attached to a ring is {name}`AlgebraicGeometry.Spec`.
-
-```lean
-noncomputable example (R : CommRingCat) : Scheme := Spec R
-```
-:::
 
 # A few examples of morphisms between affine schemes
 
@@ -328,15 +309,6 @@ I'd expect to see that in huge letters near the definition of scheme.
 How could you miss that out?
 :::
 
-:::aside
-This equivalence is one of the crown jewels of the Mathlib development: {name}`AlgebraicGeometry.AffineScheme.equivCommRingCat` is the categorical equivalence between $`\mathbf{CRing}^{\operatorname{op}}` and the category of affine schemes, with the functor being {name}`AlgebraicGeometry.Spec`.
-
-```lean
-noncomputable example {R S : CommRingCat} (f : R ⟶ S) :
-    Spec S ⟶ Spec R := Spec.map f
-```
-:::
-
 # More examples of scheme morphisms
 
 Now that we have the big hammer, we can talk about examples much more briefly than we did a few sections ago.
@@ -399,10 +371,6 @@ Part (a) follows by combining the distinguished-open basis with the previous the
 Part (b) then follows by noting that if $`U` is an open set, and $`p` is a point in $`U`, then we can take an affine open neighborhood $`\operatorname{Spec} A` at $`p`, and then cover $`U \cap \operatorname{Spec} A` with distinguished open subsets of $`\operatorname{Spec} A` as in (a).
 :::
 
-:::aside
-That a distinguished open is again affine is Mathlib's {name}`AlgebraicGeometry.IsAffineOpen.isLocalization_basicOpen` and friends: the basic open $`D(f)` of an affine scheme is affine with coordinate ring the localization $`A[1/f]`, which is exactly what makes "open subsets are locally affine" go through.
-:::
-
 We now reprise the punctured plane (except $`\mathbb{C}` will be replaced by $`k`).
 We have seen it is an open subset $`U` of $`\operatorname{Spec} k[x, y]`, so it is a scheme.
 
@@ -456,3 +424,165 @@ Given an affine scheme $`X = \operatorname{Spec} R`, show that there is a unique
 :::PROBLEM
 Is the open subset of $`\operatorname{Spec} \mathbb{Z}[x]` obtained by deleting the point $`\mathfrak{m} = (2, x)` isomorphic to some affine scheme?
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Morphisms of ringed spaces via sections
+
+The data "$`\pi` plus $`\pi^\sharp`" is exactly a morphism of the underlying ringed (in fact sheafed) spaces.
+For a morphism of schemes `f : X ⟶ Y`, the component `f.app U` is precisely the ring homomorphism $`\pi^\sharp_U \colon \mathcal{O}_Y(U) \to \mathcal{O}_X(\pi^{-1}(U))`, written from `Γ(Y, U)` to `Γ(X, f ⁻¹ᵁ U)`; phrasing everything through the inverse-image sheaf handles all the restriction squares once and for all.
+
+```lean
+noncomputable example {X Y : Scheme} (f : X ⟶ Y) (U : Y.Opens) :
+    Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U) := f.app U
+```
+
+`Spec` turns a ring homomorphism into a morphism of schemes the opposite way, so that $`\psi \colon B \to A` becomes $`\operatorname{Spec} A \to \operatorname{Spec} B`.
+
+```lean
+noncomputable example {R S : CommRingCat} (f : R ⟶ S) :
+    Spec S ⟶ Spec R := Spec.map f
+```
+
+This assignment is functorial: it sends the identity to the identity, and reverses composition.
+Show both.
+
+```lean
+example (R : CommRingCat) : Spec.map (𝟙 R) = 𝟙 (Spec R) := by
+  sorry
+
+example {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
+    Spec.map (f ≫ g) = Spec.map g ≫ Spec.map f := by
+  sorry
+```
+
+## Morphisms of ringed spaces via stalks
+
+A morphism $`\pi \colon X \to Y` induces `Scheme.Hom.stalkMap`, going $`\mathcal{O}_{Y, \pi(p)} \to \mathcal{O}_{X, p}` — the opposite direction to $`\pi` on points, as a pullback of functions should.
+
+```lean
+noncomputable example {X Y : Scheme} (f : X ⟶ Y) (x : X) :
+    Y.presheaf.stalk (f.base x) ⟶ X.presheaf.stalk x := f.stalkMap x
+```
+
+The induced stalk maps also assemble functorially.
+Show that the identity morphism induces the identity on each stalk, and that a composite induces the (contravariant) composite of stalk maps.
+
+```lean
+example (X : Scheme) (x : X) :
+    (𝟙 X : X ⟶ X).stalkMap x = 𝟙 (X.presheaf.stalk x) := by
+  sorry
+
+example {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+    (f ≫ g).stalkMap x = g.stalkMap (f.base x) ≫ f.stalkMap x := by
+  sorry
+```
+
+## Morphisms of locally ringed spaces
+
+The "local ring homomorphism" condition is `IsLocalHom` on the stalk maps, and a `LocallyRingedSpace` morphism is by definition a sheafed-space morphism all of whose stalk maps are local in this sense.
+A scheme (`AlgebraicGeometry.Scheme`) is a `LocallyRingedSpace` with a local affine cover, and a scheme morphism (`Scheme.Hom`) is just a morphism of locally ringed spaces between schemes; every scheme is in particular a locally ringed space.
+
+```lean
+example (X : Scheme) : LocallyRingedSpace := X.toLocallyRingedSpace
+```
+
+The affine scheme attached to a ring is `Spec`, and $`\operatorname{Spec} A` is a scheme (the open neighborhood being the entire space).
+
+```lean
+noncomputable example (R : CommRingCat) : Scheme := Spec R
+```
+
+Because a scheme morphism preserves values, each stalk map is a local ring homomorphism.
+Confirm this, and confirm that $`\operatorname{Spec} R` really is affine.
+
+```lean
+example {X Y : Scheme} (f : X ⟶ Y) (x : X) : IsLocalHom (f.stalkMap x).hom := by
+  sorry
+
+example (R : CommRingCat) : IsAffine (Spec R) := by
+  sorry
+```
+
+## A few examples of morphisms between affine schemes
+
+The one-point scheme $`\operatorname{Spec} \mathbb{C}` really does have extra endomorphisms: complex conjugation is a ring homomorphism $`\mathbb{C} \to \mathbb{C}`, and applying $`\operatorname{Spec}` to it gives a nonidentity self-map of $`\operatorname{Spec} \mathbb{C}`.
+
+```lean
+noncomputable example : Spec (.of ℂ) ⟶ Spec (.of ℂ) :=
+  Spec.map (CommRingCat.ofHom (starRingEnd ℂ))
+```
+
+More generally, maps $`\operatorname{Spec} S \to \operatorname{Spec} R` are in bijection with ring homomorphisms $`R \to S`, packaged as `Spec.homEquiv`.
+
+```lean
+noncomputable example {R S : CommRingCat} :
+    (Spec S ⟶ Spec R) ≃ (R ⟶ S) := Spec.homEquiv
+```
+
+One direction of that bijection is that $`\operatorname{Spec}` is injective on morphisms: two ring homomorphisms with the same $`\operatorname{Spec}` are equal.
+Prove it.
+
+```lean
+example {R S : CommRingCat} (f g : R ⟶ S)
+    (h : Spec.map f = Spec.map g) : f = g := by
+  sorry
+```
+
+## The big theorem
+
+The equivalence "affine schemes are the opposite of rings" is `AffineScheme.equivCommRingCat`, with the functor being `Spec`.
+
+```lean
+noncomputable example : AffineScheme ≌ CommRingCatᵒᵖ :=
+  AffineScheme.equivCommRingCat
+```
+
+Its concrete shadow is that $`\psi \mapsto \operatorname{Spec} \psi` is a bijection between ring homomorphisms $`R \to S` and scheme morphisms $`\operatorname{Spec} S \to \operatorname{Spec} R`.
+Prove this bijection, then, as an instance of "$`\operatorname{Spec} \mathbb{Z}` is terminal", show every scheme admits a morphism to it.
+
+```lean
+example {R S : CommRingCat} :
+    Function.Bijective (Spec.map : (R ⟶ S) → (Spec S ⟶ Spec R)) := by
+  sorry
+
+example (X : Scheme) : Nonempty (X ⟶ Spec (.of ℤ)) := by
+  sorry
+```
+
+## More examples of scheme morphisms
+
+A *scheme over $`S`* is a scheme equipped with a map $`X \to S`; such data is exactly an object of the slice category over $`S`.
+
+```lean
+example (S X : Scheme) (f : X ⟶ S) : Over S := Over.mk f
+```
+
+Since $`\operatorname{Spec} \mathbb{Z}` is terminal, a "$`\mathbb{Z}`-scheme structure" carries no information: any two morphisms $`X \to \operatorname{Spec} \mathbb{Z}` coincide.
+Prove it.
+
+```lean
+example (X : Scheme) (f g : X ⟶ Spec (.of ℤ)) : f = g := by
+  sorry
+```
+
+## A little bit on non-affine schemes
+
+That a distinguished open is again affine is `IsAffineOpen.isLocalization_basicOpen` and friends: the basic open $`D(f)` of an affine scheme is affine with coordinate ring the localization $`A[1/f]`, which is exactly what makes "open subsets are locally affine" go through.
+
+```lean
+example {X : Scheme} {U : X.Opens} (hU : IsAffineOpen U) (f : Γ(X, U)) :
+    IsLocalization.Away f Γ(X, X.basicOpen f) := hU.isLocalization_basicOpen f
+```
+
+In particular, a distinguished open $`D(f)` of a full affine scheme $`\operatorname{Spec} R` is itself an affine open.
+Show this.
+
+```lean
+example (R : CommRingCat) (f : Γ(Spec R, ⊤)) :
+    IsAffineOpen ((Spec R).basicOpen f) := by
+  sorry
+```

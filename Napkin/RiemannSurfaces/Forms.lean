@@ -36,18 +36,6 @@ The only difference is, as you can observe, $`f(z)` and $`g(z)` returns complex 
 
 The reason why we want to do what we did is simply for convenience — by abuse of notation, let $`z` be the function $`z \mapsto z`, then we want $`dz` to be a $`1`-form that returns the change in $`z`.
 
-:::aside
-Concretely, a $`1`-form in this sense is a smooth assignment, to each point of $`U`, of an $`\mathbb{R}`-linear map from tangent vectors to values — that is, a smooth map `U → ℂ →L[ℝ] ℂ`, with `ℂ →L[ℝ] ℂ` the type of continuous $`\mathbb{R}`-linear maps.
-The two building blocks $`d\operatorname{Re}` and $`d\operatorname{Im}` are `Complex.reCLM` and `Complex.imCLM`, the real and imaginary parts bundled as $`\mathbb{R}`-linear maps:
-
-```lean
-recall Complex.reCLM : ℂ →L[ℝ] ℝ
-recall Complex.imCLM : ℂ →L[ℝ] ℝ
-```
-
-(To match the definition above, compose with the inclusion `Complex.ofRealCLM : ℝ →L[ℝ] ℂ` so that the values land back in $`\mathbb{C}`; then $`\omega_p = f(p) \cdot d\operatorname{Re} + g(p) \cdot d\operatorname{Im}` is literally a linear combination in the normed space `ℂ →L[ℝ] ℂ`.)
-:::
-
 # Visualization of differential forms
 
 Because $`\omega` takes in a point and returns a $`\mathbb{R}`-linear map from the tangent space, the obvious way to visualize it is to draw a quiver diagram — for each point, the value of $`\omega_p(v)` is plotted for vectors $`v`, which we interpret as "if we integrate a curve $`c` in the direction of $`v`, with length approximately the length of $`v`, close to the point $`p`, then the result is approximately the labeled value.
@@ -133,9 +121,6 @@ Intuitively,
 A $`(1, 0)` form $`\omega` is a form such that $`\omega_p(\mathbf{e}_2) = \omega_p(\mathbf{e}_1) \cdot i`.
 :::
 
-The moral is precisely the statement that each value $`\omega_p` is not merely $`\mathbb{R}`-linear but $`\mathbb{C}`-linear: the $`\mathbb{C}`-linear maps `ℂ →L[ℂ] ℂ` sit inside `ℂ →L[ℝ] ℂ` via `ContinuousLinearMap.restrictScalars ℝ`, and a $`(1,0)`-form is exactly a form valued in that image.
-This is the same dichotomy as the Cauchy-Riemann equations: a smooth function is holomorphic exactly when its real derivative `fderiv ℝ f z` is $`\mathbb{C}`-linear, which is what `differentiableAt_iff_restrictScalars` makes precise — and applying it to $`f` itself is how one checks that $`df = f'(z)\,dz` deserves the name.
-
 # Putting the pieces together: 1-forms on a Riemann surface
 
 Unsurprisingly, now we can define a $`1`-form on a Riemann surface.
@@ -177,7 +162,81 @@ This is our first glimpse of a slogan that the next chapter makes precise:
 The number of independent holomorphic $`1`-forms on a compact Riemann surface is its genus — $`0` for the sphere, $`1` for the torus.
 :::
 
-:::aside "Formalization status"
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Differential forms on ℂ
+
+A $`1`-form in this sense is a smooth assignment, to each point of $`U`, of an $`\mathbb{R}`-linear map from tangent vectors to values — that is, a smooth map `U → ℂ →L[ℝ] ℂ`, where `ℂ →L[ℝ] ℂ` is the type of continuous $`\mathbb{R}`-linear maps.
+
+```lean
+example (U : Set ℂ) : Type := U → (ℂ →L[ℝ] ℂ)
+```
+
+The two building blocks $`d\operatorname{Re}` and $`d\operatorname{Im}` are `Complex.reCLM` and `Complex.imCLM`, the real and imaginary parts bundled as $`\mathbb{R}`-linear maps.
+
+```lean
+recall Complex.reCLM : ℂ →L[ℝ] ℝ
+recall Complex.imCLM : ℂ →L[ℝ] ℝ
+```
+
+To match the definition, compose with the inclusion `Complex.ofRealCLM : ℝ →L[ℝ] ℂ` so that the values land back in $`\mathbb{C}`; then $`\omega_p = f(p) \cdot d\operatorname{Re} + g(p) \cdot d\operatorname{Im}` is literally a linear combination in the normed space `ℂ →L[ℝ] ℂ`.
+
+```lean
+recall Complex.ofRealCLM : ℝ →L[ℝ] ℂ
+
+noncomputable example : ℂ →L[ℝ] ℂ := Complex.ofRealCLM.comp Complex.reCLM
+noncomputable example : ℂ →L[ℝ] ℂ := Complex.ofRealCLM.comp Complex.imCLM
+```
+
+These building blocks really do read off the coordinates: `Complex.reCLM` returns the real part and `Complex.imCLM` the imaginary part.
+
+```lean
+example (z : ℂ) : Complex.reCLM z = z.re := rfl
+```
+
+Check that the imaginary building block behaves the same way, and that composing with `Complex.ofRealCLM` genuinely lands the real part back inside $`\mathbb{C}`.
+
+```lean
+example (z : ℂ) : Complex.imCLM z = z.im := by sorry
+
+example (z : ℂ) :
+    (Complex.ofRealCLM.comp Complex.reCLM) z = (z.re : ℂ) := by sorry
+```
+
+## Holomorphic forms
+
+The moral is precisely the statement that each value $`\omega_p` is not merely $`\mathbb{R}`-linear but $`\mathbb{C}`-linear.
+The $`\mathbb{C}`-linear maps `ℂ →L[ℂ] ℂ` sit inside `ℂ →L[ℝ] ℂ` through `ContinuousLinearMap.restrictScalars ℝ`, which forgets the $`\mathbb{C}`-linearity but keeps the underlying function; a $`(1,0)`-form is exactly a form whose values lie in that image.
+
+```lean
+noncomputable example (T : ℂ →L[ℂ] ℂ) : ℂ →L[ℝ] ℂ := T.restrictScalars ℝ
+
+example (T : ℂ →L[ℂ] ℂ) (z : ℂ) : (T.restrictScalars ℝ) z = T z := rfl
+```
+
+This is the same dichotomy as the Cauchy-Riemann equations: a smooth function is holomorphic exactly when its real derivative `fderiv ℝ f z` is $`\mathbb{C}`-linear, i.e. is the `restrictScalars` of some map `ℂ →L[ℂ] ℂ`.
+The lemma `differentiableAt_iff_restrictScalars` makes this precise.
+
+```lean
+example (f : ℂ → ℂ) (x : ℂ) (hf : DifferentiableAt ℝ f x) :
+    DifferentiableAt ℂ f x ↔
+      ∃ g : ℂ →L[ℂ] ℂ, g.restrictScalars ℝ = fderiv ℝ f x :=
+  differentiableAt_iff_restrictScalars ℝ hf
+```
+
+When $`f` is already complex-differentiable, its real derivative is nothing but the `restrictScalars` of its complex derivative — which is exactly the sense in which $`df = f'(z)\,dz`.
+Prove it.
+
+```lean
+example (f : ℂ → ℂ) (x : ℂ) (hf : DifferentiableAt ℂ f x) :
+    fderiv ℝ f x = (fderiv ℂ f x).restrictScalars ℝ := by sorry
+```
+
+## 1-forms on a Riemann surface
+
 On open subsets of $`\mathbb{C}` everything in this chapter can be phrased today, as smooth maps `U → ℂ →L[ℝ] ℂ` and their $`\mathbb{C}`-linear locus, as sketched above.
 The chart-glued objects are another matter: Mathlib has manifold-level *derivatives* (`mfderiv`) but not yet a library of differential forms on manifolds, let alone holomorphic or meromorphic forms on a Riemann surface.
-:::
+So the definitions of this section have no direct counterpart to display yet; what can be exercised is the $`\mathbb{R}`-linear-versus-$`\mathbb{C}`-linear machinery underneath them, above.

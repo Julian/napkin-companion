@@ -11,6 +11,8 @@ import Mathlib.Topology.Algebra.InfiniteSum.Basic
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
+open scoped Manifold Topology
+
 open Napkin
 
 set_option pp.rawOnError true
@@ -32,12 +34,6 @@ For example:
 - For two Riemann surfaces $`X` and $`Y` where $`Y` is compact, any meromorphic function $`f \colon X \to Y` must in fact be holomorphic, i.e. defined everywhere.
 - If $`X` is a compact Riemann surface, then a holomorphic function $`f \colon X \to \mathbb{C}` is constant.
 - In the same setting as above, furthermore we have that if $`g \colon X \to \mathbb{C}` is meromorphic, then the number of zeros of $`g` is equal to the number of poles of $`g`, with multiplicity.
-
-:::aside
-The second of these — sometimes called the "complex Liouville on a compact manifold" theorem — is exactly `MDifferentiable.exists_eq_const_of_compactSpace` in `Mathlib.Geometry.Manifold.Complex`.
-It says that for a compact preconnected complex manifold $`M` with `IsManifold I 1 M` and `I.Boundaryless`, any complex-differentiable map $`f \colon M \to F` into a complex normed space $`F` is the constant function: there exists $`v \in F` with $`f = \mathrm{const}_M v`.
-This generalizes the classical Liouville theorem from $`\mathbb{C}` to any compact connected complex manifold.
-:::
 
 :::REMARK "Why do we have these nice properties?"
 Roughly speaking, $`\mathbb{C}` is not compact — it is isomorphic to the Riemann sphere with a hole removed.
@@ -110,8 +106,6 @@ In completely the same way, we could have defined a topological manifold by:
 
 Here, the $`\phi_i` are "set isomorphisms" and play a similar role as the homeomorphisms; the topological space structure is similarly induced from the patches $`E_i`.
 
-This "structure-on-the-charts induces the manifold's structure" idea is exactly what `IsManifold I n M` packages: the model with corners `I` records what kind of regularity (smooth, $`C^k`, analytic, …) we want the transition maps to enjoy, and the typeclass demands that every chart of the underlying `ChartedSpace` actually agrees with that level of regularity.
-
 :::EXAMPLE "(0, 2) is also a smooth 1-manifold"
 Just as above, the open interval $`(0, 2)` included in $`\mathbb{R}` can also be considered a smooth manifold.
 This time around, $`\phi_1` is the same as above, but
@@ -158,13 +152,9 @@ Each $`\phi_i` is called a *complex chart*, and together they form a *complex at
 We say that the complex atlas gives the Hausdorff space a *complex structure*.
 Thus, in other words, a Riemann surface is a (second-countable, connected, Hausdorff) topological space with a complex structure.
 
-The Mathlib incarnation is to take `IsManifold (𝓘(ℂ, ℂ)) ⊤ X`, where `𝓘(ℂ, ℂ)` is the trivial model with corners (Mathlib's name for the identity model on $`\mathbb{C}`), and the smoothness order $`\top` (denoted `ω` in some files) means "analytic".
-The connectedness, Hausdorff, and second-countability constraints are extra typeclasses one would impose alongside (`PreconnectedSpace X`, `T2Space X`, `SecondCountableTopology X`).
-
 :::aside "Maximal atlas vs. concrete atlas"
 {cite}`ref:miranda` has an alternative definition, by a maximal complex atlas.
 Both definitions are the same, but in practice it's easier to specify finitely many complex charts than infinitely many ones.
-Mathlib's `ChartedSpace` data is the "concrete" atlas; the maximal atlas can always be recovered as `IsManifold.maximalAtlas`.
 :::
 
 A complex chart $`U_i \to E_i` should be thought of as giving a *local coordinate* on $`U_i`.
@@ -187,8 +177,6 @@ such that the *transition maps* $`\phi_{ij}` are analytic functions.
 :::
 
 Of course, a complex $`n`-manifold is naturally a smooth (real) $`2n`-manifold.
-
-The Mathlib statement of "complex $`n`-manifold" is `IsManifold (𝓘(ℂ, ℂ^n)) ω M`, with model space $`E = \mathbb{C}^n`; the underlying $`(2n)`-real structure is recovered automatically because $`\mathbb{C}^n \cong \mathbb{R}^{2n}` as a real normed space.
 
 # Examples of Riemann surfaces
 
@@ -228,8 +216,6 @@ This also explains why the minus sign is needed in $`t \mapsto (\Re t, -\Im t, 1
 We can think of the Riemann sphere as the result of welding two copies of $`\mathbb{C}` together in order to "fill in" the missing point $`\infty`.
 ::::
 
-The Riemann sphere is `OnePoint ℂ` in Mathlib (the one-point compactification of $`\mathbb{C}`); the complex-analytic structure on it comes from the two charts described above, and is captured by `IsManifold (𝓘(ℂ, ℂ)) ω (OnePoint ℂ)`.
-
 In the example above, the local coordinate given by $`\phi_1` is centered at $`S`, and the local coordinate given by $`\phi_2` is centered at $`N`.
 The point $`\phi_1^{-1}(4)` would have local coordinate $`z = 4` under the chart $`\phi_1`, and local coordinate $`t = \frac{1}{4}` under the chart $`\phi_2`.
 
@@ -252,8 +238,6 @@ The complex torus is compact, thus any holomorphic function on $`\mathbb{C}/L` i
 Meromorphic functions are more interesting, and also difficult to construct.
 ::::
 
-The "any holomorphic function is constant" fact about the torus follows immediately from the Liouville-style result above: $`\mathbb{C}/L` is compact and connected, the quotient is locally biholomorphic, and so `MDifferentiable.exists_eq_const_of_compactSpace` instantiates to: every entire function on the torus is constant.
-
 And some non-examples.
 
 :::EXAMPLE "Disjoint union"
@@ -261,3 +245,119 @@ The disjoint union of two Riemann spheres is not a Riemann surface, because it i
 :::
 
 The condition that a Riemann surface must be connected is merely a technical condition such that theorems are nice — we don't lose much by requiring this, because any topological space with a complex structure can be broken down into a disjoint union of Riemann surfaces, one for each connected component.
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Complex structures
+
+The "structure-on-the-charts induces the manifold's structure" idea is exactly what `IsManifold I n M` packages.
+The *model with corners* `I` records what kind of regularity — smooth, $`C^k`, analytic, … — the transition maps must enjoy, while the underlying `ChartedSpace H M` supplies the atlas of charts modelled on `H`.
+The predicate `IsManifold I n M` then demands that every chart is compatible to order `n`.
+
+The model space is always a manifold over its own trivial model with corners `𝓘(ℂ, ℂ)`, at the analytic regularity `ω`.
+So the complex plane $`\mathbb{C}` carries the tautological complex structure.
+
+```lean
+example : IsManifold (𝓘(ℂ, ℂ)) ω ℂ := inferInstance
+
+example : Nonempty (ChartedSpace ℂ ℂ) := ⟨inferInstance⟩
+```
+
+The same reasoning applies over $`\mathbb{R}`: the real line is a manifold over its trivial model.
+Confirm it.
+
+```lean
+example : IsManifold (𝓘(ℝ, ℝ)) ω ℝ := by
+  sorry
+```
+
+## Riemann surfaces
+
+A Riemann surface is `IsManifold (𝓘(ℂ, ℂ)) ω X`, where `𝓘(ℂ, ℂ)` is the trivial model with corners on $`\mathbb{C}`, and the regularity order `ω` means "analytic".
+The connectedness, Hausdorff, and second-countability constraints are recorded separately, as `PreconnectedSpace X`, `T2Space X`, and `SecondCountableTopology X`.
+The concrete atlas is the data of the `ChartedSpace ℂ X`; the maximal atlas is recovered as `IsManifold.maximalAtlas`, and the concrete charts always live inside it.
+
+```lean
+example (X : Type*) [TopologicalSpace X] [ChartedSpace ℂ X]
+    [IsManifold (𝓘(ℂ, ℂ)) ω X] (p : X) :
+    chartAt ℂ p ∈ IsManifold.maximalAtlas (𝓘(ℂ, ℂ)) ω X :=
+  IsManifold.chart_mem_maximalAtlas p
+```
+
+Show that every chart in the concrete atlas is a member of the maximal atlas.
+
+```lean
+example (X : Type*) [TopologicalSpace X] [ChartedSpace ℂ X]
+    [IsManifold (𝓘(ℂ, ℂ)) ω X] :
+    atlas ℂ X ⊆ IsManifold.maximalAtlas (𝓘(ℂ, ℂ)) ω X := by
+  sorry
+```
+
+## Complex manifolds
+
+A complex $`n`-manifold is `IsManifold (𝓘(ℂ, (Fin n → ℂ))) ω M`, with model space $`E = \mathbb{C}^n` realized as `Fin n → ℂ`.
+The underlying real $`(2n)`-dimensional structure comes for free, since $`\mathbb{C}^n \cong \mathbb{R}^{2n}` as a real normed space.
+The model space itself is the first example.
+
+```lean
+example (n : ℕ) : IsManifold (𝓘(ℂ, (Fin n → ℂ))) ω (Fin n → ℂ) := inferInstance
+```
+
+At $`n = 1` this recovers a one-dimensional complex model, i.e. a Riemann-surface chart.
+Confirm it.
+
+```lean
+example : IsManifold (𝓘(ℂ, (Fin 1 → ℂ))) ω (Fin 1 → ℂ) := by
+  sorry
+```
+
+## Examples of Riemann surfaces
+
+The Riemann sphere is the one-point compactification `OnePoint ℂ`, welded from the two stereographic charts described above.
+Mathlib does not currently equip `OnePoint ℂ` with a `ChartedSpace ℂ` or `IsManifold (𝓘(ℂ, ℂ)) ω` structure, so the sphere's complex-manifold instance cannot be exhibited here; only its topology (as the one-point compactification) is available.
+
+The "any holomorphic function on a compact surface is constant" fact is the manifold analogue of Liouville's theorem: `MDifferentiable.exists_eq_const_of_compactSpace` says that a complex-differentiable map from a compact preconnected complex manifold into a complex normed space is the constant function.
+Applied to the complex torus $`\mathbb{C}/L` — compact and connected — this forces every holomorphic function on it to be constant.
+
+```lean
+example {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
+    {M : Type*} [TopologicalSpace M] [ChartedSpace ℂ M]
+    [IsManifold (𝓘(ℂ, ℂ)) 1 M] [CompactSpace M] [PreconnectedSpace M]
+    (f : M → F) (hf : MDifferentiable (𝓘(ℂ, ℂ)) (𝓘(ℂ, F)) f) :
+    ∃ v : F, f = Function.const M v :=
+  hf.exists_eq_const_of_compactSpace
+```
+
+Deduce the "takes equal values" form: a holomorphic function on a compact connected complex manifold agrees at any two points.
+
+```lean
+example {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
+    {M : Type*} [TopologicalSpace M] [ChartedSpace ℂ M]
+    [IsManifold (𝓘(ℂ, ℂ)) 1 M] [CompactSpace M] [PreconnectedSpace M]
+    (f : M → F) (hf : MDifferentiable (𝓘(ℂ, ℂ)) (𝓘(ℂ, F)) f) (a b : M) :
+    f a = f b := by
+  sorry
+```
+
+## Removable singularities
+
+The idea of "filling in the hole" — extending a function across a puncture — is Riemann's removable singularity theorem.
+In its weak form, `Complex.analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt` says that a function differentiable on a punctured neighborhood of a point and merely continuous at the point is in fact analytic there.
+
+```lean
+example {f : ℂ → ℂ} {c : ℂ} (hd : ∀ᶠ z in 𝓝[≠] c, DifferentiableAt ℂ f z)
+    (hc : ContinuousAt f c) : AnalyticAt ℂ f c :=
+  Complex.analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt hd hc
+```
+
+Show the packaged equivalence: on a neighborhood of $`c`, being differentiable off $`c` together with continuity at $`c` is the same as being differentiable on the whole neighborhood.
+
+```lean
+example {f : ℂ → ℂ} {s : Set ℂ} {c : ℂ} (hs : s ∈ 𝓝 c) :
+    DifferentiableOn ℂ f (s \ {c}) ∧ ContinuousAt f c ↔
+      DifferentiableOn ℂ f s := by
+  sorry
+```
