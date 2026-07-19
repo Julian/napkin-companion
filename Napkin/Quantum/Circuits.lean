@@ -2,6 +2,7 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.InnerProductSpace.TensorProduct
 import Mathlib.LinearAlgebra.UnitaryGroup
 import Mathlib.LinearAlgebra.Matrix.Hermitian
+import Mathlib.LinearAlgebra.Matrix.Notation
 import VersoManual
 
 import Napkin.Meta
@@ -10,6 +11,8 @@ open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+
+open scoped Matrix
 
 set_option pp.rawOnError true
 
@@ -52,21 +55,6 @@ Clearly, one can do the same for any other $`f`, and implement this logic into a
 
 :::REMARK
 Since $`x \text{ and } y = \text{not}\bigl((\text{not } x) \text{ or } (\text{not } y)\bigr)`, it follows that in fact, we can dispense with the AND gate.
-:::
-
-A boolean function $`f \colon \{0, 1\}^n \to \{0, 1\}` is a map `(Fin n → Bool) → Bool`, with `Bool` carrying the gate operations under their usual infix names: `&&` for and, `||` for or, `!` for not, and `^^` for xor.
-
-```lean
-example (a b : Bool) : Bool := a && b
-example (a b : Bool) : Bool := a || b
-example (a : Bool) : Bool := !a
-```
-
-The universality theorem above is the existence of disjunctive normal form: every `(Fin n → Bool) → Bool` factors as an `or` of `and`s of inputs and their negations, which the proof writes down explicitly.
-
-:::aside "There is no Mathlib `Circuit` type"
-A "boolean circuit" datatype only earns its keep when the question is about *sizes* of circuits — the content of complexity theory — which Mathlib hasn't formalized.
-So Mathlib reasons about gates as functions, and (below) about quantum gates as linear maps; the universality theorem here is just a structural fact about the function space.
 :::
 
 # Reversible classical logic
@@ -189,19 +177,6 @@ Then for a map $`U \colon V \to V`, the following are equivalent:
 The map $`U` is called *unitary* if it satisfies these equivalent conditions.
 :::
 
-`unitary R` is Mathlib's predicate for "$`u^\dagger u = u u^\dagger = 1`" in any monoid `R` carrying a `StarMul` structure (the dagger); `Matrix.unitaryGroup n α` specializes this to $`n \times n` matrices.
-
-```lean
-recall Matrix.mem_unitaryGroup_iff
-    {n : Type*} [DecidableEq n] [Fintype n]
-    {α : Type*} [CommRing α] [StarRing α]
-    {A : Matrix n n α} :
-    A ∈ Matrix.unitaryGroup n α ↔ A * star A = 1
-```
-
-The norm-preserving formulation is what `LinearIsometryEquiv` captures intrinsically: a `LinearIsometryEquiv` between two inner product spaces is exactly an invertible linear map preserving the norm — and hence, by the polarization identity, preserving the inner product.
-Over a finite-dimensional Hilbert space, the unitary endomorphisms are exactly the `H ≃ₗᵢ[ℂ] H`.
-
 Then
 
 :::MORAL
@@ -255,20 +230,6 @@ Thus, when we input mixed states into our quantum gates, the outputs are often e
   Thus, $`U` is applied when the controlling bit is $`1`, and CNOT is the special case $`U = \sigma_x`.
   As before, we get interesting behavior if the control is mixed.
 ::::::
-
-The Hadamard gate is a concrete unitary on `EuclideanSpace ℂ (Fin 2)`: written as a matrix, with `Matrix.toEuclideanLin` interpreting it as a linear map.
-Because the matrix is real-symmetric its conjugate transpose is itself, so the unitary condition $`H^\dagger H = I` collapses to $`H \cdot H = I` — which one verifies by hand from the matrix above.
-In particular $`H = H^{-1}`.
-
-```lean
-noncomputable def hadamard : Matrix (Fin 2) (Fin 2) ℂ :=
-  ((1 : ℝ) / Real.sqrt 2 : ℂ) • !![1, 1; 1, -1]
-```
-
-The five single-qubit gates we've named — identity, the three Pauli matrices $`\sigma_x, \sigma_y, \sigma_z`, and the Hadamard $`H` — are five points inside `Matrix.unitaryGroup (Fin 2) ℂ`, which has real dimension three.
-The *$`U`-rotation gate* of the example above is just the statement that every element of this group is "some" gate.
-
-A controlled-$`U` gate on $`\mathbb{C}^{\oplus 2} \otimes \mathbb{C}^{\oplus 2}` is the block-diagonal sum of $`I` and $`U` along the first qubit. `TensorProduct.map` and `LinearMap.lTensor` are the Mathlib tools for assembling tensored operators; for $`2 \times 2` work it's often cleaner to write the $`4 \times 4` block matrix directly: $$`\text{C}U = \begin{bmatrix} 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & u_{00} & u_{01} \\ 0 & 0 & u_{10} & u_{11} \end{bmatrix}.`
 
 And now, some more counterintuitive quantum behavior.
 Suppose we try to use CNOT as a copy, with truth table. $$`\begin{array}{|rr|rr|} \hline \text{In} & & \text{Out} & \\ \hline 0 & 0 & 0 & 0 \\ 1 & 0 & 1 & 1 \\ 0 & 1 & 0 & 1 \\ 1 & 1 & 1 & 0 \\ \hline \end{array}`
@@ -344,11 +305,6 @@ Equivalently, perform another $`H` gate (so that $`H |x{+}\rangle = |0\rangle`, 
 Thus for $`n = 1` we only need a single call to the oracle.
 ::::::
 
-:::aside "Formalizing the speed-up"
-The "single call vs. exponentially many calls" gap is a statement about *query complexity*, which isn't really part of Mathlib — there's no abstraction yet for an oracle, the number of times it gets used, or the separation of those uses from the other gates of a circuit.
-What is in scope is the finite-state-vector computation itself: each step is a unitary applied to a vector in a specific finite-dimensional Hilbert space, and the final amplitudes are a linear-algebraic calculation that `EuclideanSpace ℂ (Fin (2 ^ (n + 1)))` is more than equipped to carry out.
-:::
-
 # Problems
 
 :::PROBLEM "Fredkin gate"
@@ -384,3 +340,161 @@ Verify that the quantum Toffoli gate can be implemented using just controlled ro
 
 This was a big surprise to researchers when discovered, because classical reversible logic requires three-bit gates (e.g. Toffoli, Fredkin).
 ::::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Classical logic gates
+
+A boolean function $`f \colon \{0, 1\}^n \to \{0, 1\}` is a map `(Fin n → Bool) → Bool`, with `Bool` carrying the gate operations under their usual infix names: `&&` for and, `||` for or, `!` for not, and `xor` for exclusive or.
+
+```lean
+example (a b : Bool) : Bool := a && b
+example (a b : Bool) : Bool := a || b
+example (a : Bool) : Bool := !a
+example (a b : Bool) : Bool := xor a b
+```
+
+The universality theorem is the existence of disjunctive normal form: every `(Fin n → Bool) → Bool` factors as an `or` of `and`s of inputs and their negations, which the proof writes down explicitly.
+
+:::aside "There is no Mathlib `Circuit` type"
+A "boolean circuit" datatype only earns its keep when the question is about *sizes* of circuits — the content of complexity theory — which Mathlib hasn't formalized.
+So gates are reasoned about as functions, and (below) quantum gates as linear maps; the universality theorem here is just a structural fact about the function space.
+:::
+
+The remark that AND can be dispensed with is the de Morgan identity $`x \text{ and } y = \text{not}((\text{not } x) \text{ or } (\text{not } y))`.
+Prove it as an equation of `Bool`.
+
+```lean
+example (a b : Bool) : (a && b) = !(!a || !b) := by
+  sorry
+```
+
+The NOT gate is its own inverse — the first hint that it is reversible.
+
+```lean
+example (a : Bool) : !(!a) = a := by
+  sorry
+```
+
+## Reversible classical logic
+
+A reversible gate is a bijection of the state space, and the cleanest way to say a two-state involution "undoes itself" is `Function.Involutive`.
+The CNOT gate sends $`(x, y) \mapsto (x, x \oplus y)`, and applying it twice returns the input.
+
+```lean
+def cnot (p : Bool × Bool) : Bool × Bool := (p.1, xor p.1 p.2)
+
+example : Function.Involutive cnot := by
+  rintro ⟨x, y⟩; cases x <;> cases y <;> rfl
+```
+
+Being an involution, CNOT is in particular a bijection — exactly the reversibility condition.
+Prove that CNOT is bijective.
+
+```lean
+example : Function.Bijective cnot := by
+  sorry
+```
+
+The Toffoli gate flips its last bit exactly when both controls are $`1`, i.e. $`(x, y, z) \mapsto (x, y, (x \wedge y) \oplus z)`.
+Show that it, too, is its own inverse.
+
+```lean
+def toffoli (p : Bool × Bool × Bool) : Bool × Bool × Bool :=
+  (p.1, p.2.1, xor (p.1 && p.2.1) p.2.2)
+
+example : Function.Involutive toffoli := by
+  sorry
+```
+
+## Quantum logic gates
+
+`unitary R` is Mathlib's predicate for "$`u^\dagger u = u u^\dagger = 1`" in any monoid `R` carrying a `StarMul` structure (the dagger); `Matrix.unitaryGroup n α` specializes this to $`n \times n` matrices, where membership is exactly $`A \cdot A^\dagger = 1`.
+
+```lean
+recall Matrix.mem_unitaryGroup_iff
+    {n : Type*} [DecidableEq n] [Fintype n]
+    {α : Type*} [CommRing α] [StarRing α]
+    {A : Matrix n n α} :
+    A ∈ Matrix.unitaryGroup n α ↔ A * star A = 1
+```
+
+The norm-preserving formulation is what `LinearIsometryEquiv` captures intrinsically: a `LinearIsometryEquiv` between two inner product spaces is exactly an invertible linear map preserving the norm — and hence, by the polarization identity, preserving the inner product.
+Over a finite-dimensional Hilbert space, the unitary endomorphisms are exactly the `H ≃ₗᵢ[ℂ] H`.
+
+The named single-qubit gates are concrete $`2 \times 2` matrices over $`\mathbb{C}`, written with the `!![...]` notation.
+The Hadamard gate is real-symmetric, so its conjugate transpose is itself and the unitary condition $`H^\dagger H = I` collapses to $`H \cdot H = I`.
+
+```lean
+noncomputable def hadamard : Matrix (Fin 2) (Fin 2) ℂ :=
+  ((1 : ℝ) / Real.sqrt 2 : ℂ) • !![1, 1; 1, -1]
+
+noncomputable def pauliX : Matrix (Fin 2) (Fin 2) ℂ := !![0, 1; 1, 0]
+noncomputable def pauliY : Matrix (Fin 2) (Fin 2) ℂ :=
+  !![0, -Complex.I; Complex.I, 0]
+noncomputable def pauliZ : Matrix (Fin 2) (Fin 2) ℂ := !![1, 0; 0, -1]
+```
+
+Each Pauli matrix squares to the identity — the classical NOT gate $`\sigma_x` is again reversible, and the same holds for $`\sigma_y` and $`\sigma_z`.
+Here is $`\sigma_x^2 = I`, done entry by entry.
+
+```lean
+example : pauliX * pauliX = 1 := by
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    simp [pauliX, Matrix.mul_apply, Fin.sum_univ_two]
+```
+
+The five gates named — identity, the three Pauli matrices $`\sigma_x, \sigma_y, \sigma_z`, and the Hadamard $`H` — are five points inside `Matrix.unitaryGroup (Fin 2) ℂ`, which has real dimension three.
+The *$`U`-rotation gate* is just the statement that every element of this group is "some" gate.
+A controlled-$`U` gate on $`\mathbb{C}^{\oplus 2} \otimes \mathbb{C}^{\oplus 2}` is the block-diagonal sum of $`I` and $`U` along the first qubit; for $`2 \times 2` work it is cleanest to write the $`4 \times 4` block matrix directly: $$`\text{C}U = \begin{bmatrix} 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & u_{00} & u_{01} \\ 0 & 0 & u_{10} & u_{11} \end{bmatrix}.`
+
+Show that $`\sigma_z` also squares to the identity.
+
+```lean
+example : pauliZ * pauliZ = 1 := by
+  sorry
+```
+
+Because $`\sigma_y` is real-antisymmetric with the $`\pm i` off the diagonal, its square uses $`i^2 = -1`; show $`\sigma_y^2 = I` as well.
+
+```lean
+example : pauliY * pauliY = 1 := by
+  sorry
+```
+
+The Hadamard gate is self-adjoint: its conjugate transpose $`H^\dagger` (written `Hᴴ`) equals $`H`, because every entry is real.
+Prove this.
+
+```lean
+example : hadamardᴴ = hadamard := by
+  sorry
+```
+
+Finally, a Pauli matrix really is a quantum gate: it lies in `Matrix.unitaryGroup (Fin 2) ℂ`.
+Since $`\sigma_x` is self-adjoint, its unitarity reduces to $`\sigma_x^2 = I`.
+
+```lean
+example : pauliX ∈ Matrix.unitaryGroup (Fin 2) ℂ := by
+  sorry
+```
+
+## Deutsch-Jozsa algorithm
+
+:::aside "Formalizing the speed-up"
+The "single call vs. exponentially many calls" gap is a statement about *query complexity*, which isn't really part of Mathlib — there's no abstraction yet for an oracle, the number of times it gets used, or the separation of those uses from the other gates of a circuit.
+What is in scope is the finite-state-vector computation itself: each step is a unitary applied to a vector in a specific finite-dimensional Hilbert space, and the final amplitudes are a linear-algebraic calculation that `EuclideanSpace ℂ (Fin (2 ^ (n + 1)))` is more than equipped to carry out.
+:::
+
+The black box $`U_f` acts on $`n + 1` qubits, whose joint state space is `EuclideanSpace ℂ (Fin (2 ^ (n + 1)))`.
+Confirm that this space has dimension $`2^{n+1}`, one amplitude per basis string.
+
+```lean
+example (n : ℕ) :
+    Module.finrank ℂ (EuclideanSpace ℂ (Fin (2 ^ (n + 1))))
+      = 2 ^ (n + 1) := by
+  sorry
+```

@@ -4,6 +4,9 @@ import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Napkin.Meta.Recall
 import Mathlib.Topology.VectorBundle.Basic
+import Mathlib.Topology.VectorBundle.Constructions
+import Mathlib.Analysis.Complex.Basic
+import Mathlib.RingTheory.PicardGroup
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -69,12 +72,6 @@ A line bundle is a set with a line bundle structure, consisting of an analytic s
 :::
 
 The transition maps is simply to weld the pieces of the line bundle together, just like how they welded pieces of a Riemann surface in the chapter on complex structures.
-
-:::aside
-Everything in the definition except the word "analytic" is in Mathlib.
-A line bundle chart is a `Trivialization ℂ π` — a homeomorphism from `π ⁻¹' U` to `U × ℂ` respecting the projection (note Mathlib sides with the "graph paper" convention, base coordinate first, against {cite}`ref:miranda` and this chapter) — and the requirement that the fiberwise transitions be linear in the fiber is the typeclass `VectorBundle ℂ F E`, whose field `continuousOn_coordChange'` also packages the continuity of the scaling factors, there called `Trivialization.coordChangeL`.
-The gap is the last word of the definition: Mathlib's bundles come in topological and smooth flavors, but there is no _holomorphic_ vector bundle yet, and the difference is precisely where all of this chapter's content lives.
-:::
 
 Another definition, we will explain this one later.
 
@@ -298,6 +295,142 @@ A sheaf of modules which is locally free of rank $`1` in this sense is called an
 The name "invertible" comes from the product structure mentioned in the overview: the product of line bundles "adds the twists", the trivial bundle is the identity, and every line bundle has an inverse (twist the other way), so the isomorphism classes form a group — the *Picard group* of $`X`.
 The connection promised with divisors also goes through this group: a divisor $`D` determines the invertible sheaf whose sections over $`U` are the meromorphic functions with $`\operatorname{Div}(f) \geq -D` on $`U` — the sheafy upgrade of the space $`L(D)` from the previous chapter — and linearly equivalent divisors give isomorphic sheaves.
 
-:::aside "Formalization status"
-Mathlib's sheaf theory (`Mathlib.Topology.Sheaves`) is well-developed, and the Picard group exists in its commutative-algebra incarnation — `CommRing.Pic R`, the group of invertible modules over a ring, with `ClassGroup.equivPic` relating it to the class group — but none of it is connected to analytic line bundles over Riemann surfaces, whose Mathlib story stops at the smooth vector bundles mentioned above.
+# Formalization
+
+:::LEANCOMPANION
 :::
+
+## Definition
+
+Everything in the definition except the word *analytic* is present.
+The total space of a bundle over a base $`B` with model fiber $`F` is `Bundle.TotalSpace F E`, and it carries a projection `TotalSpace.proj` sending each point to the base point below it.
+
+```lean
+example (B : Type*) (E : B → Type*) (x : B) (v : E x) :
+    (Bundle.TotalSpace.mk x v : Bundle.TotalSpace ℂ E).proj = x := rfl
+```
+
+A line bundle chart is a `Trivialization ℂ π` — a homeomorphism from `π ⁻¹' U` to `U × ℂ` respecting the projection.
+Mathlib sides with the "graph paper" convention, base coordinate first, against {cite}`ref:miranda` and the convention above.
+
+```lean
+example (B F Z : Type*) [TopologicalSpace B] [TopologicalSpace F]
+    [TopologicalSpace Z] (p : Z → B) : Type _ := Bundle.Trivialization F p
+```
+
+The requirement that the fiberwise transitions be linear in the fiber, together with the continuity of the scaling factors, is packaged by `VectorBundle ℂ F E`; the coordinate change induced by two charts is `Trivialization.coordChangeL`.
+Its model example is the trivial line bundle `Bundle.Trivial B ℂ`, whose fibers are each a single copy of $`\mathbb{C}`.
+
+```lean
+example (B : Type*) [TopologicalSpace B] :
+    VectorBundle ℂ ℂ (Bundle.Trivial B ℂ) := inferInstance
+```
+
+The transition function welding the trivial bundle to itself is the identity — there is no twist.
+
+```lean
+example (B : Type*) [TopologicalSpace B] (b : B) :
+    (Bundle.Trivial.trivialization B ℂ).coordChangeL ℂ
+        (Bundle.Trivial.trivialization B ℂ) b
+      = ContinuousLinearEquiv.refl ℂ ℂ :=
+  Bundle.Trivial.trivialization.coordChangeL (B := B) (F := ℂ) b
+```
+
+The gap is the last word of the definition.
+These bundles come in topological and smooth flavors, but there is no *holomorphic* vector bundle yet, and that difference is precisely where all of this chapter's content lives — so the exercises below stay in the topological world that is present.
+
+The zero section sends each base point to the zero of the fiber above it; check that it does land back over the point it came from.
+
+```lean
+example (B : Type*) [TopologicalSpace B] (x : B) :
+    (Bundle.zeroSection ℂ (Bundle.Trivial B ℂ) x).proj = x := by
+  sorry
+```
+
+A chart respects the projection: reading off the base coordinate of `e z` recovers `p z` on the chart's source.
+
+```lean
+example (B F Z : Type*) [TopologicalSpace B] [TopologicalSpace F]
+    [TopologicalSpace Z] (p : Z → B) (e : Bundle.Trivialization F p) (z : Z)
+    (hz : z ∈ e.source) : (e z).1 = p z := by
+  sorry
+```
+
+## Visualizing a line bundle
+
+The trivial line bundle `Bundle.Trivial ℂ ℂ` really is "graph paper": its total space is just the product $`\mathbb{C} \times \mathbb{C}`, exactly the plane in the pictures.
+
+```lean
+example (B F : Type*) :
+    Bundle.TotalSpace F (Bundle.Trivial B F) ≃ B × F :=
+  Bundle.TotalSpace.toProd B F
+```
+
+The twisted bundle built by welding with a factor of $`z` — the Möbius strip over the Riemann sphere — has no direct expression here, since the holomorphic bundle theory it needs is absent.
+Working inside the identification above instead, check that its first coordinate reads off the base point.
+
+```lean
+example (B F : Type*) (z : Bundle.TotalSpace F (Bundle.Trivial B F)) :
+    (Bundle.TotalSpace.toProd B F z).1 = z.proj := by
+  sorry
+```
+
+## Morphisms between line bundles
+
+A morphism looks locally like $`(s, p) \mapsto (f(p) \cdot s, p)`.
+Fiberwise, over a single point, it is multiplication by the scalar $`f(p)`, that is, a continuous linear map $`\mathbb{C} \to \mathbb{C}`.
+
+```lean
+noncomputable example (c : ℂ) : ℂ →L[ℂ] ℂ :=
+  c • ContinuousLinearMap.id ℂ ℂ
+```
+
+The prose example's fiber maps are $`x \mapsto (\text{multiply by } x^2)`.
+
+```lean
+noncomputable example : ℂ → (ℂ →L[ℂ] ℂ) :=
+  fun x => (x ^ 2) • ContinuousLinearMap.id ℂ ℂ
+```
+
+Such a fiber map is invertible exactly when its scalar is nonzero — the reason the morphism above degenerates at $`x = 0`.
+
+```lean
+example (c : ℂ) (hc : c ≠ 0) :
+    IsUnit (c • ContinuousLinearMap.id ℂ ℂ) := by
+  refine ⟨⟨c • ContinuousLinearMap.id ℂ ℂ,
+    c⁻¹ • ContinuousLinearMap.id ℂ ℂ, ?_, ?_⟩, rfl⟩ <;>
+    ext <;> simp [mul_inv_cancel₀ hc, inv_mul_cancel₀ hc]
+```
+
+The exercise from the section — that $`f(p)` must be nonzero for a morphism to be invertible — is, fiberwise, the statement that a scalar of $`\mathbb{C}` is a unit exactly when it is nonzero.
+
+```lean
+example (c : ℂ) : IsUnit c ↔ c ≠ 0 := by
+  sorry
+```
+
+## Relation to invertible sheaves
+
+The Picard group is present in its commutative-algebra incarnation: `CommRing.Pic R` is the group of invertible modules over a ring $`R`.
+
+```lean
+example (R : Type*) [CommRing R] : Type _ := CommRing.Pic R
+
+noncomputable example (R : Type*) [CommRing R] :
+    CommGroup (CommRing.Pic R) := inferInstance
+```
+
+`ClassGroup.equivPic` relates it to the class group of a domain.
+
+```lean
+noncomputable example (R : Type*) [CommRing R] [IsDomain R] :
+    ClassGroup R ≃* CommRing.Pic R := ClassGroup.equivPic R
+```
+
+None of this is connected to analytic line bundles over Riemann surfaces, whose story stops at the smooth vector bundles above.
+Still, the algebraic Picard group already sees "every line bundle is trivial" over the nicest bases: over $`\mathbb{Z}`, a unique-factorization domain, it collapses to a single element.
+
+```lean
+example : Subsingleton (CommRing.Pic ℤ) := by
+  sorry
+```

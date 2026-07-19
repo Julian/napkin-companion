@@ -8,7 +8,12 @@ import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Algebra.ContinuedFractions.Computation.Basic
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.LinearAlgebra.UnitaryGroup
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.RingTheory.RootsOfUnity.Basic
+import Mathlib.RingTheory.RootsOfUnity.Complex
+import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+import Mathlib.FieldTheory.Finite.Basic
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -43,19 +48,6 @@ Equivalently, one is applying the matrix $$`\frac{1}{N} \begin{bmatrix} 1 & 1 & 
 The reason this operation is important is because it lets us detect if the $`x_i` are periodic.
 More generally, given a sequence of $`1`'s appearing with period $`r`, the amplitudes will peak at inputs which are divisible by $`\frac{N}{\gcd(N, r)}`.
 Mathematically, we have that $$`x_k = \sum_{j=0}^{N-1} y_j \omega_N^{-jk}.`
-
-The matrix entries are powers of `ω_N`, which is a primitive $`N`-th root of unity.
-Mathlib expresses these via `Complex.exp` and packages roots of unity as the subgroup `rootsOfUnity N ℂ` of `ℂˣ`:
-
-```lean
-recall rootsOfUnity (k : ℕ) (M : Type*) [CommMonoid M] : Subgroup Mˣ
-```
-
-:::aside "There's no Mathlib `discreteFourierTransform`"
-Mathlib's `Mathlib.Analysis.Fourier.*` files are about the *analytic* Fourier transform — integrals over $`\mathbb{R}` or the circle group.
-The DFT on a finite tuple isn't a named definition; it shows up as the matrix above, or as the character table of `ZMod N` (a `Module ℂ (ZMod N → ℂ)` change-of-basis).
-Either presentation is a one-liner once you need it; nothing in this chapter depends on Mathlib already having it.
-:::
 
 :::EXAMPLE "Example of discrete inverse Fourier transform"
 Let $`N = 6`, $`\omega = \omega_6 = \exp\!\left(\tfrac{2\pi i}{6}\right)` and suppose $`(x_0, x_1, x_2, x_3, x_4, x_5) = (0, 1, 0, 1, 0, 1)` (hence $`x_i` is periodic modulo $`2`).
@@ -130,11 +122,6 @@ Convince yourself that when $`n = 3` the two circuits described are equivalent.
 
 Thus, the quantum Fourier transform is achievable with $`O(n^2)` gates, which is enormously better than the $`O(N \log N)` operations achieved by the classical fast Fourier transform (where $`N = 2^n`).
 
-:::aside "$`R_k` is just `Matrix.diagonal`"
-The rotation matrix $`R_k` is `Matrix.diagonal ![1, ζ]` for $`\zeta = \exp(2\pi i / 2^k)`.
-Stacking it into a controlled gate on `EuclideanSpace ℂ (Fin 4)` is a $`4 \times 4` block-diagonal matrix, exactly as for the controlled-$`U` gates introduced in the previous chapter — Mathlib doesn't have a named "controlled-$`R_k`" but `Matrix.fromBlocks` assembles one in three lines.
-:::
-
 # Shor's algorithm
 
 The quantum Fourier transform is the key piece of Shor's algorithm.
@@ -148,17 +135,6 @@ Specifically, say that an $`x \pmod M` is *good* if
 2. The order $`r` of $`x \pmod M` is even, and
 3. Factoring $`0 \equiv (x^{r/2} - 1)(x^{r/2} + 1) \pmod M`, neither of the two factors is $`0 \pmod M`.
    Thus one of them is divisible by $`p`, and the other is divisible by $`q`.
-
-The integers mod $`M` are the type `ZMod M`, a commutative ring whose unit group `(ZMod M)ˣ` carries the multiplicative structure the algorithm cares about.
-Condition (1) says $`x` is in the units; condition (2) refers to its `orderOf` in that group.
-
-```lean
-recall orderOf {G : Type*} [Monoid G] (x : G) : ℕ
-recall orderOf_pos_iff {G : Type*} [Monoid G] {x : G} :
-    0 < orderOf x ↔ IsOfFinOrder x
-```
-
-For $`M = pq` finite, every unit has finite order, and $`orderOf x` divides $`|(\text{ZMod } M)^\times| = (p - 1)(q - 1)`.
 
 :::EXERCISE "For contest number theory practice"
 Show that for $`M = pq` at least half of the residues in $`(\mathbb{Z}/M\mathbb{Z})^\times` are good.
@@ -204,7 +180,6 @@ If we measure $`U_{\text{QFT}}|\phi\rangle` we obtain a $`|j\rangle` such that $
 
 And thus given sufficient luck we can use continued fractions to extract the value of $`r`.
 
-The continued fraction expansion of a real number is `GenContFract.of` (in Mathlib's `Mathlib.Algebra.ContinuedFractions.Computation.Basic`); the convergents are `convs` (or `convs'`, computed two different ways that agree).
 The algorithm wants us to compute the convergents of $`j / N` and pick the one with denominator $`< M`; that denominator is the candidate $`r`.
 
 :::EXAMPLE "Finishing the factoring of $`M = 77`"
@@ -219,3 +194,130 @@ This won't work all the time (for example, we could get unlucky and measure $`j 
 But one can show that we succeed any time that $$`\gcd(s, r) = 1.`
 This happens at least $`\frac{1}{\log r}` of the time, and since $`r < M` this means that given sufficiently many trials, we will eventually extract the correct order $`r`.
 This is Shor's algorithm.
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## The classical (inverse) Fourier transform
+
+The matrix entries are powers of $`\omega_N`, a primitive $`N`-th root of unity, which Mathlib builds out of `Complex.exp`.
+The lemma `Complex.isPrimitiveRoot_exp` records that $`\exp\!\left(\tfrac{2\pi i}{N}\right)` really is a primitive $`N`-th root of unity, and roots of unity in general are packaged as the subgroup `rootsOfUnity N ℂ` of `ℂˣ`.
+
+```lean
+recall rootsOfUnity (k : ℕ) (M : Type*) [CommMonoid M] : Subgroup Mˣ
+
+example (M : Type*) [CommMonoid M] (k : ℕ) (ζ : Mˣ) :
+    ζ ∈ rootsOfUnity k M ↔ ζ ^ k = 1 :=
+  mem_rootsOfUnity k ζ
+
+example (N : ℕ) (hN : N ≠ 0) :
+    IsPrimitiveRoot (Complex.exp (2 * Real.pi * Complex.I / N)) N :=
+  Complex.isPrimitiveRoot_exp N hN
+```
+
+There is no packaged discrete Fourier transform on a finite tuple.
+The files under `Mathlib.Analysis.Fourier.*` are about the *analytic* transform — integrals over $`\mathbb{R}` or the circle group.
+The DFT here shows up as the matrix above, or as the character table of `ZMod N` (a change-of-basis on `ZMod N → ℂ`); either presentation is a one-liner when needed, and nothing in this chapter depends on it already existing.
+
+Every $`\omega_N` is an $`N`-th root of unity, so its $`N`-th power is $`1`.
+
+```lean
+example (N : ℕ) (hN : N ≠ 0) :
+    Complex.exp (2 * Real.pi * Complex.I / N) ^ N = 1 := by
+  sorry
+```
+
+The interference that makes the transform detect periodicity comes from the identity $`\sum_{j=0}^{N-1} \omega_N^{\,j} = 0` when $`N > 1`: the powers of a primitive root sum to zero.
+Prove it with the geometric-sum lemma for primitive roots.
+
+```lean
+example (N : ℕ) (hN : 1 < N) :
+    ∑ j ∈ Finset.range N,
+      Complex.exp (2 * Real.pi * Complex.I / N) ^ j = 0 := by
+  sorry
+```
+
+## The quantum Fourier transform
+
+The rotation matrix $`R_k` is `Matrix.diagonal ![1, ζ]` for $`\zeta = \exp(2\pi i / 2^k)`.
+Assembling it into a controlled gate on `EuclideanSpace ℂ (Fin 4)` is the $`4 \times 4` block-diagonal matrix `Matrix.fromBlocks 1 0 0 (Matrix.diagonal ![1, ζ])`, exactly as for the controlled gates of the previous chapter.
+The quantum circuit itself — the network of controlled rotations and the unitary $`U_{\text{QFT}}` it computes — is not a named definition anywhere in Mathlib; only the underlying matrices are.
+
+```lean
+example (ζ : ℂ) : Matrix (Fin 2) (Fin 2) ℂ := Matrix.diagonal ![1, ζ]
+
+example (ζ : ℂ) : Matrix.diagonal ![(1 : ℂ), ζ] 1 1 = ζ := by simp
+```
+
+Its determinant is the single nontrivial diagonal entry $`\zeta`.
+
+```lean
+example (ζ : ℂ) : (Matrix.diagonal ![(1 : ℂ), ζ]).det = ζ := by
+  sorry
+```
+
+Its trace is $`1 + \zeta`.
+
+```lean
+example (ζ : ℂ) : (Matrix.diagonal ![(1 : ℂ), ζ]).trace = 1 + ζ := by
+  sorry
+```
+
+## Shor's algorithm
+
+The integers mod $`M` are the type `ZMod M`, a commutative ring whose unit group `(ZMod M)ˣ` carries the multiplicative structure the algorithm cares about.
+Condition (1) says $`x` lands in the units; condition (2) refers to its `orderOf` in that group, which is positive exactly when $`x` has finite order.
+
+```lean
+recall orderOf {G : Type*} [Monoid G] (x : G) : ℕ
+recall orderOf_pos_iff {G : Type*} [Monoid G] {x : G} :
+    0 < orderOf x ↔ IsOfFinOrder x
+```
+
+For $`M` with finitely many units, the order of any $`x` divides the size of the group; this is what forces the period $`r` to divide $`(p - 1)(q - 1)`.
+
+```lean
+example {G : Type*} [Group G] [Fintype G] (x : G) :
+    orderOf x ∣ Fintype.card G := orderOf_dvd_card
+```
+
+The Fermat–Euler theorem `ZMod.pow_totient` gives $`x^{\varphi(M)} = 1` for every unit, so $`\varphi(M)` is one such exponent.
+
+```lean
+example (M : ℕ) (x : (ZMod M)ˣ) : x ^ Nat.totient M = 1 :=
+  ZMod.pow_totient x
+```
+
+The order of $`x` therefore divides $`\varphi(M)`; deduce it from Euler's theorem.
+
+```lean
+example (M : ℕ) (x : (ZMod M)ˣ) : orderOf x ∣ Nat.totient M := by
+  sorry
+```
+
+The reduction to factoring is concrete.
+Take $`M = 15` and $`x = 4`: then $`4^2 \equiv 1 \pmod{15}` while $`4 \not\equiv \pm 1`, so the two greatest common divisors $`\gcd(4 - 1, 15)` and $`\gcd(4 + 1, 15)` split $`15 = 3 \cdot 5`.
+
+```lean
+example : (4 : ZMod 15) ^ 2 = 1 := by decide
+```
+
+Recover the factor $`3` as $`\gcd(4 - 1, 15)`.
+
+```lean
+example : Nat.gcd (4 - 1) 15 = 3 := by
+  sorry
+```
+
+The final classical step reads $`r` off a continued fraction expansion.
+The expansion of a real number is `GenContFract.of`, and its convergents are `convs` (or the equivalent `convs'`).
+
+```lean
+noncomputable example (v : ℝ) : GenContFract ℝ := GenContFract.of v
+
+noncomputable example (v : ℝ) (n : ℕ) : ℝ := (GenContFract.of v).convs n
+```
+
+Mathlib supplies the continued-fraction machinery, but selecting the convergent with denominator below $`M` and reconstructing the order from it is bespoke to the algorithm and has no packaged form.

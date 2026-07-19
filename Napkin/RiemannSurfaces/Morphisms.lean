@@ -6,12 +6,18 @@ import Napkin.Meta.Citations
 import Mathlib.Analysis.Meromorphic.Basic
 import Mathlib.Analysis.Meromorphic.Order
 import Mathlib.Analysis.Analytic.IsolatedZeros
+import Mathlib.Analysis.Analytic.Order
+import Mathlib.Analysis.Analytic.Uniqueness
+import Mathlib.Analysis.Complex.OpenMapping
 import Mathlib.Geometry.Manifold.Complex
+import Mathlib.Geometry.Manifold.MFDeriv.Defs
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+
+open scoped Manifold Topology
 
 set_option pp.rawOnError true
 
@@ -32,11 +38,6 @@ We say $`f` is a *morphism between Riemann surfaces* if and only if it is holomo
 :::
 
 In other words: $`f` is holomorphic if and only if it is holomorphic as function mapping between local coordinates.
-
-:::aside
-This "compose with charts on both sides" definition is exactly what `MDifferentiable I I' f` packages on the Mathlib side.
-For Riemann surfaces, both source and target carry the trivial complex model, so the relevant typeclass is `MDifferentiable (𝓘(ℂ, ℂ)) (𝓘(ℂ, ℂ)) f`; the manifold-differentiability machinery then automatically reduces, around each point, to ordinary holomorphy of $`\phi_2 \circ f \circ \phi_1^{-1}` on its open set of definition.
-:::
 
 :::EXAMPLE
 Some examples follows.
@@ -84,19 +85,6 @@ Or, more informally:
 
 :::MORAL
 Plugging in the hole at $`\infty` of $`\mathbb{C}` allows us to analytically extend meromorphic functions to $`\mathbb{C} \cup \{\infty\}`-maps which are holomorphic everywhere.
-:::
-
-:::aside
-In Mathlib, the "meromorphic" side is captured by `MeromorphicAt f x` (resp. `MeromorphicOn f s`) — defined as: there exists a natural number $`n` such that $`(z - x)^n \cdot f(z)` is analytic at $`x`.
-The "holomorphic-to-the-sphere" side is `MDifferentiable (𝓘(ℂ, ℂ)) (𝓘(ℂ, ℂ)) g` for $`g \colon X \to \mathrm{OnePoint}\;\mathbb{C}` (the one-point compactification, which is Mathlib's spelling of the Riemann sphere).
-A formal "extend a meromorphic function to a Riemann-sphere-valued map" lemma is on the active wishlist; the order-of-pole machinery `meromorphicOrderAt` already lets you talk about pole/zero multiplicities.
-
-```lean
-recall MeromorphicAt
-    {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    (f : 𝕜 → E) (x : 𝕜) : Prop
-```
 :::
 
 # Some other nice properties
@@ -198,9 +186,6 @@ Essentially, use the Taylor expansion to determine $`m`, then the selection of $
 The value $`m` above is the *multiplicity* of $`f` at point $`p`, written $`\mathrm{mult}_p(f)`.
 :::
 
-The Mathlib analog is `analyticOrderAt` (and `meromorphicOrderAt`): given an analytic function $`f` at $`x` that is not identically zero in a neighborhood, `analyticOrderAt f x : ℕ∞` returns the order of the zero (the unique $`n` such that $`f(z)/(z-x)^n` is analytic and nonzero at $`x`), which is exactly the multiplicity above when working on $`\mathbb{C}` charts.
-Mathlib's `AnalyticAt.exists_eventuallyEq_pow_smul_nonzero_iff` and the order API codify the "looks locally like $`z^m`" intuition.
-
 :::EXAMPLE "Multiplicities of various maps"
 - The function $`z \mapsto z^{-2}`, extended to a $`\mathbb{C} \to \mathbb{C}_\infty` map, has multiplicity $`2` at the point $`0` — "two copies" of $`0` are mapped to $`\infty`.
 - The function $`f(z) = (z - 1)(z - 2)^5` has $`\mathrm{mult}_2(f) = 5` — more generally, if $`p` is a root of $`f`, then $`\mathrm{mult}_p(f)` is the multiplicity of the root.
@@ -263,11 +248,161 @@ If $`f = g` on a nonempty open subset of $`X`, then $`f = g`.
 This is the analog of the identity theorem for ordinary holomorphic functions on a connected open subset of $`\mathbb{C}`.
 Note that here the assumption that $`X` is connected is used — the disjoint union of two copies of $`\mathbb{C}` is a smooth $`2`-manifold, but not a Riemann surface.
 
-The Mathlib counterpart on a single chart is `AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq` in `Mathlib.Analysis.Analytic.IsolatedZeros`: if two functions are analytic on a preconnected open set $`U` and agree on a neighborhood of some point $`x \in U`, they agree on all of $`U`.
-The Riemann-surface version is the patched-together statement obtained by transporting this fact across charts using the connectedness of $`X`.
-
 That is:
 
 :::MORAL
 Holomorphic maps are *rigid* — the value of a function on a tiny subset determines its value everywhere.
 :::
+
+# Formalization
+
+:::LEANCOMPANION
+:::
+
+## Definition
+
+The "compose with charts on both sides" definition is exactly what `MDifferentiable I I' f` packages.
+For Riemann surfaces both the source and the target carry the trivial complex model $`\mathcal{I}(\mathbb{C}, \mathbb{C})`, written `𝓘(ℂ, ℂ)`, so a morphism is the following.
+The manifold-differentiability machinery then reduces, around each point, to ordinary holomorphy of $`\phi_2 \circ f \circ \phi_1^{-1}` on its open set of definition.
+
+```lean
+example (f : ℂ → ℂ) : Prop :=
+  MDifferentiable (𝓘(ℂ, ℂ)) (𝓘(ℂ, ℂ)) f
+```
+
+Working inside a single chart, holomorphy at a point $`p` is `AnalyticAt ℂ f p`.
+The example map $`z \mapsto z^3` is holomorphic at every point.
+
+```lean
+example (p : ℂ) : AnalyticAt ℂ (fun z : ℂ => z ^ 3) p := by
+  apply AnalyticAt.pow
+  exact analyticAt_id
+```
+
+A composition of holomorphic maps is holomorphic, which is what makes "holomorphic in charts" a well-behaved notion.
+
+```lean
+example (f g : ℂ → ℂ) (p : ℂ) (hf : AnalyticAt ℂ f (g p))
+    (hg : AnalyticAt ℂ g p) : AnalyticAt ℂ (f ∘ g) p := by
+  sorry
+```
+
+## Functions to the Riemann sphere
+
+The "meromorphic" side is captured by `MeromorphicAt f x`: there exists a natural number $`n` such that $`(z - x)^n \cdot f(z)` is analytic at $`x`.
+
+```lean
+recall MeromorphicAt
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    (f : 𝕜 → E) (x : 𝕜) : Prop
+```
+
+The "holomorphic-to-the-sphere" side is `MDifferentiable (𝓘(ℂ, ℂ)) (𝓘(ℂ, ℂ)) g` for a map $`g \colon X \to \mathrm{OnePoint}\;\mathbb{C}` into the one-point compactification, which is the spelling of the Riemann sphere $`\mathbb{C}_\infty`.
+A packaged "extend a meromorphic function to a Riemann-sphere-valued map" lemma is not yet available; the order-of-pole machinery `meromorphicOrderAt`, met below, already records pole and zero multiplicities.
+
+Every function holomorphic at a point is in particular meromorphic there.
+
+```lean
+example (f : ℂ → ℂ) (x : ℂ) (h : AnalyticAt ℂ f x) :
+    MeromorphicAt f x := h.meromorphicAt
+```
+
+The prototypical meromorphic function $`\frac{1}{z}` is meromorphic at its pole $`0`.
+
+```lean
+example : MeromorphicAt (fun z : ℂ => z⁻¹) 0 := by
+  apply MeromorphicAt.inv
+  exact analyticAt_id.meromorphicAt
+```
+
+Show the same for a pole placed at an arbitrary point $`x`.
+
+```lean
+example (x : ℂ) : MeromorphicAt (fun z : ℂ => (z - x)⁻¹) x := by
+  sorry
+```
+
+## Some other nice properties
+
+The global degree of a nonconstant holomorphic map between compact Riemann surfaces — the constant fibre count $`d_y` — is not part of Mathlib, since it presupposes the compact surfaces themselves as objects that are not yet packaged.
+What *is* available is the local engine behind "the fibre count is locally constant": the open mapping theorem `AnalyticAt.eventually_constant_or_nhds_le_map_nhds`.
+Around each point a holomorphic map is either locally constant or locally open, and openness is what forces nearby fibres to have the same size.
+
+```lean
+example (g : ℂ → ℂ) (z₀ : ℂ) (hg : AnalyticAt ℂ g z₀) :
+    (∀ᶠ z in 𝓝 z₀, g z = g z₀) ∨
+      𝓝 (g z₀) ≤ Filter.map g (𝓝 z₀) :=
+  hg.eventually_constant_or_nhds_le_map_nhds
+```
+
+## Multiplicity of a map
+
+The multiplicity $`\mathrm{mult}_p(f)` is `analyticOrderAt f x : ℕ∞`: for a function analytic at $`x` and not identically zero nearby, it returns the unique $`n` with $`f(z)/(z - x)^n` analytic and nonzero at $`x`.
+Read in charts this is exactly the local exponent $`m` in the normal form $`z \mapsto z^m`; `AnalyticAt.analyticOrderAt_eq_natCast` and the surrounding order API codify the "looks locally like $`z^m`" picture.
+
+The power map $`z \mapsto z^n` has multiplicity $`n` at the origin, matching $`\mathrm{mult}_0(z^n) = n`.
+
+```lean
+example (n : ℕ) : analyticOrderAt (fun z : ℂ => z ^ n) 0 = n := by
+  have h : (fun z : ℂ => z ^ n) = (fun x : ℂ => x - 0) ^ n := by
+    funext z; simp
+  rw [h]
+  exact analyticOrderAt_centeredMonomial
+```
+
+A point where the value is nonzero is not a zero at all, so its order is $`0`.
+
+```lean
+example (f : ℂ → ℂ) (x : ℂ) (hf : AnalyticAt ℂ f x)
+    (h : f x ≠ 0) : analyticOrderAt f x = 0 := by
+  sorry
+```
+
+## The sum of the orders of a meromorphic function
+
+The global statement $`\sum_p \mathrm{ord}_p(f) = 0` on a compact Riemann surface is not in Mathlib, again because the compact surface is not an available object.
+The per-point order that the sum ranges over *is* available as `meromorphicOrderAt f x : WithTop ℤ`, valued in the integers-with-infinity so that a pole records a negative order.
+For instance $`\frac{1}{z}` has order $`-1` at its pole.
+
+```lean
+example : meromorphicOrderAt (fun z : ℂ => z⁻¹) 0 = (-1 : ℤ) := by
+  rw [meromorphicOrderAt_eq_int_iff (by fun_prop)]
+  refine ⟨fun _ => 1, analyticAt_const, one_ne_zero, ?_⟩
+  filter_upwards with z
+  simp [zpow_neg, zpow_one, smul_eq_mul]
+```
+
+Conversely, a function analytic and nonvanishing at $`x` contributes order $`0` to such a sum.
+
+```lean
+example (f : ℂ → ℂ) (x : ℂ) (hf : AnalyticAt ℂ f x)
+    (h : f x ≠ 0) : meromorphicOrderAt f x = 0 := by
+  sorry
+```
+
+## The Hurwitz formula
+
+The Hurwitz formula couples the genera of $`X` and $`Y` with the ramification data of the map.
+The genus is a topological invariant that Mathlib does not yet attach to these surfaces, so there is no formal statement to exhibit here — the ingredients (multiplicities via `analyticOrderAt`, and degree) are the same ones formalized piecemeal above.
+
+## The identity theorem
+
+The one-chart counterpart is `AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq`: if two functions are analytic on a preconnected open set $`U` and agree on a neighborhood of some point $`x \in U`, they agree on all of $`U`.
+The Riemann-surface version is the patched-together statement obtained by transporting this fact across charts using the connectedness of $`X`.
+
+```lean
+example {f g : ℂ → ℂ} {U : Set ℂ} (hf : AnalyticOnNhd ℂ f U)
+    (hg : AnalyticOnNhd ℂ g U) (hU : IsPreconnected U) {z₀ : ℂ}
+    (h₀ : z₀ ∈ U) (hfg : f =ᶠ[𝓝 z₀] g) : Set.EqOn f g U :=
+  hf.eqOn_of_preconnected_of_eventuallyEq hg hU h₀ hfg
+```
+
+On all of $`\mathbb{C}`, which is connected, this specializes to rigidity: two entire functions that agree near a point agree everywhere.
+
+```lean
+example {f g : ℂ → ℂ} (hf : AnalyticOnNhd ℂ f Set.univ)
+    (hg : AnalyticOnNhd ℂ g Set.univ) {z₀ : ℂ}
+    (hfg : f =ᶠ[𝓝 z₀] g) : f = g := by
+  sorry
+```
