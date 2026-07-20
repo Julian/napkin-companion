@@ -7,11 +7,13 @@ import Mathlib.Analysis.Meromorphic.Divisor
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.Algebra.BigOperators.Finsupp.Basic
+import Napkin.Missing.Divisors
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
 
 set_option pp.rawOnError true
 
@@ -337,15 +339,22 @@ arithmetic.
 Stripping away the topology, a divisor on a compact surface is a formal
 $`\mathbb{Z}`-combination of points — a finitely supported function
 $`X \to \mathbb{Z}`, which is Mathlib's `X →₀ ℤ` (a `Finsupp`).
-The abuse of notation "the point $`p` is the divisor taking value $`1` at
-$`p`" is the single-support function `Finsupp.single p 1`.
+That is the model this companion runs with, under the name `Divisor X`.
 
 ```lean
-noncomputable example (X : Type*) (p : X) : X →₀ ℤ :=
-  Finsupp.single p 1
+example (X : Type*) : Divisor X = (X →₀ ℤ) := rfl
+```
+
+The abuse of notation "the point $`p` is the divisor taking value $`1` at
+$`p`" is `Divisor.single p 1`, wrapping the single-support function
+`Finsupp.single`.
+
+```lean
+noncomputable example (X : Type*) (p : X) : Divisor X :=
+  Divisor.single p 1
 
 example (X : Type*) [DecidableEq X] (p : X) :
-    (Finsupp.single p (1 : ℤ)) p = 1 := by simp
+    Divisor.single p (1 : ℤ) p = 1 := by simp [Divisor.single]
 ```
 
 Adding divisors adds their coefficients: piling two units of value onto a
@@ -353,8 +362,8 @@ point $`p` is the same as taking value $`2` there.
 
 ```lean
 example (X : Type*) (p : X) (m n : ℤ) :
-    Finsupp.single p (m + n)
-      = Finsupp.single p m + Finsupp.single p n :=
+    Divisor.single p (m + n)
+      = Divisor.single p m + Divisor.single p n :=
   Finsupp.single_add p m n
 ```
 
@@ -362,34 +371,34 @@ Show that the divisor of a single point is supported at just that point.
 
 ```lean
 example (X : Type*) (p : X) :
-    (Finsupp.single p (1 : ℤ)).support = {p} := by
+    (Divisor.single p (1 : ℤ)).support = {p} := by
   sorry
 ```
 
 ## Degree of a divisor
 
 The degree $`\sum_{p} D(p)` adds up all the coefficients.
-On the free abelian group `X →₀ ℤ` this is the group homomorphism sending
-each generator `single p 1` to $`1`, assembled by `Finsupp.liftAddHom`.
+On the free abelian group `Divisor X` this is the group homomorphism sending
+each generator `single p 1` to $`1`, assembled by `Finsupp.liftAddHom`; this
+companion names it `Divisor.degree`.
 
 ```lean
-noncomputable example (X : Type*) : (X →₀ ℤ) →+ ℤ :=
-  Finsupp.liftAddHom (fun _ => AddMonoidHom.id ℤ)
+noncomputable example (X : Type*) : Divisor X →+ ℤ := Divisor.degree
 ```
 
-On a single point it reads off the coefficient, and being a group
-homomorphism it is automatically additive.
+On a single point it reads off the coefficient — `Divisor.degree_single` —
+and being a group homomorphism it is automatically additive, which is
+`Divisor.degree_add`.
 
 ```lean
 example (X : Type*) (p : X) (n : ℤ) :
-    Finsupp.liftAddHom (fun _ => AddMonoidHom.id ℤ)
-      (Finsupp.single p n) = n := by simp
+    Divisor.degree (Divisor.single p n) = n :=
+  Divisor.degree_single p n
 
-example (X : Type*) (D₁ D₂ : X →₀ ℤ) :
-    Finsupp.liftAddHom (fun _ => AddMonoidHom.id ℤ) (D₁ + D₂)
-      = Finsupp.liftAddHom (fun _ => AddMonoidHom.id ℤ) D₁
-        + Finsupp.liftAddHom (fun _ => AddMonoidHom.id ℤ) D₂ :=
-  map_add _ _ _
+example (X : Type*) (D₁ D₂ : Divisor X) :
+    Divisor.degree (D₁ + D₂)
+      = Divisor.degree D₁ + Divisor.degree D₂ :=
+  Divisor.degree_add D₁ D₂
 ```
 
 Modelling the points $`i` and $`\infty` as `0, 1 : ℕ`, the prototype
@@ -397,18 +406,16 @@ $`\deg((-3) \cdot i + (-4) \cdot \infty) = -7` becomes a computation.
 
 ```lean
 example :
-    Finsupp.liftAddHom (fun _ => AddMonoidHom.id ℤ)
-      (Finsupp.single 0 (-3) + Finsupp.single 1 (-4) : ℕ →₀ ℤ)
-      = -7 := by
+    Divisor.degree (Divisor.single 0 (-3) + Divisor.single 1 (-4)
+      : Divisor ℕ) = -7 := by
   sorry
 ```
 
 Show that the degree flips sign along with the divisor.
 
 ```lean
-example (X : Type*) (D : X →₀ ℤ) :
-    Finsupp.liftAddHom (fun _ => AddMonoidHom.id ℤ) (-D)
-      = - Finsupp.liftAddHom (fun _ => AddMonoidHom.id ℤ) D := by
+example (X : Type*) (D : Divisor X) :
+    Divisor.degree (-D) = - Divisor.degree D := by
   sorry
 ```
 
@@ -447,6 +454,45 @@ compact surface with no counterpart either.
 
 The Riemann-Roch theorem is not in Mathlib, in either its Riemann-surface
 or algebraic-curve incarnation, and neither are $`L(D)` spaces, canonical
-divisors, nor the genus; of this chapter's cast, only the divisor of a
-meromorphic function (`MeromorphicOn.divisor`, on subsets of
-$`\mathbb{C}`) has been formalized.
+divisors, nor the genus.
+No proof is possible here — the theorem needs genuinely new analytic input,
+as the text itself warns — but the *statement* is data, and can be bundled as
+such.
+`Divisor.RiemannRochData X` carries a genus $`g`, a dimension function
+$`l\,D = \dim L(D)`, a canonical divisor $`K`, and the Riemann-Roch identity
+$`l(D) - l(K - D) = \deg D - g + 1` as a field.
+
+```lean
+recall Divisor.RiemannRochData.riemannRoch {X : Type*}
+    (R : Divisor.RiemannRochData X) (D : Divisor X) :
+    (R.l D : ℤ) - R.l (R.K - D)
+      = Divisor.degree D - R.genus + 1
+```
+
+With the theorem in hand as a hypothesis, its consequences are ordinary
+proofs.
+Feed it $`D = K` (so $`K - D = 0`) and use $`\dim L(0) = 1` — on a compact
+curve the only global holomorphic functions are the constants — to recover
+the classic $`\deg K = 2g - 2`, the worked
+`Divisor.RiemannRochData.degree_K`.
+
+```lean
+example {X : Type*} (R : Divisor.RiemannRochData X) (h : R.l 0 = 1) :
+    Divisor.degree R.K = 2 * R.genus - 2 :=
+  R.degree_K h
+```
+
+Feed it instead $`D = 0` (where $`\deg 0 = 0` and $`K - 0 = K`) and show that
+the two linear systems at the ends differ in dimension by $`1 - g`, i.e.
+$`\dim L(0) - \dim L(K) = 1 - g`.
+
+```lean
+example {X : Type*} (R : Divisor.RiemannRochData X) :
+    (R.l 0 : ℤ) - R.l R.K = 1 - R.genus := by
+  sorry
+```
+
+Of this chapter's cast, then, the divisor of a meromorphic function
+(`MeromorphicOn.divisor`, on subsets of $`\mathbb{C}`) is the one piece
+Mathlib has formalized outright; the divisor group, its degree, and the
+Riemann-Roch statement are modelled here on `Divisor X`.

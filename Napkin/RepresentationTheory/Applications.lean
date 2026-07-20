@@ -12,11 +12,13 @@ import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.GroupTheory.Subgroup.Simple
 import Mathlib.GroupTheory.Subgroup.Center
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Napkin.Missing.GroupDeterminant
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
 
 open CategoryTheory
 open scoped Classical
@@ -263,8 +265,52 @@ example (G : Type*) [Group G] [IsSimpleGroup G] (H : Subgroup G)
 
 ## Frobenius determinant
 
-The Frobenius determinant theorem — the factorization of $`\det M_G` indexed by the irreps — is likewise not in Mathlib.
-Nor is the density-theorem input, nor the classical fact that the generic determinant $`\det (y_{ij})` in $`m^2` variables is an irreducible polynomial; these would have to be built by hand.
+The group matrix $`M_G` and the group determinant $`\det M_G` are exactly the objects this problem introduces, and Mathlib has neither.
+They are supplied by `Napkin.Missing.GroupDeterminant`: for one indeterminate `x g` per group element, `groupMatrix x` is the $`|G| \times |G|` matrix whose $`(g, h)` entry is `x (g * h⁻¹)`, and `groupDeterminant x` is its determinant.
+
+:::aside "The `x (g * h⁻¹)` convention"
+The companion places `x (g * h⁻¹)` in the $`(g, h)` slot rather than $`x_{gh}`; the two differ only by permuting columns, so their determinants agree up to sign.
+This convention makes the diagonal the constant $`x_1` and identifies $`M_G` with the regular-representation matrix $`\sum_g x_g\, \rho(g)`.
+For $`\mathbb{Z}/2\mathbb{Z}` it reproduces the matrix in the text on the nose.
+:::
+
+The $`(g, h)` entry is `x (g * h⁻¹)` by definition.
+
+```lean
+example {R : Type*} [CommRing R] {G : Type*} [Group G] [Fintype G]
+    [DecidableEq G] (x : G → R) (g h : G) :
+    groupMatrix x g h = x (g * h⁻¹) := groupMatrix_apply x g h
+```
+
+The first worked case is $`G = \mathbb{Z}/2\mathbb{Z} = \langle T \mid T^2 = 1 \rangle`, modeled as the multiplicative group `C2` with non-identity element `T`.
+Its group determinant is $`x_1^2 - x_T^2`, which factors as $`(x_1 - x_T)(x_1 + x_T)` — the smallest instance of the Frobenius factorization, its two linear factors matching the two conjugacy classes (equivalently, the trivial and the sign character).
+
+```lean
+example {R : Type*} [CommRing R] (x : C2 → R) :
+    groupDeterminant x = (x 1 - x T) * (x 1 + x T) :=
+  groupDeterminant_C2_factor x
+```
+
+The $`S_3` determinant, its cubic irreducible factor, and the general theorem — that $`\det M_G` splits into one irreducible per conjugacy class, each raised to its degree — remain out of reach: neither the density-theorem input nor the irreducibility of the generic determinant $`\det (y_{ij})` in $`m^2` variables is in Mathlib, so they would have to be built by hand.
+
+Every diagonal entry of the group matrix equals $`x_1`, because $`g g^{-1} = 1`.
+Prove it.
+
+```lean
+example {R : Type*} [CommRing R] {G : Type*} [Group G] [Fintype G]
+    [DecidableEq G] (x : G → R) (g : G) : groupMatrix x g g = x 1 := by
+  sorry
+```
+
+For the one-element group, the group determinant is the lone entry $`x_1`.
+Prove this from `Matrix.det_unique`.
+
+```lean
+example {R : Type*} [CommRing R] {G : Type*} [Group G] [Fintype G]
+    [DecidableEq G] [Unique G] (x : G → R) : groupDeterminant x = x 1 := by
+  sorry
+```
+
 What Mathlib does provide is the linear-algebra backbone of the proof.
 Determinants are multiplicative.
 

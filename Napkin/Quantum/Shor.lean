@@ -14,11 +14,13 @@ import Mathlib.RingTheory.RootsOfUnity.Basic
 import Mathlib.RingTheory.RootsOfUnity.Complex
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 import Mathlib.FieldTheory.Finite.Basic
+import Napkin.Missing.Quantum
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
 
 set_option pp.rawOnError true
 
@@ -217,9 +219,47 @@ example (N : ℕ) (hN : N ≠ 0) :
   Complex.isPrimitiveRoot_exp N hN
 ```
 
-There is no packaged discrete Fourier transform on a finite tuple.
-The files under `Mathlib.Analysis.Fourier.*` are about the *analytic* transform — integrals over $`\mathbb{R}` or the circle group.
-The DFT here shows up as the matrix above, or as the character table of `ZMod N` (a change-of-basis on `ZMod N → ℂ`); either presentation is a one-liner when needed, and nothing in this chapter depends on it already existing.
+Mathlib packages no discrete or quantum Fourier transform *matrix*: the files under `Mathlib.Analysis.Fourier.*` are about the *analytic* transform — integrals over $`\mathbb{R}` or the circle group.
+So the companion supplies the matrix itself as `qft`, the $`N \times N` matrix whose $`(j, k)` entry is $`\frac{1}{\sqrt{N}} \omega_N^{jk}` — exactly the $`U_{\text{QFT}}` above (and, dropping the $`\sqrt{N}` for an $`N`, its inverse-transform cousin).
+
+```lean
+noncomputable example (N : ℕ) : Matrix (Fin N) (Fin N) ℂ := qft N
+```
+
+The top row is the constant $`\frac{1}{\sqrt{N}}`, since $`\omega_N^0 = 1`; this is `qft_apply_zero_left`.
+
+```lean
+example (N : ℕ) [NeZero N] (k : Fin N) :
+    qft N 0 k = (1 / Real.sqrt N : ℂ) :=
+  qft_apply_zero_left N k
+```
+
+Because $`\omega_N^{jk} = \omega_N^{kj}`, the matrix is symmetric: transposing it changes nothing.
+
+```lean
+example (N : ℕ) : (qft N).transpose = qft N := qft_transpose N
+```
+
+By that symmetry the left column repeats the top row; supply the proof.
+
+```lean
+example (N : ℕ) [NeZero N] (j : Fin N) : qft N j 0 = qft N 0 j := by
+  sorry
+```
+
+On a single basis state the transform does nothing: $`\mathrm{qft}\ 1` is the $`1 \times 1` identity.
+
+```lean
+example : qft 1 = 1 := by
+  sorry
+```
+
+For $`N = 2` the root of unity is $`\omega_2 = -1`, so the bottom-right entry is $`-\frac{1}{\sqrt{2}}`; this $`U_{\text{QFT}}` is exactly the Hadamard gate.
+
+```lean
+example : qft 2 1 1 = (-1 / Real.sqrt 2 : ℂ) := by
+  sorry
+```
 
 Every $`\omega_N` is an $`N`-th root of unity, so its $`N`-th power is $`1`.
 

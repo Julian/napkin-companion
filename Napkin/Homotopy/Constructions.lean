@@ -9,11 +9,13 @@ import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.Topology.Instances.AddCircle.Real
 import Mathlib.LinearAlgebra.Projectivization.Basic
 import Mathlib.Topology.CWComplex.Classical.Basic
+import Napkin.Missing.Homotopy
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
 open Topology
 open scoped Topology
 
@@ -552,44 +554,42 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] :
 
 Mathlib has no wedge sum on the shelf, but the definition above is a recipe we can follow literally: take the disjoint union $`X \oplus Y`, and quotient by the equivalence relation that glues $`x_0` to $`y_0` and nothing else.
 The one subtlety is that "glues $`x_0` to $`y_0` and nothing else" must be spelled out as a genuine equivalence relation — reflexive, symmetric, and transitive — before we may hand it to the quotient machinery.
+That is done once and for all in `Napkin.Missing.Homotopy`, which builds `WedgeRel`, bundles it as `wedgeSetoid`, and takes the quotient as `WedgeSum x₀ y₀`, complete with the inclusions `WedgeSum.inl` and `WedgeSum.inr` and the fused basepoint `WedgeSum.base`.
+
+A wedge produces honest points; the fused basepoint is one of them.
 
 ```lean
-namespace Wedge
+example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    (x₀ : X) (y₀ : Y) : WedgeSum x₀ y₀ := WedgeSum.base x₀ y₀
+```
 
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+The whole reason for the construction is that the two chosen basepoints stop being two points: in the wedge $`x_0` and $`y_0` name the *same* point.
+Show it — the relation glues exactly the pair $`(x_0, y_0)`, so `Quotient.sound` closes the goal.
 
-/-- Two points of `X ⊕ Y` are glued exactly when they are equal, or one is the
-distinguished `x₀` and the other the distinguished `y₀`. -/
-def Rel (x₀ : X) (y₀ : Y) : X ⊕ Y → X ⊕ Y → Prop
-  | a, b => a = b ∨ (a = .inl x₀ ∧ b = .inr y₀) ∨ (a = .inr y₀ ∧ b = .inl x₀)
+```lean
+example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    (x₀ : X) (y₀ : Y) :
+    WedgeSum.inl x₀ y₀ x₀ = WedgeSum.inr x₀ y₀ y₀ := by
+  sorry
+```
 
-def setoid (x₀ : X) (y₀ : Y) : Setoid (X ⊕ Y) where
-  r := Rel x₀ y₀
-  iseqv := by
-    refine ⟨fun _ => .inl rfl, ?_, ?_⟩
-    · rintro a b (rfl | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
-      · exact .inl rfl
-      · exact .inr (.inr ⟨rfl, rfl⟩)
-      · exact .inr (.inl ⟨rfl, rfl⟩)
-    · rintro a b c hab hbc
-      rcases hab with rfl | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
-      · exact hbc
-      · rcases hbc with rfl | ⟨h, rfl⟩ | ⟨_, rfl⟩
-        · exact .inr (.inl ⟨rfl, rfl⟩)
-        · simp at h
-        · exact .inl rfl
-      · rcases hbc with rfl | ⟨_, rfl⟩ | ⟨h, rfl⟩
-        · exact .inr (.inr ⟨rfl, rfl⟩)
-        · exact .inl rfl
-        · simp at h
+Each space still sits inside the wedge, and it does so continuously: the inclusion $`X \hookrightarrow X \vee Y` is $`x \mapsto [\,\mathrm{inl}\,x\,]`, a quotient projection composed with the sum inclusion.
+Show that the inclusion of the first space is continuous.
 
-/-- The wedge sum `X ∨ Y`, glued at `x₀` and `y₀`. -/
-def WedgeSum (x₀ : X) (y₀ : Y) : Type _ := Quotient (setoid x₀ y₀)
+```lean
+example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    (x₀ : X) (y₀ : Y) : Continuous (WedgeSum.inl x₀ y₀) := by
+  sorry
+```
 
-instance (x₀ : X) (y₀ : Y) : TopologicalSpace (WedgeSum x₀ y₀) :=
-  inferInstanceAs (TopologicalSpace (Quotient (setoid x₀ y₀)))
+Away from the basepoint the gluing does nothing, so the inclusion loses no information there.
+Show that if two points of $`X` have the same image under $`\mathrm{inl}`, they were equal to begin with.
 
-end Wedge
+```lean
+example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    (x₀ : X) (y₀ : Y) {x x' : X}
+    (h : WedgeSum.inl x₀ y₀ x = WedgeSum.inl x₀ y₀ x') : x = x' := by
+  sorry
 ```
 
 ## CW complexes

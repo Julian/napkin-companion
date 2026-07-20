@@ -22,6 +22,7 @@ outstanding stopgap:
 -/
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.LinearAlgebra.UnitaryGroup
+import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 
 namespace Napkin.Missing
 
@@ -83,5 +84,38 @@ strings. -/
 theorem sum_bornProb_normalized {n : ℕ} (ψ : QubitState n)
     (h : Normalized ψ) : ∑ i, bornProb ψ i = 1 := by
   rw [sum_bornProb, h, one_pow]
+
+/-- The quantum Fourier transform on `N` basis states, as the concrete
+`N × N` complex matrix whose `(j, k)` entry is `(1 / √N) · ω ^ (j · k)`,
+for the primitive `N`-th root of unity `ω = exp(2πi / N)`.  Applying it to
+an amplitude vector is the discrete Fourier transform of the text, carrying
+the `√N` normalization that makes the matrix unitary.
+
+Not in Mathlib.  The files under `Mathlib.Analysis.Fourier.*` package only
+the *analytic* transform (integrals over `ℝ` or the circle group); there is
+no discrete/quantum Fourier transform *matrix*.  Retire this if one is
+added. -/
+noncomputable def qft (N : ℕ) : Matrix (Fin N) (Fin N) ℂ :=
+  fun j k => (1 / Real.sqrt N : ℂ) *
+    Complex.exp (2 * Real.pi * Complex.I * (j.val * k.val) / N)
+
+/-- The top row of the quantum Fourier transform is the constant `1/√N`:
+every `(0, k)` entry is `1/√N`, because `ω ^ 0 = 1`. -/
+theorem qft_apply_zero_left (N : ℕ) [NeZero N] (k : Fin N) :
+    qft N 0 k = (1 / Real.sqrt N : ℂ) := by
+  simp [qft]
+
+/-- The left column of the quantum Fourier transform is the constant
+`1/√N`: every `(j, 0)` entry is `1/√N`. -/
+theorem qft_apply_zero_right (N : ℕ) [NeZero N] (j : Fin N) :
+    qft N j 0 = (1 / Real.sqrt N : ℂ) := by
+  simp [qft]
+
+/-- The quantum Fourier transform is a symmetric matrix: its `(j, k)` and
+`(k, j)` entries agree, since `ω ^ (j · k) = ω ^ (k · j)`. -/
+theorem qft_transpose (N : ℕ) : (qft N).transpose = qft N := by
+  ext j k
+  simp only [Matrix.transpose_apply, qft]
+  rw [mul_comm (k.val : ℂ) (j.val : ℂ)]
 
 end Napkin.Missing

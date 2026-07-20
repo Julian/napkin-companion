@@ -7,11 +7,13 @@ import Mathlib.Analysis.Fourier.AddCircle
 import Mathlib.Analysis.Fourier.ZMod
 import Mathlib.Analysis.Fourier.FiniteAbelian.PontryaginDuality
 import Mathlib.NumberTheory.ZetaValues
+import Napkin.Missing.BooleanFourier
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
 
 set_option pp.rawOnError true
 
@@ -415,9 +417,48 @@ example {ι : Type*} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E
 
 ## Binary Fourier analysis on \{±1\}ⁿ
 
-Mathlib has no dedicated theory of Boolean functions $`\{\pm1\}^n \to \mathbb{C}` and their multilinear expansions.
-The structure is not lost, though: viewing $`\{\pm 1\}^n` as an abelian group under pointwise multiplication (as in the last example of the next section), the multilinear polynomials $`\chi_S` become exactly the characters of a finite abelian group, and the `AddChar` machinery below applies.
-For that reason there is no self-contained exercise to offer here; the finite-group formalization in the next subsection subsumes the binary case.
+Mathlib has no dedicated theory of Boolean functions $`\{\pm1\}^n \to \mathbb{C}` and their multilinear expansions, so `Napkin.Missing.BooleanFourier` sets one up directly.
+A point of the cube is a bit per coordinate — `BoolCube n` is `Fin n → Bool`, with `pm` reading off the $`\pm1` value ($`\texttt{false} \mapsto 1`, $`\texttt{true} \mapsto -1`) — and a Boolean function is a `BoolFn n`, i.e. `BoolCube n → ℂ`.
+The parity character $`\chi_S` is `chi S`, the product $`\prod_{s \in S} x_s`.
+
+:::aside "Why a stopgap and not `AddChar`"
+Viewing $`\{\pm 1\}^n` as an abelian group under pointwise multiplication (as in the last example of the next section), the multilinear polynomials $`\chi_S` become exactly the characters of a finite abelian group, and the `AddChar` machinery below applies.
+The direct cube model here is nevertheless the more legible one for the multilinear expansion, and is retired the day Mathlib adopts a hypercube vocabulary.
+:::
+
+The empty character is the constant function $`1`, since an empty product is $`1`.
+
+```lean
+example (x : BoolCube 3) : chi ∅ x = 1 := by
+  sorry
+```
+
+Each character takes values in $`\{\pm1\}` — that is `chi_eq_one_or` — because it is a product of $`\pm1`'s; the fact underneath it is that $`\chi_S` squares to $`1`.
+
+```lean
+example (S : Finset (Fin 3)) (x : BoolCube 3) :
+    chi S x * chi S x = 1 := by
+  sorry
+```
+
+The averaging inner product $`\langle f, g \rangle = \frac{1}{2^n} \sum_x f(x) \overline{g(x)}` is `boolInner`, and the Fourier coefficient $`\widehat{f}(S) = \langle f, \chi_S\rangle` is `boolFourierCoeff`.
+The heart of the theory — that the $`2^n` characters are orthonormal, hence a basis — is `chi_boolInner`, which discharges the earlier exercise asking for their orthonormality.
+
+```lean
+example {n : ℕ} (S T : Finset (Fin n)) :
+    boolInner (chi S) (chi T) = if S = T then 1 else 0 :=
+  chi_boolInner S T
+```
+
+In particular each character has unit norm (`chi_self_boolInner`), which is why $`\langle f, f\rangle = 1` for every $`\pm1`-valued $`f`.
+The exercise on the special role of $`\varnothing` is likewise on the books as `boolFourierCoeff_empty`: the zeroth coefficient is the plain average of $`f`.
+
+```lean
+example {n : ℕ} (f : BoolFn n) :
+    boolFourierCoeff f (∅ : Finset (Fin n))
+      = (2 ^ n : ℂ)⁻¹ * ∑ x, f x := by
+  sorry
+```
 
 ## Fourier analysis on finite groups Z
 
@@ -560,5 +601,12 @@ example : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 4) (Real.pi ^ 4 / 90) :
 
 ## Application: Arrow's Impossibility Theorem
 
-Mathlib has no theory of Boolean functions on the hypercube, and this Fourier-analytic route to Arrow's theorem is unformalized territory.
-Formalizing the final problem of this chapter — the exact probability computation the proof leans on — would be a substantial and interesting project.
+With the cube, its parity characters, and their orthonormality now in hand from `Napkin.Missing.BooleanFourier`, the Boolean-function vocabulary the proof speaks is available; the discriminant $`D(a,b,c) = ab+bc+ca` from the final problem, for instance, is an honest `BoolFn 3`.
+
+```lean
+example : BoolFn 3 := fun x =>
+  pm (x 0) * pm (x 1) + pm (x 1) * pm (x 2) + pm (x 2) * pm (x 0)
+```
+
+What remains genuinely unformalized is the probability computation the proof leans on — the exact paradox probability as a sum over $`S` of the products $`\widehat{f}(S)\widehat{g}(S)` — together with the Parseval step and the $`|ab+bc+ca| \le a^2+b^2+c^2` inequality that close it out.
+That final assembly would be a substantial and interesting project.
