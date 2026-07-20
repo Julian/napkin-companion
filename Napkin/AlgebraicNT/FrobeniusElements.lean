@@ -11,11 +11,13 @@ import Mathlib.FieldTheory.PolynomialGaloisGroup
 import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.GroupTheory.Perm.Cycle.Type
+import Napkin.Missing.Frobenius
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
 
 set_option pp.rawOnError true
 
@@ -586,10 +588,52 @@ example {G : Type*} [Group G] (σ τ : G) :
   sorry
 ```
 
+Bundling a representative's conjugacy class turns the theorem into an object: the *Artin symbol* $`\operatorname{artinSymbol} R\, Q : \operatorname{ConjClasses} G`, the conjugacy-class-valued Frobenius that "Conjugacy classes in Galois groups" produces.
+Mathlib has the element-valued `arithFrobAt R G Q` and the conjugacy fact `isConj_arithFrobAt`, but not that packaging, so `Napkin.Missing.Frobenius` assembles it — to be retired the day Mathlib adopts a conjugacy-class-valued symbol.
+Its defining property is exactly the theorem: two primes lying over the same rational prime — $`Q.\!\operatorname{under} R = Q'.\!\operatorname{under} R` — share an Artin symbol.
+
+```lean
+example {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    {G : Type*} [Group G] [Finite G] [MulSemiringAction G S]
+    [SMulCommClass G R S] [Algebra.IsInvariant R S G]
+    (Q Q' : Ideal S) [Q.IsPrime] [Q'.IsPrime]
+    [Finite (S ⧸ Q)] [Finite (S ⧸ Q')] (h : Q.under R = Q'.under R) :
+    (artinSymbol R Q : ConjClasses G) = artinSymbol R Q' :=
+  artinSymbol_eq_of_under R Q Q' h
+```
+
 ## Chebotarev density theorem
 
-The Chebotarev density theorem is not in Mathlib.
-Its most famous special case is, though: for $`K = \mathbb{Q}(\zeta_m)` the theorem specializes to Dirichlet's theorem on primes in arithmetic progressions (a problem at the end of this chapter), and that is `Nat.infinite_setOf_prime_and_eq_mod`, proved — as the classical route goes — with Dirichlet characters and their $`L`-series rather than with Frobenius elements.
+The Chebotarev density theorem is not in Mathlib, so `Napkin.Missing.Frobenius` bundles it as a hypothesis one can reason from.
+A `ChebotarevData G` records, for a finite group $`G`, a `density` on its conjugacy classes together with the Chebotarev identity itself — that the density of primes with Frobenius class $`C` is $`\left\lvert C \right\rvert / \left\lvert G \right\rvert` — as a field.
+Its consequences are then genuine theorems.
+The qualitative heart of the theorem: a class actually realized by some prime (a nonempty carrier) has *strictly positive* density, so it is realized by infinitely many primes.
+
+```lean
+example {G : Type*} [Group G] [Fintype G] (D : ChebotarevData G)
+    (C : ConjClasses G) (hC : C.carrier.Nonempty) : 0 < D.density C :=
+  D.density_pos C hC
+```
+
+The identity class is special: $`\operatorname{Frob}_\mathfrak{p} = \operatorname{id}` exactly when $`\mathfrak{p}` splits completely, and feeding Chebotarev the identity class gives the totally-split density $`1 / \left\lvert G \right\rvert`.
+Derive it from the `ChebotarevData`.
+
+```lean
+example {G : Type*} [Group G] [Fintype G] (D : ChebotarevData G) :
+    D.density 1 = 1 / (Nat.card G : ℝ) := by
+  sorry
+```
+
+Every conjugacy class is a subset of $`G`, so no class can be denser than the whole group.
+Show that each density is at most $`1`.
+
+```lean
+example {G : Type*} [Group G] [Fintype G] (D : ChebotarevData G)
+    (C : ConjClasses G) : D.density C ≤ 1 := by
+  sorry
+```
+
+Its most famous special case *is* in Mathlib, though: for $`K = \mathbb{Q}(\zeta_m)` the theorem specializes to Dirichlet's theorem on primes in arithmetic progressions (a problem at the end of this chapter), and that is `Nat.infinite_setOf_prime_and_eq_mod`, proved — as the classical route goes — with Dirichlet characters and their $`L`-series rather than with Frobenius elements.
 That special case is genuinely available: whenever $`a` is a unit mod $`m`, there are infinitely many primes congruent to $`a`.
 
 ```lean
@@ -661,7 +705,7 @@ example (p : ℕ) [Fact p.Prime] : IsSquare (-1 : ZMod p) ↔ p % 4 ≠ 3 := by
 ## Frobenius elements control factorization
 
 The action of the Galois group on the roots of $`f` is itself a Mathlib bundle: `Polynomial.Gal f` is the Galois group of the splitting field, and `Polynomial.Gal.galActionHom` is its (faithful!) permutation action on the roots — precisely the object whose cycle structure item 3 speaks about.
-The equivalence of the three patterns has no Mathlib incarnation yet.
+The three patterns are three faces of that single permutation `galActionHom f K Frob_𝔓`, whose shape is read off by `Equiv.Perm.cycleType`; what has no Mathlib incarnation yet is the *theorem* identifying that cycle type with the factorization data of items 1 and 2.
 
 The word *faithful* is itself a theorem: over a splitting field, the permutation action on the roots is injective.
 Prove it.

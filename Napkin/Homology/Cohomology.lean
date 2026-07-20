@@ -6,11 +6,14 @@ import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.LinearAlgebra.Dual.Lemmas
+import Napkin.Missing.Cochains
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
+open Napkin.Missing.Cochain
 open CategoryTheory
 
 set_option pp.rawOnError true
@@ -422,8 +425,60 @@ example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
 
 ## Cohomology of spaces
 
-Mathlib does not build the singular cochain complex $`C^\bullet(X; G)` of a topological space, nor the singular cohomology groups $`H^n(X; G)`, so the cohomology of a _space_ has no direct counterpart here.
-What is available is the algebraic engine behind it: dualizing by $`\operatorname{Hom}(-, G)`.
+Mathlib does not build the singular cochain complex $`C^\bullet(X; G)` of a topological space, nor the singular cohomology groups $`H^n(X; G)`.
+Rebuilding the chain side — a singular simplex, its faces, the boundary $`\partial`, and $`\partial^2 = 0` — is carried out in `Napkin.Missing.Chains`; dualizing it is `Napkin.Missing.Cochains`.
+A cochain `Cochain X G n` is by definition an element of the dual of the chain group, a homomorphism `Chain X n →+ G`: exactly "a value in $`G` for each singular $`n`-simplex, extended linearly".
+
+```lean
+example {X : Type*} {G : Type*} [AddCommGroup G] (n : ℕ) :
+    Cochain X G n = (Chain X n →+ G) := rfl
+```
+
+The coboundary $`\delta` is the transpose of the boundary: $`(\delta c)(\sigma) = c(\partial\sigma)`, so `coboundary c` is `c` pre-composed with the boundary map.
+
+```lean
+example {X : Type*} {G : Type*} [AddCommGroup G] {n : ℕ}
+    (c : Cochain X G n) (a : Chain X (n + 1)) :
+    coboundary c a = c (Chain.boundary a) := rfl
+```
+
+The defining relation $`\delta^2 = 0` of a cochain complex is then just the transpose of $`\partial^2 = 0`: since $`(\delta^2 c)(\sigma) = c(\partial^2 \sigma) = c(0) = 0`, two coboundaries in a row annihilate every cochain.
+
+```lean
+example {X : Type*} {G : Type*} [AddCommGroup G] {n : ℕ}
+    (c : Cochain X G n) : coboundary (coboundary c) = 0 :=
+  coboundary_coboundary c
+```
+
+With $`\delta^2 = 0` in hand the coboundaries sit inside the cocycles, and the quotient is the cohomology group; `Cohomology X G n` models $`H^{n+1}(X; G)` (the degree is shifted because $`H^0` has no incoming coboundary), and it is a genuine abelian group.
+
+```lean
+noncomputable example {X : Type*} {G : Type*} [AddCommGroup G] (n : ℕ) :
+    AddCommGroup (Cohomology X G n) := inferInstance
+```
+
+The coboundary is additive — this is the sense in which $`\delta` is linear.
+Prove it.
+
+```lean
+example {X : Type*} {G : Type*} [AddCommGroup G] {n : ℕ}
+    (c₁ c₂ : Cochain X G n) :
+    coboundary (c₁ + c₂) = coboundary c₁ + coboundary c₂ := by
+  sorry
+```
+
+The prototype claimed a $`0`-cochain in $`\ker\delta` is constant on path components; combinatorially, $`\delta c = 0` forces `c` to agree across the two endpoints of every $`1`-simplex $`[v_0, v_1]`, because $`(\delta c)([v_0, v_1]) = c([v_1]) - c([v_0])`.
+Prove this local constancy.
+
+```lean
+example {X : Type*} {G : Type*} [AddCommGroup G] {c : Cochain X G 0}
+    (h : coboundary c = 0) (v : Simplex X 1) :
+    c (Chain.ofSimplex fun _ => v 1)
+      = c (Chain.ofSimplex fun _ => v 0) := by
+  sorry
+```
+
+Underlying all of this is dualizing a _single_ map by $`\operatorname{Hom}(-, G)`, which Mathlib does have.
 Over a commutative ring `R` the dual $`\operatorname{Hom}(M, R)` is `Module.Dual R M`, and a linear map $`M \to N` dualizes — reversing direction — to `LinearMap.dualMap`.
 
 ```lean

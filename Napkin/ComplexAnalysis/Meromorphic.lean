@@ -11,11 +11,13 @@ import Mathlib.Analysis.Complex.AbsMax
 import Mathlib.Analysis.Calculus.LogDeriv
 import Mathlib.MeasureTheory.Integral.CircleIntegral
 import Mathlib.FieldTheory.IsAlgClosed.Basic
+import Napkin.Missing.Residue
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
 
 open Polynomial
 
@@ -438,7 +440,7 @@ example (f : ℂ → ℂ) (z : ℂ) :
 What matters is the local behavior — `MeromorphicAt f z` constrains the function only on a punctured neighborhood of `z`, ignoring whatever junk value sits at `z` itself.
 
 `meromorphicOrderAt f z` returns the order of the pole/zero (negative for poles, positive for zeros, `0` for "$`f` neither vanishes nor blows up").
-Mathlib does not yet have a named residue for meromorphic functions, so the coefficient $`c_{-1}` has no lemma to cite; it would have to be read off the formal Laurent expansion by hand.
+Mathlib does not yet have a named residue for meromorphic functions, so the coefficient $`c_{-1}` has no lemma of its own; `residue` fills the gap below, read off the contour integral rather than the formal Laurent expansion.
 The order lands in $`\mathbb{Z} \cup \{\infty\}`, spelled `WithTop ℤ`, with the value $`\infty` reserved for the function that vanishes identically near the point.
 
 ```lean
@@ -468,12 +470,58 @@ example (f : ℂ → ℂ) (z : ℂ) (hf : MeromorphicAt f z) :
 
 Mathlib does not have a winding-number API for complex contours, and it does not yet formalize residues or the residue theorem — there is no residue API to state them with.
 The closest available primitive is `circleIntegral`, the integral of a function over a parametrized circle, written `∮ z in C(c, R), f z`.
+On top of it `Napkin.Missing.Residue` builds the missing objects, to be retired the day Mathlib adopts a residue vocabulary.
 
-The winding number of a counterclockwise unit circle about its center rests on the single computation $`\oint_\gamma \frac{1}{z} \; dz = 2\pi i`, which is `circleIntegral.integral_sub_inv_of_mem_ball`.
-Verify it for the unit circle centered at the origin.
+Everything rests on the single computation $`\oint_\gamma \frac{1}{z} \; dz = 2\pi i` for the unit circle, which is `circleIntegral.integral_sub_center_inv`.
 
 ```lean
-example : (∮ z in C(0, 1), (z - 0)⁻¹) = 2 * Real.pi * Complex.I := by
+example :
+    (∮ z in C(0, 1), (z - 0)⁻¹) = 2 * Real.pi * Complex.I :=
+  circleIntegral.integral_sub_center_inv 0 one_ne_zero
+```
+
+The *residue* $`\operatorname{Res}(f; z_0) = \frac{1}{2\pi i} \oint_\gamma f` is `residue f z₀ r`, the contour taken over the circle of radius `r` about `z₀`.
+From the computation above, the prototype $`\frac{1}{z - z_0}` has residue $`1`; this is `residue_sub_center_inv`.
+
+```lean
+example (z₀ : ℂ) : residue (fun z => (z - z₀)⁻¹) z₀ 1 = 1 :=
+  residue_sub_center_inv z₀ one_ne_zero
+```
+
+The *winding number* $`\operatorname{Wind}(\gamma, p) = \frac{1}{2\pi i} \oint_\gamma \frac{1}{z - p}` is `circleWindingNumber c r p` for the circle $`\gamma = C(c, r)`.
+A circle winds once around every point strictly inside it — `circleWindingNumber_of_mem_ball` — recovering the text's $`\operatorname{Wind}(\text{circle}, p) = 1`.
+
+```lean
+example (c p : ℂ) (r : ℝ) (hp : p ∈ Metric.ball c r) :
+    circleWindingNumber c r p = 1 :=
+  circleWindingNumber_of_mem_ball hp
+```
+
+Cauchy's residue theorem itself is beyond Mathlib, so `ResidueTheoremData` bundles its identity $`\frac{1}{2\pi i} \oint_\gamma f = \sum_p \operatorname{Wind}(\gamma, p) \operatorname{Res}(f; p)` as a hypothesis, exactly as the chapter states it.
+Its regular-loop corollary — every winding number equal to $`1`, so the integral is the plain sum of residues — is then a one-line derivation, `contour_eq_sum_residues`.
+
+```lean
+example (D : ResidueTheoremData) (h : ∀ p ∈ D.poles, D.wind p = 1) :
+    (2 * Real.pi * Complex.I)⁻¹ • (∮ z in C(D.c, D.r), D.f z)
+      = ∑ p ∈ D.poles, D.res p :=
+  D.contour_eq_sum_residues h
+```
+
+A simple pole $`\frac{a}{z - z_0}` has residue exactly its numerator $`a` — the text's $`100 z^{-1}` with residue $`100`.
+Prove it; `residue_const_mul` peels off the constant and the prototype finishes the job.
+
+```lean
+example (a z₀ : ℂ) :
+    residue (fun z => a * (z - z₀)⁻¹) z₀ 1 = a := by
+  sorry
+```
+
+Every other Laurent monomial contributes nothing: the residue of $`(z - w)^n` is $`0` for $`n \neq -1`.
+Prove the representative case $`n = 2`.
+
+```lean
+example (w z₀ : ℂ) (r : ℝ) :
+    residue (fun z => (z - w) ^ (2 : ℤ)) z₀ r = 0 := by
   sorry
 ```
 
@@ -491,6 +539,25 @@ example (f g : ℂ → ℂ) (x : ℂ) (hf : f x ≠ 0) (hg : g x ≠ 0)
   sorry
 ```
 
+The principle itself — $`\frac{1}{2\pi i} \oint_\gamma \frac{f'}{f} = Z - P` — is out of reach, so `ArgumentPrincipleData` bundles it as a hypothesis, carrying the zero count $`Z` and pole count $`P` inside the contour.
+When $`f` has no poles, the contour integral counts the zeros outright; prove this, `zeros_eq_contour` doing the arithmetic.
+
+```lean
+example (D : ArgumentPrincipleData) (h : D.P = 0) :
+    (D.Z : ℂ) = (2 * Real.pi * Complex.I)⁻¹ •
+      (∮ z in C(D.c, D.r), logDeriv D.f z) := by
+  sorry
+```
+
+This is the engine behind Rouché's theorem: two pole-free functions whose logarithmic-derivative integrals agree must enclose the same number of zeros, `eq_zero_count_of_eq`.
+
+```lean
+example (D E : ArgumentPrincipleData) (hDP : D.P = 0) (hEP : E.P = 0)
+    (hcong : (∮ z in C(D.c, D.r), logDeriv D.f z)
+      = ∮ z in C(E.c, E.r), logDeriv E.f z) : D.Z = E.Z :=
+  D.eq_zero_count_of_eq E hDP hEP hcong
+```
+
 ## Problems
 
 `Complex.exists_root` is the bare existence form (`Complex.isAlgClosed` for the typeclass version), while `Polynomial.degree_eq_card_roots` gives the count-with-multiplicity.
@@ -501,7 +568,7 @@ example {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z :=
 example : IsAlgClosed ℂ := Complex.isAlgClosed
 ```
 
-Rouché's theorem is not in Mathlib — it rests on the argument principle, which is also absent — so there is no lemma to cite for that problem.
+Rouché's theorem is not in Mathlib — it rests on the argument principle, which is also absent — but its zero-counting core is `ArgumentPrincipleData.eq_zero_count_of_eq` above, the two functions of the problem being $`f` and $`f + g`.
 
 The fundamental theorem of algebra problem asks that a polynomial of degree $`n` has $`n` roots.
 Because $`\mathbb{C}` is algebraically closed, the number of roots counted with multiplicity is exactly the degree.

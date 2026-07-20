@@ -11,11 +11,13 @@ import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Complex.OpenMapping
 import Mathlib.Geometry.Manifold.Complex
 import Mathlib.Geometry.Manifold.MFDeriv.Defs
+import Napkin.Missing.RamifiedMap
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
 
 open scoped Manifold Topology
 
@@ -359,6 +361,32 @@ example (f : ℂ → ℂ) (x : ℂ) (hf : AnalyticAt ℂ f x)
   sorry
 ```
 
+The bare order `analyticOrderAt f x` measures how fast `f` *vanishes* at `x`, so it reads the multiplicity only when $`f(p) = 0`.
+The genuine local multiplicity $`\mathrm{mult}_p(f)` recenters on the value, taking the order of $`z \mapsto f(z) - f(p)`; this recentered packaging is `ramificationIndex f p`, recorded in `Napkin.Missing.RamifiedMap` since Mathlib has the order but not the "ramification index of a surface map" wrapper.
+
+The power map $`z \mapsto z^5` ramifies to order $`5` at the origin, so its ramification index there is $`5`.
+
+```lean
+example : ramificationIndex (fun z : ℂ => z ^ 5) 0 = 5 :=
+  ramificationIndex_centeredMonomial 5 (by norm_num)
+```
+
+Because $`z \mapsto f(z) - f(p)` vanishes at $`p` by construction, the ramification index of a map analytic there is always at least $`1` — a nonconstant map never has multiplicity $`0`.
+
+```lean
+example (f : ℂ → ℂ) (p : ℂ)
+    (hf : AnalyticAt ℂ (fun z => f z - f p) p) :
+    ramificationIndex f p ≠ 0 :=
+  ramificationIndex_ne_zero f p hf
+```
+
+Show that the cube map $`z \mapsto z^3` has ramification index $`3` at the origin, its unique ramification point.
+
+```lean
+example : ramificationIndex (fun z : ℂ => z ^ 3) 0 = 3 := by
+  sorry
+```
+
 ## The sum of the orders of a meromorphic function
 
 The global statement $`\sum_p \mathrm{ord}_p(f) = 0` on a compact Riemann surface is not in Mathlib, again because the compact surface is not an available object.
@@ -383,8 +411,39 @@ example (f : ℂ → ℂ) (x : ℂ) (hf : AnalyticAt ℂ f x)
 
 ## The Hurwitz formula
 
-The Hurwitz formula couples the genera of $`X` and $`Y` with the ramification data of the map.
-The genus is a topological invariant that Mathlib does not yet attach to these surfaces, so there is no formal statement to exhibit here — the ingredients (multiplicities via `analyticOrderAt`, and degree) are the same ones formalized piecemeal above.
+The Hurwitz formula couples the genera of $`X` and $`Y` with the ramification data of the map, and the genus is a topological invariant that Mathlib does not yet attach to these surfaces.
+Following the pattern used for Riemann–Roch, the identity is bundled as a statement-as-structure `RiemannHurwitzData` in `Napkin.Missing.RamifiedMap`: it carries the source and target genera $`g_X, g_Y`, the degree $`d`, the finite set of ramification points with their multiplicities `e p`, and the Hurwitz identity
+$$`2 g_X - 2 = d (2 g_Y - 2) + \sum_p (\mathrm{mult}_p(f) - 1)`
+itself as a field.
+The multiplicities `e p` are the ramification indices of the previous section; the genus and degree stay abstract, so the structure records exactly the data Mathlib cannot yet build, and its consequences become derivable.
+
+Solving the identity for the source genus puts it in the form one reads a computed genus off of.
+
+```lean
+example {X : Type} (H : RiemannHurwitzData X) :
+    2 * (H.gX : ℤ)
+      = H.d * (2 * H.gY - 2) + H.totalRamification + 2 :=
+  H.two_gX_eq
+```
+
+The hyperelliptic case is a degree-$`2` cover of the sphere ($`d = 2`, $`g_Y = 0`) with $`2g + 2` branch points, each of multiplicity $`2`, so the total ramification $`\sum_p (\mathrm{mult}_p(f) - 1) = 2g + 2`.
+The formula then forces the source genus to be exactly $`g`, since $`2 g_X - 2 = 2(-2) + (2g + 2) = 2g - 2`.
+
+```lean
+example {X : Type} (H : RiemannHurwitzData X) (g : ℕ)
+    (hd : H.d = 2) (hY : H.gY = 0)
+    (hR : H.totalRamification = 2 * g + 2) : H.gX = g :=
+  H.genus_of_double_cover hd hY g hR
+```
+
+As a reader exercise, derive the Hurwitz monotonicity bound: a nonconstant map ($`d \geq 1`) onto a target of positive genus ($`g_Y \geq 1`) can only raise the genus, $`g_Y \leq g_X`, because $`2 g_Y - 2 \geq 0` makes the degree factor and the nonnegative ramification term only add.
+
+```lean
+example {X : Type} (H : RiemannHurwitzData X)
+    (hpos : 0 ≤ H.totalRamification) (hd : 1 ≤ H.d)
+    (hY : 1 ≤ H.gY) : (H.gY : ℤ) ≤ H.gX := by
+  sorry
+```
 
 ## The identity theorem
 

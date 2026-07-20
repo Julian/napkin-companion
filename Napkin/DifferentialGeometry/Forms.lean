@@ -6,11 +6,13 @@ import Napkin.Meta.Citations
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.Data.Real.Basic
+import Napkin.Missing.DifferentialForms
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
 
 set_option pp.rawOnError true
 
@@ -543,10 +545,58 @@ example (V : Type*) [AddCommGroup V] [Module ℝ V]
   sorry
 ```
 
+To assemble the *pointwise* form $`\alpha \colon U \to \Lambda^k` — a value of $`\Lambda^k` at every point — `Napkin.Missing.DifferentialForms` packages `DiffForm E k` as `E → (E [⋀^Fin k]→L[ℝ] ℝ)`, using the continuous alternating maps so that "smooth in the point" at least starts from a continuous fibre.
+The pointwise sum and scalar multiple make `DiffForm E k` a real vector space, inherited from the function-space structure.
+
+```lean
+example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
+    (k : ℕ) : Module ℝ (DiffForm E k) := inferInstance
+```
+
+A $`0`-form is *just a scalar function*: `Fin 0` is empty, so `DiffForm.ofScalar` turns `f : E → ℝ` into the form `p ↦ f p`, and evaluating it on the empty tuple of tangent vectors reads $`f` back.
+
+```lean
+example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
+    (f : E → ℝ) (p : E) :
+    DiffForm.eval (DiffForm.ofScalar f) p ![] = f p := by
+  sorry
+```
+
+The alternating law $`\alpha_p(v_1, v_2) = -\alpha_p(v_2, v_1)` is `DiffForm.eval_swap`, and its degenerate case — a repeated argument spans no volume — is `DiffForm.eval_eq_zero_of_eq`.
+Reprove the doubled-vector vanishing for a pointwise $`2`-form, now through the shim.
+
+```lean
+example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
+    (α : DiffForm E 2) (p : E) (v : E) :
+    DiffForm.eval α p ![v, v] = 0 := by
+  sorry
+```
+
 ## Exterior derivatives
 
-The exterior derivative $`d` and the wedge of differential forms on a smooth manifold do not yet have a settled interface here, so there is no direct rendering of $`d\alpha` or of the theorem $`d^2 = 0` on forms.
-What is available is the purely algebraic shadow of $`d^2 = 0`: the fact that in the exterior algebra a wedge square vanishes, $`dx \wedge dx = 0`, packaged as `ExteriorAlgebra.ι_sq_zero`.
+A genuine basis-free exterior derivative — and the wedge of forms it differentiates through — is out of reach here, so `Napkin.Missing.DifferentialForms` records $`d` in the statement-as-structure style instead.
+An `ExteriorDerivative E` bundles a degree-raising operator `d k : DiffForm E k → DiffForm E (k+1)`, additive and $`\mathbb{R}`-linear in the form, satisfying the law $`d^2 = 0` as a field `dd`.
+Bundling the defining properties this way lets the theorem's *consequences* be derived even without a construction.
+The chief consequence is the exercise "exact forms are closed": with `Closed α` meaning $`d\alpha = 0` and `Exact α` meaning $`\alpha = d\beta`, applying $`d` twice and invoking `dd` gives `D.exact_isClosed`.
+
+```lean
+example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
+    (D : ExteriorDerivative E) {α : DiffForm E 1} (h : D.Exact α) :
+    D.Closed α :=
+  D.exact_isClosed h
+```
+
+Additivity of $`d` propagates to closedness: a sum of closed forms is closed, `D.closed_add`.
+Prove the analogue for a scalar multiple.
+
+```lean
+example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
+    (D : ExteriorDerivative E) (c : ℝ) {α : DiffForm E 2}
+    (h : D.Closed α) : D.Closed (c • α) := by
+  sorry
+```
+
+Underneath is the purely algebraic shadow of $`d^2 = 0`: the fact that in the exterior algebra a wedge square vanishes, $`dx \wedge dx = 0`, packaged as `ExteriorAlgebra.ι_sq_zero`.
 
 ```lean
 recall ExteriorAlgebra.ι_sq_zero {R : Type*} [CommRing R]
