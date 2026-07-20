@@ -9,11 +9,14 @@ import Mathlib.Analysis.BoxIntegral.DivergenceTheorem
 import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.CrossProduct
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+import Napkin.Missing.Chains
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
+open Napkin.Missing.Chain
 
 set_option pp.rawOnError true
 
@@ -539,8 +542,37 @@ example (R : ℝ) : ∫ _θ in (0:ℝ)..(2*Real.pi), ∫ r in (0:ℝ)..R, r
 
 ## Boundaries
 
-Mathlib does not have a general theory of $`k`-chains and their boundary operator $`\partial`, so the definition $`\partial c = \sum_i (-1)^{i+1}(c_i^{\text{stop}} - c_i^{\text{start}})` and the theorem $`\partial^2 = 0` are not directly available.
-What is available is the one-dimensional shadow: the boundary of a subdivided interval telescopes to its endpoints, mirroring $`\partial [a, b] = \{b\} - \{a\}`.
+Mathlib has no general theory of $`k`-chains, so `Napkin.Missing.Chain` supplies one directly.
+It models a singular $`n`-simplex by the tuple `Simplex X n := Fin (n + 1) → X` of its ordered vertices $`[v_0, \dots, v_n]` — the affine simplex they span — and a chain `Chain X n := Simplex X n →₀ ℤ` as a formal $`\mathbb{Z}`-combination of them, the exact combinatorial data on which the boundary operator is a finite alternating sum.
+The face `face i` deletes the vertex $`v_i`, and `boundary` is the $`\mathbb{Z}`-linear extension of $`\partial\sigma = \sum_i (-1)^i [v_0, \dots, \widehat{v_i}, \dots, v_n]`, packaged as an additive homomorphism `Chain X (n + 1) →+ Chain X n`.
+
+The $`1`-simplex $`[v_0, v_1]` plays the role of the text's $`1`-cell $`[a, b]`, and its boundary is exactly the prototype $`\partial[a, b] = \{b\} - \{a\}`: the endpoint minus the startpoint.
+
+```lean
+example {X : Type*} (v : Simplex X 1) :
+    boundary (ofSimplex v)
+      = ofSimplex (fun _ => v 1) - ofSimplex (fun _ => v 0) :=
+  boundary_one v
+```
+
+The obligatory theorem $`\partial^2 = 0` holds on this model: every face-of-a-face appears twice in $`\partial(\partial\sigma)`, once with each sign, so the alternating double sum cancels in pairs — the combinatorial heart of the text's "boundary of the boundary is empty".
+This is `boundary_boundary`; use it to close the exercise.
+
+```lean
+example {X : Type*} {n : ℕ} (c : Chain X (n + 2)) :
+    boundary (boundary c) = 0 := by
+  sorry
+```
+
+Because `boundary` is an additive homomorphism, the text's rule $`\partial(\sum a_i c_i) = \sum a_i \partial c_i` is automatic; prove its additive shadow, that the boundary of a sum of chains is the sum of their boundaries.
+
+```lean
+example {X : Type*} {n : ℕ} (c₁ c₂ : Chain X (n + 1)) :
+    boundary (c₁ + c₂) = boundary c₁ + boundary c₂ := by
+  sorry
+```
+
+The one-dimensional shadow of all this is visible already in plain calculus: the boundary of a subdivided interval telescopes to its endpoints, mirroring $`\partial [a, b] = \{b\} - \{a\}`.
 Prove that a telescoping sum of successive differences collapses to the difference of the endpoints.
 
 ```lean

@@ -5,11 +5,13 @@ import Napkin.Meta.Citations
 import Mathlib.Topology.Homotopy.Equiv
 import Mathlib.Topology.Homotopy.Contractible
 import Mathlib.Algebra.Homology.HomologySequence
+import Napkin.Missing.RelativeHomology
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
 
 open CategoryTheory
 open scoped ContinuousMap
@@ -393,7 +395,58 @@ example {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
 ## The category of pairs
 
 The underlying single-space notion, homotopy equivalence, is Mathlib's {name}`ContinuousMap.HomotopyEquiv` (written `X ≃ₕ Y`).
-The category of pairs $`\mathbf{hPairTop}`, relative singular homology $`H_n(X, A)`, and the excision theorem are not part of Mathlib's current algebraic-topology library, so this chapter's constructions are described mathematically rather than in code.
+The category of pairs $`\mathbf{PairTop}`, relative singular homology $`H_n(X, A)`, and the excision theorem have no counterpart in Mathlib's current algebraic-topology library.
+So the pieces this chapter needs are recorded in `Napkin.Missing.RelativeHomology` — as faithfully to the definitions above as Lean allows — to be retired the day the library adopts them.
+
+A *pair* $`(X, A)` is a space `TopPair.total` together with a distinguished subspace `TopPair.sub`, and a *map of pairs* $`f \colon (X, A) \to (Y, B)` is a continuous map carrying $`A` into $`B`, packaged as `PairMap` with its `PairMap.mapsTo'` field.
+These pairs and their maps do form a category: the identity map of pairs is `PairMap.id`, composition is `PairMap.comp`, and the unit and associativity laws hold on the nose.
+
+```lean (name := pairCategory)
+example {P Q : TopPair} (f : PairMap P Q) :
+    PairMap.comp (PairMap.id Q) f = f :=
+  PairMap.id_comp f
+```
+
+Relative homology is modelled where it is tractable — algebraically.
+Fixing a degree, the chains of $`X` supported in $`A` form a subgroup $`C(A)` of the chain group $`C(X)`, and the *relative chains* $`C(X, A) = C(X)/C(A)` are `RelativeChains`, the quotient module.
+Inclusion followed by projection assembles the short complex $`0 \to C(A) \to C(X) \to C(X, A) \to 0` as `pairShortComplex`, and it is short exact: the inclusion is injective, the projection surjective, and image equals kernel in the middle.
+
+```lean (name := pairSES)
+example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
+    (N : Submodule R M) : (pairShortComplex N).ShortExact :=
+  pairShortComplex_shortExact N
+```
+
+Bundling three consecutive chain groups with a subcomplex — the data of `RelChainData` — makes the quotients into a genuine chain complex `RelChainData.relShortComplex`, whose middle homology `RelChainData.relativeHomology` is the relative homology group $`H_n(X, A)`.
+When the subspace already carries every $`n`-chain, that middle relative group vanishes, giving `RelChainData.relativeHomology_isZero_of_top` — the algebraic shadow of $`H_n(A, A) = 0`.
+
+Underlying the short exact sequence is the "image lies inside kernel" relation: in the pair's short complex, inclusion into $`C(X)` followed by projection onto $`C(X, A)` is zero, because chains from $`A` project to $`0`.
+Verify it.
+
+```lean (name := pairComposeZero)
+example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
+    (N : Submodule R M) :
+    (pairShortComplex N).f ≫ (pairShortComplex N).g = 0 := by
+  sorry
+```
+
+Every element of $`H_n(X, A)` has a representative in $`C(X)`, because the projection $`C(X) \to C(X, A)` hits every relative chain.
+Show that this projection is surjective.
+
+```lean (name := mkQSurjective)
+example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
+    (N : Submodule R M) : Function.Surjective N.mkQ := by
+  sorry
+```
+
+Collapsing $`X` onto a subspace that is all of it leaves nothing behind: when $`A = X`, the relative chains $`C(X, X)` have a single element, matching $`H_n(X, X) = 0`.
+Prove the relative chains of the full subspace are a subsingleton.
+
+```lean (name := relChainsTop)
+example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M] :
+    Subsingleton (RelativeChains (⊤ : Submodule R M)) := by
+  sorry
+```
 
 Homotopy equivalence is reflexive: every space is homotopy equivalent to itself.
 Construct this identity homotopy equivalence.

@@ -10,11 +10,13 @@ import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.Analysis.Complex.Polynomial.Basic
+import Napkin.Missing.IntersectionMultiplicity
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
 
 open Polynomial
 
@@ -428,7 +430,71 @@ example (R : Type*) [CommRing R] : Prop := IsBezout R
 ```
 
 The projective Bézout theorem, and the degree of a projective variety, are not part of the algebraic-geometry library, which develops intersection theory scheme-theoretically instead.
-What _is_ available is the one-dimensional case: a curve $`\mathbb{V}(f)` of degree $`k` meets a line in at most $`k` points, which is the statement that a nonzero polynomial of degree $`k` has at most $`k` roots.
+So `Napkin.Missing.IntersectionMultiplicity` supplies them.
+The *degree* of a plane curve $`\mathbb{V}(f)` is the total degree of its homogeneous polynomial, `curveDegree f`, and the *Bézout number* $`\deg f \cdot \deg g` is `bezoutNumber f g`.
+
+```lean
+example {k : Type*} [Field k] (f g : MvPolynomial (Fin 3) k) :
+    bezoutNumber f g = curveDegree f * curveDegree g :=
+  bezoutNumber_eq f g
+```
+
+The Bézout number is symmetric: intersecting $`f` with $`g` predicts the same count as intersecting $`g` with $`f`.
+
+```lean
+example {k : Type*} [Field k] (f g : MvPolynomial (Fin 3) k) :
+    bezoutNumber f g = bezoutNumber g f :=
+  bezoutNumber_comm f g
+```
+
+The degree is additive over components: a curve that factors into nonzero homogeneous pieces $`f_1 \cdot f_2` has degree $`\deg f_1 + \deg f_2`, which is why the union of three lines in Pascal's theorem is a cubic.
+
+```lean
+example {k : Type*} [Field k] {m n : ℕ}
+    {f g : MvPolynomial (Fin 3) k} (hf : f.IsHomogeneous m)
+    (hg : g.IsHomogeneous n) (hf0 : f ≠ 0) (hg0 : g ≠ 0) :
+    curveDegree (f * g) = curveDegree f + curveDegree g :=
+  curveDegree_mul hf hg hf0 hg0
+```
+
+The *intersection multiplicity* $`I_p(f, g)` at a point is the dimension $`\dim_k(\mathcal{O}_p / (f, g))` of the local quotient ring, `intersectionMult k 𝒪ₚ f g`.
+A point lying off one of the curves — where $`(f, g)` is the unit ideal — contributes nothing.
+
+```lean
+example (k R : Type*) [Field k] [CommRing R] [Algebra k R] (f g : R)
+    (h : Ideal.span {f, g} = ⊤) :
+    intersectionMult k R f g = 0 :=
+  intersectionMult_eq_zero_of_span_eq_top k R f g h
+```
+
+The theorem itself is out of reach, so it is bundled as a hypothesis `BezoutData`: two homogeneous curves, their finitely many intersection points, the multiplicity at each, and the identity $`\sum_p I_p(f, g) = \deg f \cdot \deg g`.
+From that hypothesis the classical consequences follow.
+The count $`\lvert X \cap Y \rvert \le \deg X \cdot \deg Y` of the "Bézout's theorem for curves" corollary is one of them, since each point contributes at least one.
+
+```lean
+example (B : BezoutData ℂ) : B.points.card ≤ bezoutNumber B.f B.g :=
+  B.card_points_le
+```
+
+A line is a degree-$`1` curve, so it meets a degree-$`d` curve in exactly $`d` points counted with multiplicity.
+Prove it from the bundled Bézout identity.
+
+```lean
+example (B : BezoutData ℂ) (h : B.f.totalDegree = 1) :
+    ∑ p ∈ B.points, B.mult p = B.g.totalDegree := by
+  sorry
+```
+
+Hence a line and a conic meet in at most two points.
+Show it.
+
+```lean
+example (B : BezoutData ℂ) (hf : B.f.totalDegree = 1)
+    (hg : B.g.totalDegree = 2) : B.points.card ≤ 2 := by
+  sorry
+```
+
+The one-dimensional shadow that Mathlib can prove directly is the univariate case: a curve $`\mathbb{V}(f)` of degree $`k` meets a line in at most $`k` points, which is the statement that a nonzero polynomial of degree $`k` has at most $`k` roots.
 Show that the number of roots (with multiplicity) is bounded by the degree.
 
 ```lean

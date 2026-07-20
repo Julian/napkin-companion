@@ -8,11 +8,13 @@ import Mathlib.Order.Cofinal
 import Mathlib.Order.Ideal
 import Mathlib.Order.PFilter
 import Mathlib.Order.RelClasses
+import Napkin.Missing.Forcing
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
 
 set_option pp.rawOnError true
 
@@ -432,63 +434,77 @@ Show that in a countable transitive model $`M` of ZFC, one can find an $`M`-gene
 :::LEANCOMPANION
 :::
 
-The forcing machinery itself is absent from Mathlib.
-Transitive models of ZFC, generic filters, $`\mathbb{P}`-names, the generic extension $`M[G]`, and the forcing relation $`\Vdash` are all beyond the current library, so the heart of this chapter is developed entirely on paper.
-What _is_ formalized is the order-theoretic scaffolding underneath: a poset is a `PartialOrder`, dense sets and filters live in `Order`, and — remarkably — the Rasiowa–Sikorski lemma appears verbatim.
-Where a genuinely order-theoretic notion has a Mathlib name, we point it out below; everything else stays informal.
+The deep machinery of forcing is genuinely beyond Mathlib.
+A transitive model $`M` of ZFC, the $`\mathbb{P}`-names, the generic extension $`M[G]`, and the forcing relation $`\Vdash` all live above the current library, so the heart of this chapter is developed entirely on paper.
+But the order-theoretic _foundation_ the chapter sets up first — the poset of conditions, dense sets, compatibility, filters, and genericity — is completely elementary, and Mathlib has no forcing-flavoured names for it.
+So `Napkin.Missing.Forcing` defines exactly these, faithful to the text, and the worked facts below run on them.
 
 ## Setting up posets
 
-A poset $`(\mathbb{P}, \le)` is exactly a `PartialOrder`.
+A poset $`(\mathbb{P}, \le)` is a `PartialOrder` — a `Preorder` already suffices for everything here — and its maximum condition $`1_\mathbb{P}` is an `OrderTop`'s `⊤`.
 The "infinite unary tree" $`(\mathbb{N}, \ge)` is the order dual `ℕᵒᵈ`.
 
 ```lean
 example : PartialOrder ℕᵒᵈ := inferInstance
 ```
 
-A subset $`D \subseteq \mathbb{P}` is dense when for every $`p` there is a $`q \in D` with $`q \le p`.
-This is a plain proposition, and the whole space $`\mathbb{P}` is trivially dense.
+A subset $`D \subseteq \mathbb{P}` is `Forcing.Dense` when every condition has a stronger one inside $`D`, and the whole space is dense because each condition is stronger than itself.
 
 ```lean
-example (P : Type*) [PartialOrder P] :
-    ∀ p : P, ∃ q ∈ (Set.univ : Set P), q ≤ p :=
-  fun p => ⟨p, Set.mem_univ p, le_rfl⟩
+example (P : Type*) [Preorder P] : Forcing.Dense (Set.univ : Set P) :=
+  Forcing.dense_univ
 ```
 
-Mathlib records the _order-dual_ of this notion — "arbitrarily large" rather than "arbitrarily small" — as `IsCofinal` (and its bundled form `Order.Cofinal`), which its own documentation flags as "the dense sets used in forcing", read in $`\mathbb{P}^{\mathrm{op}}`.
-The whole space is cofinal.
+:::aside "The dense sets of forcing, dualized"
+Mathlib records the _order dual_ of this notion — "arbitrarily large" rather than "arbitrarily small" — as `IsCofinal`, which its own documentation flags as "the dense sets used in forcing", read in $`\mathbb{P}^{\mathrm{op}}`.
+Reading `Forcing.Dense D` in $`\mathbb{P}` is the same as reading `IsCofinal D` in `Pᵒᵈ`; the shim keeps the text's convention that stronger conditions go _down_.
+:::
+
+Two conditions are `Forcing.Compatible` when some condition is stronger than both, and `Forcing.Incompatible` when not.
+Every condition is compatible with itself, and none is incompatible with itself.
 
 ```lean
-example (P : Type*) [PartialOrder P] :
-    IsCofinal (Set.univ : Set P) := IsCofinal.univ
+example (P : Type*) [Preorder P] (p : P) : Forcing.Compatible p p :=
+  Forcing.compatible_self p
+
+example (P : Type*) [Preorder P] (p : P) :
+    ¬ Forcing.Incompatible p p :=
+  Forcing.not_incompatible_self p
 ```
 
-Two conditions $`p`, $`q` are compatible when some $`r` lies below both; every condition is compatible with itself.
+The chapter noted that any downward "slice" — indeed the whole $`\mathbb{P}` — is dense, and more generally any superset of a dense set stays dense.
+Prove it: unfold `Forcing.Dense` and relocate the witness.
 
 ```lean
-example (P : Type*) [PartialOrder P] (p : P) : ∃ r : P, r ≤ p ∧ r ≤ p :=
-  ⟨p, le_rfl, le_rfl⟩
-```
-
-A filter — nonempty, upward-closed, and downward-directed — is `Order.PFilter`, which coerces to its underlying set of conditions.
-
-```lean
-example (P : Type*) [PartialOrder P] (F : Order.PFilter P) : Set P := F
-```
-
-The first question asked you to show that a filter always contains the maximum condition $`1_\mathbb{P}`.
-With a top element `⊤` standing in for $`1_\mathbb{P}`, prove it: pick any element of the filter and push it up.
-
-```lean
-example (P : Type*) [PartialOrder P] [OrderTop P] (F : Order.PFilter P) :
-    ⊤ ∈ F := by
+example (P : Type*) [Preorder P] {D E : Set P} (hDE : D ⊆ E)
+    (hD : Forcing.Dense D) : Forcing.Dense E := by
   sorry
 ```
 
 ## More properties of posets
 
-For a _countable_ model, the Rasiowa–Sikorski lemma guarantees a generic filter, and this is one of the few genuinely set-theoretic statements of the chapter that Mathlib does have — as `Order.idealOfCofinals`.
-Given a starting condition and a countable family of cofinal (dense) sets, it builds an ideal meeting every one of them.
+A `Forcing.IsForcingFilter` is a nonempty, upward-closed set of conditions any two of which are compatible — the text's definition verbatim.
+Mathlib's `Order.PFilter` is close, but it demands the stronger "downward directed" — a common lower bound _inside_ the set — and its name would collide with the analytic `Order.Filter`.
+A filter carries its `nonempty` witness and its two closure fields.
+
+```lean
+example (P : Type*) [Preorder P] {G : Set P}
+    (h : Forcing.IsForcingFilter G) : G.Nonempty := h.nonempty
+```
+
+A forcing notion is `Forcing.Splitting` when two incompatible conditions sit below every condition — the property that forces a generic set out of $`M` — and a set of pairwise incompatible conditions is a `Forcing.Antichain`.
+
+The first question of the chapter asked you to show that a filter always contains the maximum condition $`1_\mathbb{P}`.
+With $`1_\mathbb{P} = ⊤`, prove it: pick any element of the filter and push it up.
+
+```lean
+example (P : Type*) [Preorder P] [OrderTop P] {G : Set P}
+    (h : Forcing.IsForcingFilter G) : ⊤ ∈ G := by
+  sorry
+```
+
+For a _countable_ model the Rasiowa–Sikorski lemma builds a generic filter, and this is one of the few genuinely set-theoretic statements of the chapter that Mathlib does have — as `Order.idealOfCofinals`.
+Given a starting condition and a countable family of cofinal (dense) sets, it produces an ideal meeting every one of them.
 
 ```lean
 example (P : Type*) [Preorder P] (p : P) {ι : Type*} [Encodable ι]
@@ -496,31 +512,21 @@ example (P : Type*) [Preorder P] (p : P) {ι : Type*} [Encodable ι]
   Order.idealOfCofinals p 𝒟
 ```
 
-The resulting ideal contains the chosen condition and is generic: it meets each cofinal set in the family.
+A `Forcing.IsGeneric 𝒟 G` filter meets every dense set in the family $`𝒟`; taking $`𝒟` to be the dense sets that belong to $`M` recovers "$`M`-generic".
+That meeting is the whole content of genericity — extract it.
 
 ```lean
-example (P : Type*) [Preorder P] (p : P) {ι : Type*} [Encodable ι]
-    (𝒟 : ι → Order.Cofinal P) : p ∈ Order.idealOfCofinals p 𝒟 :=
-  Order.mem_idealOfCofinals p 𝒟
-
-example (P : Type*) [Preorder P] (p : P) {ι : Type*} [Encodable ι]
-    (𝒟 : ι → Order.Cofinal P) (i : ι) :
-    ∃ x : P, x ∈ 𝒟 i ∧ x ∈ Order.idealOfCofinals p 𝒟 :=
-  Order.cofinal_meets_idealOfCofinals p 𝒟 i
-```
-
-The chapter noted that any superset of a dense set is again dense.
-Prove the cofinal analogue: a set containing a cofinal set is cofinal.
-
-```lean
-example (P : Type*) [Preorder P] (s t : Set P) (hst : s ⊆ t)
-    (hs : IsCofinal s) : IsCofinal t := by
+example (P : Type*) [Preorder P] {𝒟 : Set (Set P)} {G D : Set P}
+    (h : Forcing.IsGeneric 𝒟 G) (hD : D ∈ 𝒟) (hd : Forcing.Dense D) :
+    (G ∩ D).Nonempty := by
   sorry
 ```
 
 ## Names, and the generic extension
 
-The name hierarchy $`\mathrm{Name}_\alpha` and facts like $`(\check x)^G = x` are proved by _rank induction_, the transfinite induction principle backing well-founded orders.
+The name hierarchy $`\mathrm{Name}_\alpha`, the interpretations $`\tau^G`, the extension $`M[G]`, and the forcing relation $`\Vdash` have no Mathlib counterpart.
+Each is built by transfinite recursion over a model of set theory, machinery the library does not carry, so all of it stays on paper.
+What _is_ available is their engine — _rank induction_, the transfinite induction principle backing well-founded orders.
 Mathlib packages "the order $`<` is well-founded" as `WellFoundedLT`, and $`\mathbb{N}` has it.
 
 ```lean
@@ -531,6 +537,7 @@ Rank induction is available precisely because every element is _accessible_ unde
 Prove that in any `WellFoundedLT` order each element is `Acc`essible.
 
 ```lean
-example (α : Type*) [Preorder α] [WellFoundedLT α] (a : α) : Acc (· < ·) a := by
+example (α : Type*) [Preorder α] [WellFoundedLT α] (a : α) :
+    Acc (· < ·) a := by
   sorry
 ```
