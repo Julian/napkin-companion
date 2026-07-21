@@ -7,11 +7,13 @@ import Mathlib.Topology.VectorBundle.Basic
 import Mathlib.Topology.VectorBundle.Constructions
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.RingTheory.PicardGroup
+import Napkin.Missing.HolomorphicLineBundle
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
 
 set_option pp.rawOnError true
 
@@ -337,7 +339,8 @@ example (B : Type*) [TopologicalSpace B] (b : B) :
 ```
 
 The gap is the last word of the definition.
-These bundles come in topological and smooth flavors, but there is no *holomorphic* vector bundle yet, and that difference is precisely where all of this chapter's content lives — so the exercises below stay in the topological world that is present.
+These bundles come in topological and smooth flavors, but there is no *holomorphic* vector bundle yet, and that difference is precisely where all of this chapter's content lives.
+What survives the gap is the *transition data* of the definition — the nonvanishing scaling factors that weld the charts — and that datum is enough to model the twisted bundles below; it is packaged as `Napkin.Missing.LineBundleCocycle`.
 
 The zero section sends each base point to the zero of the fiber above it; check that it does land back over the point it came from.
 
@@ -366,12 +369,35 @@ example (B F : Type*) :
   Bundle.TotalSpace.toProd B F
 ```
 
-The twisted bundle built by welding with a factor of $`z` — the Möbius strip over the Riemann sphere — has no direct expression here, since the holomorphic bundle theory it needs is absent.
-Working inside the identification above instead, check that its first coordinate reads off the base point.
+The twisted bundle built by welding with a factor of $`z` — the Möbius strip over the Riemann sphere — is not a holomorphic bundle the library can build, but its *transition data* is.
+That data is an open cover, indexed by $`I`, with nonvanishing scaling factors $`g_{ij} \colon B \to \mathbb{C}^\times` welding chart $`j` to chart $`i` over each overlap, subject to the cocycle condition $`g_{ij} \cdot g_{jk} = g_{ik}` — packaged as `LineBundleCocycle I B`.
+The trivial bundle is the one whose every weld is the constant $`1`, with no twist anywhere.
 
 ```lean
-example (B F : Type*) (z : Bundle.TotalSpace F (Bundle.Trivial B F)) :
-    (Bundle.TotalSpace.toProd B F z).1 = z.proj := by
+example (I B : Type*) (i j : I) (b : B) :
+    (1 : LineBundleCocycle I B).g i j b = 1 :=
+  LineBundleCocycle.one_g i j b
+```
+
+The Riemann sphere's two charts $`z` and $`t = \frac{1}{z}` overlap on $`\mathbb{C}^\times`, and welding them with a factor of $`z^n` is the degree-$`n` bundle $`O(n)`; the twist above is $`O(1)`.
+Over the overlap, the weld from the first chart to the second reads off exactly that factor.
+
+```lean
+example (z : ℂˣ) : (O 1).g 0 1 z = z := by rw [O_zero_one]; simp
+```
+
+Reversing the two charts inverts the weld — the cocycle law forces $`g_{10} = g_{01}^{-1}` — so the factor the other way is $`z^{-1}`.
+
+```lean
+example (z : ℂˣ) : (O 1).g 1 0 z = z⁻¹ := by rw [O_one_zero]; simp
+```
+
+A chart welds to itself without any twist: the self-transition $`g_{ii}` is not assumed to be $`1`, but forced to be by the cocycle law (feed it $`i = j = k`).
+Prove it.
+
+```lean
+example {I B : Type*} (C : LineBundleCocycle I B) (i : I) (b : B) :
+    C.g i i b = 1 := by
   sorry
 ```
 
@@ -427,8 +453,30 @@ noncomputable example (R : Type*) [CommRing R] [IsDomain R] :
     ClassGroup R ≃* CommRing.Pic R := ClassGroup.equivPic R
 ```
 
-None of this is connected to analytic line bundles over Riemann surfaces, whose story stops at the smooth vector bundles above.
-Still, the algebraic Picard group already sees "every line bundle is trivial" over the nicest bases: over $`\mathbb{Z}`, a unique-factorization domain, it collapses to a single element.
+This algebraic Picard group is not connected to analytic line bundles over Riemann surfaces, but the cocycle presentation from earlier carries the same *product structure* of the overview directly.
+Line bundles multiply by welding pointwise, which "adds up the twists", and under this product they form an abelian group — the Picard group of the base.
+
+```lean
+noncomputable example (I B : Type*) :
+    CommGroup (LineBundleCocycle I B) := inferInstance
+```
+
+On the Riemann sphere this makes the degree add: tensoring $`O(m)` with $`O(n)` gives $`O(m + n)`, so the twists $`O(n)` realize the integers inside the Picard group.
+
+```lean
+example (m n : ℤ) : O m * O n = O (m + n) := O_mul_O m n
+```
+
+Reversing a weld everywhere gives the inverse bundle; in the group this is the identity $`g_{ij} = g_{ji}^{-1}` once more.
+Prove that the reverse weld of any bundle is the pointwise inverse.
+
+```lean
+example {I B : Type*} (C : LineBundleCocycle I B) (i j : I) (b : B) :
+    C.g i j b = (C.g j i b)⁻¹ := by
+  sorry
+```
+
+The algebraic Picard group, for its part, already sees "every line bundle is trivial" over the nicest bases: over $`\mathbb{Z}`, a unique-factorization domain, it collapses to a single element.
 
 ```lean
 example : Subsingleton (CommRing.Pic ℤ) := by

@@ -5,6 +5,7 @@ import Napkin.Meta.Citations
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.Algebra.Ring.Prod
+import Napkin.Missing.CupProduct
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -12,6 +13,7 @@ open Verso.Genre.Manual.InlineLean
 open scoped TensorProduct
 
 open Napkin
+open Napkin.Missing
 
 set_option pp.rawOnError true
 
@@ -575,9 +577,10 @@ Show that the induced map $`H^\bullet(S^m \vee S^n; \mathbb{Z}) \to H^\bullet(S^
 :::LEANCOMPANION
 :::
 
-The cohomology ring, cup product, cross product, Poincaré duality, and Künneth formula of this chapter are topological constructions that Mathlib does not yet carry, so those sections are presented here mathematically only.
+The cohomology ring, cross product, Poincaré duality, and Künneth formula of this chapter are topological constructions that Mathlib does not yet carry, so those sections are presented here mathematically only.
 What Mathlib does formalize is the *algebraic* skeleton underneath: graded rings, the exterior algebra $`\bigwedge^\bullet(V)`, product rings, and the tensor products that make the cross product and Künneth formula tick.
-The sections below exercise exactly that skeleton.
+The cup product itself, absent from Mathlib, is supplied directly by the companion module `Napkin.Missing.CupProduct`, built on the singular cochains of the previous chapter.
+The sections below exercise exactly that skeleton, and that construction.
 
 ## Poincaré duality
 
@@ -621,8 +624,64 @@ example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (x y : M) :
 
 ## Cup products
 
-The cup product $`\smile` on singular cochains, and the graded ring $`H^\bullet(X; R)` it induces, are topological and not present in Mathlib.
-The purely algebraic shadow — an anticommutative graded ring built from exterior powers — is exactly the exterior algebra of the previous section, so there is no separate construction to formalize here.
+The cup product $`\smile` on singular cochains is not present in Mathlib, so the companion module `Napkin.Missing.CupProduct` defines it, `cup`, directly on the singular cochains `Cochain X R p` of the previous chapter.
+A `p`-cochain and a `q`-cochain over a commutative ring produce a `(p+q)`-cochain by the Alexander–Whitney formula: on a single simplex, evaluate the first cochain on the *front face* `frontFace` (the first $`p+1` vertices) and the second on the *back face* `backFace` (the last $`q+1` vertices), then multiply in the ring.
+
+```lean
+example {X R : Type*} [CommRing R] {p q : ℕ} (a : Cochain X R p)
+    (b : Cochain X R q) (σ : Simplex X (p + q)) :
+    cup a b (Chain.ofSimplex σ)
+      = a (Chain.ofSimplex (frontFace σ))
+        * b (Chain.ofSimplex (backFace σ)) :=
+  cup_ofSimplex a b σ
+```
+
+Because the ring multiplication distributes, the cup product is bilinear — additive in each argument.
+Here is additivity in the first argument.
+
+```lean
+example {X R : Type*} [CommRing R] {p q : ℕ}
+    (a₁ a₂ : Cochain X R p) (b : Cochain X R q) :
+    cup (a₁ + a₂) b = cup a₁ b + cup a₂ b :=
+  cup_add_left a₁ a₂ b
+```
+
+The text asks which $`0`-cochain is the identity for $`\smile`.
+It is `cochainOne`, the $`0`-cochain sending every $`0`-simplex to $`1 \in R`; cupping with it on the right recovers the original cochain, since the back $`0`-face contributes the factor $`1` and the front $`p`-face of a $`(p+0)`-simplex is the whole simplex.
+
+```lean
+example {X R : Type*} [CommRing R] {p : ℕ} (a : Cochain X R p) :
+    cup a (cochainOne : Cochain X R 0) = a :=
+  cup_cochainOne_right a
+```
+
+The lemma "$`\delta` with cup products", $`\delta(\phi \smile \psi) = \delta\phi \smile \psi + (-1)^p \phi \smile \delta\psi`, together with the on-the-nose associativity of $`\smile`, is what makes the cohomology ring; both are recorded — not proved — as the fields of `CupProductLaws`, since the descent to $`H^\bullet(X; R)` is out of Mathlib's reach.
+From the Leibniz field alone one derives the step that lets $`\smile` descend to cohomology: the cup product of two cocycles is again a cocycle.
+
+```lean
+example {X R : Type*} [CommRing R] (L : CupProductLaws X R) {p q : ℕ}
+    (a : Cochain X R p) (b : Cochain X R q)
+    (ha : Cochain.coboundary a = 0) (hb : Cochain.coboundary b = 0) :
+    Cochain.coboundary (cup a b) = 0 :=
+  L.cup_cocycle ha hb
+```
+
+Prove the companion half of bilinearity, additivity in the *second* argument, mirroring `cup_add_left` above.
+
+```lean
+example {X R : Type*} [CommRing R] {p q : ℕ}
+    (a : Cochain X R p) (b₁ b₂ : Cochain X R q) :
+    cup a (b₁ + b₂) = cup a b₁ + cup a b₂ := by
+  sorry
+```
+
+Show that cupping with the zero cochain gives zero.
+
+```lean
+example {X R : Type*} [CommRing R] {p q : ℕ} (a : Cochain X R p) :
+    cup a (0 : Cochain X R q) = 0 := by
+  sorry
+```
 
 ## Wedge sums
 

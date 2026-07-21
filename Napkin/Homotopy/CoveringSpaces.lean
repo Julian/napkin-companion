@@ -7,11 +7,13 @@ import Mathlib.Topology.Covering.Quotient
 import Mathlib.Topology.Homotopy.Lifting
 import Mathlib.Topology.Connected.LocPathConnected
 import Mathlib.Analysis.Complex.CoveringMap
+import Napkin.Missing.CoveringClassification
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
 open scoped Topology unitInterval
 
 set_option pp.rawOnError true
@@ -575,9 +577,8 @@ example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
   cov.injective_path_homotopic_map e₀ e₁
 ```
 
-The classification theorem — the Galois correspondence between subgroups of $`\pi_1(B)` and connected covers, with normal subgroups matching the regular coverings — is not yet in Mathlib, so we cannot formalize it here.
-What we can do is the uniqueness half of the isomorphism story: a map of covering projections out of a connected space is determined by a single value.
-Prove that two continuous maps into a cover which project to the same map and agree at one point are equal.
+The uniqueness half of the isomorphism story is already available: a map of covering projections out of a connected space is determined by a single value.
+Two continuous maps into a cover which project to the same map and agree at one point are equal — the diagonal at which they agree is open, closed, and nonempty.
 
 ```lean
 example {E₁ E₂ B : Type*} [TopologicalSpace E₁] [TopologicalSpace E₂]
@@ -585,5 +586,57 @@ example {E₁ E₂ B : Type*} [TopologicalSpace E₁] [TopologicalSpace E₂]
     (cov : IsCoveringMap p) (f g : E₁ → E₂)
     (hf : Continuous f) (hg : Continuous g) (he : p ∘ f = p ∘ g)
     (x : E₁) (hx : f x = g x) : f = g := by
+  sorry
+```
+
+## The classification theorem
+
+The classification theorem — the Galois correspondence between subgroups of $`\pi_1(B)` and connected covers, with normal subgroups matching the regular coverings — is the greatest triumph of the theory, and none of it is in Mathlib.
+So `Napkin.Missing.CoveringClassification` bundles the correspondence as data: for a base with fundamental group $`G = \pi_1(B)`, a `CoveringClassificationData G` packages a type `Cover` of connected covers, the order isomorphism `corr` between subgroups of $`G` and covers, the fact that the regular covers are exactly those matched with normal subgroups, and the sheet count read off as the index of the subgroup.
+
+```lean
+example {G : Type*} [Group G] (D : CoveringClassificationData G)
+    (H : Subgroup G) : D.sheets (D.corr H) = H.index :=
+  D.sheets_eq_index H
+```
+
+The two extremes of the text fall out of the correspondence.
+The trivial subgroup $`\bot` is matched with the *universal cover*, and it really is the bottom of the poset — it covers every other cover.
+The whole group $`\top` is matched with the *base itself*, and it is a one-sheeted cover, because $`\top` has index $`1`.
+
+```lean
+example {G : Type*} [Group G] (D : CoveringClassificationData G) :
+    D.sheets D.baseCover = 1 :=
+  D.sheets_baseCover
+
+example {G : Type*} [Group G] (D : CoveringClassificationData G)
+    (c : D.Cover) : D.universalCover ≤ c :=
+  D.universalCover_le c
+```
+
+The universal cover has as many sheets as the fundamental group has elements, since the trivial subgroup has index $`\left\lvert \pi_1(B) \right\rvert`.
+Both extremes are regular, because $`\bot` and $`\top` are normal.
+
+```lean
+example {G : Type*} [Group G] (D : CoveringClassificationData G) :
+    D.sheets D.universalCover = Nat.card G :=
+  D.sheets_universalCover
+```
+
+The correspondence is an order isomorphism, so it is injective: distinct subgroups give genuinely distinct covers.
+Prove it.
+
+```lean
+example {G : Type*} [Group G] (D : CoveringClassificationData G)
+    (H₁ H₂ : Subgroup G) (h : D.corr H₁ = D.corr H₂) : H₁ = H₂ := by
+  sorry
+```
+
+The regular covers are, by definition, those matched with normal subgroups.
+Read off one direction: a regular cover comes from a normal subgroup.
+
+```lean
+example {G : Type*} [Group G] (D : CoveringClassificationData G)
+    (H : Subgroup G) (h : D.Regular (D.corr H)) : H.Normal := by
   sorry
 ```

@@ -9,11 +9,13 @@ import Mathlib.Analysis.Calculus.Implicit
 import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
 import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.Analysis.Complex.Basic
+import Napkin.Missing.PlaneCurveNode
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
 
 open MvPolynomial
 
@@ -438,5 +440,47 @@ example : (X 0 ^ 2 * X 1 : MvPolynomial (Fin 3) ℂ).IsHomogeneous 3 := by
 
 ## Nodes of a plane curve
 
-There is no dedicated notion of a *node* or of the resolution of singularities in the installed library, so the discussion above stays informal.
-The transversal crossing at the origin is the failure of the smoothness criterion from the first section: at a node both partial derivatives vanish, so the Jacobian condition that guarantees a chart is not met there.
+The installed library has no dedicated notion of a *node*, so `Napkin.Missing.PlaneCurveNode` supplies one, built on exactly the `pderiv` machinery of the first section.
+A point is an `IsSingularPoint` of $`f` when $`f` and both partials vanish there — the failure of the smoothness criterion — and its `IsSmoothPoint` counterpart is the negation.
+Among singular points, a node is an *ordinary double point*: one whose `hessian`, the $`2 \times 2` matrix of second partials, has nonzero determinant `hessianDet`, computed with `Matrix.det_fin_two`.
+
+```lean
+example (f : MvPolynomial (Fin 2) ℚ) (p : Fin 2 → ℚ) :
+    IsNode f p ↔ IsSingularPoint f p ∧ hessianDet f p ≠ 0 :=
+  Iff.rfl
+```
+
+The two-lines example $`x^2 - y^2 = 0` from the start of the chapter has a node at the origin.
+Writing it as $`f = y^2 - x^2`, the value and both partials $`-2x`, $`2y` vanish at the origin, and the Hessian $`\begin{psmallmatrix} -2 & 0 \\ 0 & 2 \end{psmallmatrix}` has determinant $`-4 \neq 0`.
+
+```lean
+example : IsNode (X 1 ^ 2 - X 0 ^ 2 : MvPolynomial (Fin 2) ℚ) ![0, 0] :=
+  isNode_Y_sq_sub_X_sq_origin
+```
+
+The single monomial $`f = x y` is a node at the origin as well: it is singular there, and its Hessian $`\begin{psmallmatrix} 0 & 1 \\ 1 & 0 \end{psmallmatrix}` has determinant $`-1 \neq 0`.
+
+```lean
+example : IsNode (X 0 * X 1 : MvPolynomial (Fin 2) ℚ) ![0, 0] :=
+  isNode_X_mul_X_origin
+```
+
+By contrast, the point $`(1, 0)` on the circle is a smooth point: its partial $`\partial f / \partial x = 2x` is nonzero there, so it is not singular.
+As a reader exercise, confirm this from the definition.
+
+```lean
+example :
+    IsSmoothPoint (X 0 ^ 2 + X 1 ^ 2 - 1 : MvPolynomial (Fin 2) ℚ) ![1, 0] := by
+  sorry
+```
+
+As a second exercise, show the origin is a singular point of the cuspidal cubic $`y^2 - x^3`.
+(It is not a node — its Hessian is degenerate — but it is singular.)
+
+```lean
+example :
+    IsSingularPoint (X 1 ^ 2 - X 0 ^ 3 : MvPolynomial (Fin 2) ℚ) ![0, 0] := by
+  sorry
+```
+
+There is a general theory of *resolving* such singularities to recover a nonsingular Riemann surface; that construction has no counterpart in the library and stays prose.

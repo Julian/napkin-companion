@@ -5,11 +5,13 @@ import Napkin.Meta.Citations
 import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 import Mathlib.SetTheory.Cardinal.Regular
 import Mathlib.SetTheory.Cardinal.Continuum
+import Napkin.Missing.ContinuumHypothesis
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
 
 open Cardinal
 
@@ -256,10 +258,11 @@ example : aleph 0 = ℵ₀ := aleph_zero
 example : ℵ₀ < ℵ₁ := aleph0_lt_aleph_one
 ```
 
-The Continuum Hypothesis is the assertion $`\mathfrak{c} = \aleph_1`, which we can name as a proposition even though it is provable neither in ZFC nor its negation:
+The Continuum Hypothesis is the assertion $`\mathfrak{c} = \aleph_1`, which we can name as a proposition — {name}`Napkin.Missing.ContinuumHypothesis` — even though it is provable neither in ZFC nor its negation:
 
 ```lean
-def ContinuumHypothesis : Prop := continuum.{0} = aleph 1
+example : ContinuumHypothesis ↔ continuum.{0} = ℵ₁ :=
+  continuumHypothesis_iff
 ```
 
 Only one direction of that equality is a theorem of ZFC: the continuum is always at least $`\aleph_1`, since $`\aleph_1` is the very next cardinal past $`\aleph_0`.
@@ -321,13 +324,63 @@ example : Cardinal.IsRegular (aleph 2) := by
   sorry
 ```
 
-## Infinite combinatorics
+## The additive poset
 
-The $`\Delta`-system lemma and the strong-antichain combinatorics of $`\operatorname{Add}(\omega, \kappa)` have no counterpart in Mathlib.
-What the argument does use at the cardinal level is that the antichain $`\{ p_\alpha \mid \alpha < \omega_1 \}` is uncountable, i.e. of size at least $`\aleph_1`.
+The forcing notion $`\operatorname{Add}(\omega, \kappa)` has no name in Mathlib, so `Napkin.Missing.ContinuumHypothesis` supplies one: a condition is a `FinPartialFn (κ × ℕ) Bool`, a finite domain together with its $`0`/$`1` values, and `CohenAdd κ` is the type of them.
+The order is reverse inclusion — `p ≤ q` means `p` *extends* `q` — which is a {name}`Preorder`, exactly the setting the forcing vocabulary of the previous chapter runs on.
+
+The chapter's question about the maximum condition $`1_\mathbb{P}` has a one-line answer: it is the empty partial function, which commits to nothing.
+
+```lean
+example (κ : Type) : (⊤ : CohenAdd κ).dom = ∅ := rfl
+```
+
+The combinatorial engine is compatibility.
+Two conditions whose domains are *disjoint* are always compatible: overlay them into a single partial function on the union of the domains, and that common extension is stronger than both.
+This is {name}`Napkin.Missing.FinPartialFn.compatible_of_disjoint`, reusing the previous chapter's {name}`Napkin.Missing.Forcing.Compatible`.
+
+```lean
+example {κ : Type} [DecidableEq κ] (p q : CohenAdd κ)
+    (h : Disjoint p.dom q.dom) : Forcing.Compatible p q :=
+  FinPartialFn.compatible_of_disjoint p q h
+```
+
+So an antichain of conditions must have pairwise *overlapping* domains — and it is these overlaps that the $`\Delta`-system lemma organizes.
+A $`\Delta`-system is a family of finite sets meeting pairwise in one common `root`; `DeltaSystem` records it.
+Any one-element family is trivially such a system, with empty root, the base case of the lemma's induction.
+
+```lean
+example {α : Type} [DecidableEq α] (f : Unit → Finset α) :
+    DeltaSystem α Unit := DeltaSystem.ofSubsingleton f
+```
+
+:::aside "What stays on paper"
+The $`\Delta`-system lemma itself — every uncountable family of finite sets has an uncountable $`\Delta`-subsystem — has no Mathlib counterpart: the library proves no sunflower lemma in any form.
+So `Napkin.Missing.ContinuumHypothesis` can only *state* it, as `DeltaSystemLemma`, to be discharged the day Mathlib formalizes the sunflower lemma.
+The forcing argument that turns "ccc" into "$`\aleph_2^{M[G]} = \aleph_2^M`" likewise stays prose.
+:::
+
+Below the cardinal level, the argument uses only that the antichain $`\{ p_\alpha \mid \alpha < \omega_1 \}` is uncountable, i.e. of size at least $`\aleph_1`.
 Show that any cardinal which is not at most $`\aleph_0` is at least $`\aleph_1`.
 
 ```lean
 example (c : Cardinal) (h : ¬ c ≤ ℵ₀) : ℵ₁ ≤ c := by
+  sorry
+```
+
+Every condition extends the empty condition $`1_\mathbb{P}`, because nothing is weaker than committing to nothing.
+Prove that each Cohen condition refines the top.
+
+```lean
+example {κ : Type} (p : CohenAdd κ) : p ≤ ⊤ := by
+  sorry
+```
+
+Finally, the common `root` of a $`\Delta`-system sits inside every one of its sets, since it *is* the intersection of any two.
+Show this for the two sets of a $`\Delta`-system indexed by `Bool`.
+
+```lean
+example {α : Type} [DecidableEq α] (S : DeltaSystem α Bool) :
+    S.root ⊆ S.sets true := by
   sorry
 ```
