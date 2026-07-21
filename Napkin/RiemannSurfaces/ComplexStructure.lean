@@ -7,13 +7,15 @@ import Mathlib.Geometry.Manifold.IsManifold.Basic
 import Mathlib.Geometry.Manifold.Complex
 import Mathlib.Analysis.Complex.RemovableSingularity
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Napkin.Missing.RiemannSphere
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
-open scoped Manifold Topology
+open scoped Manifold Topology OnePoint
 
 open Napkin
+open Napkin.Missing
 
 set_option pp.rawOnError true
 
@@ -317,7 +319,53 @@ example : IsManifold (𝓘(ℂ, (Fin 1 → ℂ))) ω (Fin 1 → ℂ) := by
 ## Examples of Riemann surfaces
 
 The Riemann sphere is the one-point compactification `OnePoint ℂ`, welded from the two stereographic charts described above.
-Mathlib does not currently equip `OnePoint ℂ` with a `ChartedSpace ℂ` or `IsManifold (𝓘(ℂ, ℂ)) ω` structure, so the sphere's complex-manifold instance cannot be exhibited here; only its topology (as the one-point compactification) is available.
+Mathlib equips `OnePoint ℂ` with its topology but not with a `ChartedSpace ℂ` or `IsManifold (𝓘(ℂ, ℂ)) ω` structure, so the sphere's complex-manifold *instance* cannot be exhibited.
+The two charts and the analytic weld between them can be built explicitly, though: `Napkin.Missing.RiemannSphere` records the two chart domains, the two coordinate maps, and the holomorphic transition, retiring the day `OnePoint ℂ` becomes a complex manifold upstream.
+
+The first chart's domain `sphereChart0Dom` is the copy of $`\mathbb{C}` inside `OnePoint ℂ` (every point but $`\infty`), with coordinate `sphereChart0` sending $`\uparrow z \mapsto z`.
+The second chart's domain `sphereChart1Dom` is $`(\mathbb{C} \setminus \{0\}) \cup \{\infty\}` (every point but $`\uparrow 0`), and its coordinate `sphereChart1` sends $`\uparrow z \mapsto z^{-1}` — in particular filling in the hole, $`\infty \mapsto 0`.
+
+```lean
+example (z : ℂ) : sphereChart0 ↑z = z := rfl
+example (z : ℂ) : sphereChart1 ↑z = z⁻¹ := rfl
+example : sphereChart1 ∞ = 0 := rfl
+```
+
+On the overlap $`\mathbb{C} \setminus \{0\}` the coordinate $`z` of the first chart and the coordinate $`w` of the second are related by the transition $`w = z^{-1}`, which is `sphereTransition`.
+It is its own inverse, since $`(z^{-1})^{-1} = z`.
+
+```lean
+example : Function.Involutive sphereTransition :=
+  sphereTransition_involutive
+```
+
+The whole point of the weld is that this transition is *holomorphic* away from $`0`: it is analytic on a neighborhood of every point of $`\mathbb{C} \setminus \{0\}`.
+Confirm it.
+
+```lean
+example : AnalyticOnNhd ℂ sphereTransition {z : ℂ | z ≠ 0} := by
+  sorry
+```
+
+The two chart domains cover the sphere: the only point outside `sphereChart0Dom` is $`\infty`, which lies in `sphereChart1Dom`.
+Show that every point lies in one chart or the other, and that $`\infty` in particular lands in the second chart but not the first.
+
+```lean
+example (p : OnePoint ℂ) :
+    p ∈ sphereChart0Dom ∨ p ∈ sphereChart1Dom := by
+  sorry
+
+example : (∞ : OnePoint ℂ) ∈ sphereChart1Dom ∧
+    (∞ : OnePoint ℂ) ∉ sphereChart0Dom := by
+  sorry
+```
+
+Bundling this data — a covering family of charts whose transitions are analytic on their overlaps — is the text's Definition of a complex atlas, recorded as `ComplexAtlas`.
+The sphere's two-chart atlas, indexed by `Bool`, is `riemannSphereAtlas`.
+
+```lean
+noncomputable example : ComplexAtlas (OnePoint ℂ) := riemannSphereAtlas
+```
 
 The "any holomorphic function on a compact surface is constant" fact is the manifold analogue of Liouville's theorem: `MDifferentiable.exists_eq_const_of_compactSpace` says that a complex-differentiable map from a compact preconnected complex manifold into a complex normed space is the constant function.
 Applied to the complex torus $`\mathbb{C}/L` — compact and connected — this forces every holomorphic function on it to be constant.

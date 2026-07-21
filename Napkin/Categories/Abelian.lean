@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+import Mathlib.CategoryTheory.Abelian.FreydMitchell
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -452,7 +453,54 @@ example (C : Type*) [Category C] [Abelian C] (S : ShortComplex C)
 
 ## The Freyd–Mitchell embedding theorem
 
-Mathlib does not (yet) have the full Freyd–Mitchell embedding theorem, but it recovers the tool the theorem exists to justify: {name}`CategoryTheory.Abelian.Pseudoelement` lets you chase "elements" of objects in _any_ abelian category, so that arguments like the one above go through directly.
+The full embedding theorem is {name}`CategoryTheory.Abelian.freyd_mitchell`: for any abelian category it produces a ring, together with a full, faithful, exact functor into that ring's modules.
+The exactness is packaged as preservation of finite limits and finite colimits, {name}`CategoryTheory.Limits.PreservesFiniteLimits` and {name}`CategoryTheory.Limits.PreservesFiniteColimits`.
+That existence statement is witnessed by a concrete embedding {name}`CategoryTheory.Abelian.FreydMitchell.functor` into modules over the ring {name}`CategoryTheory.Abelian.FreydMitchell.EmbeddingRing`, which carries all four properties as instances.
+
+```lean
+noncomputable example (C : Type*) [Category C] [Abelian C] :
+    C ⥤ ModuleCat (Abelian.FreydMitchell.EmbeddingRing C) :=
+  Abelian.FreydMitchell.functor C
+
+example (C : Type*) [Category C] [Abelian C] :
+    (Abelian.FreydMitchell.functor C).Full := inferInstance
+```
+
+Faithfulness is what makes the phrase "and therefore the two maps are equal" at the end of a chase legitimate: two morphisms that become equal after embedding into modules were already equal.
+
+```lean
+example (C : Type*) [Category C] [Abelian C] {A B : C} (f g : A ⟶ B)
+    (h : (Abelian.FreydMitchell.functor C).map f
+        = (Abelian.FreydMitchell.functor C).map g) : f = g :=
+  (Abelian.FreydMitchell.functor C).map_injective h
+```
+
+Because the embedding is full and faithful it reflects both monomorphisms and epimorphisms, so checking that a map is monic — or epic — can be done on its image in modules, where it means injective or surjective.
+
+```lean
+example (C : Type*) [Category C] [Abelian C] {A B : C} (f : A ⟶ B)
+    (h : Mono ((Abelian.FreydMitchell.functor C).map f)) : Mono f :=
+  (Abelian.FreydMitchell.functor C).mono_of_mono_map h
+```
+
+Dually, if the image of $`f` is epic then $`f` itself is epic.
+Prove it.
+
+```lean
+example (C : Type*) [Category C] [Abelian C] {A B : C} (f : A ⟶ B)
+    (h : Epi ((Abelian.FreydMitchell.functor C).map f)) : Epi f := by
+  sorry
+```
+
+A chase also needs the embedding to send the zero morphism to the zero morphism, so that "starting from an element that maps to zero" survives the translation.
+
+```lean
+example (C : Type*) [Category C] [Abelian C] (A B : C) :
+    (Abelian.FreydMitchell.functor C).map (0 : A ⟶ B) = 0 :=
+  (Abelian.FreydMitchell.functor C).map_zero A B
+```
+
+There is also a lighter-weight route that stays inside the abstract category: {name}`CategoryTheory.Abelian.Pseudoelement` lets you chase "elements" of objects in _any_ abelian category, without naming the embedding at all.
 A morphism $`f` acts on pseudoelements through {name}`CategoryTheory.Abelian.Pseudoelement.pseudoApply`, and chasing through a composite applies each map in turn.
 
 ```lean

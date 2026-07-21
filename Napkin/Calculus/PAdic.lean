@@ -7,11 +7,13 @@ import Mathlib.NumberTheory.Padics.PadicNumbers
 import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.NumberTheory.Padics.PadicVal.Basic
 import Mathlib.NumberTheory.Padics.MahlerBasis
+import Napkin.Missing.PadicInverseLimit
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
 
 set_option pp.rawOnError true
 
@@ -462,6 +464,42 @@ example (p : ℕ) [Fact p.Prime] (x : ℤ_[p]) : ℚ_[p] := (x : ℚ_[p])
 
 The two presentations agree, and Mathlib provides the bridge: `PadicInt.toZModPow n` for the projection to each $`\mathbb{Z}/p^e`.
 Rather than packaging the inverse limit as a single isomorphism, `Mathlib.NumberTheory.Padics.RingHoms` pins down $`\mathbb{Z}_p` by its universal property: `PadicInt.lift` builds a map into $`\mathbb{Z}_p` out of any compatible family of maps to the $`\mathbb{Z}/p^e`, and `PadicInt.ext_of_toZModPow` records that two $`p`-adic integers agreeing modulo every $`p^e` are equal.
+
+The definition above, though, builds $`\mathbb{Z}_p` the *other* way — as the inverse limit itself, a sequence of residues subject to the compatibility relations.
+That object can be built directly.
+`PadicIntLim p` is the subring of the product `∀ n, ZMod (p ^ n)` cut out by the relations $`x_i \equiv x_j \pmod{p^i}` for consecutive levels, and `proj p n` reads off its $`n`-th residue $`x_n` as a ring homomorphism.
+The step-by-step compatibility `towerMap p n (proj p (n+1) x) = proj p n x` — reducing the $`(n+1)`-st residue modulo $`p^n` recovers the $`n`-th — is exactly the defining condition.
+
+```lean
+noncomputable example (p : ℕ) (x : PadicIntLim p) (n : ℕ) : ZMod (p ^ n) :=
+  proj p n x
+
+example (p : ℕ) (x : PadicIntLim p) (n : ℕ) :
+    towerMap p n (proj p (n + 1) x) = proj p n x :=
+  towerMap_proj_succ x n
+```
+
+The two presentations then genuinely agree: `ofPadicInt` sends each $`x : \mathbb{Z}_p` (in the analytic, unit-ball sense) to the compatible family `(PadicInt.toZModPow n x)ₙ` of its residues, realizing it as an honest point of the inverse limit.
+
+```lean
+noncomputable example (p : ℕ) [Fact p.Prime] : ℤ_[p] →+* PadicIntLim p :=
+  ofPadicInt p
+```
+
+Two exercises on the inverse-limit object.
+First, show the level-$`0` projection is trivial: there is only one residue modulo $`p^0 = 1`, so `proj p 0 x` is forced to be $`0`.
+
+```lean
+example (p : ℕ) (x : PadicIntLim p) : proj p 0 x = 0 := by
+  sorry
+```
+
+Second, show the comparison map `ofPadicInt` is injective: two $`p`-adic integers with the same residues modulo every $`p^e` are equal (this is `PadicInt.ext_of_toZModPow`).
+
+```lean
+example (p : ℕ) [Fact p.Prime] : Function.Injective (ofPadicInt p) := by
+  sorry
+```
 
 The exercise asked you to check that $`\mathbb{Z}_p` is an integral domain.
 Mathlib packages "commutative ring with no zero divisors and $`0 \neq 1`" as the `IsDomain` class; find the instance.
