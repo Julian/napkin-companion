@@ -74,6 +74,22 @@ lists below.
 11. **Silent typo fixes.** Upstream mathematical typos are corrected
     without comment (itemized per chapter below).
 
+12. **The `Napkin.Missing` layer.** Where a chapter introduces a
+    mathematical object Mathlib has no definition for, the Lean
+    companion does not stop at a prose note: the object is defined —
+    as faithfully to the chapter's definition as Lean allows — under
+    `Napkin/Missing/`, and the companion's worked models and exercises
+    are built on it. These are stopgaps: each definition carries a
+    doc-string line beginning `Not in Mathlib.` naming the upstream
+    object to watch for, so `grep -rn "Not in Mathlib." Napkin/Missing`
+    enumerates every one. When Mathlib gains the real object, delete the
+    stopgap and repoint the chapter. Deep *theorems* with no
+    constructible content (Riemann–Roch, projective Bézout, excision,
+    Chebotarev, Artin reciprocity, Riemann–Hurwitz, …) are bundled as
+    "statement-as-structure" `*Data` records so their consequences stay
+    derivable even though the theorem itself is assumed; this is flagged
+    in each such definition's doc-string.
+
 ## Formalization-forced deviations
 
 Places where Mathlib's design genuinely differs from the chapter's
@@ -90,7 +106,10 @@ mathematical framing, acknowledged in the text where they occur:
   Dedekind cuts; Mathlib's `Real` is the Cauchy completion of `ℚ`.
 - **Calculus / p-adics.** Mathlib defines `ℚ_[p]` first and carves out
   `ℤ_[p]` as the closed unit ball — the reverse of the chapter's
-  inverse-limit-first construction.
+  inverse-limit-first construction. The chapter's inverse limit
+  $\varprojlim \mathbb{Z}/p^n\mathbb{Z}$ is defined as a genuine object
+  in `Napkin.Missing.PadicInverseLimit`, with an injective bridge from
+  Mathlib's `ℤ_[p]`.
 - **Calculus / Integration.** Mathlib's `intervalIntegral` is a
   Bochner (Lebesgue-flavored) integral; the chapter's Riemann
   construction is presented for pedagogy and connected to the Mathlib
@@ -719,8 +738,12 @@ drops the "(TO DO)" from the part, chapter, and sales-pitch titles.
   descriptive phrases. Reveals cover `HasZeroObject`/`HasZeroMorphisms`,
   `Limits.kernel`/`cokernel`, `Abelian.image`, `Preadditive`/`Abelian`,
   `ShortComplex`/`.Exact`/`.ShortExact`, and `Abelian.Pseudoelement` for
-  diagram chasing; an aside notes the Freyd–Mitchell embedding theorem
-  is not in Mathlib, though pseudoelements recover its practical payoff.
+  diagram chasing. Mathlib gained the full Freyd–Mitchell embedding
+  theorem (`Abelian.freyd_mitchell`) in early 2025, so the companion
+  uses it directly — the concrete embedding into `ModuleCat`, its
+  `Full`/`Faithful`/exactness, and the mono/epi reflection that makes a
+  diagram chase in `R`-Mod rigorous — with pseudoelements kept as the
+  lighter in-category alternative.
 
 ### Algebraic Topology II: Homology
 
