@@ -5,11 +5,13 @@ import Napkin.Meta.Citations
 import Napkin.Meta.Recall
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+import Napkin.Missing.HolomorphicForm
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
 
 set_option pp.rawOnError true
 
@@ -235,8 +237,64 @@ example (f : ℂ → ℂ) (x : ℂ) (hf : DifferentiableAt ℂ f x) :
     fderiv ℝ f x = (fderiv ℂ f x).restrictScalars ℝ := by sorry
 ```
 
+## The forms `dz` and `dz̄`
+
+The machinery above is enough to build the forms themselves, not just their values, so the stopgap `Napkin.Missing.OneForm` names the carrier `ℂ → (ℂ →L[ℝ] ℂ)`: a $`1`-form assigns to each point an $`\mathbb{R}`-linear functional on tangent vectors.
+
+:::aside "A stopgap object"
+`OneForm`, `dz`, `dzbar`, and the `Type10` predicate below live in `Napkin.Missing.HolomorphicForm`, to be retired the day Mathlib grows a library of holomorphic forms.
+:::
+
+The two basis forms are `dz`, the change in $`z`, which is the identity map viewed only $`\mathbb{R}`-linearly, and `dzbar`, the change in $`\overline{z}`, which is complex conjugation `Complex.conjCLE` viewed the same way.
+Both are honest `ContinuousLinearMap`s, hence $`\mathbb{R}`-linear, and they read off their coordinates just as `Complex.reCLM` did.
+
+```lean
+noncomputable example : ℂ →L[ℝ] ℂ := dz
+example (z : ℂ) : dz z = z := rfl
+example (z : ℂ) : dzbar z = starRingEnd ℂ z := rfl
+```
+
+They are genuinely different forms, `dz_ne_dzbar`, already because they disagree on the tangent vector $`i`: the form $`dz` fixes it, while $`d\overline{z}` sends it to $`-i`.
+
+```lean
+example : dz ≠ dzbar := dz_ne_dzbar
+```
+
+Confirm that disagreement directly: evaluate $`d\overline{z}` at $`i`, then check the two forms really do differ there.
+
+```lean
+example : dzbar Complex.I = -Complex.I := by sorry
+
+example : dz Complex.I ≠ dzbar Complex.I := by sorry
+```
+
+The moral $`\omega_p(\mathbf{e}_2) = \omega_p(\mathbf{e}_1) \cdot i` is exactly the condition that each value $`\omega_p` is $`\mathbb{C}`-linear, which `Type10` records as the value lying in the image of `restrictScalars ℝ`.
+The constant form $`dz` is of type $`(1, 0)`, witnessed by the identity $`\mathbb{C}`-linear map; conjugation is the obstruction, so $`d\overline{z}` is not.
+
+```lean
+example : Type10 dzForm := dzForm_type10
+example : ¬ Type10 dzbarForm := dzbarForm_not_type10
+```
+
+The differential `differential f`, whose value at each point is the real derivative `fderiv ℝ f`, is the honest $`df`.
+Its being type $`(1, 0)` for holomorphic $`f` is precisely the statement $`df = f'(z) \, dz`: the real derivative of a complex-differentiable map is the `restrictScalars` of its complex derivative.
+
+```lean
+example : Type10 (differential (id : ℂ → ℂ)) := by
+  apply differential_holomorphic_type10
+  intro p
+  exact differentiableAt_id
+```
+
+Finally, unpack the definition: a type $`(1, 0)` form's value really is $`\mathbb{C}`-linear, so one can extract a genuinely $`\mathbb{C}`-linear map agreeing with it at each point.
+
+```lean
+example (ω : OneForm) (h : Type10 ω) (p : ℂ) :
+    ∃ T : ℂ →L[ℂ] ℂ, ∀ v, ω p v = T v := by sorry
+```
+
 ## 1-forms on a Riemann surface
 
-On open subsets of $`\mathbb{C}` everything in this chapter can be phrased today, as smooth maps `U → ℂ →L[ℝ] ℂ` and their $`\mathbb{C}`-linear locus, as sketched above.
+On open subsets of $`\mathbb{C}` everything in this chapter can be phrased today, as maps `U → ℂ →L[ℝ] ℂ` and their $`\mathbb{C}`-linear locus: the basis forms $`dz`, $`d\overline{z}` and the type $`(1, 0)` condition are the concrete `Napkin.Missing` models built above.
 The chart-glued objects are another matter: Mathlib has manifold-level *derivatives* (`mfderiv`) but not yet a library of differential forms on manifolds, let alone holomorphic or meromorphic forms on a Riemann surface.
-So the definitions of this section have no direct counterpart to display yet; what can be exercised is the $`\mathbb{R}`-linear-versus-$`\mathbb{C}`-linear machinery underneath them, above.
+The surface-level definition — local forms on each chart, glued by the substitution rule — therefore stays prose for now; only its per-chart pieces, the $`\mathbb{C}`-plane forms above, have counterparts to exercise.

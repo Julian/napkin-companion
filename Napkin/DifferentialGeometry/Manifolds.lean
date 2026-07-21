@@ -11,11 +11,13 @@ import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.Geometry.Manifold.DerivationBundle
 import Mathlib.RingTheory.Ideal.Cotangent
+import Napkin.Missing.ManifoldForm
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
 
 set_option pp.rawOnError true
 
@@ -474,7 +476,57 @@ example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 ## Differential forms on manifolds
 
 A differential form on a manifold is a section of an exterior power of the cotangent bundle: the cotangent bundle is built as the dual of `TangentSpace I x`, and a $`k`-form is a smooth section of $`\bigwedge^k T^\ast M`.
-There is, however, no dedicated Mathlib type packaging "differential $`k`-form on a manifold" together with the chart-by-chart pullback compatibility of the definition above, so there is no honest one-liner to state here.
+There is no dedicated Mathlib type packaging "differential $`k`-form on a manifold" together with the chart-by-chart pullback compatibility of the definition above, so we introduce one, `ManifoldForm I M k`, as the intrinsic object those charts glue to: a pointwise assignment $`p \mapsto \alpha_p`, where each $`\alpha_p` is a continuous alternating $`k`-linear functional on the tangent space `TangentSpace I p`.
+
+:::aside
+`ManifoldForm` lives in a small `Napkin.Missing` namespace of stopgaps for objects the text defines but Mathlib does not; retire it once a de-Rham namespace lands upstream.
+:::
+
+The pointwise operations make the $`k`-forms a real vector space, and — since $`\mathtt{Fin}\ 0` is empty — a $`0`-form is exactly a scalar function `M → ℝ`, packaged by `ManifoldForm.ofScalar`.
+This settles the problem "zero-forms are functions".
+
+```lean
+open ManifoldForm in
+noncomputable example {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
+    {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M]
+    [ChartedSpace H M] (f : M → ℝ) : ManifoldForm I M 0 := ofScalar f
+```
+
+Each $`\alpha_p` is alternating, so swapping two tangent vectors flips the sign and feeding the same vector twice returns zero; the volume form of an *orientable* manifold is a nowhere-vanishing top form, `ManifoldForm.Nonvanishing`.
+Show that exhibiting one witnesses orientability.
+
+```lean
+example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {n : ℕ}
+    (ω : ManifoldForm I M n) (hω : ManifoldForm.Nonvanishing ω) :
+    ManifoldForm.Orientable (I := I) (M := M) n := by
+  sorry
+```
+
+Now show directly that a $`2`-form fed the same tangent vector twice vanishes.
+
+```lean
+example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+    (α : ManifoldForm I M 2) (p : M) (v : TangentSpace I p) :
+    ManifoldForm.eval α p ![v, v] = 0 := by
+  sorry
+```
+
+The exterior derivative $`d` and the pullbacks that phrase the chart-compatibility are out of reach — the de-Rham complex is unformalized — so `ManifoldForm.ExteriorDerivative` bundles $`d`'s defining properties (degree-raising, linear, $`d^2 = 0`) as a hypothesis.
+From that bundled data alone, the fact underlying Stokes' theorem — every exact form is closed — is derivable.
+
+```lean
+example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+    (D : ManifoldForm.ExteriorDerivative (I := I) (M := M)) {k : ℕ}
+    {α : ManifoldForm I M (k + 1)} (h : D.Exact α) : D.Closed α := by
+  sorry
+```
 
 ## Stokes' theorem for manifolds
 

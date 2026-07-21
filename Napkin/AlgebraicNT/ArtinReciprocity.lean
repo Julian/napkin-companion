@@ -11,11 +11,13 @@ import Mathlib.NumberTheory.Cyclotomic.Gal
 import Mathlib.NumberTheory.SumTwoSquares
 import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.RingTheory.ClassGroup.Basic
+import Napkin.Missing.ArtinMap
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
 
 open scoped NumberField
 
@@ -733,6 +735,58 @@ example (n : ℕ) [NeZero n] (K L : Type*) [Field K] [Field L] [Algebra K L]
 ## Artin reciprocity
 
 Artin reciprocity, the Artin map, and the conductor are not in Mathlib.
+Following the pattern used for Chebotarev density, the reciprocity theorem is bundled as a statement-as-structure `Napkin.Missing.ArtinMap`, so that it can be *stated* as a hypothesis and its consequences *derived*.
+The `ArtinMapData` structure fixes an abelian Galois group $`G = \operatorname{Gal}(L/K)`, the group $`I = I_K(\mathfrak m)` of fractional ideals coprime to a modulus, and the Artin map $`\left( \frac{L/K}{\bullet} \right) \colon I \to G` as a homomorphism, together with the two halves of reciprocity Mathlib cannot prove: that the map is surjective, and that the ray $`P_K(\mathfrak m)` lies in its kernel.
+
+```lean
+example (I G : Type*) [CommGroup I] [CommGroup G] : Type _ :=
+  ArtinMapData I G
+```
+
+From that datum alone the abelian reciprocity isomorphism follows.
+Because the ray sits inside the kernel, the Artin map descends to the ray class group $`C_K(\mathfrak m) = I_K(\mathfrak m) / P_K(\mathfrak m)`, and the descent is again surjective, so the first isomorphism theorem exhibits $`\operatorname{Gal}(L/K)` as a quotient of the ray class group.
+
+```lean
+noncomputable example (I G : Type*) [CommGroup I] [CommGroup G]
+    (D : ArtinMapData I G) : ((I ⧸ D.ray) ⧸ D.rayArtin.ker) ≃* G :=
+  D.quotientEquiv
+```
+
+In particular the order of the Galois group divides the ray class number, since a group divides any group it is a quotient of.
+
+```lean
+example (I G : Type*) [CommGroup I] [CommGroup G] (D : ArtinMapData I G) :
+    Nat.card G ∣ Nat.card (I ⧸ D.ray) :=
+  D.card_dvd_rayClassNumber
+```
+
+The identity of $`\operatorname{Gal}(L/K)` collects the principal ideals of the ray: the Artin symbol depends only on the ray class, so multiplying an ideal by something in $`P_K(\mathfrak m)` leaves the symbol unchanged.
+Prove it, from `artin_eq_one_of_mem_ray` and multiplicativity.
+
+```lean
+example (I G : Type*) [CommGroup I] [CommGroup G] (D : ArtinMapData I G)
+    (x y : I) (hx : x ∈ D.ray) : D.artin (x * y) = D.artin y := by
+  sorry
+```
+
+The lower-bound case $`H(L/K, \mathfrak m) = P_K(\mathfrak m)` — the cyclotomic, Kronecker–Weber prototype — makes the ray class group *equal to* the Galois group, via `rayClassEquiv`.
+When it happens, the ray class number is exactly $`|\operatorname{Gal}(L/K)|`.
+
+```lean
+example (I G : Type*) [CommGroup I] [CommGroup G] (D : ArtinMapData I G)
+    (h : D.artin.ker = D.ray) : Nat.card (I ⧸ D.ray) = Nat.card G := by
+  sorry
+```
+
+The conductor is packaged the same way, as `ConductorData`: a distinguished modulus $`\mathfrak f` together with the predicate "$`P_K(\mathfrak m) \subseteq H(L/K, \mathfrak m)`", and reciprocity's claim that this predicate holds for exactly the multiples of $`\mathfrak f`.
+So $`\mathfrak f` is the smallest such modulus, and admissibility is upward closed: any multiple of the conductor is again admissible.
+
+```lean
+example (M : Type*) [CommMonoid M] (C : ConductorData M) (m : M) :
+    C.IsAdmissible (C.conductor * m) := by
+  sorry
+```
+
 What Mathlib does have is the abelian prototype this whole chapter points back to: the law of quadratic reciprocity for the Legendre symbol, {name}`legendreSym.quadratic_reciprocity`.
 
 ```lean

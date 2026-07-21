@@ -10,11 +10,13 @@ import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.Dimension.Constructions
+import Napkin.Missing.MappingDegree
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open Napkin.Missing
 open Topology
 open CategoryTheory
 
@@ -349,6 +351,41 @@ example (df dg : ℤ) :
   sorry
 ```
 
+To keep this shadow honest, the self-maps and their degrees are bundled as {name}`MapDegreeData`: a type `SelfMap` of self-maps of the sphere, whose monoid multiplication *is* composition, together with the degree presented as an honest monoid homomorphism `deg : SelfMap →* ℤ`.
+The two defining properties of the text — $`\deg(\operatorname{id}) = 1` and $`\deg(f \circ g) = \deg(f)\deg(g)` — are then nothing but {name}`map_one` and {name}`map_mul` for that homomorphism, and a constant map records its degree $`0` as a separate field.
+
+:::aside "Why a bundle"
+The degree of a map $`S^n \to S^n` genuinely needs $`H_n(S^n) \cong \mathbb{Z}` and the induced map on homology, neither of which is in Mathlib, so `MapDegreeData` is a stopgap in `Napkin.Missing`.
+Bundling the degree axioms lets the chapter's degree facts be *derived* from `map_mul` rather than merely asserted.
+:::
+
+The chapter's {name}`MapDegreeData.deg_mul` is the multiplicativity $`\deg(f \circ g) = \deg(f)\deg(g)` asked for above, now genuinely proved.
+Re-derive it yourself, straight from the homomorphism law.
+
+```lean
+example (D : MapDegreeData) (f g : D.SelfMap) :
+    D.deg (f * g) = D.deg f * D.deg g := by
+  sorry
+```
+
+Multiplicativity forces the degree of a map composed with itself to be a perfect square, $`\deg(f \circ f) = (\deg f)^2`.
+Prove it.
+
+```lean
+example (D : MapDegreeData) (f : D.SelfMap) :
+    D.deg (f * f) = (D.deg f) ^ 2 := by
+  sorry
+```
+
+This is the engine behind the hairy ball theorem: the antipodal map on an even sphere has degree $`-1`, so composing it with itself gives degree $`(-1)^2 = 1`, the same as $`\operatorname{id}`.
+Show that any self-map of degree $`-1` squares to one of degree $`1`.
+
+```lean
+example (D : MapDegreeData) (f : D.SelfMap) (h : D.deg f = -1) :
+    D.deg (f * f) = 1 := by
+  sorry
+```
+
 ## Cellular chain complex
 
 Mathlib's CW complexes are the predicate {name}`Topology.CWComplex` on a set, carrying the cells and attaching maps.
@@ -399,6 +436,28 @@ Reading the ranks of $`H_0, H_1, H_2 \cong \mathbb{Z}, \mathbb{Z}^2, \mathbb{Z}`
 example :
     (Module.finrank ℤ (Fin 1 → ℤ) : ℤ) - Module.finrank ℤ (Fin 2 → ℤ)
       + Module.finrank ℤ (Fin 1 → ℤ) = 0 := by
+  sorry
+```
+
+The *combinatorial* side of the identity — the alternating sum $`\chi(X) = \sum_n (-1)^n \cdot \#(n\text{-cells})` counted straight off a CW decomposition — is packaged as {name}`CellStructure`: a count `cells : ℕ → ℕ` of the $`k`-cells in each dimension, bounded above by a top dimension `dim`, with {name}`CellStructure.eulerChar` the finite alternating sum.
+Mathlib's {name}`Topology.CWComplex` records the cells and attaching maps but has no cell-counting or Euler-characteristic API, so this too is a stopgap in `Napkin.Missing`.
+
+The minimal decomposition of $`S^n` (one $`0`-cell and one $`n`-cell) gives $`\chi(S^n) = 1 + (-1)^n`, which is {name}`CellStructure.eulerChar_sphere`; the standard torus (one $`0`-cell, two $`1`-cells, one $`2`-cell) gives $`\chi = 1 - 2 + 1 = 0`, which is {name}`CellStructure.eulerChar_torus`.
+Read the torus's Euler characteristic off its cell structure.
+
+```lean
+example : CellStructure.torus.eulerChar = 0 := by
+  sorry
+```
+
+The sphere formula makes the even/odd split visible: an even sphere has $`\chi = 2` and an odd sphere has $`\chi = 0`.
+Confirm both endpoints — $`\chi(S^2) = 2`, then $`\chi(S^1) = 0` — from {name}`CellStructure.eulerChar_sphere`.
+
+```lean
+example : (CellStructure.sphere 2).eulerChar = 2 := by
+  sorry
+
+example : (CellStructure.sphere 1).eulerChar = 0 := by
   sorry
 ```
 

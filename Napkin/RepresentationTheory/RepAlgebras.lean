@@ -6,6 +6,8 @@ import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.RingTheory.SimpleModule.Basic
 import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.LinearAlgebra.Matrix.Action
+import Mathlib.RingTheory.SimpleRing.Matrix
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -543,14 +545,30 @@ example [IsSimpleModule A V] : True := trivial
 end
 ```
 
-The concrete irreducibility computations of this section --- that $`k^{\oplus d}` is irreducible over $`\operatorname{Mat}_d(k)`, or that the $`\begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}` representation of $`\mathbb{R}[x]` is indecomposable but not irreducible --- are not packaged in Mathlib, and would require building each module structure by hand.
-A basic sanity check that is available is that an irreducible representation is nonzero.
+The matrix algebra $`\operatorname{Mat}_d(k)` acts on the standard representation $`k^{\oplus d}` by matrix--vector multiplication, making `Fin d → k` a module over `Matrix (Fin d) (Fin d) k`.
 
 ```lean
-example (A V : Type*) [Ring A] [AddCommGroup V] [Module A V]
-    [IsSimpleModule A V] : Nontrivial V := by
+example (k : Type*) [Field k] (d : ℕ) :
+    Module (Matrix (Fin d) (Fin d) k) (Fin d → k) := inferInstance
+```
+
+The prototypical exercise of this section --- that this standard representation is irreducible --- is exactly `IsSimpleModule (Matrix (Fin d) (Fin d) k) (Fin d → k)`.
+Prove it: any nonzero vector can be carried onto each standard basis vector by a suitable matrix, so the only nonzero subrepresentation is the whole space.
+
+```lean
+example (k : Type*) [Field k] (d : ℕ) [NeZero d] :
+    IsSimpleModule (Matrix (Fin d) (Fin d) k) (Fin d → k) := by
   sorry
 ```
+
+Dually, the matrix algebra has no nontrivial two-sided ideals, which Mathlib derives from the Artin--Wedderburn theory as `IsSimpleRing`.
+
+```lean
+example (k : Type*) [Field k] (d : ℕ) [NeZero d] :
+    IsSimpleRing (Matrix (Fin d) (Fin d) k) := inferInstance
+```
+
+The other concrete computation of this section --- that the $`\begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}` representation of $`\mathbb{R}[x]` is indecomposable but not irreducible --- would require building its module structure from the single operator $`\rho(x)` by hand, and we leave it as prose.
 
 ## Morphisms of representations
 
