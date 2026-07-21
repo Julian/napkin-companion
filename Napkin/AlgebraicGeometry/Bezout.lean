@@ -467,7 +467,7 @@ example (k R : Type*) [Field k] [CommRing R] [Algebra k R] (f g : R)
   intersectionMult_eq_zero_of_span_eq_top k R f g h
 ```
 
-The theorem itself is out of reach, so it is bundled as a hypothesis `BezoutData`: two homogeneous curves, their finitely many intersection points, the multiplicity at each, and the identity $`\sum_p I_p(f, g) = \deg f \cdot \deg g`.
+The theorem itself is out of reach, so it is bundled as a hypothesis `BezoutData`: two homogeneous curves, their finitely many intersection points, the local ring $`\mathcal{O}_p` at each with the images of the curves there, the multiplicity at each — pinned by its `mult_eq` field to the genuine local number $`\dim_k(\mathcal{O}_p / (f, g))` — and the identity $`\sum_p I_p(f, g) = \deg f \cdot \deg g`.
 From that hypothesis the classical consequences follow.
 The count $`\lvert X \cap Y \rvert \le \deg X \cdot \deg Y` of the "Bézout's theorem for curves" corollary is one of them, since each point contributes at least one.
 

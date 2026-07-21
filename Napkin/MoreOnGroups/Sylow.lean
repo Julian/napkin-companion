@@ -310,7 +310,8 @@ example (G : Type*) [Group G] (p : ℕ) [Fact p.Prime]
 ```
 
 The chapter noted that a Sylow $`p`-subgroup is normal exactly when $`n_p = 1`.
-The "$`n_p = 1`" side is Mathlib's `Subsingleton (Sylow p G)`, that there is at most one Sylow $`p`-subgroup; show that under this hypothesis the Sylow subgroup is normal.
+The "$`n_p = 1`" side is Mathlib's `Subsingleton (Sylow p G)`, that there is at most one Sylow $`p`-subgroup.
+Since a lone Sylow subgroup has nowhere else to be conjugated, it is normal, and `Sylow.normal_of_subsingleton` is the lemma that names this; it applies to `P` directly.
 
 ```lean
 example (G : Type*) [Group G] (p : ℕ) [Subsingleton (Sylow p G)]
@@ -329,7 +330,14 @@ example (G : Type*) [Group G] (H : Subgroup G) :
 ```
 
 The conclusion of Step 2 is that any two Sylow $`p`-subgroups are conjugate, and hence isomorphic.
-Mathlib records the isomorphism directly as `Sylow.equiv`; produce it (as a `Nonempty` witness).
+Mathlib records the isomorphism directly as `Sylow.equiv`, a `def` handing back the multiplicative equivalence itself:
+
+```lean
+recall Sylow.equiv {p : ℕ} {G : Type*} [Group G] [Fact p.Prime]
+    [Finite (Sylow p G)] (P Q : Sylow p G) : P ≃* Q
+```
+
+Apply it to `P` and `Q`, then wrap the result in an anonymous constructor to hand back the `Nonempty` witness.
 
 ```lean
 example (G : Type*) [Group G] (p : ℕ) [Fact p.Prime] [Finite (Sylow p G)]
@@ -345,17 +353,25 @@ example (G : Type*) [Group G] (p : ℕ) [Fact p.Prime] [Finite (Sylow p G)]
 example (G : Type*) [Group G] : Prop := IsSimpleGroup G
 ```
 
-The question of "for which $`n` is $`\mathbb{Z}/n\mathbb{Z}` simple" is answered by the primes.
-Since $`\mathbb{Z}/n\mathbb{Z}` is abelian, the relevant notion here is the additive `IsSimpleAddGroup`; confirm Mathlib already knows $`\mathbb{Z}/p\mathbb{Z}` is a simple additive group when $`p` is prime.
+The question of "for which $`n` is $`\mathbb{Z}/n\mathbb{Z}` simple" is answered by the primes, and that equivalence is itself a lemma.
+Since $`\mathbb{Z}/n\mathbb{Z}` is abelian, the relevant notion is the additive `IsSimpleAddGroup`, and `AddCommGroup.is_simple_iff_prime_card` says a commutative additive group is simple exactly when its order is prime:
 
 ```lean
-example (p : ℕ) [Fact p.Prime] : IsSimpleAddGroup (ZMod p) := by
+recall AddCommGroup.is_simple_iff_prime_card {α : Type*} [AddCommGroup α] :
+    IsSimpleAddGroup α ↔ (Nat.card α).Prime
+```
+
+Rewrite along this equivalence with `rw`, then close the remaining $`|\mathbb{Z}/p\mathbb{Z}|` is prime goal with `simpa using hp.out` (which reduces the cardinality to $`p` and uses its primality).
+
+```lean
+example (p : ℕ) [hp : Fact p.Prime] : IsSimpleAddGroup (ZMod p) := by
   sorry
 ```
 
 ## Problems
 
 Cauchy's theorem says a prime $`p` dividing $`|G|` is realized as the order of some element.
+Mathlib proves it as `exists_prime_orderOf_dvd_card`, which takes the prime and the divisibility hypothesis and returns the element with its order; feed it `p` and `h`.
 
 ```lean
 example (G : Type*) [Group G] [Fintype G] (p : ℕ) [Fact p.Prime]

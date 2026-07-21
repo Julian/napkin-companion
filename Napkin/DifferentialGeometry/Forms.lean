@@ -575,7 +575,7 @@ example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
 ## Exterior derivatives
 
 A genuine basis-free exterior derivative — and the wedge of forms it differentiates through — is out of reach here, so `Napkin.Missing.DifferentialForms` records $`d` in the statement-as-structure style instead.
-An `ExteriorDerivative E` bundles a degree-raising operator `d k : DiffForm E k → DiffForm E (k+1)`, additive and $`\mathbb{R}`-linear in the form, satisfying the law $`d^2 = 0` as a field `dd`.
+An `ExteriorDerivative E` bundles a degree-raising operator `d k : DiffForm E k → DiffForm E (k+1)`, additive and $`\mathbb{R}`-linear in the form, satisfying the law $`d^2 = 0` as a field `dd`, and — as the field `d_ofScalar` — agreeing on $`0`-forms with the genuine differential $`df`, which excludes the trivial $`d \equiv 0` that would otherwise make "exact ⇒ closed" vacuous.
 Bundling the defining properties this way lets the theorem's *consequences* be derived even without a construction.
 The chief consequence is the exercise "exact forms are closed": with `Closed α` meaning $`d\alpha = 0` and `Exact α` meaning $`\alpha = d\beta`, applying $`d` twice and invoking `dd` gives `D.exact_isClosed`.
 

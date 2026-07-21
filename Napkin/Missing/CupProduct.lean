@@ -155,17 +155,84 @@ theorem cast_cochain_zero {m m' : ℕ} (h : m = m') :
     h ▸ (0 : Cochain X R m) = 0 := by
   subst h; rfl
 
-/-- The data of the *cohomology ring* laws that make the cup product descend to
-`H^\bullet(X; R)`: the two identities that Mathlib cannot prove but the book
-states, bundled so their consequences can be derived.
+/-- Evaluating a degree-transported cochain: transporting `c` along `h : m = m'`
+and applying it to a chain `x` reads off `c` on the back-transported chain. -/
+theorem transport_apply {m m' : ℕ} (h : m = m') (c : Cochain X R m)
+    (x : Chain X m') : (h ▸ c) x = c (h.symm ▸ x) := by
+  subst h; rfl
+
+/-- Transporting a generating chain along an equality of degrees transports the
+underlying simplex. -/
+theorem single_transport {m m' : ℕ} (h : m = m') (σ : Simplex X m) (n : ℤ) :
+    (h ▸ Finsupp.single σ n : Chain X m') = Finsupp.single (h ▸ σ) n := by
+  subst h; rfl
+
+/-- Transporting a simplex along an equality of degrees is precomposition with
+the `Fin`-cast: the reindexed vertex list. -/
+theorem simplex_transport_apply {m m' : ℕ} (h : m = m') (σ : Simplex X m)
+    (i : Fin (m' + 1)) : (h ▸ σ) i = σ (Fin.cast (by rw [h]) i) := by
+  subst h; simp
+
+/-- The front `p`-face of the front `(p+q)`-face is the front `p`-face outright:
+both keep vertices `[v₀, …, v_p]`, matching across the degree cast
+`(p+q)+r = p+(q+r)`. -/
+theorem frontFace_frontFace {p q r : ℕ} (σ : Simplex X ((p + q) + r)) :
+    frontFace (frontFace σ)
+      = frontFace ((by omega : (p + q) + r = p + (q + r)) ▸ σ) := by
+  funext i
+  simp only [frontFace, simplex_transport_apply]
+  congr 1
+
+/-- The back `q`-face of the front `(p+q)`-face equals the front `q`-face of the
+back `(q+r)`-face: both keep the middle block `[v_p, …, v_{p+q}]`, across the
+degree cast `(p+q)+r = p+(q+r)`. -/
+theorem backFace_frontFace {p q r : ℕ} (σ : Simplex X ((p + q) + r)) :
+    backFace (frontFace σ)
+      = frontFace (backFace ((by omega : (p + q) + r = p + (q + r)) ▸ σ)) := by
+  funext i
+  simp only [frontFace, backFace, simplex_transport_apply]
+  congr 1
+
+/-- The back `r`-face equals the back `r`-face of the back `(q+r)`-face: both
+keep the tail `[v_{p+q}, …, v_{p+q+r}]`, across the degree cast
+`(p+q)+r = p+(q+r)`. -/
+theorem backFace_backFace {p q r : ℕ} (σ : Simplex X ((p + q) + r)) :
+    backFace σ
+      = backFace (backFace ((by omega : (p + q) + r = p + (q + r)) ▸ σ)) := by
+  funext i
+  simp only [backFace, simplex_transport_apply]
+  congr 1
+  ext
+  simp only [Fin.val_cast, Fin.natAdd]
+  omega
+
+/-- **Associativity of the cup product**, on the nose: `(φ ⌣ ψ) ⌣ χ = φ ⌣ (ψ ⌣
+χ)`, modulo the degree cast reconciling `(p+q)+r` with `p+(q+r)`.  Unlike the
+Leibniz rule, this needs no hypothesis: the Alexander–Whitney formula composes
+front and back faces so that both sides evaluate a generator to
+`φ(v₀…v_p) · ψ(v_p…v_{p+q}) · χ(v_{p+q}…v_{p+q+r})`, the same triple product. -/
+theorem cup_assoc {p q r : ℕ} (a : Cochain X R p) (b : Cochain X R q)
+    (c : Cochain X R r) :
+    cup (cup a b) c
+      = (by omega : p + (q + r) = (p + q) + r) ▸ cup a (cup b c) := by
+  refine Finsupp.addHom_ext fun σ n => ?_
+  rw [transport_apply, single_transport,
+    cup_single (cup a b) c σ n, cup_ofSimplex a b (frontFace σ),
+    cup_single a (cup b c) _ n, cup_ofSimplex b c (backFace _),
+    ← frontFace_frontFace σ, ← backFace_frontFace σ, ← backFace_backFace σ,
+    mul_assoc]
+
+/-- The data of the *cohomology ring* law that makes the cup product descend to
+`H^\bullet(X; R)`: the one identity that Mathlib cannot prove but the book
+states, bundled so its consequences can be derived.
 
 The `leibniz` field is the text's lemma `δ(φ ⌣ ψ) = δφ ⌣ ψ + (-1)^p φ ⌣ δψ`
 (the sign living in `ℤ`, acting on the cochain group); the degree-cast `▸`
-reconciles `(p+1)+q` with `(p+q)+1`.  The `assoc` field is the on-the-nose
-associativity of the Alexander–Whitney product, its cast reconciling
-`p+(q+r)` with `(p+q)+r`.
+reconciles `(p+1)+q` with `(p+q)+1`.  The book pairs this with associativity of
+`⌣`, but that is *not* a hypothesis: the Alexander–Whitney product is
+associative on the nose, `cup_assoc`, so only Leibniz need be assumed.
 
-Not in Mathlib.  Neither the singular cohomology ring nor these laws exist
+Not in Mathlib.  Neither the singular cohomology ring nor this law exist
 there; retire alongside `cup`. -/
 structure CupProductLaws (X : Type*) (R : Type*) [CommRing R] where
   /-- The Leibniz rule for the coboundary of a cup product. -/
@@ -173,11 +240,6 @@ structure CupProductLaws (X : Type*) (R : Type*) [CommRing R] where
     Cochain.coboundary (cup a b)
       = (by omega : (p + 1) + q = (p + q) + 1) ▸ cup (Cochain.coboundary a) b
         + (-1 : ℤ) ^ p • cup a (Cochain.coboundary b)
-  /-- Associativity of the cup product. -/
-  assoc : ∀ {p q r : ℕ} (a : Cochain X R p) (b : Cochain X R q)
-      (c : Cochain X R r),
-    cup (cup a b) c
-      = (by omega : p + (q + r) = (p + q) + r) ▸ cup a (cup b c)
 
 namespace CupProductLaws
 

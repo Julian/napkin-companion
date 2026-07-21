@@ -609,6 +609,10 @@ noncomputable example (f : ℂ → ℂ) (c : ℂ) (R : ℝ) : ℂ :=
 The computation $`\oint_\gamma z^m \; dz` is `circleIntegral.integral_sub_inv_of_mem_ball` in Mathlib (the $`m = -1` case, which is what one actually wants); the higher-power cases follow from `Differentiable`'s closure under polynomials and the next theorem.
 Prove the headline instance: around the unit circle, $`\oint_\gamma z^{-1} \; dz = 2\pi i`.
 
+The finisher is `circleIntegral.integral_sub_center_inv`, whose statement is `(∮ z in C(c, R), (z - c)⁻¹) = 2 * π * I`.
+The subtlety is that the integrand it wants is `(z - c)⁻¹` with the *same* `c` that names the circle's center — which is exactly why the exercise is phrased with `(z - (0 : ℂ))⁻¹` rather than a bare `z⁻¹`, so that its center `0` lines up with the circle's center `0`.
+Its only hypothesis is `R ≠ 0`, so the first move is `exact circleIntegral.integral_sub_center_inv 0 ?_`, leaving `(1 : ℝ) ≠ 0` to discharge with `norm_num`.
+
 ```lean
 example : (∮ z in C((0 : ℂ), 1), (z - (0 : ℂ))⁻¹) = 2 * Real.pi * Complex.I :=
   by sorry
@@ -616,8 +620,9 @@ example : (∮ z in C((0 : ℂ), 1), (z - (0 : ℂ))⁻¹) = 2 * Real.pi * Compl
 
 ## Cauchy-Goursat theorem
 
-`Complex.circleIntegral_eq_zero_of_differentiable_on_off_countable` is the closest single named lemma, but Mathlib's official statement of "loops integrate to zero" is woven into the proof of the Cauchy integral formula in `Mathlib.Analysis.Complex.CauchyIntegral` (since the integral formula immediately implies it for $`f` itself by taking $`a` outside the disk).
-The theorem, specialized to an entire $`f`, says a circle contour integral vanishes.
+`circleIntegral_eq_zero_of_differentiable_on_off_countable` is the closest raw lemma, but it asks for continuity on the closed disk plus differentiability off a countable set, which is fiddly to feed by hand.
+Mathlib packages the clean statement as `DiffContOnCl.circleIntegral_eq_zero`: if `f` is differentiable on the open ball and continuous up to its closure — the `DiffContOnCl ℂ f (Metric.ball c R)` bundle — then `∮ z in C(c, R), f z = 0` for `0 ≤ R`.
+An entire $`f` satisfies that bundle everywhere, and `Differentiable.diffContOnCl` produces it for any set, so the whole proof is `hf.diffContOnCl.circleIntegral_eq_zero hR` — start by writing `exact hf.diffContOnCl.circleIntegral_eq_zero hR` and let unification pick the ball.
 
 ```lean
 example (f : ℂ → ℂ) (hf : Differentiable ℂ f) (c : ℂ) (R : ℝ) (hR : 0 ≤ R) :
@@ -630,8 +635,9 @@ example (f : ℂ → ℂ) (hf : Differentiable ℂ f) (c : ℂ) (R : ℝ) (hR : 
 Cauchy's integral formula is Mathlib's `Complex.circleIntegral_sub_inv_smul_of_differentiable_on_off_countable` (the long name reflects the most general off-countable-set hypotheses Mathlib has formalized).
 Specialized to a fully-differentiable $`f`, it reads exactly as the formula above, with `(2 * π * I)⁻¹ • ∮ z in C(c, R), (z - a)⁻¹ • f z = f a`.
 
-The $`ML` estimation lemma is `circleIntegral.norm_integral_le_of_norm_le_const` (and friends for general intervals, `intervalIntegral.norm_integral_le_of_norm_le_const`); the bound there is $`M \cdot (b - a)`, which on a circle becomes $`M \cdot 2\pi R`.
-State the $`ML` bound: if $`\|f\| \leq C` on the circle, then the contour integral is bounded by $`2\pi R \cdot C`.
+The general-interval $`ML` estimate `intervalIntegral.norm_integral_le_of_norm_le_const` gives a bound of the shape $`M \cdot (b - a)`; on a circle the parameter interval is $`[0, 2\pi]`, and folding in the radius from the $`|\gamma'| = R` speed of `circleMap` turns that length $`2\pi` into the arclength $`2\pi R`.
+Mathlib has already done that reshaping for us in `circleIntegral.norm_integral_le_of_norm_le_const`, which reads `‖∮ z in C(c, R), f z‖ ≤ 2 * π * R * C` — matching this goal on the nose.
+So the finisher is `exact circleIntegral.norm_integral_le_of_norm_le_const hR hf`; the pointwise bound `hf` over `Metric.sphere c R` is exactly the `sphere c R` hypothesis the lemma wants, no massaging needed.
 
 ```lean
 example (f : ℂ → ℂ) (c : ℂ) (R C : ℝ) (hR : 0 ≤ R)
@@ -652,6 +658,7 @@ example {s : Set ℂ} {f : ℂ → ℂ} (hf : DifferentiableOn ℂ f s) (hs : Is
 ```
 
 Specialize to an entire function: differentiability on all of $`\mathbb{C}` makes it analytic everywhere.
+The dedicated equivalence `Complex.analyticOnNhd_univ_iff_differentiable` states exactly `AnalyticOnNhd ℂ f univ ↔ Differentiable ℂ f`, so the finisher is its `.mpr` direction fed `hf` — start with `exact Complex.analyticOnNhd_univ_iff_differentiable.mpr hf`.
 
 ```lean
 example (f : ℂ → ℂ) (hf : Differentiable ℂ f) : AnalyticOnNhd ℂ f Set.univ := by
@@ -662,6 +669,7 @@ example (f : ℂ → ℂ) (hf : Differentiable ℂ f) : AnalyticOnNhd ℂ f Set.
 
 Liouville's theorem is `Differentiable.apply_eq_apply_of_bounded` in Mathlib: any entire $`f \colon \mathbb{C} \to \mathbb{C}` whose image is bounded takes the same value at every two points, i.e. is constant.
 Prove the first problem: a bounded entire function agrees at any two points.
+The lemma takes the boundedness of `Set.range f` and the two points as arguments, so via dot notation on `hf` the finisher is `exact hf.apply_eq_apply_of_bounded hb z w`.
 
 ```lean
 example (f : ℂ → ℂ) (hf : Differentiable ℂ f)

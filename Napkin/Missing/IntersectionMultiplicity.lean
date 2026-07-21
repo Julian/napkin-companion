@@ -123,13 +123,19 @@ theorem intersectionMult_eq_zero_of_span_eq_top (k R : Type*) [Field k]
     Ideal.Quotient.subsingleton_iff.2 h
   exact Module.finrank_zero_of_subsingleton
 
+universe u
+
 /-- The data of the projective Bézout theorem for two plane curves over an
 algebraically closed field, packaged as a hypothesis.  It bundles the two
-homogeneous curves, the finite set of their intersection points, the
-intersection multiplicity at each, and — as the field `bezout` — the theorem
-itself: the multiplicities sum to `deg f · deg g`.  Mathlib can prove none of
-this projectively, but bundling it lets Bézout be *stated* and its classical
-consequences derived.
+homogeneous curves, the finite set of their intersection points, the local
+ring `𝒪ₚ` at each point together with the images of the curves there, the
+intersection multiplicity at each — pinned by `mult_eq` to the genuine local
+number `dim_k(𝒪ₚ/(f,g)) = intersectionMult` — and, as the field `bezout`, the
+theorem itself: the multiplicities sum to `deg f · deg g`.  Because `mult` is
+tied to the real intersection multiplicity, `bezout` is the honest Bézout
+identity `∑ₚ Iₚ(f, g) = deg f · deg g`, not a sum of free numbers.  Mathlib can
+prove none of this projectively, but bundling it lets Bézout be *stated* and
+its classical consequences derived.
 
 Not in Mathlib.  The projective Bézout theorem is absent (intersection theory
 is scheme-theoretic there); retire this whenever it arrives. -/
@@ -143,11 +149,27 @@ structure BezoutData (k : Type*) [Field k] where
   /-- `g` is homogeneous, of degree `g.totalDegree`. -/
   hg : g.IsHomogeneous g.totalDegree
   /-- The type of projective points. -/
-  Point : Type*
+  Point : Type u
   /-- The finite set of intersection points of the two curves. -/
   points : Finset Point
+  /-- The local ring `𝒪ₚ` at each point. -/
+  localRing : Point → Type u
+  /-- Each local ring is a commutative ring. -/
+  commRing : ∀ p, CommRing (localRing p)
+  /-- Each local ring is a `k`-algebra. -/
+  algebra : ∀ p,
+    @Algebra k (localRing p) _ (commRing p).toCommSemiring.toSemiring
+  /-- The image of `f` in the local ring `𝒪ₚ`. -/
+  fLoc : ∀ p, localRing p
+  /-- The image of `g` in the local ring `𝒪ₚ`. -/
+  gLoc : ∀ p, localRing p
   /-- The intersection multiplicity `Iₚ(f, g)` at each point. -/
   mult : Point → ℕ
+  /-- The multiplicity is the genuine local intersection number
+  `dim_k(𝒪ₚ/(f, g))`. -/
+  mult_eq : ∀ p, mult p
+    = @intersectionMult k (localRing p) _ (commRing p) (algebra p)
+        (fLoc p) (gLoc p)
   /-- A genuine intersection point has positive multiplicity. -/
   mult_pos : ∀ p ∈ points, 0 < mult p
   /-- Projective Bézout: the multiplicities sum to `deg f · deg g`. -/

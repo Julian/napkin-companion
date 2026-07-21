@@ -516,7 +516,7 @@ example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   sorry
 ```
 
-The exterior derivative $`d` and the pullbacks that phrase the chart-compatibility are out of reach — the de-Rham complex is unformalized — so `ManifoldForm.ExteriorDerivative` bundles $`d`'s defining properties (degree-raising, linear, $`d^2 = 0`) as a hypothesis.
+The exterior derivative $`d` and the pullbacks that phrase the chart-compatibility are out of reach — the de-Rham complex is unformalized — so `ManifoldForm.ExteriorDerivative` bundles $`d`'s defining properties (degree-raising, linear, $`d^2 = 0`, and agreeing on $`0`-forms with the genuine differential $`df` via `d_ofScalar`, which rules out the trivial $`d \equiv 0`) as a hypothesis.
 From that bundled data alone, the fact underlying Stokes' theorem — every exact form is closed — is derivable.
 
 ```lean

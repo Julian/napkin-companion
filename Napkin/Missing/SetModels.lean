@@ -76,10 +76,16 @@ universe u
 
 /-- The *Mostowski collapse* of an extensional, well-founded model `𝓜`,
 packaged as data: a map `toFun : 𝓜.carrier → ZFSet` that transports `E`
-faithfully onto the real `∈` (`mem_iff`) and is injective, so `𝓜` is realized
-as genuine sets — the transitive collapse of the lemma.  Constructing this map
-(transfinite recursion `π x = {π y | y E x}`) is out of reach, so we bundle
-the collapse and its defining property and derive consequences from it.
+faithfully onto the real `∈` (`mem_iff`), is injective, and whose image is a
+*transitive* set (`image_transitive`), so `𝓜` is realized as genuine sets — the
+transitive collapse of the lemma.  Constructing this map (transfinite recursion
+`π x = {π y | y E x}`) is out of reach, so we bundle the collapse and its
+defining properties and derive consequences from it.
+
+The `image_transitive` field records that every member of a collapsed set `π a`
+is again a collapsed set `π b` with `b E a` — the content of the recursion
+`π a = {π b | b E a}`, and exactly the transitivity of the image that makes the
+collapse land in a transitive universe.
 
 Not in Mathlib.  Mathlib's `ZFSet` is the transitive universe and so never
 needs collapsing, but the collapse *lemma* — from an arbitrary extensional
@@ -93,6 +99,9 @@ structure MostowskiCollapse (𝓜 : SetModel) where
   mem_iff : ∀ a b, 𝓜.mem a b ↔ toFun a ∈ toFun b
   /-- Distinct elements collapse to distinct sets. -/
   injective : Function.Injective toFun
+  /-- The image is `∈`-transitive: every member of a collapsed set `π a` is
+  itself a collapsed set `π b`, with `b E a`. -/
+  image_transitive : ∀ a x, x ∈ toFun a → ∃ b, 𝓜.mem b a ∧ toFun b = x
 
 namespace MostowskiCollapse
 

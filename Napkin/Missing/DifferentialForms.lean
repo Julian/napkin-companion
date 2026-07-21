@@ -22,6 +22,7 @@ outstanding stopgap:
 -/
 import Mathlib.Topology.Algebra.Module.Alternating.Basic
 import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Analysis.Calculus.FDeriv.Basic
 
 namespace Napkin.Missing
 
@@ -87,14 +88,36 @@ theorem eval_eq_zero_of_eq {k : ℕ} (α : DiffForm E k) (p : E) (v : Fin k → 
     eval α p v = 0 :=
   (α p).map_eq_zero_of_eq v h hij
 
+/-- The *differential* `df` of a scalar function `f : E → ℝ`, as the `1`-form
+whose value at `p` on a tangent vector `v` is the directional derivative
+`(Df)_p(v)`.  It packages the Fréchet derivative `fderiv ℝ f p : E →L[ℝ] ℝ` as a
+continuous alternating map on a single argument.  This is the honest exterior
+derivative of a `0`-form, the anchor that pins `ExteriorDerivative` to the real
+`d` rather than the trivial `d ≡ 0`.
+
+Not in Mathlib.  Retire alongside `DiffForm`. -/
+noncomputable def differential (f : E → ℝ) : DiffForm E 1 :=
+  fun p => ContinuousAlternatingMap.ofSubsingleton ℝ E ℝ (0 : Fin 1)
+    (fderiv ℝ f p)
+
+/-- Evaluating the differential on a single tangent vector reads off the
+directional derivative `(Df)_p(v)`. -/
+@[simp] theorem differential_eval (f : E → ℝ) (p : E) (v : Fin 1 → E) :
+    eval (differential f) p v = fderiv ℝ f p (v 0) := by
+  simp [eval, differential]
+
 end DiffForm
 
 /-- The data of an *exterior derivative* on differential forms over `E`: a
 degree-raising operator `d` on each `DiffForm E k`, additive and
-`ℝ`-linear in the form, and satisfying `d ∘ d = 0`.  A genuine basis-free `d`
+`ℝ`-linear in the form, satisfying `d ∘ d = 0`, and — crucially — agreeing on
+`0`-forms with the genuine differential `df`.  A genuine basis-free `d`
 (and the wedge product it differentiates through) is out of reach here, so —
 in the "statement-as-structure" style — bundling its defining properties lets
-`d² = 0`'s consequences, like "exact ⇒ closed", still be *derived*.
+`d² = 0`'s consequences, like "exact ⇒ closed", still be *derived*.  Without the
+`d_ofScalar` anchor the trivial `d ≡ 0` would satisfy the other fields and make
+"exact ⇒ closed" vacuous; pinning `d` on `0`-forms to `differential` rules that
+out.
 
 Not in Mathlib.  There is no exterior derivative of differential forms (the
 de-Rham complex is unformalized); the algebraic shadow `d² = 0` is only
@@ -108,6 +131,10 @@ structure ExteriorDerivative where
   map_smul : ∀ k (c : ℝ) (α : DiffForm E k), d k (c • α) = c • d k α
   /-- `d² = 0`: applying the exterior derivative twice yields the zero form. -/
   dd : ∀ k (α : DiffForm E k), d (k + 1) (d k α) = 0
+  /-- On a `0`-form `f`, `d` is the genuine differential `df`.  This anchors `d`
+  to the real exterior derivative, excluding the trivial `d ≡ 0`. -/
+  d_ofScalar : ∀ f : E → ℝ,
+    d 0 (DiffForm.ofScalar f) = DiffForm.differential f
 
 namespace ExteriorDerivative
 

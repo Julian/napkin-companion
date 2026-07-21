@@ -655,7 +655,7 @@ example {X R : Type*} [CommRing R] {p : ℕ} (a : Cochain X R p) :
   cup_cochainOne_right a
 ```
 
-The lemma "$`\delta` with cup products", $`\delta(\phi \smile \psi) = \delta\phi \smile \psi + (-1)^p \phi \smile \delta\psi`, together with the on-the-nose associativity of $`\smile`, is what makes the cohomology ring; both are recorded — not proved — as the fields of `CupProductLaws`, since the descent to $`H^\bullet(X; R)` is out of Mathlib's reach.
+The lemma "$`\delta` with cup products", $`\delta(\phi \smile \psi) = \delta\phi \smile \psi + (-1)^p \phi \smile \delta\psi`, together with the on-the-nose associativity of $`\smile`, is what makes the cohomology ring; the Leibniz rule is recorded — not proved — as the field `leibniz` of `CupProductLaws`, since the descent to $`H^\bullet(X; R)` is out of Mathlib's reach, while associativity needs no hypothesis: the Alexander–Whitney product is associative outright, `cup_assoc`.
 From the Leibniz field alone one derives the step that lets $`\smile` descend to cohomology: the cup product of two cocycles is again a cocycle.
 
 ```lean

@@ -22,6 +22,7 @@ outstanding stopgap:
 -/
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.Topology.Algebra.Module.Alternating.Basic
+import Mathlib.Geometry.Manifold.MFDeriv.Basic
 
 namespace Napkin.Missing
 
@@ -91,6 +92,27 @@ theorem ofScalar_injective :
   have := congrFun h p
   simpa [ofScalar] using congrArg (fun ω => ω ![]) this
 
+/-- The *differential* `df` of a scalar function `f : M → ℝ`, as the `1`-form
+whose value at `p` on a tangent vector `v` is the directional derivative
+`(df)_p(v)`.  It packages the manifold derivative
+`mfderiv I 𝓘(ℝ) f p : TₚM →L[ℝ] ℝ` as a continuous alternating map on a single
+argument.  This is the honest exterior derivative of a `0`-form, the anchor
+that pins `ExteriorDerivative` to the real `d` rather than the trivial
+`d ≡ 0`.
+
+Not in Mathlib.  Retire alongside `ManifoldForm`. -/
+noncomputable def differential (f : M → ℝ) : ManifoldForm I M 1 :=
+  fun p => ContinuousAlternatingMap.ofSubsingleton ℝ (TangentSpace I p) ℝ
+    (0 : Fin 1) (mfderiv I (modelWithCornersSelf ℝ ℝ) f p)
+
+/-- Evaluating the differential on a single tangent vector reads off the
+directional derivative `(df)_p(v)`. -/
+@[simp] theorem differential_eval (f : M → ℝ) (p : M)
+    (v : Fin 1 → TangentSpace I p) :
+    eval (differential f) p v
+      = mfderiv I (modelWithCornersSelf ℝ ℝ) f p (v 0) := by
+  rfl
+
 /-- Antisymmetry of a differential form: swapping two distinct arguments
 negates the value, `αₚ(…, v_i, …, v_j, …) = -αₚ(…, v_j, …, v_i, …)`.  This is
 the alternating law the text builds into the wedge product, here for a
@@ -141,11 +163,15 @@ theorem Orientable.of_volumeForm {n : ℕ} (ω : ManifoldForm I M n)
 
 /-- The data of an *exterior derivative* on differential forms over `M`: a
 degree-raising operator `d` on each `ManifoldForm I M k`, additive and
-`ℝ`-linear in the form, and satisfying `d ∘ d = 0`.  A genuine chart-by-chart
+`ℝ`-linear in the form, satisfying `d ∘ d = 0`, and — crucially — agreeing on
+`0`-forms with the genuine differential `df`.  A genuine chart-by-chart
 `d` (and the wedge product it differentiates through) is out of reach here, so
 — in the "statement-as-structure" style — bundling its defining properties
 lets `d² = 0`'s consequences, like "exact ⇒ closed", still be *derived*; these
-are what Stokes' theorem `∫_M dα = ∫_{∂M} α` rests on.
+are what Stokes' theorem `∫_M dα = ∫_{∂M} α` rests on.  Without the `d_ofScalar`
+anchor the trivial `d ≡ 0` would satisfy the other fields and make
+"exact ⇒ closed" vacuous; pinning `d` on `0`-forms to `differential` rules that
+out.
 
 Not in Mathlib.  There is no exterior derivative of manifold differential
 forms (the de-Rham complex is unformalized); retire this when it arrives. -/
@@ -159,6 +185,10 @@ structure ExteriorDerivative where
   /-- `d² = 0`: applying the exterior derivative twice yields the zero
   form. -/
   dd : ∀ k (α : ManifoldForm I M k), d (k + 1) (d k α) = 0
+  /-- On a `0`-form `f`, `d` is the genuine differential `df`.  This anchors `d`
+  to the real exterior derivative, excluding the trivial `d ≡ 0`. -/
+  d_ofScalar : ∀ f : M → ℝ,
+    d 0 (ManifoldForm.ofScalar f) = ManifoldForm.differential f
 
 namespace ExteriorDerivative
 

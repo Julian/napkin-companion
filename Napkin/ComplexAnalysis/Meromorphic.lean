@@ -497,7 +497,7 @@ example (c p : ℂ) (r : ℝ) (hp : p ∈ Metric.ball c r) :
   circleWindingNumber_of_mem_ball hp
 ```
 
-Cauchy's residue theorem itself is beyond Mathlib, so `ResidueTheoremData` bundles its identity $`\frac{1}{2\pi i} \oint_\gamma f = \sum_p \operatorname{Wind}(\gamma, p) \operatorname{Res}(f; p)` as a hypothesis, exactly as the chapter states it.
+Cauchy's residue theorem itself is beyond Mathlib, so `ResidueTheoremData` bundles its identity $`\frac{1}{2\pi i} \oint_\gamma f = \sum_p \operatorname{Wind}(\gamma, p) \operatorname{Res}(f; p)` as a hypothesis, exactly as the chapter states it; its `res_eq` and `wind_eq` fields pin each $`\operatorname{Res}(f; p)` and $`\operatorname{Wind}(\gamma, p)` to the honest `residue` and `circleWindingNumber`, so the bundled sum is the real theorem rather than a sum of free numbers.
 Its regular-loop corollary — every winding number equal to $`1`, so the integral is the plain sum of residues — is then a one-line derivation, `contour_eq_sum_residues`.
 
 ```lean

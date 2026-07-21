@@ -93,9 +93,12 @@ theorem circleWindingNumber_of_mem_ball {c p : ℂ} {r : ℝ}
     smul_eq_mul, inv_mul_cancel₀ Complex.two_pi_I_ne_zero]
 
 /-- The data of Cauchy's residue theorem for a circle `C(c, r)`: a function
-`f`, its finite set of `poles`, the residue and winding number at each, and
-the identity `(2πi)⁻¹ ∮ f = ∑ₚ Wind(γ, p) · Res(f; p)` as a field.  Mathlib
-cannot prove this, but bundling it lets the theorem be *stated* as a
+`f`, its finite set of `poles`, the residue and winding number at each —
+pinned by `res_eq`/`wind_eq` to the honest `residue` and `circleWindingNumber`
+defined above — and the identity `(2πi)⁻¹ ∮ f = ∑ₚ Wind(γ, p) · Res(f; p)` as a
+field.  Because `res` and `wind` are tied to the genuine definitions, the
+bundled identity is the real residue theorem, not a sum of free numbers.
+Mathlib cannot prove this, but bundling it lets the theorem be *stated* as a
 hypothesis and its consequences — such as the regular-loop form — derived.
 
 Not in Mathlib.  There is no residue theorem, nor the residue API it would
@@ -109,10 +112,19 @@ structure ResidueTheoremData where
   r : ℝ
   /-- The finite set of poles enclosed by the contour. -/
   poles : Finset ℂ
+  /-- A small radius about each pole, the circle on which its residue is read
+  off; small enough that the pole is the only one it encloses. -/
+  poleRadius : ℂ → ℝ
   /-- The residue `Res(f; p)` at each pole. -/
   res : ℂ → ℂ
   /-- The winding number `Wind(γ, p)` of the contour about each pole. -/
   wind : ℂ → ℂ
+  /-- Each `res p` is the honest residue of `f` at `p`, read off the circle of
+  radius `poleRadius p` about `p`. -/
+  res_eq : ∀ p ∈ poles, res p = residue f p (poleRadius p)
+  /-- Each `wind p` is the honest winding number of the contour `C(c, r)` about
+  the pole `p`. -/
+  wind_eq : ∀ p ∈ poles, wind p = circleWindingNumber c r p
   /-- The residue theorem:
   `(2πi)⁻¹ ∮ f = ∑ₚ Wind(γ, p) · Res(f; p)`. -/
   residueTheorem :

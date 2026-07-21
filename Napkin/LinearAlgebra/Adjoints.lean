@@ -363,6 +363,7 @@ example (k V W : Type*) [Field k]
 ```
 
 Unfolding the definition, the dual map really is precomposition $`f \mapsto f \circ T`: evaluating $`T^\vee f` at a vector $`v` gives $`f(T v)`.
+This is true by definition, so `rfl` closes the goal.
 
 ```lean
 example (k V W : Type*) [Field k]
@@ -385,6 +386,7 @@ example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
 ```
 
 The injectivity half of the isomorphism $`V \cong V^\vee` is the fact used in the proof: if $`\langle v, w \rangle = 0` for every $`v`, then $`w = 0` by positive definiteness (take $`v = w`).
+Instantiating the hypothesis at $`v = w` gives $`\langle w, w \rangle = 0`, and `inner_self_eq_zero` rewrites that into $`w = 0`.
 
 ```lean
 example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
@@ -405,7 +407,8 @@ noncomputable example {𝕜 V W : Type*} [RCLike 𝕜]
     (T : V →ₗ[𝕜] W) : W →ₗ[𝕜] V := T.adjoint
 ```
 
-The defining property of the adjoint is the inner-product identity $`\langle v, T^\dagger(w) \rangle_V = \langle T(v), w \rangle_W`.
+The defining property of the adjoint is the inner-product identity $`\langle v, T^\dagger(w) \rangle_V = \langle T(v), w \rangle_W`, which Mathlib records as `LinearMap.adjoint_inner_right`.
+Applying `LinearMap.adjoint_inner_right T v w` is exactly the goal.
 
 ```lean
 example {𝕜 V W : Type*} [RCLike 𝕜]
@@ -428,7 +431,9 @@ example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
   T.IsSymmetric
 ```
 
-The corollary that a Hermitian map has real eigenvalues is `conj_eigenvalue_eq_self`: every eigenvalue is fixed by conjugation.
+Complex conjugation on the scalars appears here as `starRingEnd 𝕜`: it is the ring map sending each scalar to its conjugate, so $`\texttt{starRingEnd } 𝕜\ \mu` is $`\overline{\mu}` (Mathlib also writes this `conj μ`, and on $`\mathbb{R}` it is the identity).
+The corollary that a Hermitian map has real eigenvalues — every eigenvalue equals its own conjugate — is `LinearMap.IsSymmetric.conj_eigenvalue_eq_self`.
+It takes the symmetry hypothesis and the `HasEigenvalue` witness, so `hT.conj_eigenvalue_eq_self hμ` finishes the goal.
 
 ```lean
 example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
@@ -439,6 +444,12 @@ example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
 ```
 
 The key orthogonality step of the spectral theorem: eigenvectors of a self-adjoint map with distinct eigenvalues are orthogonal.
+Mathlib packages the general statement (over eigenspaces) as `LinearMap.IsSymmetric.orthogonalFamily_eigenspaces`, but the two-vector case is a short direct computation worth doing by hand.
+
+Feed the symmetry hypothesis the two eigenvectors: `hT v w` is $`\langle T v, w \rangle = \langle v, T w \rangle`.
+Rewriting with `hv` and `hw` and pulling the scalars out with `inner_smul_left` (which conjugates the left scalar) and `inner_smul_right` turns this into $`\overline{\mu}\langle v, w \rangle = \nu\langle v, w \rangle`.
+Assuming $`v \neq 0`, the scalar $`\mu` is an eigenvalue, so `conj_eigenvalue_eq_self` makes $`\overline{\mu} = \mu`; then $`(\mu - \nu)\langle v, w \rangle = 0` and `mul_eq_zero` with $`\mu \neq \nu` forces $`\langle v, w \rangle = 0`.
+Handle $`v = 0` separately (there `simp` closes it), and bridge the hypothesis `hv` to the eigenvalue witness with `Module.End.mem_eigenspace_iff` and `Module.End.hasEigenvalue_of_hasEigenvector`.
 
 ```lean
 example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]

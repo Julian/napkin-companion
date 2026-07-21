@@ -632,13 +632,14 @@ example (x : ZFSet) : x ∈ x.powerset := by
 ## Mostowski collapse
 
 Mathlib's `ZFSet` is *already* the transitive von Neumann universe, so it never needs collapsing; but the Mostowski collapse *lemma* — given an arbitrary extensional well-founded $`(X, E)`, producing the isomorphic transitive $`(M, \in)` — is a theorem about models of set theory that Mathlib does not state or prove.
-Constructing the map $`\pi(x) = \{\pi(y) \mid y \mathrel{E} x\}` by transfinite recursion is out of reach, so the companion instead *bundles the conclusion*: `MostowskiCollapse 𝓜` is a map `toFun : 𝓜.carrier → ZFSet` that is injective and transports `E` faithfully onto the real $`\in` (its `mem_iff` field).
+Constructing the map $`\pi(x) = \{\pi(y) \mid y \mathrel{E} x\}` by transfinite recursion is out of reach, so the companion instead *bundles the conclusion*: `MostowskiCollapse 𝓜` is a map `toFun : 𝓜.carrier → ZFSet` that is injective, transports `E` faithfully onto the real $`\in` (its `mem_iff` field), and has a *transitive* image (its `image_transitive` field, that every member of $`\pi(a)` is again some $`\pi(b)` with $`b \mathrel{E} a`, the content of the recursion above).
 That is exactly the collapse presented as an $`\in`-isomorphism onto genuine sets, and consequences still follow.
 Because the already-transitive universe is its own collapse, `zfSetModel` collapses by the identity.
 
 ```lean
 example : MostowskiCollapse zfSetModel :=
-  ⟨id, fun _ _ => Iff.rfl, Function.injective_id⟩
+  ⟨id, fun _ _ => Iff.rfl, Function.injective_id,
+    fun _ x h => ⟨x, h, rfl⟩⟩
 ```
 
 The point of the lemma is that living inside the well-founded $`\in` forces the model to be well-founded too: pulling `ZFSet.mem_wf` back along an injective $`\in`-isomorphism shows any collapsible model satisfies Foundation.

@@ -403,6 +403,8 @@ example {Ω : Type*} (𝒜 : Set (Set Ω)) : Prop := IsSetAlgebra 𝒜
 
 The definition asks only for closure under complement and finite union, but this already forces closure under intersection, since $`s \cap t = (s^c \cup t^c)^c`.
 Prove that an algebra is closed under (binary) intersection.
+The two fields of `IsSetAlgebra` you need are `h.compl_mem` and `h.union_mem`; rewriting the goal with `← compl_compl (s ∩ t)` then `Set.compl_inter` turns it into exactly the shape they close.
+(Mathlib bundles this derivation as `IsSetAlgebra.inter_mem`, so `h.inter_mem hs ht` also finishes in one line.)
 
 ```lean
 example {Ω : Type*} (𝒜 : Set (Set Ω)) (h : IsSetAlgebra 𝒜)
@@ -422,7 +424,7 @@ example (Ω : Type*) : Type _ := OuterMeasure Ω
 The compatibility statement in part (b) is `OuterMeasure.ofFunction_eq` (specialized to the case where the input function is a pre-measure on an algebra).
 
 One of the outer-measure axioms is monotonicity: a subset never has larger outer measure.
-Prove it from the Mathlib API.
+This axiom is carried as the field `OuterMeasure.mono`, so `μ.mono h` is the whole proof.
 
 ```lean
 example {Ω : Type*} (μ : OuterMeasure Ω) (s t : Set Ω) (h : s ⊆ t) :
@@ -443,8 +445,16 @@ example {Ω : Type*} (μ : OuterMeasure Ω) :
 `Measure.IsComplete μ` and the `[CompleteMeasure μ]` typeclass package completeness in Mathlib.
 `OuterMeasure.toMeasure` realizes the extension theorem: given an outer measure `μ` and a `MeasurableSpace` instance with `m ≤ μ.caratheodory` (the $`\sigma`-algebra is contained in the Carathéodory-measurable sets), it produces the proper `Measure`.
 
+Unfolding the predicate, `μ.IsCaratheodory s` is literally the statement that the splitting equation of the definition holds for *every* test set `t`, so from a hypothesis `h : μ.IsCaratheodory s` the term `h t` is the split at a particular `t`:
+
+```lean
+example {Ω : Type*} (μ : OuterMeasure Ω) (s t : Set Ω)
+    (h : μ.IsCaratheodory s) : μ t = μ (t ∩ s) + μ (t \ s) := h t
+```
+
 Since the Carathéodory-measurable sets form a $`\sigma`-algebra, they are closed under complement.
 Prove that if $`A`$ is $`\mu^*`$-measurable, then so is its complement.
+The complement of a set uses the same test sets with the two pieces swapped, and Mathlib packages exactly this as `OuterMeasure.isCaratheodory_compl`, so `μ.isCaratheodory_compl h` finishes.
 
 ```lean
 example {Ω : Type*} (μ : OuterMeasure Ω) (s : Set Ω)
@@ -468,6 +478,7 @@ The resulting measure is `Measure.IsComplete` and agrees with `μ` on the origin
 
 A single point ought to be negligible.
 Show that a singleton in $`\mathbb{R}`$ has Lebesgue measure zero, so it is a null set.
+The named lemma is `Real.volume_singleton`; it is also a `simp` lemma, so a bare `simp` closes the goal.
 
 ```lean
 example (a : ℝ) : volume ({a} : Set ℝ) = 0 := by
@@ -479,11 +490,12 @@ example (a : ℝ) : volume ({a} : Set ℝ) = 0 := by
 `SigmaFinite μ` is the Mathlib typeclass; `volume` on `ℝ` and `ℝ^n` carries it as a registered instance, since you can cover the line by `Set.Ico (-n) n` for `n : ℕ`.
 The uniqueness statement for $`\sigma`-finite extensions is `Measure.ext_of_generateFrom_of_iUnion` (and friends): two $`\sigma`-finite measures agreeing on a generating $`\pi`-system agree everywhere.
 
-The Lebesgue measure is $`\sigma`-finite: the line is a countable union of finite-measure pieces.
-Confirm that Mathlib already knows this for `volume` on `ℝ`.
+The Lebesgue measure is $`\sigma`-finite because the line is a countable union of finite-measure pieces — the bounded intervals $`(-n, n)`.
+The load-bearing fact is that each such piece really does have finite measure; prove it.
+Rewriting with `Real.volume_Ioo` turns the goal into `ENNReal.ofReal (n - -n) ≠ ⊤`, which is `ENNReal.ofReal_ne_top` (every `ENNReal.ofReal` is finite).
 
 ```lean
-example : SigmaFinite (volume : Measure ℝ) := by
+example (n : ℕ) : volume (Set.Ioo (-(n : ℝ)) n) ≠ ⊤ := by
   sorry
 ```
 
