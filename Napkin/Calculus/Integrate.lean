@@ -309,14 +309,15 @@ example {M N : Type*} [MetricSpace M] [CompactSpace M] [MetricSpace N]
 ## Dense sets and extension
 
 `Dense s` in Mathlib is the equivalent statement "`s.closure = univ`", or pointwise "`∀ x, x ∈ closure s`".
-The two-set form ("`s ⊆ t` and `t ⊆ closure s`") is `DenseRange` for ranges of functions.
+For the image of a map there is `DenseRange f`, which is *definitionally* `Dense (Set.range f)` — so wherever a `Dense` set is called for, a `DenseRange` fact slots in with no glue.
 `Rat.denseRange_cast : DenseRange ((↑) : ℚ → ℝ)` records that $`\mathbb{Q}` is dense in $`\mathbb{R}`; the abstract completion comes with `UniformSpace.Completion.denseRange_coe`.
 
 `IsDenseInducing.extend` (and its more uniform variant `UniformSpace.Completion.extension`) realizes the extension theorem in Mathlib: given a uniformly continuous map out of a dense uniform inducing subspace into a complete uniform space, you get a unique extension.
 The companion lemma `IsDenseInducing.extend_eq_at` says the extension agrees with the original on the dense subset, and `IsDenseInducing.continuous_extend` gives continuity.
 
-The uniqueness half of that story is that there is *at most one* continuous extension: two continuous functions that agree on the dense subset $`\mathbb{Q}` must be equal.
-Prove it, using density of $`\mathbb{Q}` and `Continuous.ext_on`.
+The uniqueness half of that story is the exercise below: there is *at most one* continuous extension, because two continuous functions into a Hausdorff space that agree on a dense set must be equal.
+That is exactly `Continuous.ext_on`, whose density hypothesis wants a `Dense` set — and `Rat.denseRange_cast` supplies one directly, since `DenseRange` *is* `Dense (Set.range _)`.
+Applying it leaves a `Set.EqOn f g (Set.range ((↑) : ℚ → ℝ))` goal; peel a point of that range back to some $`q : \mathbb{Q}` (via `rintro _ ⟨q, rfl⟩`) and the hypothesis `h q` closes it.
 
 ```lean
 example (f g : ℝ → ℝ) (hf : Continuous f) (hg : Continuous g)
@@ -337,7 +338,8 @@ The Riemann construction in this chapter exists for pedagogy, and to motivate wh
 :::
 
 The rectangle-sum functional $`\Sigma` sends a single constant rectangle of height $`c` over $`[a, b]` to its area $`(b - a) c`.
-Confirm the integral does the same on a constant, via `intervalIntegral.integral_const`.
+Confirm the integral does the same on a constant, via `intervalIntegral.integral_const` (a single application, applied to `c`, closes it).
+The right-hand side is written with the scalar action `•` rather than `*` because the interval integral is Banach-valued in general: the real number `(b - a)` *scales* the value `c`, and for a real `c` that scaling is just ordinary multiplication.
 
 ```lean
 example (a b c : ℝ) : ∫ _ in a..b, c = (b - a) • c := by
@@ -367,8 +369,8 @@ example : ∫ x in (1 : ℝ)..4, x ^ 2 = 21 := by
 
 ## Problems
 
-The first problem — a differentiable function with bounded derivative is uniformly continuous — is the Mathlib statement `LipschitzWith.uniformContinuous` combined with the fact that a bounded derivative implies Lipschitz (`Convex.lipschitzOnWith_of_nnnorm_deriv_le`), exactly the contrapositive-and-MVT argument the hint suggests.
-The final Lipschitz step is short: prove that any Lipschitz function is uniformly continuous.
+The chapter's first problem — a differentiable function with bounded derivative is uniformly continuous — factors in Mathlib into two steps: a bounded derivative makes the function Lipschitz (`Convex.lipschitzOnWith_of_nnnorm_deriv_le`, the MVT argument the hint suggests), and a Lipschitz function is uniformly continuous.
+The exercise below isolates that *second* step, which stands on its own for any Lipschitz map with no derivative in sight; its finisher is `LipschitzWith.uniformContinuous` (that is, `h.uniformContinuous`).
 
 ```lean
 example {M N : Type*} [PseudoMetricSpace M] [PseudoMetricSpace N]

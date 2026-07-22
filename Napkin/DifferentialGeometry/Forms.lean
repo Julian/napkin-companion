@@ -538,6 +538,8 @@ example (V : Type*) [AddCommGroup V] [Module ℝ V] (k : ℕ) :
 
 The evaluation rule builds in the alternating law $`\alpha_p(v_1, v_2) = -\alpha_p(v_2, v_1)`, and in particular a form returns $`0` whenever two of its arguments coincide — the degenerate parallelepiped has no volume.
 Prove this for a $`2`-form: feeding the same vector twice returns zero.
+The tuple of tangent vectors is written with Lean's vector-literal notation `![v, w]`, which builds the map `Fin 2 → V` sending `0 ↦ v` and `1 ↦ w`; here `![v, v]` puts $`v` in both slots.
+The finishing lemma is `AlternatingMap.map_eq_zero_of_eq`: give it the two coinciding slots `0` and `1`, the proof that they agree, and the proof `0 ≠ 1`.
 
 ```lean
 example (V : Type*) [AddCommGroup V] [Module ℝ V]
@@ -554,6 +556,7 @@ example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
 ```
 
 A $`0`-form is *just a scalar function*: `Fin 0` is empty, so `DiffForm.ofScalar` turns `f : E → ℝ` into the form `p ↦ f p`, and evaluating it on the empty tuple of tangent vectors reads $`f` back.
+Here `![]` is the empty vector literal, the unique map `Fin 0 → E`; the read-back holds definitionally, so `rfl` closes it, and it is packaged as the simp lemma `DiffForm.ofScalar_eval`.
 
 ```lean
 example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -562,13 +565,14 @@ example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
   sorry
 ```
 
-The alternating law $`\alpha_p(v_1, v_2) = -\alpha_p(v_2, v_1)` is `DiffForm.eval_swap`, and its degenerate case — a repeated argument spans no volume — is `DiffForm.eval_eq_zero_of_eq`.
-Reprove the doubled-vector vanishing for a pointwise $`2`-form, now through the shim.
+The doubled-vector vanishing just above is only the degenerate case of the full alternating law $`\alpha_p(v_1, v_2) = -\alpha_p(v_2, v_1)`; through the shim these are `DiffForm.eval_eq_zero_of_eq` and its parent `DiffForm.eval_swap`.
+Prove the swap law itself for a pointwise $`2`-form: exchanging the two tangent vectors negates the value.
+`DiffForm.eval_swap` states this for a composition with `Equiv.swap i j`, so instantiate it at `i = 0`, `j = 1` on `![w, v]` — then `simpa` reduces `![w, v] ∘ Equiv.swap 0 1` back to `![v, w]`.
 
 ```lean
 example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
-    (α : DiffForm E 2) (p : E) (v : E) :
-    DiffForm.eval α p ![v, v] = 0 := by
+    (α : DiffForm E 2) (p : E) (v w : E) :
+    DiffForm.eval α p ![v, w] = - DiffForm.eval α p ![w, v] := by
   sorry
 ```
 
@@ -586,8 +590,18 @@ example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
   D.exact_isClosed h
 ```
 
-Additivity of $`d` propagates to closedness: a sum of closed forms is closed, `D.closed_add`.
-Prove the analogue for a scalar multiple.
+Additivity of $`d` propagates to closedness: a sum of closed forms is closed.
+Unfolding `Closed` and rewriting with the additivity field `D.map_add` collapses $`d(\alpha + \beta)` to $`0 + 0`; here is that proof, bundled in the shim as `D.closed_add`.
+
+```lean
+example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
+    (D : ExteriorDerivative E) {α β : DiffForm E 2}
+    (hα : D.Closed α) (hβ : D.Closed β) : D.Closed (α + β) := by
+  rw [ExteriorDerivative.Closed, D.map_add, hα, hβ, add_zero]
+```
+
+Prove the analogue for a scalar multiple, mirroring the proof with the homogeneity field `D.map_smul` and `smul_zero` in place of `D.map_add` and `add_zero`.
+The bundled form of the result is `D.closed_smul`.
 
 ```lean
 example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -604,8 +618,8 @@ recall ExteriorAlgebra.ι_sq_zero {R : Type*} [CommRing R]
     ExteriorAlgebra.ι R m * ExteriorAlgebra.ι R m = 0
 ```
 
-The same relation forces anticommutativity, the sign convention $`dx \wedge dy = -\,dy \wedge dx` behind the whole theory.
-Prove it from `ExteriorAlgebra.ι_add_mul_swap`, which records $`\iota(x)\iota(y) + \iota(y)\iota(x) = 0`.
+The same relation forces the anticommutativity of the wedge, the sign convention $`dx \wedge dy = -\,dy \wedge dx` on $`1`-forms that makes a repeated wedge $`dx \wedge dx` vanish and orients every signed volume in the theory.
+Reading $`dx`, $`dy` as $`\iota(x)`, $`\iota(y)`, prove it from `ExteriorAlgebra.ι_add_mul_swap`, which records $`\iota(x)\iota(y) + \iota(y)\iota(x) = 0`; the step from that vanishing sum to the negation is `eq_neg_of_add_eq_zero_left`.
 
 ```lean
 example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (x y : M) :
@@ -624,13 +638,16 @@ example (V : Type*) [AddCommGroup V] [Module ℝ V]
   MultilinearMap.alternatization m
 ```
 
-Because the output really is alternating, it too kills a repeated argument.
-Verify that the alternatization of a bilinear map returns zero on a doubled vector.
+The word *additive* there is literal: `MultilinearMap.alternatization` is bundled as an `AddMonoidHom`, not merely a function on multilinear maps.
+Verify that it respects addition — the alternatization of a sum is the sum of the alternatizations.
+Every `AddMonoidHom` satisfies this, so the finishing lemma is the generic `map_add`.
 
 ```lean
 example (V : Type*) [AddCommGroup V] [Module ℝ V]
-    (m : MultilinearMap ℝ (fun _ : Fin 2 => V) ℝ) (v : V) :
-    (MultilinearMap.alternatization m) ![v, v] = 0 := by
+    (m m' : MultilinearMap ℝ (fun _ : Fin 2 => V) ℝ) :
+    MultilinearMap.alternatization (m + m')
+      = MultilinearMap.alternatization m
+        + MultilinearMap.alternatization m' := by
   sorry
 ```
 
@@ -638,6 +655,7 @@ example (V : Type*) [AddCommGroup V] [Module ℝ V]
 
 De Rham cohomology of smooth manifolds — and with it a literal "exact implies closed" — is not yet formalized here; the algebraic side of de Rham lives in `Mathlib.RingTheory.Kaehler.Basic` as Kähler differentials.
 Still, the crux of "exact forms are closed" is that applying the derivative twice yields zero, and the exterior algebra models this exactly: multiplying by $`\iota(m)` twice annihilates everything, since $`\iota(m)` squares to zero.
+Reassociate the product with `← mul_assoc` so the two $`\iota(m)` factors meet, then kill them with `ExteriorAlgebra.ι_sq_zero`, leaving `0 * x`.
 
 ```lean
 example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]

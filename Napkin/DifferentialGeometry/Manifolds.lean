@@ -403,7 +403,7 @@ recall ChartedSpace.chartAt
 For a "concrete" topological $`n`-manifold one would take $`H = \mathbb{R}^n`, but the abstract setup `ChartedSpace H M` is more flexible: we can model on $`H = \mathbb{R}^n`, on a half-space (for manifolds with boundary), or on a Banach space (for the infinite-dimensional case).
 
 The local picture — "every point has a neighborhood looking like the model" — is guaranteed by the field `mem_chart_source`, which says every point lies in the source of the chart chosen through it.
-Show it directly.
+Show it directly; applied to a point, `mem_chart_source H x` is exactly this witness.
 
 ```lean
 example {H : Type*} [TopologicalSpace H] {M : Type*} [TopologicalSpace M]
@@ -440,7 +440,7 @@ example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   contMDiff_const
 ```
 
-Now show that the identity map is smooth.
+Now show that the identity map is smooth; the finisher is `contMDiff_id`.
 
 ```lean
 example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -458,7 +458,7 @@ The implicit function theorem `HasStrictFDerivAt.implicitFunction` from `Mathlib
 The smoothness of the resulting local inverse is packaged by `IsLocalDiffeomorphAt`: a map that near a point is a diffeomorphism onto its image.
 
 Such a local diffeomorphism is in particular smooth at the point.
-Prove it.
+Prove it by drawing the smoothness out of the hypothesis, `IsLocalDiffeomorphAt.contMDiffAt`.
 
 ```lean
 example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -494,7 +494,7 @@ noncomputable example {E : Type*} [NormedAddCommGroup E]
 ```
 
 Each $`\alpha_p` is alternating, so swapping two tangent vectors flips the sign and feeding the same vector twice returns zero; the volume form of an *orientable* manifold is a nowhere-vanishing top form, `ManifoldForm.Nonvanishing`.
-Show that exhibiting one witnesses orientability.
+Show that exhibiting one witnesses orientability, via `ManifoldForm.Orientable.of_volumeForm`.
 
 ```lean
 example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -505,19 +505,23 @@ example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   sorry
 ```
 
-Now show directly that a $`2`-form fed the same tangent vector twice vanishes.
+The anchor tying these forms back to calculus is the *differential* $`df` of a scalar function `f : M → ℝ`, packaged as the $`1`-form `ManifoldForm.differential f`.
+Its value at $`p` on a single tangent vector is the directional derivative — the manifold derivative `mfderiv I 𝓘(ℝ) f p` applied to that vector.
+Show that evaluating it reads off exactly that `mfderiv`; the finisher is `ManifoldForm.differential_eval`.
 
 ```lean
 example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
     {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-    (α : ManifoldForm I M 2) (p : M) (v : TangentSpace I p) :
-    ManifoldForm.eval α p ![v, v] = 0 := by
+    (f : M → ℝ) (p : M) (v : Fin 1 → TangentSpace I p) :
+    ManifoldForm.eval (ManifoldForm.differential f) p v
+      = mfderiv I (modelWithCornersSelf ℝ ℝ) f p (v 0) := by
   sorry
 ```
 
 The exterior derivative $`d` and the pullbacks that phrase the chart-compatibility are out of reach — the de-Rham complex is unformalized — so `ManifoldForm.ExteriorDerivative` bundles $`d`'s defining properties (degree-raising, linear, $`d^2 = 0`, and agreeing on $`0`-forms with the genuine differential $`df` via `d_ofScalar`, which rules out the trivial $`d \equiv 0`) as a hypothesis.
 From that bundled data alone, the fact underlying Stokes' theorem — every exact form is closed — is derivable.
+Unfold `D.Exact α` to a witness $`\alpha = d\beta`, then the $`d^2 = 0` field `D.dd` closes it.
 
 ```lean
 example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -553,7 +557,7 @@ recall PointDerivation
 Underneath the hood, `PointDerivation` is a special case of the algebraic `Derivation R A M`: an $`R`-linear map $`A \to M` satisfying the Leibniz rule, where here $`R = 𝕜`, $`A = C^\infty(M; 𝕜)`, and $`M = 𝕜` viewed as a module over $`A` via evaluation at $`x`.
 
 The `mfderiv` of a map is the induced linear map on tangent spaces.
-Show that the derivative of the identity map is the identity linear map.
+Show that the derivative of the identity map is the identity linear map; the finisher is `mfderiv_id`.
 
 ```lean
 example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -578,6 +582,7 @@ recall IsLocalRing.CotangentSpace
 The smooth-manifold cotangent space is the same idea applied to $`R = C^\infty(M; \mathbb{R})`.
 The sanity check that a point has trivial cotangent space when there is no room to differentiate is visible on the algebraic side: a field is a local ring whose maximal ideal is $`0`, so its cotangent space is trivial.
 Show that the cotangent space of a field is a subsingleton.
+The equivalence `IsLocalRing.subsingleton_cotangentSpace_iff` reads `Subsingleton (CotangentSpace R) ↔ IsField R`, so its `.mpr` direction fed `Field.toIsField K` is the finisher.
 
 ```lean
 example (K : Type*) [Field K] :

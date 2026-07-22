@@ -516,8 +516,14 @@ example (a z₀ : ℂ) :
   sorry
 ```
 
-Every other Laurent monomial contributes nothing: the residue of $`(z - w)^n` is $`0` for $`n \neq -1`.
-Prove the representative case $`n = 2`.
+Every other Laurent monomial contributes nothing: the residue of $`(z - w)^n` is $`0` for every $`n \neq -1`, which is `residue_sub_zpow_of_ne`.
+
+```lean
+recall residue_sub_zpow_of_ne {n : ℤ} (hn : n ≠ -1) (w z₀ : ℂ)
+    (r : ℝ) : residue (fun z => (z - w) ^ n) z₀ r = 0
+```
+
+Prove the representative case $`n = 2`: feed it to `residue_sub_zpow_of_ne`, whose side condition $`(2 : \mathbb{Z}) \neq -1` is discharged by `decide`.
 
 ```lean
 example (w z₀ : ℂ) (r : ℝ) :
@@ -530,7 +536,7 @@ example (w z₀ : ℂ) (r : ℝ) :
 Mathlib has the logarithmic derivative itself as `logDeriv`, but not the meromorphic statement that $`f'/f` has a simple pole whose residue is exactly the order of $`f`; nor does it have the argument principle in any form, which would first need the residue theorem and a winding-number API.
 
 The one piece that is available is the algebra behind the logarithmic derivative: it turns products into sums, which is exactly why $`P'/P = \sum_i \frac{e_i}{x - a_i}` for a factored polynomial.
-Prove that `logDeriv (f g) = logDeriv f + logDeriv g` where the factors are nonzero and differentiable.
+This is `logDeriv_mul`; prove `logDeriv (f g) = logDeriv f + logDeriv g` for nonzero, differentiable factors by applying it to the point `x`, the two nonvanishing hypotheses, and the two differentiability hypotheses.
 
 ```lean
 example (f g : ℂ → ℂ) (x : ℂ) (hf : f x ≠ 0) (hg : g x ≠ 0)
@@ -560,7 +566,7 @@ example (D E : ArgumentPrincipleData) (hDP : D.P = 0) (hEP : E.P = 0)
 
 ## Problems
 
-`Complex.exists_root` is the bare existence form (`Complex.isAlgClosed` for the typeclass version), while `Polynomial.degree_eq_card_roots` gives the count-with-multiplicity.
+`Complex.exists_root` is the bare existence form (`Complex.isAlgClosed` for the typeclass version); over an algebraically closed field the count-with-multiplicity is the degree outright, which is `IsAlgClosed.card_roots_eq_natDegree`.
 
 ```lean
 example {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z :=
@@ -571,7 +577,7 @@ example : IsAlgClosed ℂ := Complex.isAlgClosed
 Rouché's theorem is not in Mathlib — it rests on the argument principle, which is also absent — but its zero-counting core is `ArgumentPrincipleData.eq_zero_count_of_eq` above, the two functions of the problem being $`f` and $`f + g`.
 
 The fundamental theorem of algebra problem asks that a polynomial of degree $`n` has $`n` roots.
-Because $`\mathbb{C}` is algebraically closed, the number of roots counted with multiplicity is exactly the degree.
+Because $`\mathbb{C}` is algebraically closed, the number of roots counted with multiplicity is exactly the degree: `IsAlgClosed.card_roots_eq_natDegree`, resting on the `Complex.isAlgClosed` instance, closes the goal in one step.
 
 ```lean
 example (f : ℂ[X]) : f.roots.card = f.natDegree := by
