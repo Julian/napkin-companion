@@ -525,6 +525,7 @@ So the companion here formalizes the general model theory and is honest about wh
 
 A first-order language is `FirstOrder.Language`, a structure interpreting that language on a type `M` is `L.Structure M`, a closed formula is a term of `L.Sentence`, and "$`\mathcal{M}` satisfies $`\varphi`" is written `M ⊨ φ`.
 A model of a whole theory `L.Theory` is again `M ⊨ T`.
+At a high level, none of this is more than the setup of this chapter: a `Language` is just the choice of symbols one is allowed to write down (for set theory, a single relation symbol reading as $`\in`), an `L.Structure M` equips a type `M` with one concrete interpretation of those symbols, and `M ⊨ φ` asserts that this interpretation makes the closed formula `φ` come out true — Mathlib's spelling of $`\mathcal{M} \vDash \varphi`.
 
 ```lean
 example (L : Language) : Type _ := L.Sentence
@@ -543,8 +544,15 @@ example : zfSetModel.carrier = ZFSet := rfl
 ```
 
 The chapter's Extensionality and Foundation axioms become predicates on a `SetModel`: `Extensional 𝓜` says elements with the same `E`-members are equal, and `Foundation 𝓜` says `E` is well-founded.
+
+```lean
+recall Extensional (𝓜 : SetModel) : Prop
+recall Foundation (𝓜 : SetModel) : Prop
+```
+
+Unfolding the names, `Extensional 𝓜` is exactly `∀ a b, (∀ c, 𝓜.mem c a ↔ 𝓜.mem c b) → a = b` and `Foundation 𝓜` is `WellFounded 𝓜.mem`.
 The universe `zfSetModel` satisfies both, as `zfSetModel_extensional` (built from `ZFSet.ext`) and `zfSetModel_foundation` (built from `ZFSet.mem_wf`).
-Unfold the first to see it *is* extensionality of the real universe.
+Unfold the first to see it *is* extensionality of the real universe: `zfSetModel_extensional` closes the goal outright, or unfold `Extensional` and finish with `ZFSet.ext`.
 
 ```lean
 example : Extensional zfSetModel := by
@@ -552,6 +560,7 @@ example : Extensional zfSetModel := by
 ```
 
 As a first taste of the general first-order framework alongside, show that every structure satisfies the trivially true sentence $`\top`.
+The named lemma is `Sentence.realize_top` (supply the structure `M`), and `simp` finds it unaided.
 
 ```lean
 example (L : Language) (M : Type*) [L.Structure M] : M ⊨ (⊤ : L.Sentence) := by
@@ -573,6 +582,7 @@ example (L : Language) (M : Type*) [L.Structure M] (φ ψ : L.Sentence) :
 
 The chapter's question was where $`\land` and $`\forall` went; the answer is that they are *derived*, with $`\land` built from $`\neg` and $`\lor`.
 Confirm the corresponding satisfaction clause: a conjunction holds exactly when both conjuncts do.
+This is the mirror of `Sentence.realize_sup` shown just above — its twin is `Sentence.realize_inf` (again applied to `M`).
 
 ```lean
 example (L : Language) (M : Type*) [L.Structure M] (φ ψ : L.Sentence) :
@@ -598,7 +608,7 @@ example (L : Language) (M : Type*) [L.Structure M] (S : L.ElementarySubstructure
 ```
 
 Unwinding that equivalence recovers the defining property of $`\prec`: the substructure and the model agree on every sentence.
-Prove it.
+Prove it by feeding the sentence to the equivalence from above: `S.elementarilyEquivalent.realize_sentence φ`.
 
 ```lean
 example (L : Language) (M : Type*) [L.Structure M] (S : L.ElementarySubstructure M)
@@ -623,6 +633,7 @@ example : (∅ : ZFSet) ∈ ZFSet.omega := ZFSet.omega_zero
 
 What Mathlib does *not* phrase is the lemma as a whole: "$`M \vDash` Replacement" quantifies over $`M`-definable classes, which is a schema in the metatheory rather than one Lean proposition, and the whole point of a transitive *model* — a `ZFSet` closed under these operations that then satisfies ZFC internally — is not set up.
 Here is a concrete external fact you *can* prove: every set is a member of its own power set.
+Rewrite with `ZFSet.mem_powerset` (shown above) to reduce the goal to `x ⊆ x`, then close it by reflexivity of $`\subseteq` — `subset_refl x`.
 
 ```lean
 example (x : ZFSet) : x ∈ x.powerset := by
@@ -642,8 +653,29 @@ example : MostowskiCollapse zfSetModel :=
     fun _ x h => ⟨x, h, rfl⟩⟩
 ```
 
+These are the four fields a `π : MostowskiCollapse 𝓜` hands you — the collapse map, the fact it transports `E` faithfully onto real membership, its injectivity, and the transitivity of its image — together with the consequence the exercises below lean on, that any collapsible model satisfies Foundation:
+
+```lean
+recall MostowskiCollapse.toFun {𝓜 : SetModel}
+    (π : MostowskiCollapse 𝓜) : 𝓜.carrier → ZFSet
+
+recall MostowskiCollapse.mem_iff {𝓜 : SetModel}
+    (π : MostowskiCollapse 𝓜) (a b : 𝓜.carrier) :
+    𝓜.mem a b ↔ π.toFun a ∈ π.toFun b
+
+recall MostowskiCollapse.injective {𝓜 : SetModel}
+    (π : MostowskiCollapse 𝓜) : Function.Injective π.toFun
+
+recall MostowskiCollapse.image_transitive {𝓜 : SetModel}
+    (π : MostowskiCollapse 𝓜) (a : 𝓜.carrier) (x : ZFSet)
+    (h : x ∈ π.toFun a) : ∃ b, 𝓜.mem b a ∧ π.toFun b = x
+
+recall MostowskiCollapse.foundation {𝓜 : SetModel}
+    (π : MostowskiCollapse 𝓜) : Foundation 𝓜
+```
+
 The point of the lemma is that living inside the well-founded $`\in` forces the model to be well-founded too: pulling `ZFSet.mem_wf` back along an injective $`\in`-isomorphism shows any collapsible model satisfies Foundation.
-Prove it — the map carries each `E`-step to a real membership step.
+That derivation is packaged for you as the `π.foundation` field above, so the exercise is a one-liner.
 
 ```lean
 example {𝓜 : SetModel} (π : MostowskiCollapse 𝓜) :
@@ -652,6 +684,7 @@ example {𝓜 : SetModel} (π : MostowskiCollapse 𝓜) :
 ```
 
 One step further: no element of a collapsible model is a member of itself, since Foundation forbids $`a \mathrel{E} a`.
+Well-foundedness gives asymmetry — `π.foundation.asymmetric a a` turns a proof of `𝓜.mem a a` into a proof of `¬ 𝓜.mem a a`, so applying it to the hypothesis twice closes the goal.
 
 ```lean
 example {𝓜 : SetModel} (π : MostowskiCollapse 𝓜)
@@ -673,6 +706,7 @@ example (L : Language) (T : L.Theory) :
 ```
 
 Read one direction of that equivalence off as an exercise: a satisfiable theory is finitely satisfiable.
+That direction has its own name, `Theory.IsSatisfiable.isFinitelySatisfiable`, so the hypothesis closes it as `h.isFinitelySatisfiable`.
 
 ```lean
 example (L : Language) (T : L.Theory) (h : T.IsSatisfiable) :

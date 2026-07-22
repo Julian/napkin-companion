@@ -244,13 +244,13 @@ Show that $`\mathbb{P}` preserves regularity greater than or equal to $`\kappa`.
 
 :::aside
 Like the previous chapter, the machinery here — generic extensions, cardinal collapse, the constructible universe $`L`, and the independence of CH itself — is beyond Mathlib's library.
-What _is_ formalized is the cardinal-arithmetic backdrop: the aleph function {name}`Cardinal.aleph`, cofinality {name}`Ordinal.cof`, and regularity {name}`Cardinal.IsRegular`.
+What _is_ formalized is the cardinal-arithmetic backdrop: the aleph function `Cardinal.aleph`, cofinality `Ordinal.cof`, and regularity `Cardinal.IsRegular`.
 So the combinatorial cardinal facts this chapter leans on have Lean counterparts even though the forcing argument that uses them does not.
 :::
 
 ## The continuum and the aleph numbers
 
-The size of the continuum $`\mathfrak{c} = 2^{\aleph_0}` is {name}`Cardinal.continuum`, and that it really is $`2^{\aleph_0}` is {name}`Cardinal.two_power_aleph0`; the first two aleph numbers $`\aleph_0` and $`\aleph_1` are {lean}`aleph 0` and {lean}`aleph 1`, with {name}`Cardinal.aleph_zero` identifying $`\aleph_0` with $`\omega`.
+The size of the continuum $`\mathfrak{c} = 2^{\aleph_0}` is `Cardinal.continuum`, and that it really is $`2^{\aleph_0}` is `Cardinal.two_power_aleph0`; the first two aleph numbers $`\aleph_0` and $`\aleph_1` are `aleph 0` and `aleph 1`, with `Cardinal.aleph_zero` identifying $`\aleph_0` with $`\omega`.
 
 ```lean
 example : (2 : Cardinal) ^ ℵ₀ = 𝔠 := two_power_aleph0
@@ -258,7 +258,7 @@ example : aleph 0 = ℵ₀ := aleph_zero
 example : ℵ₀ < ℵ₁ := aleph0_lt_aleph_one
 ```
 
-The Continuum Hypothesis is the assertion $`\mathfrak{c} = \aleph_1`, which we can name as a proposition — {name}`Napkin.Missing.ContinuumHypothesis` — even though it is provable neither in ZFC nor its negation:
+The Continuum Hypothesis is the assertion $`\mathfrak{c} = \aleph_1`, which we can name as the proposition `ContinuumHypothesis` — even though it is provable neither in ZFC nor its negation:
 
 ```lean
 example : ContinuumHypothesis ↔ continuum.{0} = ℵ₁ :=
@@ -266,7 +266,7 @@ example : ContinuumHypothesis ↔ continuum.{0} = ℵ₁ :=
 ```
 
 Only one direction of that equality is a theorem of ZFC: the continuum is always at least $`\aleph_1`, since $`\aleph_1` is the very next cardinal past $`\aleph_0`.
-Prove this provable half, $`\aleph_1 \le \mathfrak{c}`.
+Prove this provable half, $`\aleph_1 \le \mathfrak{c}`; it is exactly `aleph_one_le_continuum`.
 
 ```lean
 example : ℵ₁ ≤ 𝔠 := by
@@ -284,6 +284,7 @@ example : #(Set ℕ) = 𝔠 := mk_set_nat
 
 The branches themselves are the functions $`\omega \to 2`, of which there are again $`2^{\aleph_0} = \mathfrak{c}` many.
 Show that the type of binary branches has size continuum.
+Rewriting with `mk_arrow` turns the goal into a cardinal power that `simp` closes.
 
 ```lean
 example : #(ℕ → Bool) = 𝔠 := by
@@ -299,6 +300,7 @@ example (c : Cardinal) : c < ℵ₁ ↔ c ≤ ℵ₀ := lt_aleph_one_iff
 ```
 
 Rephrase this as the statement that a set is countable exactly when its cardinality is below $`\aleph_1`.
+Rewriting by `lt_aleph_one_iff` and then `le_aleph0_iff_set_countable` finishes it.
 
 ```lean
 example {α : Type} (s : Set α) : s.Countable ↔ #s < ℵ₁ := by
@@ -307,7 +309,7 @@ example {α : Type} (s : Set α) : s.Countable ↔ #s < ℵ₁ := by
 
 ## Preserving cardinals
 
-Regularity of a cardinal is {name}`Cardinal.IsRegular`, and both $`\aleph_0` and $`\aleph_1` are regular — the latter is {name}`Cardinal.isRegular_aleph_one` — as is every successor aleph $`\aleph_{o+1}`:
+Regularity of a cardinal is `Cardinal.IsRegular`, and both $`\aleph_0` and $`\aleph_1` are regular — the latter is `Cardinal.isRegular_aleph_one` — as is every successor aleph $`\aleph_{o+1}`:
 
 ```lean
 example : Cardinal.IsRegular ℵ₀ := isRegular_aleph0
@@ -318,6 +320,7 @@ example (o : Ordinal) : Cardinal.IsRegular (aleph (o + 1)) :=
 
 The forcing above adds $`\aleph_2` many reals and needs $`\aleph_2` to survive as a regular cardinal.
 Since $`\aleph_2 = \aleph_{1+1}` is a successor aleph, show that it is regular.
+Rewriting `2` as `1 + 1` (with `one_add_one_eq_two`) lets `isRegular_aleph_add_one` apply.
 
 ```lean
 example : Cardinal.IsRegular (aleph 2) := by
@@ -326,8 +329,21 @@ example : Cardinal.IsRegular (aleph 2) := by
 
 ## The additive poset
 
-The forcing notion $`\operatorname{Add}(\omega, \kappa)` has no name in Mathlib, so `Napkin.Missing.ContinuumHypothesis` supplies one: a condition is a `FinPartialFn (κ × ℕ) Bool`, a finite domain together with its $`0`/$`1` values, and `CohenAdd κ` is the type of them.
-The order is reverse inclusion — `p ≤ q` means `p` *extends* `q` — which is a {name}`Preorder`, exactly the setting the forcing vocabulary of the previous chapter runs on.
+The forcing notion $`\operatorname{Add}(\omega, \kappa)` has no name in Mathlib, so `Napkin.Missing.ContinuumHypothesis` supplies one.
+A condition is a `FinPartialFn (κ × ℕ) Bool`: a finite domain `dom` together with a total `toFun`, only its restriction to `dom` meaningful.
+
+```lean
+recall FinPartialFn.dom {α β : Type*} (p : FinPartialFn α β) : Finset α
+recall FinPartialFn.toFun {α β : Type*} (p : FinPartialFn α β) : α → β
+```
+
+The type of all such conditions is `CohenAdd κ`, its $`0`/$`1` values recorded as a `Bool`.
+
+```lean
+example (κ : Type) : CohenAdd κ = FinPartialFn (κ × ℕ) Bool := rfl
+```
+
+The order is reverse inclusion — `p ≤ q` means `p` *extends* `q` — which is a `Preorder`, exactly the setting the forcing vocabulary of the previous chapter runs on.
 
 The chapter's question about the maximum condition $`1_\mathbb{P}` has a one-line answer: it is the empty partial function, which commits to nothing.
 
@@ -336,8 +352,15 @@ example (κ : Type) : (⊤ : CohenAdd κ).dom = ∅ := rfl
 ```
 
 The combinatorial engine is compatibility.
+Two conditions are `Forcing.Compatible` when some third condition is stronger than both — a common lower bound in the order.
+
+```lean
+example {P : Type*} [LE P] (p q : P) :
+    Forcing.Compatible p q ↔ ∃ r : P, r ≤ p ∧ r ≤ q := Iff.rfl
+```
+
 Two conditions whose domains are *disjoint* are always compatible: overlay them into a single partial function on the union of the domains, and that common extension is stronger than both.
-This is {name}`Napkin.Missing.FinPartialFn.compatible_of_disjoint`, reusing the previous chapter's {name}`Napkin.Missing.Forcing.Compatible`.
+This is `FinPartialFn.compatible_of_disjoint`, reusing the previous chapter's `Forcing.Compatible`.
 
 ```lean
 example {κ : Type} [DecidableEq κ] (p q : CohenAdd κ)
@@ -346,7 +369,17 @@ example {κ : Type} [DecidableEq κ] (p q : CohenAdd κ)
 ```
 
 So an antichain of conditions must have pairwise *overlapping* domains — and it is these overlaps that the $`\Delta`-system lemma organizes.
-A $`\Delta`-system is a family of finite sets meeting pairwise in one common `root`; `DeltaSystem` records it.
+A `DeltaSystem` is a family `sets` of finite sets meeting pairwise in one common `root`, with `root_subset` recording that the root sits inside each member.
+
+```lean
+recall DeltaSystem.sets {α ι : Type*} [DecidableEq α]
+    (S : DeltaSystem α ι) : ι → Finset α
+recall DeltaSystem.root {α ι : Type*} [DecidableEq α]
+    (S : DeltaSystem α ι) : Finset α
+recall DeltaSystem.root_subset {α ι : Type*} [DecidableEq α]
+    (S : DeltaSystem α ι) {i j : ι} (h : i ≠ j) : S.root ⊆ S.sets i
+```
+
 Any one-element family is trivially such a system, with empty root, the base case of the lemma's induction.
 
 ```lean
@@ -362,6 +395,7 @@ The forcing argument that turns "ccc" into "$`\aleph_2^{M[G]} = \aleph_2^M`" lik
 
 Below the cardinal level, the argument uses only that the antichain $`\{ p_\alpha \mid \alpha < \omega_1 \}` is uncountable, i.e. of size at least $`\aleph_1`.
 Show that any cardinal which is not at most $`\aleph_0` is at least $`\aleph_1`.
+Turning `¬ c ≤ ℵ₀` around with `not_lt` and `lt_aleph_one_iff` gives exactly this.
 
 ```lean
 example (c : Cardinal) (h : ¬ c ≤ ℵ₀) : ℵ₁ ≤ c := by
@@ -369,7 +403,7 @@ example (c : Cardinal) (h : ¬ c ≤ ℵ₀) : ℵ₁ ≤ c := by
 ```
 
 Every condition extends the empty condition $`1_\mathbb{P}`, because nothing is weaker than committing to nothing.
-Prove that each Cohen condition refines the top.
+Prove that each Cohen condition refines the top; since $`1_\mathbb{P}` is the order's `⊤`, this is `le_top`.
 
 ```lean
 example {κ : Type} (p : CohenAdd κ) : p ≤ ⊤ := by
@@ -377,7 +411,7 @@ example {κ : Type} (p : CohenAdd κ) : p ≤ ⊤ := by
 ```
 
 Finally, the common `root` of a $`\Delta`-system sits inside every one of its sets, since it *is* the intersection of any two.
-Show this for the two sets of a $`\Delta`-system indexed by `Bool`.
+Show this for the two sets of a $`\Delta`-system indexed by `Bool`, feeding `true ≠ false` to `DeltaSystem.root_subset`.
 
 ```lean
 example {α : Type} [DecidableEq α] (S : DeltaSystem α Bool) :

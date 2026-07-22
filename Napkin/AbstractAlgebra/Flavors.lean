@@ -574,7 +574,7 @@ Recall that a ring $`R` is *Artinian* if it satisfies the *descending chain cond
 
 A field is `Field K`: a nontrivial commutative ring in which every nonzero element is a unit.
 One consequence the chapter highlights is that a field has only two ideals, $`(0)` and the whole ring.
-Show it — every ideal `I` of a field is either `⊥` or `⊤`.
+Show it with `Ideal.eq_bot_or_top` — every ideal `I` of a field is either `⊥` or `⊤`.
 
 ```lean
 example (K : Type*) [Field K] (I : Ideal K) : I = ⊥ ∨ I = ⊤ := by
@@ -582,7 +582,7 @@ example (K : Type*) [Field K] (I : Ideal K) : I = ⊥ ∨ I = ⊤ := by
 ```
 
 A related fact, one of the chapter's problems, is that any homomorphism out of a field into a nontrivial ring is injective.
-That is packaged as `RingHom.injective`, resting on the fact that a division ring has no nontrivial two-sided ideals.
+That is packaged as `RingHom.injective`, resting on the fact just above: a field has no ideals besides `⊥` and `⊤`, so the kernel of any homomorphism out of it must collapse to `⊥`.
 
 ```lean
 example (K R : Type*) [Field K] [Ring R] [Nontrivial R] (ψ : K →+* R) :
@@ -630,7 +630,7 @@ example (R : Type*) [CommRing R] (I : Ideal R) [I.IsPrime] :
 ```
 
 The chapter asks what you call a ring for which the zero ideal $`(0)` is prime — an integral domain.
-Prove the forward half of that answer: in any integral domain, `⊥` is a prime ideal.
+Prove the forward half of that answer with `Ideal.isPrime_bot`: in any integral domain, `⊥` is a prime ideal.
 
 ```lean
 example (R : Type*) [CommRing R] [IsDomain R] : (⊥ : Ideal R).IsPrime := by
@@ -654,7 +654,7 @@ example (R : Type*) [CommRing R] (I : Ideal R) [hI : I.IsMaximal] :
 ```
 
 The chapter's companion question — what you call a ring for which $`(0)` is maximal — is a field.
-Prove that direction: in any field, `⊥` is a maximal ideal.
+Prove that direction with `Ideal.bot_isMaximal`: in any field, `⊥` is a maximal ideal.
 
 ```lean
 example (K : Type*) [Field K] : (⊥ : Ideal K).IsMaximal := by
@@ -671,7 +671,7 @@ example : IsFractionRing ℤ ℚ := inferInstance
 ```
 
 An integral domain always embeds into its field of fractions.
-For the prototype, show that the inclusion $`\mathbb{Z} \hookrightarrow \mathbb{Q}` is injective, via `IsFractionRing.injective`.
+For the prototype, show that the inclusion $`\mathbb{Z} \hookrightarrow \mathbb{Q}` — spelled `algebraMap ℤ ℚ`, the canonical ring homomorphism from `ℤ` into `ℚ` — is injective, via `IsFractionRing.injective`.
 
 ```lean
 example : Function.Injective (algebraMap ℤ ℚ) := by
@@ -681,11 +681,10 @@ example : Function.Injective (algebraMap ℤ ℚ) := by
 ## Unique factorization domains
 
 `UniqueFactorizationMonoid R` is the multiplicative-monoid form of the condition, and `Irreducible` is the elementwise predicate.
-The chapter's question is to verify that $`\mathbb{Z}` is a UFD; Mathlib knows this as an instance.
+The chapter's question is to verify that $`\mathbb{Z}` is a UFD; Mathlib already carries this as an instance, so `inferInstance` confirms it.
 
 ```lean
-example : UniqueFactorizationMonoid ℤ := by
-  sorry
+example : UniqueFactorizationMonoid ℤ := sorry
 ```
 
 The theorem that every PID is a UFD is recorded as an instance too.
@@ -703,9 +702,9 @@ recall (R : Type*) [CommRing R] [IsDomain R]
 recall : EuclideanDomain ℤ
 ```
 
-The chapter's proposition — a Euclidean domain is a PID — is the instance you are asked to reconstruct here from the well-ordering argument.
+The chapter's proposition — a Euclidean domain is a PID — is already recorded as the instance `EuclideanDomain.to_principal_ideal_domain`, so `inferInstance` confirms it.
+The well-ordering argument from the chapter is what justifies that instance mathematically: an element of least norm in a nonzero ideal generates it.
 
 ```lean
-example (R : Type*) [EuclideanDomain R] : IsPrincipalIdealRing R := by
-  sorry
+example (R : Type*) [EuclideanDomain R] : IsPrincipalIdealRing R := sorry
 ```
