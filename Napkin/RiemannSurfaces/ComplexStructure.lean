@@ -260,6 +260,7 @@ The *model with corners* `I` records what kind of regularity — smooth, $`C^k`,
 The predicate `IsManifold I n M` then demands that every chart is compatible to order `n`.
 
 The model space is always a manifold over its own trivial model with corners `𝓘(ℂ, ℂ)`, at the analytic regularity `ω`.
+This regularity index reads `ω` for analytic ($`C^\omega`) and a natural number `n` for `n`-times continuously differentiable ($`C^n`); the Liouville examples below drop to `1`.
 So the complex plane $`\mathbb{C}` carries the tautological complex structure.
 
 ```lean
@@ -269,7 +270,7 @@ example : Nonempty (ChartedSpace ℂ ℂ) := ⟨inferInstance⟩
 ```
 
 The same reasoning applies over $`\mathbb{R}`: the real line is a manifold over its trivial model.
-Confirm it.
+Confirm it; as over $`\mathbb{C}`, `inferInstance` supplies the structure.
 
 ```lean
 example : IsManifold (𝓘(ℝ, ℝ)) ω ℝ := by
@@ -289,7 +290,7 @@ example (X : Type*) [TopologicalSpace X] [ChartedSpace ℂ X]
   IsManifold.chart_mem_maximalAtlas p
 ```
 
-Show that every chart in the concrete atlas is a member of the maximal atlas.
+Show that every chart in the concrete atlas is a member of the maximal atlas; the set-level counterpart of the lemma above is `IsManifold.subset_maximalAtlas`.
 
 ```lean
 example (X : Type*) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -309,7 +310,7 @@ example (n : ℕ) : IsManifold (𝓘(ℂ, (Fin n → ℂ))) ω (Fin n → ℂ) :
 ```
 
 At $`n = 1` this recovers a one-dimensional complex model, i.e. a Riemann-surface chart.
-Confirm it.
+Confirm it; `inferInstance` closes it just as at general $`n`.
 
 ```lean
 example : IsManifold (𝓘(ℂ, (Fin 1 → ℂ))) ω (Fin 1 → ℂ) := by
@@ -340,6 +341,14 @@ example : Function.Involutive sphereTransition :=
 ```
 
 The whole point of the weld is that this transition is *holomorphic* away from $`0`: it is analytic on a neighborhood of every point of $`\mathbb{C} \setminus \{0\}`.
+`AnalyticOnNhd ℂ g s` records exactly this — that `g` is analytic on a neighborhood of every point of `s` — and the prototype is inversion itself, `analyticOnNhd_inv`.
+
+```lean
+example : AnalyticOnNhd ℂ (fun z : ℂ => z⁻¹) {z : ℂ | z ≠ 0} :=
+  analyticOnNhd_inv
+```
+
+The transition `sphereTransition` is that very map $`z \mapsto z^{-1}`, so the same fact carries over, packaged in the shim as `sphereTransition_analyticOnNhd`.
 Confirm it.
 
 ```lean
@@ -348,7 +357,7 @@ example : AnalyticOnNhd ℂ sphereTransition {z : ℂ | z ≠ 0} := by
 ```
 
 The two chart domains cover the sphere: the only point outside `sphereChart0Dom` is $`\infty`, which lies in `sphereChart1Dom`.
-Show that every point lies in one chart or the other, and that $`\infty` in particular lands in the second chart but not the first.
+Show that every point lies in one chart or the other, and that $`\infty` in particular lands in the second chart but not the first; the shim proves these as `sphere_charts_cover`, `infty_mem_sphereChart1Dom`, and `infty_notMem_sphereChart0Dom`.
 
 ```lean
 example (p : OnePoint ℂ) :
@@ -369,6 +378,7 @@ noncomputable example : ComplexAtlas (OnePoint ℂ) := riemannSphereAtlas
 
 The "any holomorphic function on a compact surface is constant" fact is the manifold analogue of Liouville's theorem: `MDifferentiable.exists_eq_const_of_compactSpace` says that a complex-differentiable map from a compact preconnected complex manifold into a complex normed space is the constant function.
 Applied to the complex torus $`\mathbb{C}/L` — compact and connected — this forces every holomorphic function on it to be constant.
+The regularity index is `1` here rather than the analytic `ω` used above, since the statement already holds at $`C^1`.
 
 ```lean
 example {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
@@ -380,6 +390,7 @@ example {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
 ```
 
 Deduce the "takes equal values" form: a holomorphic function on a compact connected complex manifold agrees at any two points.
+Extract the constant `v` with `hf.exists_eq_const_of_compactSpace`, then both values are `v`.
 
 ```lean
 example {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
@@ -402,6 +413,7 @@ example {f : ℂ → ℂ} {c : ℂ} (hd : ∀ᶠ z in 𝓝[≠] c, Differentiabl
 ```
 
 Show the packaged equivalence: on a neighborhood of $`c`, being differentiable off $`c` together with continuity at $`c` is the same as being differentiable on the whole neighborhood.
+This bundled iff is `Complex.differentiableOn_compl_singleton_and_continuousAt_iff`, whose forward direction at a single point is the worked lemma above.
 
 ```lean
 example {f : ℂ → ℂ} {s : Set ℂ} {c : ℂ} (hs : s ∈ 𝓝 c) :

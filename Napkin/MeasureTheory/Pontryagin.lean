@@ -223,7 +223,8 @@ example (G : Type*) [Group G] [TopologicalSpace G]
 An LCA group is then assembled from `[CommGroup G]`, `[TopologicalSpace G]`, `[IsTopologicalGroup G]`, and `[LocallyCompactSpace G]`.
 Here `Circle` is the unit circle in $`\mathbb{C}` with its multiplicative group structure, the abelian topological group $`\mathbb{T}`, while $`\mathbb{R}`, $`\mathbb{Z}`, and `ZMod n` all carry the LCA-group instances out of the box.
 
-The Haar measure is built through `MeasureTheory.Measure.haarMeasure`, which takes a nonempty compact set as a normalization datum and produces a translation-invariant measure on the group.
+The Haar measure is built through `MeasureTheory.Measure.haarMeasure`, which produces a translation-invariant measure on the group.
+Its one argument has type `TopologicalSpace.PositiveCompacts G`: a nonempty compact set with nonempty interior, serving as the normalization datum that pins the measure down among all of its positive rescalings.
 
 ```lean
 noncomputable example {G : Type*} [Group G] [TopologicalSpace G]
@@ -252,9 +253,10 @@ example (G : Type*) [CommGroup G] [TopologicalSpace G]
     [IsTopologicalGroup G] : Type _ := PontryaginDual G
 ```
 
-The double-duality isomorphism $`G \cong \widehat{\widehat{G}}` is not yet packaged for a general LCA group; the finite abelian case is available as `AddChar.doubleDualEquiv`, between a finite abelian group and the characters of its characters.
+The double-duality isomorphism $`G \cong \widehat{\widehat{G}}` is not yet packaged for a general LCA group; the finite abelian case is available as `AddChar.doubleDualEquiv`.
+Here `AddChar G ℂ` is the additive-notation flavor of a character — a homomorphism from $`G` into the nonzero complex numbers — and `doubleDualEquiv` is the resulting isomorphism between a finite abelian group and the characters of its characters.
 One half of the "compact iff discrete" proposition is, however, already an instance: when $`G` is compact its dual is discrete.
-Confirm it.
+Because Mathlib registers precisely this direction — compact forces discrete — as an instance, the goal below is closed by `inferInstance`; the exercise is to notice that this half is already formalized (the reverse direction, and hence the full equivalence, is not).
 
 ```lean
 example (G : Type*) [CommGroup G] [TopologicalSpace G]
@@ -275,12 +277,14 @@ example {α E : Type*} [MeasurableSpace α] {μ : MeasureTheory.Measure α}
   MeasureTheory.L2.inner_def f g
 ```
 
-For the circle $`\mathbb{T}` the characters really do form an orthonormal family, recorded as `orthonormal_fourier` against the family `fourierLp`.
-State this orthonormality.
+For the circle $`\mathbb{T}` the characters really do form an orthonormal family.
+The family is `fourierLp`, the Fourier monomials $`x \mapsto \exp(2\pi i n x / T)` (indexed by $`n \in \mathbb{Z}`) viewed as elements of $`L^2`, and their orthonormality is packaged as the single lemma `orthonormal_fourier`.
+An `Orthonormal` family is by definition a conjunction — every vector has unit norm, and distinct vectors are orthogonal — so its second component `orthonormal_fourier.2` extracts the orthogonality.
+Use it to show that two monomials with distinct frequencies are orthogonal.
 
 ```lean
-example {T : ℝ} [Fact (0 < T)] :
-    Orthonormal ℂ (fourierLp (T := T) 2) := by
+example {T : ℝ} [Fact (0 < T)] {m n : ℤ} (h : m ≠ n) :
+    inner ℂ (fourierLp (T := T) 2 m) (fourierLp (T := T) 2 n) = 0 := by
   sorry
 ```
 
@@ -297,8 +301,11 @@ noncomputable example {V W E : Type*} [NormedAddCommGroup V]
   VectorFourier.fourierIntegral Real.fourierChar μ L f
 ```
 
-The inversion formula holds on a finite-dimensional real inner product space such as $`\mathbb{R}`, as `MeasureTheory.Integrable.fourierInv_fourier_eq` (pointwise) and `Continuous.fourierInv_fourier_eq` (everywhere); the general-LCA statement is not yet in Mathlib.
-Prove the everywhere version: for a continuous integrable $`f` with integrable transform, applying $`\mathcal{F}` then $`\mathcal{F}^{-1}` recovers $`f`.
+Under the `FourierTransform` scope, `𝓕 f` denotes the Fourier transform of $`f` and `𝓕⁻ f` its inverse transform.
+Inversion is the statement that these two operations really are mutually inverse: transforming to the frequency side and back reconstructs the original function, losing no information.
+It holds on a finite-dimensional real inner product space such as $`\mathbb{R}`, as `MeasureTheory.Integrable.fourierInv_fourier_eq` (pointwise) and `Continuous.fourierInv_fourier_eq` (everywhere); the general-LCA statement is not yet in Mathlib.
+Prove the everywhere version below.
+The finisher is `Continuous.fourierInv_fourier_eq`, which consumes exactly the three hypotheses already in scope — continuity, integrability of $`f`, and integrability of its transform — so the first move is to hand it `h`, `hf`, and `h'f` (dot notation `h.fourierInv_fourier_eq …` reads cleanly).
 
 ```lean
 open scoped FourierTransform in

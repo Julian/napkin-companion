@@ -342,15 +342,17 @@ The gap is the last word of the definition.
 These bundles come in topological and smooth flavors, but there is no *holomorphic* vector bundle yet, and that difference is precisely where all of this chapter's content lives.
 What survives the gap is the *transition data* of the definition — the nonvanishing scaling factors that weld the charts — and that datum is enough to model the twisted bundles below; it is packaged as `Napkin.Missing.LineBundleCocycle`.
 
-The zero section sends each base point to the zero of the fiber above it; check that it does land back over the point it came from.
+The zero section sends each base point to the zero of the fiber above it.
+That it lands back over the point it came from is the definitional accessor `Bundle.zeroSection_proj`, no different from the `TotalSpace.mk` computation above; the coordinate worth reading off is the other one — the fiber value it picks out is the zero of $`\mathbb{C}`, which is `Bundle.zeroSection_snd`.
 
 ```lean
 example (B : Type*) [TopologicalSpace B] (x : B) :
-    (Bundle.zeroSection ℂ (Bundle.Trivial B ℂ) x).proj = x := by
+    (Bundle.zeroSection ℂ (Bundle.Trivial B ℂ) x).2 = 0 := by
   sorry
 ```
 
 A chart respects the projection: reading off the base coordinate of `e z` recovers `p z` on the chart's source.
+That equation is the accessor `Trivialization.coe_fst`, which consumes exactly the source-membership hypothesis `hz`.
 
 ```lean
 example (B F Z : Type*) [TopologicalSpace B] [TopologicalSpace F]
@@ -371,6 +373,14 @@ example (B F : Type*) :
 
 The twisted bundle built by welding with a factor of $`z` — the Möbius strip over the Riemann sphere — is not a holomorphic bundle the library can build, but its *transition data* is.
 That data is an open cover, indexed by $`I`, with nonvanishing scaling factors $`g_{ij} \colon B \to \mathbb{C}^\times` welding chart $`j` to chart $`i` over each overlap, subject to the cocycle condition $`g_{ij} \cdot g_{jk} = g_{ik}` — packaged as `LineBundleCocycle I B`.
+The cocycle law itself is the field `LineBundleCocycle.cocycle`, and it is the workhorse of the exercises below.
+
+```lean
+recall LineBundleCocycle.cocycle {I B : Type*}
+    (self : LineBundleCocycle I B) (i j k : I) (b : B) :
+    self.g i j b * self.g j k b = self.g i k b
+```
+
 The trivial bundle is the one whose every weld is the constant $`1`, with no twist anywhere.
 
 ```lean
@@ -393,7 +403,7 @@ example (z : ℂˣ) : (O 1).g 1 0 z = z⁻¹ := by rw [O_one_zero]; simp
 ```
 
 A chart welds to itself without any twist: the self-transition $`g_{ii}` is not assumed to be $`1`, but forced to be by the cocycle law (feed it $`i = j = k`).
-Prove it.
+Feeding those indices to `C.cocycle` gives $`g_{ii} \cdot g_{ii} = g_{ii}`, and `mul_eq_left` — the group fact $`a \cdot b = a \iff b = 1` — reads off $`g_{ii} = 1`.
 
 ```lean
 example {I B : Type*} (C : LineBundleCocycle I B) (i : I) (b : B) :
@@ -429,6 +439,8 @@ example (c : ℂ) (hc : c ≠ 0) :
 ```
 
 The exercise from the section — that $`f(p)` must be nonzero for a morphism to be invertible — is, fiberwise, the statement that a scalar of $`\mathbb{C}` is a unit exactly when it is nonzero.
+This equivalence is exactly why the transition data above records its scaling factors as $`\mathbb{C}^\times`-valued: the nonvanishing welds are precisely the units of $`\mathbb{C}`.
+The finisher is `isUnit_iff_ne_zero`.
 
 ```lean
 example (c : ℂ) : IsUnit c ↔ c ≠ 0 := by
@@ -468,7 +480,7 @@ example (m n : ℤ) : O m * O n = O (m + n) := O_mul_O m n
 ```
 
 Reversing a weld everywhere gives the inverse bundle; in the group this is the identity $`g_{ij} = g_{ji}^{-1}` once more.
-Prove that the reverse weld of any bundle is the pointwise inverse.
+Chain the previous result: `C.cocycle j i j b` gives $`g_{ji} \cdot g_{ij} = g_{jj}`, the self-weld `C.g_self` (the fact you just proved) collapses $`g_{jj}` to $`1`, and `eq_inv_of_mul_eq_one_right` turns $`g_{ji} \cdot g_{ij} = 1` into $`g_{ij} = g_{ji}^{-1}`.
 
 ```lean
 example {I B : Type*} (C : LineBundleCocycle I B) (i j : I) (b : B) :
@@ -477,6 +489,9 @@ example {I B : Type*} (C : LineBundleCocycle I B) (i j : I) (b : B) :
 ```
 
 The algebraic Picard group, for its part, already sees "every line bundle is trivial" over the nicest bases: over $`\mathbb{Z}`, a unique-factorization domain, it collapses to a single element.
+The route is through the class group of the previous section.
+Since $`\mathbb{Z}` is a principal ideal domain, every ideal is principal, so its class group is trivial — one ideal class — and Mathlib records this as `Subsingleton (ClassGroup ℤ)`.
+Transport that triviality across `ClassGroup.equivPic ℤ`, whose underlying equivalence is `(ClassGroup.equivPic ℤ).toEquiv`: `Equiv.subsingleton` carries a `Subsingleton` backward along an equivalence, so feed it the reversed equivalence `.symm` to land the `Subsingleton` on the Picard group.
 
 ```lean
 example : Subsingleton (CommRing.Pic ℤ) := by

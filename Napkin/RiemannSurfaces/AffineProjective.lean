@@ -366,6 +366,7 @@ example {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace 
 
 The exercise asked you to check the smoothness criterion on the circle at $`(1, 0)`.
 Concretely, verify that the partial derivative $`\partial f / \partial z = 2z` does not vanish there, so the circle is smooth at $`(1, 0)`.
+The finisher is the same `simp [pderiv_X]` used just above: it rewrites the partial to $`2z`, evaluates it to $`2`, and recognizes that numeral as nonzero.
 
 ```lean
 example :
@@ -444,29 +445,59 @@ The installed library has no dedicated notion of a *node*, so `Napkin.Missing.Pl
 A point is an `IsSingularPoint` of $`f` when $`f` and both partials vanish there — the failure of the smoothness criterion — and its `IsSmoothPoint` counterpart is the negation.
 Among singular points, a node is an *ordinary double point*: one whose `hessian`, the $`2 \times 2` matrix of second partials, has nonzero determinant `hessianDet`, computed with `Matrix.det_fin_two`.
 
+Each of these three predicates unfolds to a concrete computation, and seeing the unfolding is what tells us how to prove one by hand.
+A point is singular exactly when $`f` and its two partials all vanish there:
+
+```lean
+example (f : MvPolynomial (Fin 2) ℚ) (p : Fin 2 → ℚ) :
+    IsSingularPoint f p ↔
+      eval p f = 0 ∧ eval p (pderiv 0 f) = 0 ∧ eval p (pderiv 1 f) = 0 :=
+  Iff.rfl
+```
+
+The Hessian determinant expands, via `hessianDet_eq`, to $`f_{xx} f_{yy} - f_{xy} f_{yx}` with each second partial evaluated at $`p`:
+
+```lean
+example (f : MvPolynomial (Fin 2) ℚ) (p : Fin 2 → ℚ) :
+    hessianDet f p =
+      eval p (pderiv 0 (pderiv 0 f)) * eval p (pderiv 1 (pderiv 1 f))
+        - eval p (pderiv 0 (pderiv 1 f)) * eval p (pderiv 1 (pderiv 0 f)) :=
+  hessianDet_eq f p
+```
+
+and a node is a singular point whose Hessian determinant is nonzero:
+
 ```lean
 example (f : MvPolynomial (Fin 2) ℚ) (p : Fin 2 → ℚ) :
     IsNode f p ↔ IsSingularPoint f p ∧ hessianDet f p ≠ 0 :=
   Iff.rfl
 ```
 
-The two-lines example $`x^2 - y^2 = 0` from the start of the chapter has a node at the origin.
-Writing it as $`f = y^2 - x^2`, the value and both partials $`-2x`, $`2y` vanish at the origin, and the Hessian $`\begin{psmallmatrix} -2 & 0 \\ 0 & 2 \end{psmallmatrix}` has determinant $`-4 \neq 0`.
+This hands us a uniform recipe.
+To prove a point singular, `refine ⟨?_, ?_, ?_⟩` splits off the three vanishing conditions, and each falls to `simp [pderiv_X]`, which differentiates and evaluates in one step.
+To prove it a node, pair that with a Hessian check: `rw [hessianDet_eq]` exposes the determinant formula, and `simp [pderiv_X]` reduces it to a numeral it can see is nonzero.
+Here is the two-lines example $`x^2 - y^2 = 0` from the start of the chapter, worked in full at the origin, writing it as $`f = y^2 - x^2`: the value and both partials $`-2x`, $`2y` vanish there, and the Hessian $`\begin{psmallmatrix} -2 & 0 \\ 0 & 2 \end{psmallmatrix}` has determinant $`-4 \neq 0`.
 
 ```lean
-example : IsNode (X 1 ^ 2 - X 0 ^ 2 : MvPolynomial (Fin 2) ℚ) ![0, 0] :=
-  isNode_Y_sq_sub_X_sq_origin
+example : IsNode (X 1 ^ 2 - X 0 ^ 2 : MvPolynomial (Fin 2) ℚ) ![0, 0] := by
+  refine ⟨⟨?_, ?_, ?_⟩, ?_⟩
+  · simp
+  · simp [pderiv_X]
+  · simp [pderiv_X]
+  · rw [hessianDet_eq]
+    simp [pderiv_X]
 ```
 
-The single monomial $`f = x y` is a node at the origin as well: it is singular there, and its Hessian $`\begin{psmallmatrix} 0 & 1 \\ 1 & 0 \end{psmallmatrix}` has determinant $`-1 \neq 0`.
+The single monomial $`f = x y` is a node at the origin as well, but a subtler one: both pure second partials $`f_{xx}, f_{yy}` vanish, so its determinant $`-1` comes entirely from the mixed partial in the Hessian $`\begin{psmallmatrix} 0 & 1 \\ 1 & 0 \end{psmallmatrix}`.
+Prove it with the same recipe: split with `refine ⟨⟨?_, ?_, ?_⟩, ?_⟩`, close the three singular-point goals with `simp [pderiv_X]`, and finish the Hessian with `rw [hessianDet_eq]` then `simp [pderiv_X]`.
 
 ```lean
-example : IsNode (X 0 * X 1 : MvPolynomial (Fin 2) ℚ) ![0, 0] :=
-  isNode_X_mul_X_origin
+example : IsNode (X 0 * X 1 : MvPolynomial (Fin 2) ℚ) ![0, 0] := by
+  sorry
 ```
 
 By contrast, the point $`(1, 0)` on the circle is a smooth point: its partial $`\partial f / \partial x = 2x` is nonzero there, so it is not singular.
-As a reader exercise, confirm this from the definition.
+Smoothness is the *negation* of singularity, so the proof runs the other way: `intro h` assumes the point were singular, and the $`\partial f / \partial x`-vanishing component `h.2.1` then claims $`2 = 0`, so `simpa [pderiv_X] using h.2.1` computes that and derives the contradiction.
 
 ```lean
 example :
@@ -474,8 +505,9 @@ example :
   sorry
 ```
 
-As a second exercise, show the origin is a singular point of the cuspidal cubic $`y^2 - x^3`.
-(It is not a node — its Hessian is degenerate — but it is singular.)
+As a final exercise, show the origin is a singular point of the cuspidal cubic $`y^2 - x^3`.
+Its partials $`-3x^2`, $`2y` both vanish at the origin, so this is exactly the singular-point half of the node recipe: `refine ⟨?_, ?_, ?_⟩ <;> simp [pderiv_X]`.
+(It is not a node: there $`f_{xx} = -6x`, $`f_{yy} = 2`, and $`f_{xy} = 0`, so the Hessian determinant vanishes.)
 
 ```lean
 example :

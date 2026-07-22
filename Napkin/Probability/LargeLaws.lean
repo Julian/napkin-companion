@@ -420,12 +420,15 @@ recall ProbabilityTheory.meas_ge_le_variance_div_sq {Ω : Type*}
 
 There is no standalone `weak_law_of_large_numbers` in Mathlib, nor a packaged in-measure corollary: the strong law `ProbabilityTheory.strong_law_ae` below implies it, and the glue — almost sure convergence implies convergence in probability — is `MeasureTheory.tendstoInMeasure_of_tendsto_ae`.
 
-Prove Chebyshev's inequality by supplying the lemma above.
+The chapter states Chebyshev for a mean-zero variable, where the bound reads
+$`\Pr[|X| \ge a] \le \operatorname{Var}[X]/a^2` with nothing to recenter.
+Recover that form: feed the recentered `recall` above the extra hypothesis
+$`\mathbb{E}[X] = 0` and collapse $`|X - \mathbb{E}[X]|` back to $`|X|`.
 
 ```lean
 example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
-    {X : Ω → ℝ} (hX : MemLp X 2 μ) {c : ℝ} (hc : 0 < c) :
-    μ {ω | c ≤ |X ω - μ[X]|} ≤ ENNReal.ofReal (variance X μ / c ^ 2) := by
+    {X : Ω → ℝ} (hX : MemLp X 2 μ) (hmean : μ[X] = 0) {c : ℝ} (hc : 0 < c) :
+    μ {ω | c ≤ |X ω|} ≤ ENNReal.ofReal (variance X μ / c ^ 2) := by
   sorry
 ```
 
@@ -433,11 +436,17 @@ example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
 
 Mathlib proves Weierstrass approximation by exactly this argument, with the probabilistic language compiled away: `bernsteinApproximation n f` is the polynomial above (as a continuous map), the coin-flip facts $`\sum_k \Pr[S_n = k] = 1` and $`\operatorname{Var}[S_n/n] = \frac{x(1-x)}{n}` appear as `bernstein.probability` and `bernstein.variance`, and the theorem is `bernsteinApproximation_uniform : Tendsto (fun n => bernsteinApproximation n f) atTop (𝓝 f)`, where the limit happens in the uniform topology on `C(I, ℝ)`.
 
-The coin-flip fact that the probabilities $`\Pr[S_n = k]` sum to $`1` is `bernstein.probability`; establish it here.
+Here `bernstein n k x` is the Bernstein basis polynomial
+$`\binom nk x^k (1-x)^{n-k}` (unfolded to that closed form by `bernstein_apply`),
+which is exactly the coin-flip probability $`\Pr[S_n = k]` of seeing $`k` heads.
+The fact that these probabilities sum to $`1` is `bernstein.probability`, and
+`bernstein_nonneg` records that each is nonnegative.
+Combine the two to bound a single probability: no one term can exceed the sum, so
+$`\Pr[S_n = k] \le 1`.
 
 ```lean
-example (n : ℕ) (x : unitInterval) :
-    (∑ k : Fin (n + 1), bernstein n k x) = 1 := by
+example (n : ℕ) (k : Fin (n + 1)) (x : unitInterval) :
+    bernstein n k x ≤ 1 := by
   sorry
 ```
 
@@ -490,10 +499,14 @@ example {u : ℕ → ℝ} {l : ℝ} (h : Tendsto u atTop (nhds l)) :
 The Borel–Cantelli lemma used in the truncation step — if a sequence of events has finite total probability, then almost surely only finitely many occur — is `MeasureTheory.measure_limsup_atTop_eq_zero`.
 In the Mathlib development the truncation skeleton is visible as the sequence of auxiliary lemmas `strong_law_aux1` through `strong_law_aux7` building to `strong_law_ae_real`, with the truncation living in `ProbabilityTheory.truncation`.
 
-Establish the Borel–Cantelli lemma: a summable family of events has null `limsup`.
+The `limsup` here is the set of points lying in infinitely many of the $`s_i`, so
+`measure_limsup_atTop_eq_zero` says that set is null.
+Turn that null set into the statement the truncation step actually uses — almost
+every point lies in only finitely many $`s_i`, i.e. eventually lands outside the
+`limsup` — by trading measure zero for an almost-everywhere claim via `ae_iff`.
 
 ```lean
 example {α : Type*} [MeasurableSpace α] {μ : Measure α} {s : ℕ → Set α}
-    (hs : ∑' i, μ (s i) ≠ ∞) : μ (limsup s atTop) = 0 := by
+    (hs : ∑' i, μ (s i) ≠ ∞) : ∀ᵐ x ∂μ, x ∉ limsup s atTop := by
   sorry
 ```
