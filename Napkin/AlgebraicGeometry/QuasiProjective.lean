@@ -319,38 +319,18 @@ A morphism of schemes `f : X ⟶ Y` still remembers its underlying continuous ma
 example {X Y : Scheme} (f : X ⟶ Y) : X → Y := f.base
 ```
 
-Composing two morphisms composes their underlying point maps, in the same order.
-Show that the base map of a composite is the composite of the base maps.
-
-```lean
-example {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
-    (f ≫ g).base x = g.base (f.base x) := by
-  sorry
-```
-
 ## Classifying the simplest examples
 
-That "morphisms of affines are exactly ring maps of coordinate rings" is the anti-equivalence at the heart of the subject: on the scheme side it is the equivalence of `AlgebraicGeometry.AffineScheme` with the opposite of `CommRingCat`.
-Taking `Spec` of a ring produces a scheme, and a ring homomorphism `f : R ⟶ S` induces a morphism the _other_ way, `Spec.map f : Spec S ⟶ Spec R`.
+That "morphisms of affines are exactly ring maps of coordinate rings" is the anti-equivalence at the heart of the subject, developed in the chapter on morphisms of locally ringed spaces.
+All we need here is that taking `Spec` of a ring produces a scheme, giving us the affine charts to glue quasi-projective objects out of; the functoriality of `Spec.map` is proved there.
 
 ```lean
 noncomputable example (R : CommRingCat) : Scheme := Spec R
-
-noncomputable example {R S : CommRingCat} (f : R ⟶ S) :
-    Spec S ⟶ Spec R := Spec.map f
-```
-
-Because this correspondence is (contravariantly) functorial, the identity ring homomorphism induces the identity morphism of schemes.
-Show that `Spec.map` sends `𝟙 R` to `𝟙 (Spec R)`.
-
-```lean
-example (R : CommRingCat) : Spec.map (𝟙 R) = 𝟙 (Spec R) := by
-  sorry
 ```
 
 ## Some more applications and examples
 
-Mathlib does not carry a separate "quasi-projective variety" type; the same generalization is achieved by working with an arbitrary open subset of a `Scheme`.
+Mathlib does not carry a separate "quasi-projective variety" type; the same generalization is achieved by working with an arbitrary open subset of a `Scheme` — an open subscheme.
 Such an open `U : X.Opens` is itself a scheme, `U.toScheme`, and its inclusion `U.ι` back into `X` is an open immersion — of which affine and `Proj` charts are the special cases.
 
 ```lean
@@ -359,11 +339,19 @@ noncomputable example (X : Scheme) (U : X.Opens) : Scheme := U.toScheme
 example (X : Scheme) (U : X.Opens) : IsOpenImmersion U.ι := inferInstance
 ```
 
-An open immersion is in particular an open embedding on points, hence injective.
-Show that the inclusion of an open subscheme is injective on points.
+An open immersion is in particular an open embedding on points, so `U.ι.isOpenEmbedding` gives a bundled `IsOpenEmbedding`.
+Extract from it that the inclusion of an open subscheme is injective on points; the finisher is `.injective`.
 
 ```lean
 example (X : Scheme) (U : X.Opens) : Function.Injective U.ι.base := by
+  sorry
+```
+
+The image of that inclusion is exactly `U` sitting back inside `X`.
+Show that the range of `U.ι` on points is the underlying set of `U`; this is `Scheme.Opens.range_ι`.
+
+```lean
+example (X : Scheme) (U : X.Opens) : Set.range U.ι.base = ↑U := by
   sorry
 ```
 
@@ -378,7 +366,7 @@ example {X : Scheme} {U : X.Opens} (hU : IsAffineOpen U) (f : Γ(X, U)) :
 ```
 
 The starting point of the trick is that the whole affine space is itself a (distinguished) affine open.
-Show that the top open of $`\operatorname{Spec} R` is affine.
+Show that the top open of $`\operatorname{Spec} R` is affine; the finisher is `isAffineOpen_top`, which needs only that $`\operatorname{Spec} R` is affine.
 
 ```lean
 example (R : CommRingCat) : IsAffineOpen (⊤ : (Spec R).Opens) := by

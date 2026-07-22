@@ -475,8 +475,25 @@ example (x : ℝ) : HasDerivAt Real.exp (Real.exp x) x :=
 The log and power-rule corollaries are spelled `Real.hasDerivAt_log` and the various `Real.hasDerivAt_rpow_const` (for $`x^r` with $`r` a real).
 Both are corollaries of the chain rule applied to $`\exp` and $`\log` exactly as above — and Mathlib does in fact have rigorous definitions of both, anchored to the Cauchy completion that built `ℝ`.
 
-The exercise asked for the derivative of $`f(x) = x^3 + 10x^2 + 2019`; assemble it from `hasDerivAt_pow`, `HasDerivAt.const_mul`, `HasDerivAt.add`, and `HasDerivAt.add_const`.
-The `simp` tactic also knows the standard rules under the `[deriv_simp]` set.
+The exercise asked for the derivative of $`f(x) = x^3 + 10x^2 + 2019`.
+You assemble it from four combinators: `hasDerivAt_pow` for each power, `HasDerivAt.const_mul` for the coefficient `10`, `HasDerivAt.add` to glue the two terms, and `HasDerivAt.add_const` for the constant `2019`.
+Each combinator reports the derivative in its own shape — `hasDerivAt_pow 2 x` produces `↑2 * x ^ (2 - 1)`, not `2 * x` — so `simpa using …` is the workhorse that normalizes each piece.
+The assembled value `3*x^2 + 10*(2*x)` still won't match the stated `3*x^2 + 20*x` syntactically, so finish by rewriting the target with `rw [show (3*x^2 + 20*x : ℝ) = 3*x^2 + 10*(2*x) by ring]` and closing with `exact`.
+
+Here is the identical recipe on the smaller $`5x^2 + x^4 + 7`, which exercises all four combinators:
+
+```lean
+example (x : ℝ) :
+    HasDerivAt (fun x : ℝ => 5*x^2 + x^4 + 7) (10*x + 4*x^3) x := by
+  have h1 : HasDerivAt (fun x : ℝ => 5*x^2) (5*(2*x)) x := by
+    simpa using (hasDerivAt_pow 2 x).const_mul 5
+  have h2 : HasDerivAt (fun x : ℝ => x^4) (4*x^3) x := by
+    simpa using hasDerivAt_pow 4 x
+  rw [show (10*x + 4*x^3 : ℝ) = 5*(2*x) + 4*x^3 by ring]
+  exact (h1.add h2).add_const 7
+```
+
+Now do the cubic the same way.
 
 ```lean
 example (x : ℝ) :
@@ -530,12 +547,14 @@ Mathlib has the ratio mean value theorem as `exists_ratio_hasDerivAt_eq_ratio_sl
 
 ## Smooth functions
 
-`ContDiff 𝕜 ⊤ f` is Mathlib's name for "$`f` is smooth"; the $`n`-times-differentiable variant is `ContDiff 𝕜 n f` for `n : WithTop ℕ∞`.
+The smoothness parameter of `ContDiff 𝕜 n f` ranges over `ℕ∞ω`, Mathlib's notation (available under `open scoped ContDiff`) for `WithTop ℕ∞`.
+The value `n : ℕ` asks for $`C^n`, the notation `∞` (that is `(⊤ : ℕ∞)`) asks for smooth (infinitely differentiable), and the genuine top element `ω` (that is `⊤`, one notch above `∞`) asks for the strictly stronger property of being analytic.
+So "$`f` is smooth" in the book's sense is `ContDiff 𝕜 ∞ f`, not `ContDiff 𝕜 ⊤ f`.
 Iterated derivatives are `iteratedDeriv n f`, with the same `0`-indexed convention as the book.
 
 ```lean
 open scoped ContDiff in
-example (f : ℝ → ℝ) : Prop := ContDiff ℝ (⊤ : ℕ∞ω) f
+example (f : ℝ → ℝ) : Prop := ContDiff ℝ ∞ f
 ```
 
 Mathlib formalizes a related construction in `Mathlib.Analysis.SpecialFunctions.SmoothTransition` (`Real.smoothTransition`), which uses a quotient of two such exponentials to build a smooth $`[0, 1]`-valued cutoff.

@@ -7,6 +7,8 @@ import Mathlib.NumberTheory.Padics.PadicNumbers
 import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.NumberTheory.Padics.PadicVal.Basic
 import Mathlib.NumberTheory.Padics.MahlerBasis
+import Mathlib.Topology.MetricSpace.Ultra.TotallySeparated
+import Mathlib.Analysis.SpecificLimits.Normed
 import Napkin.Missing.PadicInverseLimit
 
 open Verso.Genre Manual
@@ -486,8 +488,10 @@ noncomputable example (p : ℕ) [Fact p.Prime] : ℤ_[p] →+* PadicIntLim p :=
   ofPadicInt p
 ```
 
-Two exercises on the inverse-limit object.
+Two exercises on the inverse-limit object; recall that `PadicIntLim p` is the inverse limit and `proj p n : PadicIntLim p →+* ZMod (p ^ n)` reads off the $`n`-th residue.
 First, show the level-$`0` projection is trivial: there is only one residue modulo $`p^0 = 1`, so `proj p 0 x` is forced to be $`0`.
+The residues here live in `ZMod (p ^ 0)`, which is `ZMod 1`, and Mathlib knows `Subsingleton (ZMod 1)` — a type with at most one element — so *any* two of its terms are equal by `Subsingleton.elim`.
+So it suffices to get that instance in hand: establish `Subsingleton (ZMod (p ^ 0))` by rewriting $`p^0` to $`1` with `pow_zero` and then `infer_instance`, after which `Subsingleton.elim _ _` closes the goal.
 
 ```lean
 example (p : ℕ) (x : PadicIntLim p) : proj p 0 x = 0 := by
@@ -495,6 +499,7 @@ example (p : ℕ) (x : PadicIntLim p) : proj p 0 x = 0 := by
 ```
 
 Second, show the comparison map `ofPadicInt` is injective: two $`p`-adic integers with the same residues modulo every $`p^e` are equal (this is `PadicInt.ext_of_toZModPow`).
+After `intro x y h`, apply `PadicInt.ext_of_toZModPow.mp` and fix a level `n`; then `congrArg (proj p n) h` says the two compatible families agree at `n`, and the simp lemma `proj_ofPadicInt` rewrites each `proj p n (ofPadicInt p ·)` back to `PadicInt.toZModPow n ·`.
 
 ```lean
 example (p : ℕ) [Fact p.Prime] : Function.Injective (ofPadicInt p) := by
@@ -502,11 +507,10 @@ example (p : ℕ) [Fact p.Prime] : Function.Injective (ofPadicInt p) := by
 ```
 
 The exercise asked you to check that $`\mathbb{Z}_p` is an integral domain.
-Mathlib packages "commutative ring with no zero divisors and $`0 \neq 1`" as the `IsDomain` class; find the instance.
+Mathlib packages "commutative ring with no zero divisors and $`0 \neq 1`" as the `IsDomain` class, and already registers the instance for `ℤ_[p]`, so `inferInstance` supplies it with no work on your part — the content is entirely in Mathlib's proof that `ℤ_[p]` has no zero divisors.
 
 ```lean
-example (p : ℕ) [Fact p.Prime] : IsDomain ℤ_[p] := by
-  sorry
+example (p : ℕ) [Fact p.Prime] : IsDomain ℤ_[p] := inferInstance
 ```
 
 ## Constructing the p-adic numbers
@@ -543,6 +547,7 @@ example (p : ℕ) [Fact p.Prime] (q r : ℚ_[p]) :
 
 The proposition also promised that equality holds when the two norms differ.
 Prove that if $`\|q\|_p \neq \|r\|_p` then $`\|q + r\|_p = \max\{\|q\|_p, \|r\|_p\}`.
+This "all triangles are isosceles" strengthening is `IsUltrametricDist.norm_add_eq_max_of_norm_ne_norm` (the additive twin, via `to_additive`, of the ultrametric norm-of-product lemma), and it consumes the hypothesis `h` directly — the whole proof is `exact IsUltrametricDist.norm_add_eq_max_of_norm_ne_norm h`.
 
 ```lean
 example (p : ℕ) [Fact p.Prime] (q r : ℚ_[p]) (h : ‖q‖ ≠ ‖r‖) :
@@ -554,6 +559,7 @@ example (p : ℕ) [Fact p.Prime] (q r : ℚ_[p]) (h : ‖q‖ ≠ ‖r‖) :
 
 The "$`x_k \to 0` iff convergent" miracle turns infinite sums into a much friendlier object than they are over $`\mathbb{R}`.
 Restate it: a family in the complete nonarchimedean field $`\mathbb{Q}_p` is summable exactly when its terms tend to zero along the cofinite filter.
+This is exactly `NonarchimedeanAddGroup.summable_iff_tendsto_cofinite_zero`, which holds for any complete nonarchimedean additive group; `ℚ_[p]` is one, so applying that lemma to `f` is the entire proof.
 
 ```lean
 open Filter Topology in
@@ -565,6 +571,7 @@ example (p : ℕ) [Fact p.Prime] (f : ℕ → ℚ_[p]) :
 ## More fun with geometric series
 
 The geometric series formula holds verbatim in $`\mathbb{Q}_p`: for $`\|x\|_p < 1`, the sum $`\sum_{n \geq 0} x^n` converges to $`\frac{1}{1 - x}`.
+Because $`\mathbb{Q}_p` is a complete normed field, Mathlib's general `tsum_geometric_of_norm_lt_one` applies with the norm hypothesis `h` unchanged — there is no $`p`-adic-specific input, and `exact tsum_geometric_of_norm_lt_one h` finishes.
 
 ```lean
 example (p : ℕ) [Fact p.Prime] (x : ℚ_[p]) (h : ‖x‖ < 1) :
@@ -581,11 +588,10 @@ recall : ∀ (p : ℕ) [Fact p.Prime], CompleteSpace ℚ_[p]
 ```
 
 One of the problems asked you to show that $`\mathbb{Z}_p` is compact.
-Mathlib records this as `PadicInt.compactSpace`, an instance in `Mathlib.NumberTheory.Padics.ProperSpace`; confirm the type is already inhabited.
+Mathlib records this as `PadicInt.compactSpace`, an instance in `Mathlib.NumberTheory.Padics.ProperSpace`, so `inferInstance` finds it directly — the work is Mathlib's sequential-compactness proof, which the instance already packages.
 
 ```lean
-example (p : ℕ) [Fact p.Prime] : CompactSpace ℤ_[p] := by
-  sorry
+example (p : ℕ) [Fact p.Prime] : CompactSpace ℤ_[p] := inferInstance
 ```
 
 ## Mahler coefficients
@@ -603,9 +609,8 @@ Both would be excellent ports for someone wanting a concrete $`p`-adic-flavored 
 ## Problems
 
 The "totally disconnected" problem asked you to show that $`\mathbb{Q}_p` (and likewise $`\mathbb{Z}_p`) has no connected subsets beyond the empty set and singletons.
-This follows from the ultrametric, and Mathlib already provides the `TotallyDisconnectedSpace ℚ_[p]` instance.
+This follows from the ultrametric, and Mathlib already provides the `TotallyDisconnectedSpace ℚ_[p]` instance, so `inferInstance` supplies it.
 
 ```lean
-example (p : ℕ) [Fact p.Prime] : TotallyDisconnectedSpace ℚ_[p] := by
-  sorry
+example (p : ℕ) [Fact p.Prime] : TotallyDisconnectedSpace ℚ_[p] := inferInstance
 ```

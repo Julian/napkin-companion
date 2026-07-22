@@ -447,13 +447,17 @@ noncomputable example {R S : CommRingCat} (f : R ⟶ S) :
     Spec S ⟶ Spec R := Spec.map f
 ```
 
-This assignment is functorial: it sends the identity to the identity, and reverses composition.
-Show both.
+This assignment is functorial: it sends the identity to the identity (`Spec.map_id`), and reverses composition (`Spec.map_comp`).
+Here is the identity half, worked out.
 
 ```lean
-example (R : CommRingCat) : Spec.map (𝟙 R) = 𝟙 (Spec R) := by
-  sorry
+example (R : CommRingCat) : Spec.map (𝟙 R) = 𝟙 (Spec R) := Spec.map_id R
+```
 
+Now do the composition half yourself.
+Because `Spec` is contravariant the two factors come out in the _reversed_ order; the finisher is `Spec.map_comp`.
+
+```lean
 example {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
     Spec.map (f ≫ g) = Spec.map g ≫ Spec.map f := by
   sorry
@@ -468,16 +472,14 @@ noncomputable example {X Y : Scheme} (f : X ⟶ Y) (x : X) :
     Y.presheaf.stalk (f.base x) ⟶ X.presheaf.stalk x := f.stalkMap x
 ```
 
-The induced stalk maps also assemble functorially.
-Show that the identity morphism induces the identity on each stalk, and that a composite induces the (contravariant) composite of stalk maps.
+Sections and stalks are tied together by a single naturality square: taking the germ at `f.base x` and then applying `stalkMap` agrees with pulling back by `f.app U` and then taking the germ at `x`.
+This is exactly the "compatible germs go to compatible germs" compatibility described in the section, recorded as `Scheme.Hom.germ_stalkMap`.
+Prove it; the composition `≫` reads left to right, and the inverse-image open $`\pi^{-1}(U)` appears as `f ⁻¹ᵁ U`.
 
 ```lean
-example (X : Scheme) (x : X) :
-    (𝟙 X : X ⟶ X).stalkMap x = 𝟙 (X.presheaf.stalk x) := by
-  sorry
-
-example {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
-    (f ≫ g).stalkMap x = g.stalkMap (f.base x) ≫ f.stalkMap x := by
+example {X Y : Scheme} (f : X ⟶ Y) (U : Y.Opens) (x : X) (hx : f.base x ∈ U) :
+    Y.presheaf.germ U (f.base x) hx ≫ f.stalkMap x =
+      f.app U ≫ X.presheaf.germ (f ⁻¹ᵁ U) x hx := by
   sorry
 ```
 
@@ -496,15 +498,14 @@ The affine scheme attached to a ring is `Spec`, and $`\operatorname{Spec} A` is 
 noncomputable example (R : CommRingCat) : Scheme := Spec R
 ```
 
-Because a scheme morphism preserves values, each stalk map is a local ring homomorphism.
-Confirm this, and confirm that $`\operatorname{Spec} R` really is affine.
+Because a scheme morphism preserves values, Mathlib folds the local-homomorphism condition directly into `Scheme.Hom`, so each stalk map is a local ring homomorphism for free; likewise $`\operatorname{Spec} R` is affine by construction.
+Both facts are therefore just `inferInstance`.
 
 ```lean
-example {X Y : Scheme} (f : X ⟶ Y) (x : X) : IsLocalHom (f.stalkMap x).hom := by
-  sorry
+example {X Y : Scheme} (f : X ⟶ Y) (x : X) :
+    IsLocalHom (f.stalkMap x).hom := inferInstance
 
-example (R : CommRingCat) : IsAffine (Spec R) := by
-  sorry
+example (R : CommRingCat) : IsAffine (Spec R) := inferInstance
 ```
 
 ## A few examples of morphisms between affine schemes
@@ -523,15 +524,6 @@ noncomputable example {R S : CommRingCat} :
     (Spec S ⟶ Spec R) ≃ (R ⟶ S) := Spec.homEquiv
 ```
 
-One direction of that bijection is that $`\operatorname{Spec}` is injective on morphisms: two ring homomorphisms with the same $`\operatorname{Spec}` are equal.
-Prove it.
-
-```lean
-example {R S : CommRingCat} (f g : R ⟶ S)
-    (h : Spec.map f = Spec.map g) : f = g := by
-  sorry
-```
-
 ## The big theorem
 
 The equivalence "affine schemes are the opposite of rings" is `AffineScheme.equivCommRingCat`, with the functor being `Spec`.
@@ -542,14 +534,11 @@ noncomputable example : AffineScheme ≌ CommRingCatᵒᵖ :=
 ```
 
 Its concrete shadow is that $`\psi \mapsto \operatorname{Spec} \psi` is a bijection between ring homomorphisms $`R \to S` and scheme morphisms $`\operatorname{Spec} S \to \operatorname{Spec} R`.
-Prove this bijection, then, as an instance of "$`\operatorname{Spec} \mathbb{Z}` is terminal", show every scheme admits a morphism to it.
+Prove this bijection; the inverse equivalence `Spec.homEquiv.symm` has `Spec.map` as its forward map, so `.bijective` finishes it.
 
 ```lean
 example {R S : CommRingCat} :
     Function.Bijective (Spec.map : (R ⟶ S) → (Spec S ⟶ Spec R)) := by
-  sorry
-
-example (X : Scheme) : Nonempty (X ⟶ Spec (.of ℤ)) := by
   sorry
 ```
 
@@ -562,7 +551,7 @@ example (S X : Scheme) (f : X ⟶ S) : Over S := Over.mk f
 ```
 
 Since $`\operatorname{Spec} \mathbb{Z}` is terminal, a "$`\mathbb{Z}`-scheme structure" carries no information: any two morphisms $`X \to \operatorname{Spec} \mathbb{Z}` coincide.
-Prove it.
+Prove it by feeding both morphisms to `specZIsTerminal.hom_ext`.
 
 ```lean
 example (X : Scheme) (f g : X ⟶ Spec (.of ℤ)) : f = g := by
@@ -571,18 +560,19 @@ example (X : Scheme) (f g : X ⟶ Spec (.of ℤ)) : f = g := by
 
 ## A little bit on non-affine schemes
 
-That a distinguished open is again affine is `IsAffineOpen.isLocalization_basicOpen` and friends: the basic open $`D(f)` of an affine scheme is affine with coordinate ring the localization $`A[1/f]`, which is exactly what makes "open subsets are locally affine" go through.
+The coordinate ring of a distinguished open $`D(f)` is the localization $`A[1/f]`: on an affine open `U` carrying a section `f`, the sections over `X.basicOpen f` are `Γ(X, U)` localized away from `f`, via `IsAffineOpen.isLocalization_basicOpen`.
+(Its affineness as an _open_ subscheme is taken up in the next chapter.)
 
 ```lean
 example {X : Scheme} {U : X.Opens} (hU : IsAffineOpen U) (f : Γ(X, U)) :
     IsLocalization.Away f Γ(X, X.basicOpen f) := hU.isLocalization_basicOpen f
 ```
 
-In particular, a distinguished open $`D(f)` of a full affine scheme $`\operatorname{Spec} R` is itself an affine open.
-Show this.
+Specialize this to a full affine scheme: the ring of functions on $`D(f) \subseteq \operatorname{Spec} R` is $`R` localized away from $`f`.
+Take `U = ⊤`, whose affineness is `isAffineOpen_top`, and hand it to the same lemma.
 
 ```lean
 example (R : CommRingCat) (f : Γ(Spec R, ⊤)) :
-    IsAffineOpen ((Spec R).basicOpen f) := by
+    IsLocalization.Away f Γ(Spec R, (Spec R).basicOpen f) := by
   sorry
 ```
