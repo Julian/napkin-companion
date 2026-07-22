@@ -425,7 +425,7 @@ example {C : Type*} [Category C] [Abelian C] (S : ShortComplex C) : Prop :=
 ```
 
 A short exact sequence bakes in that its first map is injective.
-Extract from `S.ShortExact` the fact that $`A \to B` is a monomorphism.
+Extract from `S.ShortExact` the fact that $`A \to B` is a monomorphism; it is the {name}`CategoryTheory.ShortComplex.ShortExact.mono_f` field, so `hS.mono_f` hands it over directly.
 
 ```lean
 example {C : Type*} [Category C] [Abelian C] (S : ShortComplex C)
@@ -457,7 +457,7 @@ example {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
 ```
 
 Part of that exactness is that consecutive maps compose to zero.
-Show that going $`H_n(B_\bullet) \xrightarrow{g_\ast} H_n(C_\bullet) \xrightarrow{\partial} H_{n-1}(A_\bullet)` is the zero map.
+Show that going $`H_n(B_\bullet) \xrightarrow{g_\ast} H_n(C_\bullet) \xrightarrow{\partial} H_{n-1}(A_\bullet)` is the zero map; this composite is exactly {name}`CategoryTheory.ShortComplex.ShortExact.comp_δ`, so `hS.comp_δ i j hij` closes it.
 
 ```lean
 example {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
@@ -477,7 +477,7 @@ example {C : Type*} [Category C] [Abelian C] (S : ShortComplex C) : Type _ :=
 ```
 
 The section $`s \colon C \to B` of clause (b) is a genuine one-sided inverse to $`g`.
-Show that $`C \xrightarrow{s} B \xrightarrow{g} C` is the identity.
+Show that $`C \xrightarrow{s} B \xrightarrow{g} C` is the identity; the splitting records this as {name}`CategoryTheory.ShortComplex.Splitting.s_g`, so `s.s_g` is the whole proof.
 
 ```lean
 example {C : Type*} [Category C] [Abelian C] {S : ShortComplex C}

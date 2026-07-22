@@ -475,7 +475,8 @@ example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
 ```
 
 The chapter's complex examples include the exponential map $`\exp \colon \mathbb{C} \to \mathbb{C} \setminus \{0\}`.
-Show that it is a covering projection — Mathlib has done the work, so find the lemma that names it.
+The goal writes the codomain $`\mathbb{C} \setminus \{0\}` as the subtype `{z : ℂ // z ≠ 0}`, so the map sends $`z` to `Complex.exp z` bundled with the proof `z.exp_ne_zero` that it lands away from the origin.
+Mathlib has already done the work and named this exact map: {name}`Complex.isCoveringMap_exp` closes the goal outright.
 
 ```lean
 example :
@@ -512,7 +513,9 @@ example {E B A : Type*} [TopologicalSpace E] [TopologicalSpace B]
 ```
 
 The question observed that a lift starting at a chosen point is unique.
-Show that two lifts of the same path that agree at time $`0` agree everywhere — the interval $`[0, 1]` is connected, which is what makes this work.
+Two lifts of the same path that agree at time $`0` in fact agree everywhere, because the interval $`[0, 1]` is (pre)connected.
+Mathlib packages exactly this rigidity as {name}`IsCoveringMap.eq_of_comp_eq`: on a preconnected source, two continuous maps with the same composite along $`p` that agree at a single point are equal.
+Feed it the two continuity proofs `h₁` and `h₂`, the shared composite `he`, the point `0`, and the agreement `h0`.
 
 ```lean
 example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
@@ -536,7 +539,7 @@ example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
 ```
 
 The constant loop at $`b_0` sits at the identity of $`\pi_1(B, b_0)`, and under $`\Phi` it should stay put at $`e_0`.
-Show that lifting the constant path at $`p(e)` from $`e` gives the constant path at $`e`.
+That lifting the constant path at $`p(e)` from $`e` gives the constant path at $`e` is recorded as {name}`IsCoveringMap.liftPath_const`; the only argument it still needs is the proof that $`p(e) = p(e)`, which is `rfl`.
 
 ```lean
 example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
@@ -556,7 +559,7 @@ example {E X G : Type*} [TopologicalSpace E] [TopologicalSpace X] [Group G]
   IsQuotientCoveringMap f G
 ```
 
-Confirm that a regular projection really is a covering projection: extract {name}`IsCoveringMap` from an {name}`IsQuotientCoveringMap`.
+Confirm that a regular projection really is a covering projection: extract {name}`IsCoveringMap` from an {name}`IsQuotientCoveringMap` via its {name}`IsQuotientCoveringMap.isCoveringMap` field applied to `hf`.
 
 ```lean
 example {E X G : Type*} [TopologicalSpace E] [TopologicalSpace X] [Group G]
@@ -578,7 +581,8 @@ example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
 ```
 
 The uniqueness half of the isomorphism story is already available: a map of covering projections out of a connected space is determined by a single value.
-Two continuous maps into a cover which project to the same map and agree at one point are equal — the diagonal at which they agree is open, closed, and nonempty.
+Two continuous maps into a cover which project to the same map and agree at one point are equal — the diagonal at which they agree is open, closed, and nonempty, and this is the same {name}`IsCoveringMap.eq_of_comp_eq` that settled uniqueness of path lifts above.
+This time the preconnected source is $`E_1`; feed it the continuity proofs `hf` and `hg`, the shared composite `he`, the point `x`, and the agreement `hx`.
 
 ```lean
 example {E₁ E₂ B : Type*} [TopologicalSpace E₁] [TopologicalSpace E₂]
@@ -623,8 +627,8 @@ example {G : Type*} [Group G] (D : CoveringClassificationData G) :
   D.sheets_universalCover
 ```
 
-The correspondence is an order isomorphism, so it is injective: distinct subgroups give genuinely distinct covers.
-Prove it.
+The correspondence `D.corr` is an order isomorphism, so it is injective: distinct subgroups give genuinely distinct covers.
+Every order isomorphism is injective, so apply `D.corr.injective` to the hypothesis `h`.
 
 ```lean
 example {G : Type*} [Group G] (D : CoveringClassificationData G)
@@ -632,8 +636,8 @@ example {G : Type*} [Group G] (D : CoveringClassificationData G)
   sorry
 ```
 
-The regular covers are, by definition, those matched with normal subgroups.
-Read off one direction: a regular cover comes from a normal subgroup.
+The regular covers are, by definition, those matched with normal subgroups — the equivalence is bundled as the field `D.regular_iff_normal`.
+Read off one direction: apply the forward implication `(D.regular_iff_normal H).mp` to `h`.
 
 ```lean
 example {G : Type*} [Group G] (D : CoveringClassificationData G)

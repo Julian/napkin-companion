@@ -335,42 +335,9 @@ Prove that $`\mathbb{R}^n \setminus X` has exactly two path-connected components
 
 ## The long exact sequences
 
-A three-term sequence like the one above is short exact exactly when the left map is injective, the right map is surjective, and the composite kernel-image data is exact in the middle; this is packaged as {name}`CategoryTheory.ShortComplex.ShortExact`, whose three fields are precisely exactness together with $`\mathsf{f}` a monomorphism and $`\mathsf{g}` an epimorphism.
-
-```lean (name := shortExact)
-example {C : Type*} [Category C] [Limits.HasZeroMorphisms C]
-    (S : ShortComplex C) (h : S.ShortExact) :
-    S.Exact ∧ Mono S.f ∧ Epi S.g :=
-  ⟨h.exact, h.mono_f, h.epi_g⟩
-```
-
-Purely algebraically, any short exact sequence of chain complexes produces a connecting map $`\partial \colon H_n(\text{third}) \to H_{n-1}(\text{first})` lowering degree, and the resulting long sequence is exact at every term.
-The connecting map is {name}`CategoryTheory.ShortComplex.ShortExact.δ`, and its exactness at the third term is recorded by {name}`CategoryTheory.ShortComplex.ShortExact.homology_exact₃`.
-
-```lean (name := connecting)
-noncomputable example {C ι : Type*} [Category C] [Abelian C]
-    {c : ComplexShape ι} {S : ShortComplex (HomologicalComplex C c)}
-    (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j) :
-    S.X₃.homology i ⟶ S.X₁.homology j :=
-  hS.δ i j hij
-
-example {C ι : Type*} [Category C] [Abelian C]
-    {c : ComplexShape ι} {S : ShortComplex (HomologicalComplex C c)}
-    (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j) :
-    (ShortComplex.mk _ _ (ShortComplex.ShortExact.comp_δ hS i j hij)).Exact :=
-  hS.homology_exact₃ i j hij
-```
-
-Underlying all of this is the "image lies inside kernel" relation: in any short complex the composite of the two maps vanishes.
-Verify it.
-
-```lean (name := shortComplexZero)
-example {C : Type*} [Category C] [Limits.HasZeroMorphisms C]
-    (S : ShortComplex C) : S.f ≫ S.g = 0 := by
-  sorry
-```
-
-The hypothesis on $`A` here is contractibility, meaning $`A` is homotopy equivalent to a one-point space; this is exactly {name}`ContractibleSpace`, which asserts a homotopy equivalence $`A \simeq \ast` valued in $`\mathsf{Unit}` via {name}`ContractibleSpace.hequiv_unit`.
+The chapter reads $`H_n(X, A) \cong \widetilde H_n(X)` off the long exact sequence whenever $`A` is contractible, so the object to pin down here is contractibility itself.
+(The short exact sequence $`0 \to C(A) \to C(X) \to C(X, A) \to 0` behind that long exact sequence, and its connecting map, are set up in the long-exact-sequence chapter's companion; below we build only the pieces this chapter adds.)
+That $`A` is contractible — homotopy equivalent to a one-point space — is exactly {name}`ContractibleSpace`, which asserts a homotopy equivalence $`A \simeq \ast` valued in $`\mathsf{Unit}` via {name}`ContractibleSpace.hequiv_unit`.
 Contractibility also transports across a homotopy equivalence $`X \simeq Y`, recorded by {name}`ContinuousMap.HomotopyEquiv.contractibleSpace`.
 
 ```lean (name := contractible)
@@ -384,7 +351,8 @@ example {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
 ```
 
 The worked example transported contractibility from $`Y` to $`X` along $`X \simeq Y`.
-Since a homotopy equivalence can be reversed, the same conclusion holds in the other direction: show that if $`X` is contractible then so is $`Y`.
+Since a homotopy equivalence can be reversed with {name}`ContinuousMap.HomotopyEquiv.symm`, the same conclusion holds in the other direction: show that if $`X` is contractible then so is $`Y`.
+Reverse the equivalence and reuse the transport lemma — `e.symm.contractibleSpace`.
 
 ```lean (name := contractibleSymm)
 example {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
@@ -409,7 +377,7 @@ example {P Q : TopPair} (f : PairMap P Q) :
 
 Relative homology is modelled where it is tractable — algebraically.
 Fixing a degree, the chains of $`X` supported in $`A` form a subgroup $`C(A)` of the chain group $`C(X)`, and the *relative chains* $`C(X, A) = C(X)/C(A)` are `RelativeChains`, the quotient module.
-Inclusion followed by projection assembles the short complex $`0 \to C(A) \to C(X) \to C(X, A) \to 0` as `pairShortComplex`, and it is short exact: the inclusion is injective, the projection surjective, and image equals kernel in the middle.
+Inclusion followed by projection assembles the short complex $`0 \to C(A) \to C(X) \to C(X, A) \to 0` as `pairShortComplex`, and it is short exact — a {name}`CategoryTheory.ShortComplex.ShortExact`, bundling that the inclusion is injective, the projection surjective, and image equals kernel in the middle.
 
 ```lean (name := pairSES)
 example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
@@ -421,7 +389,7 @@ Bundling three consecutive chain groups with a subcomplex — the data of `RelCh
 When the subspace already carries every $`n`-chain, that middle relative group vanishes, giving `RelChainData.relativeHomology_isZero_of_top` — the algebraic shadow of $`H_n(A, A) = 0`.
 
 Underlying the short exact sequence is the "image lies inside kernel" relation: in the pair's short complex, inclusion into $`C(X)` followed by projection onto $`C(X, A)` is zero, because chains from $`A` project to $`0`.
-Verify it.
+Every short complex carries this vanishing as its {name}`CategoryTheory.ShortComplex.zero` field, so `(pairShortComplex N).zero` verifies it.
 
 ```lean (name := pairComposeZero)
 example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
@@ -431,7 +399,7 @@ example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
 ```
 
 Every element of $`H_n(X, A)` has a representative in $`C(X)`, because the projection $`C(X) \to C(X, A)` hits every relative chain.
-Show that this projection is surjective.
+Show that this projection is surjective; the quotient projection `N.mkQ` is surjective by {name}`Submodule.mkQ_surjective`.
 
 ```lean (name := mkQSurjective)
 example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
@@ -440,7 +408,8 @@ example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
 ```
 
 Collapsing $`X` onto a subspace that is all of it leaves nothing behind: when $`A = X`, the relative chains $`C(X, X)` have a single element, matching $`H_n(X, X) = 0`.
-Prove the relative chains of the full subspace are a subsingleton.
+Here `RelativeChains N` is by definition the quotient module `M ⧸ N`, and such a quotient is a subsingleton exactly when the subgroup is everything, recorded by {name}`Submodule.Quotient.subsingleton_iff`.
+Prove the relative chains of the full subspace are a subsingleton; feed `rfl` to its `.mpr` direction.
 
 ```lean (name := relChainsTop)
 example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M] :
@@ -449,7 +418,7 @@ example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M] :
 ```
 
 Homotopy equivalence is reflexive: every space is homotopy equivalent to itself.
-Construct this identity homotopy equivalence.
+Construct this identity homotopy equivalence with {name}`ContinuousMap.HomotopyEquiv.refl`.
 
 ```lean (name := hequivRefl)
 example (X : Type) [TopologicalSpace X] : X ≃ₕ X := by

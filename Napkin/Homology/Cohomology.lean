@@ -414,7 +414,7 @@ noncomputable example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
   A.homology n
 ```
 
-Show that the differentials of a cochain complex compose to zero.
+Show that the differentials of a cochain complex compose to zero; `A.d_comp_d i j k`, the `HomologicalComplex.d_comp_d` above specialized to `A`, closes it.
 
 ```lean
 example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
@@ -458,7 +458,7 @@ noncomputable example {X : Type*} {G : Type*} [AddCommGroup G] (n : ℕ) :
 ```
 
 The coboundary is additive — this is the sense in which $`\delta` is linear.
-Prove it.
+Prove it; the shim records this same statement as `coboundary_add`.
 
 ```lean
 example {X : Type*} {G : Type*} [AddCommGroup G] {n : ℕ}
@@ -468,7 +468,23 @@ example {X : Type*} {G : Type*} [AddCommGroup G] {n : ℕ}
 ```
 
 The prototype claimed a $`0`-cochain in $`\ker\delta` is constant on path components; combinatorially, $`\delta c = 0` forces `c` to agree across the two endpoints of every $`1`-simplex $`[v_0, v_1]`, because $`(\delta c)([v_0, v_1]) = c([v_1]) - c([v_0])`.
-Prove this local constancy.
+To even state this we need to name the vertices of a $`1`-simplex.
+A `Simplex X n` is the tuple of its $`n + 1` vertices `Fin (n + 1) → X`, so a $`1`-simplex `v : Simplex X 1` has endpoints `v 0` and `v 1`.
+
+```lean
+example {X : Type*} (n : ℕ) : Simplex X n = (Fin (n + 1) → X) := rfl
+```
+
+The generating chain $`1 \cdot \sigma` is `Chain.ofSimplex σ`, and the boundary of the edge $`[v_0, v_1]` is the $`0`-chain $`\{v_1\} - \{v_0\}`, recorded as `Chain.boundary_one`.
+
+```lean
+example {X : Type*} (v : Simplex X 1) :
+    Chain.boundary (Chain.ofSimplex v)
+      = Chain.ofSimplex (fun _ => v 1) - Chain.ofSimplex (fun _ => v 0) :=
+  Chain.boundary_one v
+```
+
+Prove this local constancy; the shim records it as `cocycle_zero_locally_constant`.
 
 ```lean
 example {X : Type*} {G : Type*} [AddCommGroup G] {c : Cochain X G 0}
@@ -497,7 +513,7 @@ example (R M N : Type*) [CommRing R] [AddCommGroup M] [Module R M]
 ```
 
 The exercise on functoriality asked you to read $`\operatorname{Hom}(-, G)` as a contravariant functor: a composite $`g \circ f` dualizes with the order reversed.
-Prove that dualization is contravariant.
+Prove that dualization is contravariant; `LinearMap.dualMap_comp_dualMap` states the reversed equation, so its `.symm` closes it.
 
 ```lean
 example (R M N P : Type*) [CommRing R] [AddCommGroup M] [Module R M]
@@ -519,7 +535,7 @@ example {V : Type*} [Category V] [Limits.HasZeroMorphisms V] :
 
 Over a field the $`\operatorname{Ext}` term vanishes, so cohomology is exactly the dual of homology — the content of the problem "cohomology over a field is a dual".
 The algebraic fact that makes this an honest isomorphism for finitely generated homology is that a finite-dimensional vector space and its dual have the same dimension.
-Prove it.
+Prove it; `Subspace.dual_finrank_eq` is exactly this equality of dimensions.
 
 ```lean
 example (F V : Type*) [Field F] [AddCommGroup V] [Module F V]

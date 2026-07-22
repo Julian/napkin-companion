@@ -433,7 +433,8 @@ noncomputable example (A : Type*) [CommRing A] :
 ```
 
 Because it is built directly as a sheaf of compatible germs, no separate sheafification step is even needed: the bundled object already carries the sheaf condition on its nose.
-Extract that condition from the structure sheaf.
+A `TopCat.Sheaf` is a presheaf bundled with a proof of the sheaf condition, so that proof is just the second component, projected out with `.property`.
+Extract it from the structure sheaf.
 
 ```lean
 example (A : Type*) [CommRing A] :
@@ -461,13 +462,13 @@ noncomputable example (A : CommRingCat) :
   StructureSheaf.globalSectionsIso A
 ```
 
-The prose observed that $`D(x) \cap D(y) = D(xy)`.
-Prove the general identity that intersecting two distinguished opens multiplies their defining elements.
+The prose observed in passing that $`\operatorname{Spec} A = D(1)` is itself distinguished open, which is exactly what let the global sections reappear as $`A[1/1] = A`.
+Prove that identity: the distinguished open of the unit is the whole space, `⊤`.
+The finishing lemma is `PrimeSpectrum.basicOpen_one`.
 
 ```lean
-example (A : Type*) [CommRing A] (f g : A) :
-    PrimeSpectrum.basicOpen (f * g)
-      = PrimeSpectrum.basicOpen f ⊓ PrimeSpectrum.basicOpen g := by
+example (A : Type*) [CommRing A] :
+    PrimeSpectrum.basicOpen (1 : A) = ⊤ := by
   sorry
 ```
 
@@ -481,12 +482,13 @@ example (A : Type*) [CommRing A] (p : Ideal A) [p.IsPrime] :
 ```
 
 The isomorphism identifying the structure-sheaf stalk with this localization is `StructureSheaf.stalkIso`.
-Reconstruct it: the stalk of the structure presheaf at a point is $`A_\mathfrak{p}`, as an `A`-algebra isomorphism.
+Reconstruct it: the stalk of $`\mathcal{O}_{\operatorname{Spec} A}` at a point is $`A_\mathfrak{p}`, as an `A`-algebra isomorphism.
+Finish with `StructureSheaf.stalkIso A p`.
 
 ```lean
 noncomputable example (A : Type*) [CommRing A] (p : PrimeSpectrum A) :
     Localization.AtPrime p.asIdeal ≃ₐ[A]
-      (structurePresheafInCommRingCat A).stalk p := by
+      (Spec.structureSheaf A).presheaf.stalk p := by
   sorry
 ```
 
@@ -510,7 +512,7 @@ example (R : Type*) [CommRing R] [IsLocalRing R] (a : R) :
 ```
 
 The chapter asked whether fields are local rings.
-A field has exactly the two ideals $`(0)` and the whole field, so its unique maximal ideal is $`(0)`; confirm Mathlib already knows a field is a local ring.
+A field has exactly the two ideals $`(0)` and the whole field, so its unique maximal ideal is $`(0)`, and Mathlib registers this as an instance directly — so the goal is closed by `inferInstance`.
 
 ```lean
 example (K : Type*) [Field K] : IsLocalRing K := by
@@ -527,7 +529,7 @@ example (A : Type*) [CommRing A] :
 ```
 
 The chapter asked whether integral domains are reduced.
-In a domain the only nilpotent is $`0`, since $`a^n = 0` forces $`a = 0`; confirm a domain is reduced.
+In a domain the only nilpotent is $`0`, since $`a^n = 0` forces $`a = 0`; this too is an instance Mathlib already carries, so `inferInstance` again discharges the goal.
 
 ```lean
 example (A : Type*) [CommRing A] [IsDomain A] : IsReduced A := by

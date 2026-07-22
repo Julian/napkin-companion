@@ -402,7 +402,7 @@ example (C : Type*) [Category C] [HasZeroMorphisms C] {A B : C} (f : A ⟶ B)
 ```
 
 Dually, $`f` composed with the projection to its cokernel vanishes.
-Prove it.
+Prove it; `cokernel.condition` does the work.
 
 ```lean
 example (C : Type*) [Category C] [HasZeroMorphisms C] {A B : C} (f : A ⟶ B)
@@ -424,6 +424,7 @@ example (C : Type*) [Category C] [Preadditive C] {A B D : C}
 
 The proposition above characterized isomorphisms as the maps that are both monic and epic.
 One half of that holds in every abelian category: a map that is monic and epic is an isomorphism.
+The lemma `isIso_of_mono_of_epi` does the work; prove it.
 
 ```lean
 example (C : Type*) [Category C] [Abelian C] {A B : C} (f : A ⟶ B)
@@ -444,6 +445,7 @@ example (C : Type*) [Category C] [HasZeroMorphisms C] (S : ShortComplex C) :
 
 The exercise above showed that $`0 \to A \to B` is exact exactly when $`A \to B` is monic.
 When the first map of a short complex is zero, exactness of the complex is precisely monicity of the second map.
+That equivalence is `ShortComplex.exact_iff_mono`, applied to `hf`.
 
 ```lean
 example (C : Type*) [Category C] [Abelian C] (S : ShortComplex C)
@@ -483,13 +485,13 @@ example (C : Type*) [Category C] [Abelian C] {A B : C} (f : A ⟶ B)
   (Abelian.FreydMitchell.functor C).mono_of_mono_map h
 ```
 
-Dually, if the image of $`f` is epic then $`f` itself is epic.
-Prove it.
+Dually, the same functor reflects epimorphisms via `epi_of_epi_map`.
+If the image of $`f` is epic then $`f` itself is epic.
 
 ```lean
 example (C : Type*) [Category C] [Abelian C] {A B : C} (f : A ⟶ B)
-    (h : Epi ((Abelian.FreydMitchell.functor C).map f)) : Epi f := by
-  sorry
+    (h : Epi ((Abelian.FreydMitchell.functor C).map f)) : Epi f :=
+  (Abelian.FreydMitchell.functor C).epi_of_epi_map h
 ```
 
 A chase also needs the embedding to send the zero morphism to the zero morphism, so that "starting from an element that maps to zero" survives the translation.
@@ -512,7 +514,7 @@ example (C : Type*) [Category C] [Abelian C] {A B D : C} (f : A ⟶ B) (g : B �
 ```
 
 Every diagram chase relies on each map sending the zero pseudoelement to the zero pseudoelement.
-Prove it.
+Prove it; `apply_zero` does the work.
 
 ```lean
 open CategoryTheory.Abelian.Pseudoelement in
@@ -532,6 +534,7 @@ example (C : Type*) [Category C] [Preadditive C] {S : ShortComplex C}
 ```
 
 Dually, the last map of a short exact sequence is epic.
+Prove it; `hS.epi_g` does the work.
 
 ```lean
 example (C : Type*) [Category C] [Preadditive C] {S : ShortComplex C}
