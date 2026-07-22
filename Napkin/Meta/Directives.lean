@@ -509,6 +509,61 @@ block_extension Block.aside (title : String) where
 def aside : DirectiveExpanderOf TitledConfig :=
   titledDirective "Aside" fun t => ``(Block.aside $(quote t))
 
+-- Collapsible worked solution to a reader exercise. Rendered collapsed by
+-- default so the exercise stays a challenge; the reader opens it to check
+-- their answer. The body is a real (build-checked) `lean` proof.
+block_extension Block.solution where
+  data := .null
+  traverse _ _ _ := pure none
+  toTeX :=
+    some <| fun _ goB _ _ content => do
+      content.mapM goB
+  toHtml :=
+    open Verso.Output.Html in
+    some <| fun _ goB _ _ content => do
+      pure {{
+        <details class="solution">
+          <summary>"Solution"</summary>
+          <div class="solution-body">{{← content.mapM goB}}</div>
+        </details>
+      }}
+  extraCss := [r#"
+    details.solution {
+      margin: 1em 0;
+      border: 1px solid #cfe6d4;
+      background: #f4faf5;
+      border-radius: 3px;
+    }
+    details.solution > summary {
+      cursor: pointer;
+      font-variant: small-caps;
+      letter-spacing: 0.04em;
+      font-size: 0.9em;
+      font-weight: 600;
+      padding: 0.4em 0.75em;
+      color: #2e7d46;
+      list-style-position: inside;
+    }
+    details.solution > summary::before { content: "\2713\00a0"; }
+    details.solution > summary:hover {
+      background: #eaf5ec;
+    }
+    details.solution[open] > summary {
+      border-bottom: 1px solid #cfe6d4;
+    }
+    details.solution > .solution-body {
+      padding: 0.25em 0.75em;
+    }
+    details.solution > .solution-body > *:first-child { margin-top: 0; }
+    details.solution > .solution-body > *:last-child { margin-bottom: 0; }
+  "#]
+
+@[directive]
+def solution : DirectiveExpanderOf Unit
+  | (), contents => do
+    ``(Verso.Doc.Block.other Block.solution
+        #[$[$(← contents.mapM elabBlock)],*])
+
 block_extension Block.definition (title : String) where
   data := .str title
   traverse blockId _ _ := do assignCalloutNumber blockId; return none

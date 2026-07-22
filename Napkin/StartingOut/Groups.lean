@@ -717,6 +717,17 @@ example (G : Type*) [Group G] (g h : G) (hh : g * h = 1) : h = g⁻¹ := by
   sorry
 ```
 
+:::solution
+```lean
+example (G : Type*) [Group G] (g : G) :
+    Function.Bijective (fun x : G => x * g) :=
+  (Equiv.mulRight g).bijective
+
+example (G : Type*) [Group G] (g h : G) (hh : g * h = 1) : h = g⁻¹ :=
+  (inv_eq_of_mul_eq_one_right hh).symm
+```
+:::
+
 ## Isomorphisms
 
 A group isomorphism is `MulEquiv G H`, written `G ≃* H`, or `AddEquiv G H` (`G ≃+ H`) for the additive case.
