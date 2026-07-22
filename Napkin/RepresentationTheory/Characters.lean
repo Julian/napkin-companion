@@ -294,7 +294,8 @@ Here, $`C_G(g) = \{ x : G \mid xg = gx \}` is the centralizer of $`g`.
 
 ## Definitions
 
-The character $`\chi_V` of a finite-dimensional representation $`V` is `FDRep.character`, sending each $`g` to the trace of $`\rho(g) \colon V \to V`.
+A finite-dimensional representation of $`G` over $`k` is bundled as the type `FDRep k G`, and the underlying action $`\rho` — sending each $`g : G` to the linear map $`\rho(g) \colon V \to V` — is `V.ρ`.
+The character $`\chi_V` of such a representation $`V` is `FDRep.character`, sending each $`g` to the trace of $`\rho(g) \colon V \to V`.
 
 ```lean
 example {k G : Type*} [Field k] [Monoid G] (V : FDRep k G) (g : G) :
@@ -309,6 +310,8 @@ example {k G : Type*} [Field k] [Monoid G] (V : FDRep k G) :
 ```
 
 Characters were promised to determine a representation up to isomorphism; the easy half of that is `FDRep.char_iso`, that isomorphic representations already share a character.
+Here `V ≅ W` is an isomorphism of representations — an invertible map that intertwines the two actions — and `i : V ≅ W` is such an isomorphism.
+This is a one-liner: apply `FDRep.char_iso` to `i`.
 
 ```lean
 example {k G : Type*} [Field k] [Monoid G] (V W : FDRep k G) (i : V ≅ W) :
@@ -330,6 +333,7 @@ example {k G : Type*} [Field k] [Group G] (V : FDRep k G) (g h : G) :
 
 The question asked you to deduce that a character takes the same value on conjugate elements.
 Mathlib's `IsConj g h` is exactly the statement that $`g` and $`h` are conjugate; show that the character then agrees on them.
+Unpack `IsConj g h` with `isConj_iff` to obtain a conjugator `c` with `c * g * c⁻¹ = h`, then finish with `FDRep.char_conj`.
 
 ```lean
 example {k G : Type*} [Field k] [Group G] (V : FDRep k G) (g h : G)
@@ -351,7 +355,9 @@ example {k G : Type*} [Field k] [Group G] (V : FDRep k G) (g : G) :
 ```
 
 The scalar product of two characters equals the dimension of the space of equivariant maps $`V \to W`, which is `FDRep.scalar_product_char_eq_finrank_equivariant`.
+The assumption `[Invertible (Fintype.card G : k)]` makes $`|G|` a unit in $`k`, so that the averaging factor $`\frac{1}{|G|}` — written `⅟(Fintype.card G : k)` — makes sense; and `V ⟶ W` is the type of maps of representations from $`V` to $`W` (the equivariant maps), so `Module.finrank k (V ⟶ W)` is the dimension of that space.
 Over an algebraically closed field this specializes to orthonormality of irreducible characters, `FDRep.char_orthonormal`, taking the value $`1` when $`V \cong W` and $`0` otherwise.
+The hypothesis `[Simple V]` marks $`V` as irreducible, and `Nonempty (V ≅ W)` says there exists an isomorphism of representations $`V ≅ W`, i.e. $`V` and $`W` are isomorphic.
 
 ```lean
 example {k G : Type*} [Field k] [Group G] [Fintype G]
@@ -367,7 +373,7 @@ example {k G : Type*} [Field k] [IsAlgClosed k] [Group G] [Fintype G]
 ```
 
 The orthogonality relation gives a mechanical irreducibility test: an irrep has norm $`1`, i.e. $`\langle \chi_V, \chi_V \rangle = 1`.
-Specialize `FDRep.char_orthonormal` to $`W = V` to confirm it.
+Specialize `FDRep.char_orthonormal` to $`W = V`, then discharge the resulting `if` with `if_pos ⟨Iso.refl V⟩` — since $`V ≅ V` — to confirm it.
 
 ```lean
 example {k G : Type*} [Field k] [IsAlgClosed k] [Group G] [Fintype G]

@@ -388,7 +388,7 @@ example (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
 ```
 
 The "lies over" relation says exactly that $`(p)` is the contraction of $`P` back down to the base ring; that is `p = P.under A`.
-Show that a prime lying over `p` recovers `p` as its contraction.
+Show that a prime lying over `p` recovers `p` as its contraction — that recovery is exactly the class field `Ideal.LiesOver.over`.
 
 ```lean
 example (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
@@ -401,15 +401,18 @@ example (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
 Being unramified at a prime is the predicate `Algebra.IsUnramifiedAt`, and the theorem above, in contrapositive, is `NumberField.not_dvd_discr_iff_forall_mem`: a prime does not divide `NumberField.discr K` exactly when every prime above it is unramified.
 (The existence of ramified primes for $`K \neq \mathbb{Q}` — combining this with the Hermite-Minkowski bound $`|\Delta_K| > 1` from the class group chapter — is `NumberField.exists_not_isUnramifiedAt_int` in `Mathlib.NumberTheory.NumberField.ExistsRamified`.)
 
-State the contrapositive form for yourself: a rational prime avoids the discriminant exactly when every prime containing it is unramified.
+State the contrapositive form for yourself, for the ring of integers $`\mathcal{O}_K` itself: a rational prime avoids the discriminant exactly when every prime containing it is unramified.
+Specialized to `𝓞 K`, the Dedekind-domain, finiteness, and integral-closure hypotheses are all automatic, and the whole biconditional is `NumberField.not_dvd_discr_iff_forall_mem K (𝓞 K) hp`.
+
+```lean -show
+open scoped NumberField
+```
 
 ```lean
-example (K 𝒪 : Type*) [Field K] [NumberField K] [CommRing 𝒪]
-    [Algebra 𝒪 K] [IsFractionRing 𝒪 K] [IsDedekindDomain 𝒪] [CharZero 𝒪]
-    [Module.Finite ℤ 𝒪] [IsIntegralClosure 𝒪 ℤ K] {p : ℤ} (hp : Prime p) :
+example (K : Type*) [Field K] [NumberField K] {p : ℤ} (hp : Prime p) :
     ¬ p ∣ NumberField.discr K ↔
-      ∀ (P : Ideal 𝒪) (_ : P.IsPrime),
-        (p : 𝒪) ∈ P → Algebra.IsUnramifiedAt ℤ P := by
+      ∀ (P : Ideal (𝓞 K)) (_ : P.IsPrime),
+        (p : 𝓞 K) ∈ P → Algebra.IsUnramifiedAt ℤ P := by
   sorry
 ```
 
@@ -428,17 +431,16 @@ recall Ideal.inertiaDeg {R : Type*} [CommRing R] {S : Type*}
 with `ramificationIdx` defined as the largest $`n` with $`p \cdot S \subseteq P^n`, `inertiaDeg` as the degree of the residue field extension $`(S/P) / (R/p)` — that's the "roomy" description again, in logarithmic form — and junk value $`0` whenever the setup is degenerate.
 The identity $`n = \sum e_i f_i` is the *fundamental identity* `Ideal.sum_ramification_inertia`, summing over `IsDedekindDomain.primesOverFinset`.
 
-Prove the fundamental identity: over a maximal $`p`, the sum of $`e_i f_i` across the primes above it equals the degree of the extension of fraction fields.
+Prove the fundamental identity in its number field guise.
+Taking $`\mathcal{O}_K` over $`\mathbb{Z}`, whose fraction fields are $`\mathbb{Q}` and $`K`, the sum of $`e_i f_i` across the primes above $`(p)` recovers the degree $`[K:\mathbb{Q}]`.
+The identity itself is `Ideal.sum_ramification_inertia (𝓞 K) ℚ K`; its hypothesis that $`(p)` is maximal follows from `Ideal.span_singleton_prime` together with `Ideal.IsPrime.isMaximal`, and its $`(p) \neq 0` from `Ideal.span_singleton_eq_bot`.
 
 ```lean
-example {R : Type*} [CommRing R] {S : Type*} [CommRing S] [Algebra R S]
-    [IsDedekindDomain S] (K L : Type*) [Field K] [Field L] [IsDedekindDomain R]
-    [Algebra R K] [IsFractionRing R K] [Algebra S L] [IsFractionRing S L]
-    [Algebra K L] [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L]
-    [Module.Finite R S] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
-    ∑ P ∈ IsDedekindDomain.primesOverFinset p S,
-        Ideal.ramificationIdx p P * Ideal.inertiaDeg p P
-          = Module.finrank K L := by
+example (K : Type*) [Field K] [NumberField K] {p : ℤ} (hp : Prime p) :
+    ∑ P ∈ IsDedekindDomain.primesOverFinset (Ideal.span {p}) (𝓞 K),
+        Ideal.ramificationIdx (Ideal.span {p}) P
+          * Ideal.inertiaDeg (Ideal.span {p}) P
+          = Module.finrank ℚ K := by
   sorry
 ```
 
@@ -461,6 +463,7 @@ example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 ```
 
 Use transitivity to show that any two primes above $`p` are related by some element of the Galois group.
+With the `MulAction.IsPretransitive` instance above in scope, `MulAction.exists_smul_eq` hands you that group element directly.
 
 ```lean
 example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] (p : Ideal A)
@@ -480,13 +483,16 @@ example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] {p : Ideal A}
     (P : Ideal.primesOver p B) : Subgroup G := MulAction.stabilizer G P
 ```
 
-Confirm that an automorphism lies in the decomposition group exactly when it fixes $`\mathfrak{p}`.
+An automorphism lies in the decomposition group exactly when it fixes $`\mathfrak{p}`, which is by definition `MulAction.mem_stabilizer_iff`.
+A more substantial fact — the one behind the different fixed fields of conjugate primes above — is that the decomposition groups of $`\mathfrak{p}` and $`\sigma\mathfrak{p}` are conjugate: $`D_{\sigma\mathfrak{p}} = \sigma D_\mathfrak{p} \sigma^{-1}`.
+Prove it; the finisher is `MulAction.stabilizer_smul_eq_stabilizer_map_conj`.
 
 ```lean
 example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] {p : Ideal A}
     (G : Type*) [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
     (P : Ideal.primesOver p B) (σ : G) :
-    σ ∈ MulAction.stabilizer G P ↔ σ • P = P := by
+    MulAction.stabilizer G (σ • P)
+      = (MulAction.stabilizer G P).map (MulAut.conj σ).toMonoidHom := by
   sorry
 ```
 

@@ -496,9 +496,11 @@ example (A B : Type*) [Ring A] [Ring B] : (1 : A × B) = (1, 1) := rfl
 
 The question of when $`k[G]` is commutative has the answer "exactly when $`G` is abelian".
 Prove the forward direction: a commutative group yields a commutative group algebra.
+The honest answer is `inferInstance`: Mathlib already registers `MonoidAlgebra.commRing` whenever the coefficients form a commutative ring and the group is abelian, which is exactly the `[CommGroup G]` hypothesis here.
+That ring structure is `noncomputable`, so the example is marked accordingly --- without the marker even `inferInstance` is rejected.
 
 ```lean
-example (k G : Type*) [CommRing k] [CommGroup G] :
+noncomputable example (k G : Type*) [CommRing k] [CommGroup G] :
     CommRing (MonoidAlgebra k G) := by
   sorry
 ```
@@ -524,7 +526,7 @@ example (A : Type*) [Ring A] : Module A A := inferInstance
 ```
 
 The action axioms are precisely the module axioms.
-As one instance, prove the axiom $`1_A \cdot v = v` from the definition of a representation.
+As one instance, prove the axiom $`1_A \cdot v = v` from the definition of a representation; it is the module law `one_smul`, applied as `one_smul A v`.
 
 ```lean
 example (A V : Type*) [Ring A] [AddCommGroup V] [Module A V] (v : V) :
@@ -554,6 +556,12 @@ example (k : Type*) [Field k] (d : ℕ) :
 
 The prototypical exercise of this section --- that this standard representation is irreducible --- is exactly `IsSimpleModule (Matrix (Fin d) (Fin d) k) (Fin d → k)`.
 Prove it: any nonzero vector can be carried onto each standard basis vector by a suitable matrix, so the only nonzero subrepresentation is the whole space.
+Here is the road map, with the lemma names that do each step.
+Rewriting with `isSimpleModule_iff` reduces the goal to `IsSimpleOrder` on the submodule lattice, so it suffices to show that a submodule which is not $`\{0\}` is everything.
+For such a submodule, `Submodule.exists_mem_ne_zero_of_ne_bot` produces a vector $`v \neq 0`, and some coordinate has $`v_j \neq 0`.
+Then the matrix `Matrix.single i j (w i * (v j)⁻¹)` applied to $`v` equals $`w_i` in coordinate $`i` and zero elsewhere: `Matrix.smul_eq_mulVec` unfolds the action to matrix--vector multiplication, `Matrix.single_mulVec_eq` computes it, and `Pi.single_smul'` identifies the result as `Pi.single i (w i)`.
+Summing over $`i` (via `Submodule.sum_mem`) shows every vector lies in the submodule.
+The `[NeZero d]` hypothesis is what keeps the space nonzero, so the submodule lattice is genuinely nontrivial.
 
 ```lean
 example (k : Type*) [Field k] (d : ℕ) [NeZero d] :
@@ -597,6 +605,7 @@ example (A V W : Type*) [Ring A] [AddCommGroup V] [Module A V]
 ```
 
 Schur's lemma then follows: a nonzero intertwining operator out of an irreducible representation is injective, because its kernel --- a subrepresentation of a simple module --- must be zero.
+Mathlib packages exactly this as `LinearMap.injective_of_ne_zero`, so the finisher is `LinearMap.injective_of_ne_zero hT`; its own proof rewrites the kernel with `LinearMap.ker_eq_bot` and appeals to `eq_bot_or_eq_top` on the simple module's two submodules.
 
 ```lean
 example (A V W : Type*) [Ring A] [AddCommGroup V] [Module A V]

@@ -238,10 +238,17 @@ The existence of holomorphic $`n`th roots is not packaged as one named theorem, 
 Composing the two recovers the theorem above.
 
 The question about the image of $`p` being $`2\mathbb{Z}` is, once we identify $`\pi_1(\mathbb{C}^*)` with $`\mathbb{Z}`, the statement that the doubling map on $`\mathbb{Z}` has the even integers as its image.
+Prove the two set inclusions separately: `ext n` splits the equation into a membership `↔`, and `Even n` unfolds to `∃ r, n = r + r`.
+Both directions are then the lemma `two_mul k : 2 * k = k + k` (forwards as given, backwards after `rintro ⟨k, rfl⟩`).
 
 ```lean
 example : Set.range (fun k : ℤ => 2 * k) = {n : ℤ | Even n} := by
-  sorry
+  ext n
+  constructor
+  · rintro ⟨k, rfl⟩
+    sorry
+  · rintro ⟨k, rfl⟩
+    sorry
 ```
 
 ## Complex logarithms
@@ -262,10 +269,13 @@ example {X : Type*} [TopologicalSpace X] [LocPathConnectedSpace X] {U : Set X}
 
 The question asked why a function with a zero can have no logarithm.
 Since $`\exp` is never zero, a $`g` with $`\exp(g(z)) = f(z)` forces $`f` to be zero-free.
+The finisher is `Complex.exp_ne_zero (g z₀) : Complex.exp (g z₀) ≠ 0`: rewrite it with `hfg z₀` and then `hz` to turn it into `(0 : ℂ) ≠ 0`, which closes the goal.
 
 ```lean
 example (f g : ℂ → ℂ) (z₀ : ℂ) (hfg : ∀ z, Complex.exp (g z) = f z)
     (hz : f z₀ = 0) : False := by
+  have hne := Complex.exp_ne_zero (g z₀)
+  rw [hfg z₀, hz] at hne
   sorry
 ```
 
@@ -288,7 +298,8 @@ example (z : ℂ) (hz : z ∈ Complex.slitPlane) :
 ```
 
 On the slit plane the principal log has the derivative $`(\log z)' = 1/z` you would expect.
-Prove it from the packaged derivative.
+Note that `Complex.differentiableAt_log` only records *that* the log is differentiable, not the *value* of its derivative.
+The value comes from `Complex.hasDerivAt_log hz : HasDerivAt Complex.log z⁻¹ z`, and `HasDerivAt.deriv` reads the `deriv` off of it, so the whole proof is `(Complex.hasDerivAt_log hz).deriv`.
 
 ```lean
 example (z : ℂ) (hz : z ∈ Complex.slitPlane) : deriv Complex.log z = z⁻¹ := by

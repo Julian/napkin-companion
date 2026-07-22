@@ -668,7 +668,7 @@ example (K : Type*) [Field K] [NumberField K] :
 ```
 
 The chapter split the infinite primes cleanly into the real ones and the complex ones, with nothing left over.
-Show that every infinite place really is one or the other.
+Show that every infinite place really is one or the other; this is `NumberField.InfinitePlace.isReal_or_isComplex`, available as `w.isReal_or_isComplex`.
 
 ```lean
 example (K : Type*) [Field K] [NumberField K]
@@ -695,6 +695,7 @@ noncomputable example (K : Type*) [Field K] [NumberField K] :
 
 The class group of $`\mathbb Z`, whose fractional ideals are all principal, is trivial — the base case $`C_{\mathbb Q}(1)` of the section's first example.
 Confirm it has a single element.
+The class number of any principal ideal ring is $`1`, and $`\mathbb Z` is one, so the finisher is `card_classGroup_eq_one`.
 
 ```lean
 example : Fintype.card (ClassGroup ℤ) = 1 := by
@@ -723,6 +724,7 @@ noncomputable example (n : ℕ) [NeZero n] (K L : Type*) [Field K] [Field L]
 
 Class field theory only becomes this clean for *abelian* extensions, where each Frobenius conjugacy class is a single element.
 The cyclotomic case is abelian; show it, by transporting the commutativity of $`(\mathbb Z/n\mathbb Z)^\times` across the isomorphism above.
+Concretely, let `e := IsCyclotomicExtension.autEquivPow L h` and `apply e.injective`; then `rw [map_mul, map_mul, mul_comm]` reduces the goal to commutativity in $`(\mathbb Z/n\mathbb Z)^\times`.
 
 ```lean
 example (n : ℕ) [NeZero n] (K L : Type*) [Field K] [Field L] [Algebra K L]
@@ -741,6 +743,19 @@ The `ArtinMapData` structure fixes an abelian Galois group $`G = \operatorname{G
 ```lean
 example (I G : Type*) [CommGroup I] [CommGroup G] : Type _ :=
   ArtinMapData I G
+```
+
+Its three fields are the ones the exercises below reach for: the Artin map `D.artin`, its surjectivity `D.surjective`, and the ray `D.ray` of principal ideals.
+
+```lean
+example (I G : Type*) [CommGroup I] [CommGroup G] (D : ArtinMapData I G) :
+    I →* G := D.artin
+
+example (I G : Type*) [CommGroup I] [CommGroup G] (D : ArtinMapData I G) :
+    Function.Surjective D.artin := D.surjective
+
+example (I G : Type*) [CommGroup I] [CommGroup G] (D : ArtinMapData I G) :
+    Subgroup I := D.ray
 ```
 
 From that datum alone the abelian reciprocity isomorphism follows.
@@ -771,6 +786,7 @@ example (I G : Type*) [CommGroup I] [CommGroup G] (D : ArtinMapData I G)
 
 The lower-bound case $`H(L/K, \mathfrak m) = P_K(\mathfrak m)` — the cyclotomic, Kronecker–Weber prototype — makes the ray class group *equal to* the Galois group, via `rayClassEquiv`.
 When it happens, the ray class number is exactly $`|\operatorname{Gal}(L/K)|`.
+Feed the bijection of `D.rayClassEquiv h` to `Nat.card_eq_of_bijective` to move the cardinalities across.
 
 ```lean
 example (I G : Type*) [CommGroup I] [CommGroup G] (D : ArtinMapData I G)
@@ -779,7 +795,20 @@ example (I G : Type*) [CommGroup I] [CommGroup G] (D : ArtinMapData I G)
 ```
 
 The conductor is packaged the same way, as `ConductorData`: a distinguished modulus $`\mathfrak f` together with the predicate "$`P_K(\mathfrak m) \subseteq H(L/K, \mathfrak m)`", and reciprocity's claim that this predicate holds for exactly the multiples of $`\mathfrak f`.
+Its fields are the conductor `C.conductor`, the admissibility predicate `C.IsAdmissible`, and `C.reciprocity`, which equates admissibility of $`\mathfrak m` with $`\mathfrak f \mid \mathfrak m`.
+
+```lean
+example (M : Type*) [CommMonoid M] (C : ConductorData M) : M := C.conductor
+
+example (M : Type*) [CommMonoid M] (C : ConductorData M) : M → Prop :=
+  C.IsAdmissible
+
+example (M : Type*) [CommMonoid M] (C : ConductorData M) (m : M) :
+    C.IsAdmissible m ↔ C.conductor ∣ m := C.reciprocity m
+```
+
 So $`\mathfrak f` is the smallest such modulus, and admissibility is upward closed: any multiple of the conductor is again admissible.
+Combine `C.isAdmissible_conductor` with `C.isAdmissible_of_dvd`, the divisibility witness being $`\mathfrak f \mid \mathfrak f \cdot m`.
 
 ```lean
 example (M : Type*) [CommMonoid M] (C : ConductorData M) (m : M) :
@@ -797,7 +826,7 @@ example (p q : ℕ) [Fact p.Prime] [Fact q.Prime]
 ```
 
 When $`p \equiv 1 \pmod 4` the sign on the right disappears and the symbol becomes symmetric: $`\left( \frac qp \right) = \left( \frac pq \right)`.
-Derive this special case.
+Derive this special case; Mathlib bundles it as `legendreSym.quadratic_reciprocity_one_mod_four`.
 
 ```lean
 example (p q : ℕ) [Fact p.Prime] [Fact q.Prime] (hp : p % 4 = 1) (hq : q ≠ 2) :
@@ -816,6 +845,7 @@ example (p : ℕ) [Fact p.Prime] (hp : p % 4 ≠ 3) :
 ```
 
 Specialize to the interesting direction: an odd prime $`p \equiv 1 \pmod 4` is a sum of two squares.
+Reuse `Nat.Prime.sq_add_sq`; its hypothesis $`p \not\equiv 3 \pmod 4` follows from $`p \equiv 1 \pmod 4` by `omega`.
 
 ```lean
 example (p : ℕ) [Fact p.Prime] (hp : p % 4 = 1) :
