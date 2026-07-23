@@ -547,6 +547,13 @@ example : AddSubgroup.zmultiples (1 : ℤ) = ⊤ := by
   sorry
 ```
 
+:::solution
+```lean
+example : AddSubgroup.zmultiples (1 : ℤ) = ⊤ :=
+  Int.zmultiples_one
+```
+:::
+
 ## Homomorphisms
 
 `MonoidHom G H` (notation `G →* H`) is a group homomorphism; the additive analog is `AddMonoidHom` (`G →+ H`).
@@ -593,6 +600,15 @@ example (G H : Type*) [Group G] [Group H] (φ : G →* H)
   sorry
 ```
 
+:::solution
+```lean
+example (G H : Type*) [Group G] [Group H] (φ : G →* H)
+    (g h : G) (hg : g ∈ φ.ker) (hh : h ∈ φ.ker) :
+    g * h ∈ φ.ker :=
+  mul_mem hg hh
+```
+:::
+
 Likewise the image is a subgroup, written `φ.range`.
 Show that every $`\phi(a)` lands in it.
 
@@ -601,6 +617,14 @@ example (G H : Type*) [Group G] [Group H] (φ : G →* H) (a : G) :
     φ a ∈ φ.range := by
   sorry
 ```
+
+:::solution
+```lean
+example (G H : Type*) [Group G] [Group H] (φ : G →* H) (a : G) :
+    φ a ∈ φ.range :=
+  MonoidHom.mem_range.mpr ⟨a, rfl⟩
+```
+:::
 
 ## Cosets and modding out
 
@@ -618,6 +642,14 @@ example (G : Type*) [Group G] (N : Subgroup G) [N.Normal] (a b : G) :
     (a : G ⧸ N) = b ↔ a⁻¹ * b ∈ N := by
   sorry
 ```
+
+:::solution
+```lean
+example (G : Type*) [Group G] (N : Subgroup G) [N.Normal] (a b : G) :
+    (a : G ⧸ N) = b ↔ a⁻¹ * b ∈ N :=
+  QuotientGroup.eq
+```
+:::
 
 ## Proof of Lagrange's theorem
 
@@ -637,6 +669,14 @@ example (G : Type*) [Group G] [Fintype G] (x : G) :
   sorry
 ```
 
+:::solution
+```lean
+example (G : Type*) [Group G] [Fintype G] (x : G) :
+    x ^ Fintype.card G = 1 :=
+  pow_card_eq_one
+```
+:::
+
 ## Eliminating the homomorphism
 
 `Subgroup.Normal` takes the algebraic condition — closure under conjugation — as its definition:
@@ -655,6 +695,14 @@ example (G : Type*) [Group G] (H : Subgroup G) [H.Normal]
   sorry
 ```
 
+:::solution
+```lean
+example (G : Type*) [Group G] (H : Subgroup G) [H.Normal]
+    (g h : G) (hh : h ∈ H) : g * h * g⁻¹ ∈ H :=
+  (‹H.Normal›).conj_mem h hh g
+```
+:::
+
 The chapter also asks why every subgroup of an abelian group is normal.
 Prove it — in a commutative group, conjugation does nothing.
 
@@ -662,6 +710,15 @@ Prove it — in a commutative group, conjugation does nothing.
 example (G : Type*) [CommGroup G] (H : Subgroup G) : H.Normal := by
   sorry
 ```
+
+:::solution
+```lean
+example (G : Type*) [CommGroup G] (H : Subgroup G) : H.Normal :=
+  ⟨fun n hn g => by
+    rw [mul_comm g n, mul_assoc, mul_inv_cancel, mul_one]
+    exact hn⟩
+```
+:::
 
 ## The first isomorphism theorem
 
@@ -681,3 +738,11 @@ example (G H : Type*) [Group G] [Group H] (φ : G →* H)
     (h : Function.Injective φ) : φ.ker = ⊥ := by
   sorry
 ```
+
+:::solution
+```lean
+example (G H : Type*) [Group G] [Group H] (φ : G →* H)
+    (h : Function.Injective φ) : φ.ker = ⊥ :=
+  (MonoidHom.ker_eq_bot_iff φ).mpr h
+```
+:::

@@ -382,6 +382,13 @@ example (R : Type*) [CommRing R] (I : Ideal R) (hI : I.IsPrime) :
   sorry
 ```
 
+:::solution
+```lean
+example (R : Type*) [CommRing R] (I : Ideal R) (hI : I.IsPrime) :
+    I.IsRadical := hI.isRadical
+```
+:::
+
 ## Hilbert functions of finitely many points
 
 The dimension-additivity $`h_{I \cap J} + h_{I+J} = h_I + h_J` comes from a short exact sequence of graded pieces.
@@ -403,6 +410,18 @@ example (a b : ℂ) (h : a ≠ b) :
   sorry
 ```
 
+:::solution
+```lean
+example (a b : ℂ) (h : a ≠ b) :
+    (((X - C a) * (X - C b)).roots).toFinset.card = 2 := by
+  have hne : ((X - C a) * (X - C b) : ℂ[X]) ≠ 0 :=
+    mul_ne_zero (X_sub_C_ne_zero a) (X_sub_C_ne_zero b)
+  rw [roots_mul hne, roots_X_sub_C, roots_X_sub_C, Multiset.singleton_add,
+    Multiset.toFinset_cons, Multiset.toFinset_singleton]
+  exact Finset.card_pair h
+```
+:::
+
 ## Hilbert polynomials
 
 The "eventually a polynomial" phenomenon is captured abstractly by {name}`Polynomial.hilbertPoly`: from the numerator of a rational generating function it produces a numerical polynomial that agrees with the coefficients for large degree, exactly the $`\chi_I` above.
@@ -420,6 +439,13 @@ Show that the Hilbert polynomial attached to the zero series is zero in every de
 example (F : Type*) [Field F] (d : ℕ) : hilbertPoly (0 : F[X]) d = 0 := by
   sorry
 ```
+
+:::solution
+```lean
+example (F : Type*) [Field F] (d : ℕ) : hilbertPoly (0 : F[X]) d = 0 :=
+  hilbertPoly_zero_left d
+```
+:::
 
 ## Bézout's theorem
 
@@ -485,6 +511,13 @@ example (B : BezoutData ℂ) (h : B.f.totalDegree = 1) :
   sorry
 ```
 
+:::solution
+```lean
+example (B : BezoutData ℂ) (h : B.f.totalDegree = 1) :
+    ∑ p ∈ B.points, B.mult p = B.g.totalDegree := B.line_meets h
+```
+:::
+
 Hence a line and a conic meet in at most two points.
 Show it.
 
@@ -494,6 +527,17 @@ example (B : BezoutData ℂ) (hf : B.f.totalDegree = 1)
   sorry
 ```
 
+:::solution
+```lean
+example (B : BezoutData ℂ) (hf : B.f.totalDegree = 1)
+    (hg : B.g.totalDegree = 2) : B.points.card ≤ 2 := by
+  have h := B.card_points_le
+  unfold bezoutNumber at h
+  rw [hf, hg] at h
+  omega
+```
+:::
+
 The one-dimensional shadow that Mathlib can prove directly is the univariate case: a curve $`\mathbb{V}(f)` of degree $`k` meets a line in at most $`k` points, which is the statement that a nonzero polynomial of degree $`k` has at most $`k` roots.
 Show that the number of roots (with multiplicity) is bounded by the degree.
 
@@ -502,6 +546,13 @@ example (F : Type*) [Field F] (p : F[X]) :
     Multiset.card p.roots ≤ p.natDegree := by
   sorry
 ```
+
+:::solution
+```lean
+example (F : Type*) [Field F] (p : F[X]) :
+    Multiset.card p.roots ≤ p.natDegree := p.card_roots'
+```
+:::
 
 ## Applications
 
@@ -520,3 +571,10 @@ Show that the number of roots equals the degree.
 example (p : ℂ[X]) : Multiset.card p.roots = p.natDegree := by
   sorry
 ```
+
+:::solution
+```lean
+example (p : ℂ[X]) : Multiset.card p.roots = p.natDegree :=
+  splits_iff_card_roots.mp (IsAlgClosed.splits p)
+```
+:::

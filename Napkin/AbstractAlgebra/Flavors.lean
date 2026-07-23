@@ -581,6 +581,13 @@ example (K : Type*) [Field K] (I : Ideal K) : I = ⊥ ∨ I = ⊤ := by
   sorry
 ```
 
+:::solution
+```lean
+example (K : Type*) [Field K] (I : Ideal K) : I = ⊥ ∨ I = ⊤ :=
+  I.eq_bot_or_top
+```
+:::
+
 A related fact, one of the chapter's problems, is that any homomorphism out of a field into a nontrivial ring is injective.
 That is packaged as `RingHom.injective`, resting on the fact just above: a field has no ideals besides `⊥` and `⊤`, so the kernel of any homomorphism out of it must collapse to `⊥`.
 
@@ -606,6 +613,14 @@ example (R : Type*) [CommRing R] [IsDomain R] (a b c : R)
     (hc : c ≠ 0) (h : a * c = b * c) : a = b := by
   sorry
 ```
+
+:::solution
+```lean
+example (R : Type*) [CommRing R] [IsDomain R] (a b c : R)
+    (hc : c ≠ 0) (h : a * c = b * c) : a = b :=
+  mul_right_cancel₀ hc h
+```
+:::
 
 `IsPrincipalIdealRing R` is the principal-ideals condition; pairing it with `IsDomain` records that $`R` is a PID.
 
@@ -637,6 +652,13 @@ example (R : Type*) [CommRing R] [IsDomain R] : (⊥ : Ideal R).IsPrime := by
   sorry
 ```
 
+:::solution
+```lean
+example (R : Type*) [CommRing R] [IsDomain R] :
+    (⊥ : Ideal R).IsPrime := Ideal.isPrime_bot
+```
+:::
+
 ## Maximal ideals
 
 `Ideal.IsMaximal I` is the corresponding predicate; the quotient by a maximal ideal is a field.
@@ -661,6 +683,13 @@ example (K : Type*) [Field K] : (⊥ : Ideal K).IsMaximal := by
   sorry
 ```
 
+:::solution
+```lean
+example (K : Type*) [Field K] : (⊥ : Ideal K).IsMaximal :=
+  Ideal.bot_isMaximal
+```
+:::
+
 ## Field of fractions
 
 The field of fractions is `FractionRing R`, and `IsFractionRing R K` records that a field `K` *is* the fraction field of `R`.
@@ -678,6 +707,13 @@ example : Function.Injective (algebraMap ℤ ℚ) := by
   sorry
 ```
 
+:::solution
+```lean
+example : Function.Injective (algebraMap ℤ ℚ) :=
+  IsFractionRing.injective ℤ ℚ
+```
+:::
+
 ## Unique factorization domains
 
 `UniqueFactorizationMonoid R` is the multiplicative-monoid form of the condition, and `Irreducible` is the elementwise predicate.
@@ -686,6 +722,12 @@ The chapter's question is to verify that $`\mathbb{Z}` is a UFD; Mathlib already
 ```lean
 example : UniqueFactorizationMonoid ℤ := sorry
 ```
+
+:::solution
+```lean
+example : UniqueFactorizationMonoid ℤ := inferInstance
+```
+:::
 
 The theorem that every PID is a UFD is recorded as an instance too.
 
@@ -708,3 +750,10 @@ The well-ordering argument from the chapter is what justifies that instance math
 ```lean
 example (R : Type*) [EuclideanDomain R] : IsPrincipalIdealRing R := sorry
 ```
+
+:::solution
+```lean
+example (R : Type*) [EuclideanDomain R] :
+    IsPrincipalIdealRing R := inferInstance
+```
+:::
