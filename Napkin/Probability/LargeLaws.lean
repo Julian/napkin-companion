@@ -368,6 +368,16 @@ example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
   sorry
 ```
 
+:::solution
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    {X : ℕ → Ω → ℝ} {Y : Ω → ℝ} (hX : ∀ n, AEStronglyMeasurable (X n) μ)
+    (h : ∀ᵐ ω ∂μ, Tendsto (fun n => X n ω) atTop (nhds (Y ω))) :
+    TendstoInMeasure μ X atTop Y :=
+  tendstoInMeasure_of_tendsto_ae hX h
+```
+:::
+
 ## Convergence in probability
 
 The masked form is the one Mathlib uses, phrased with the anomaly set on the left (measure tending to zero) and stated for functions into any space with an extended distance:
@@ -391,6 +401,16 @@ example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
   sorry
 ```
 
+:::solution
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    {X : ℕ → Ω → ℝ} {Y : Ω → ℝ} (h : TendstoInMeasure μ X atTop Y) :
+    ∃ ns : ℕ → ℕ, StrictMono ns ∧
+      ∀ᵐ ω ∂μ, Tendsto (fun i => X (ns i) ω) atTop (nhds (Y ω)) :=
+  h.exists_seq_tendsto_ae
+```
+:::
+
 ## Convergence in law
 
 Convergence in law is `MeasureTheory.TendstoInDistribution X l Z μ`; rather than CDFs, it is defined by weak convergence of the pushforward laws inside the type `ProbabilityMeasure ℝ` (or any topological space of values), and the definition allows each `X n` to live on its own probability space, matching the definition above.
@@ -405,6 +425,16 @@ example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasur
     TendstoInDistribution X atTop Y (fun _ => μ) μ := by
   sorry
 ```
+
+:::solution
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasure μ]
+    {X : ℕ → Ω → ℝ} {Y : Ω → ℝ} (h : TendstoInMeasure μ X atTop Y)
+    (hX : ∀ i, AEMeasurable (X i) μ) :
+    TendstoInDistribution X atTop Y (fun _ => μ) μ :=
+  h.tendstoInDistribution hX
+```
+:::
 
 ## Weak law of large numbers
 
@@ -432,6 +462,17 @@ example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
   sorry
 ```
 
+:::solution
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    {X : Ω → ℝ} (hX : MemLp X 2 μ) (hmean : μ[X] = 0) {c : ℝ} (hc : 0 < c) :
+    μ {ω | c ≤ |X ω|} ≤ ENNReal.ofReal (variance X μ / c ^ 2) := by
+  have h := meas_ge_le_variance_div_sq hX hc
+  simp only [hmean, sub_zero] at h
+  exact h
+```
+:::
+
 ## Application: Weierstrass approximation
 
 Mathlib proves Weierstrass approximation by exactly this argument, with the probabilistic language compiled away: `bernsteinApproximation n f` is the polynomial above (as a continuous map), the coin-flip facts $`\sum_k \Pr[S_n = k] = 1` and $`\operatorname{Var}[S_n/n] = \frac{x(1-x)}{n}` appear as `bernstein.probability` and `bernstein.variance`, and the theorem is `bernsteinApproximation_uniform : Tendsto (fun n => bernsteinApproximation n f) atTop (𝓝 f)`, where the limit happens in the uniform topology on `C(I, ℝ)`.
@@ -449,6 +490,17 @@ example (n : ℕ) (k : Fin (n + 1)) (x : unitInterval) :
     bernstein n k x ≤ 1 := by
   sorry
 ```
+
+:::solution
+```lean
+example (n : ℕ) (k : Fin (n + 1)) (x : unitInterval) :
+    bernstein n k x ≤ 1 :=
+  calc bernstein n k x
+      ≤ ∑ i : Fin (n + 1), bernstein n i x :=
+        Finset.single_le_sum (fun _ _ => bernstein_nonneg) (Finset.mem_univ k)
+    _ = 1 := bernstein.probability n x
+```
+:::
 
 ## Strong law of large numbers
 
@@ -480,6 +532,20 @@ example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
   sorry
 ```
 
+:::solution
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    (X : ℕ → Ω → ℝ) (hint : Integrable (X 0) μ)
+    (hindep : Pairwise fun i j => IndepFun (X i) (X j) μ)
+    (hident : ∀ i, IdentDistrib (X i) (X 0) μ μ) (hmean : ∫ ω, X 0 ω ∂μ = 0) :
+    ∀ᵐ ω ∂μ, Tendsto (fun n : ℕ => (n : ℝ)⁻¹ • ∑ i ∈ Finset.range n, X i ω)
+      atTop (nhds 0) := by
+  have h := strong_law_ae X hint hindep hident
+  rw [hmean] at h
+  exact h
+```
+:::
+
 ## Proof for finite-variance case
 
 There is no lemma named after Kolmogorov's inequality; Mathlib subsumes it into Doob's maximal inequality for submartingales, `MeasureTheory.maximal_ineq`, applied to the submartingale $`S_i^2` — martingales are the subject of the next chapter, and the positive-correlation phenomenon in the proof above is precisely the martingale property in disguise.
@@ -493,6 +559,15 @@ example {u : ℕ → ℝ} {l : ℝ} (h : Tendsto u atTop (nhds l)) :
       atTop (nhds l) := by
   sorry
 ```
+
+:::solution
+```lean
+example {u : ℕ → ℝ} {l : ℝ} (h : Tendsto u atTop (nhds l)) :
+    Tendsto (fun n : ℕ => (n⁻¹ : ℝ) * ∑ i ∈ Finset.range n, u i)
+      atTop (nhds l) := by
+  simpa [smul_eq_mul] using h.cesaro
+```
+:::
 
 ## The general proof
 
@@ -510,3 +585,12 @@ example {α : Type*} [MeasurableSpace α] {μ : Measure α} {s : ℕ → Set α}
     (hs : ∑' i, μ (s i) ≠ ∞) : ∀ᵐ x ∂μ, x ∉ limsup s atTop := by
   sorry
 ```
+
+:::solution
+```lean
+example {α : Type*} [MeasurableSpace α] {μ : Measure α} {s : ℕ → Set α}
+    (hs : ∑' i, μ (s i) ≠ ∞) : ∀ᵐ x ∂μ, x ∉ limsup s atTop := by
+  rw [ae_iff]
+  simpa using measure_limsup_atTop_eq_zero hs
+```
+:::

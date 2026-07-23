@@ -309,6 +309,13 @@ example (G X : Type*) [Group G] [MulAction G X] (g : G) (x : X) :
   sorry
 ```
 
+:::solution
+```lean
+example (G X : Type*) [Group G] [MulAction G X] (g : G) (x : X) :
+    g⁻¹ • g • x = x := inv_smul_smul g x
+```
+:::
+
 ## Stabilizers and orbits
 
 `MulAction.stabilizer G x` is the stabilizer subgroup, and `MulAction.orbit G x` is the orbit set.
@@ -329,6 +336,14 @@ example (G X : Type*) [Group G] [MulAction G X] (g : G) (x : X) :
   sorry
 ```
 
+:::solution
+```lean
+example (G X : Type*) [Group G] [MulAction G X] (g : G) (x : X) :
+    g ∈ MulAction.stabilizer G x ↔ g • x = x :=
+  MulAction.mem_stabilizer_iff
+```
+:::
+
 The relation $`\sim` is an equivalence relation; its reflexivity is that every point lies in its own orbit.
 
 ```lean
@@ -336,6 +351,13 @@ example (G X : Type*) [Group G] [MulAction G X] (x : X) :
     x ∈ MulAction.orbit G x := by
   sorry
 ```
+
+:::solution
+```lean
+example (G X : Type*) [Group G] [MulAction G X] (x : X) :
+    x ∈ MulAction.orbit G x := MulAction.mem_orbit_self x
+```
+:::
 
 The orbit-stabilizer theorem is the bijection between an orbit and the cosets of a stabilizer, packaged as `MulAction.orbitEquivQuotientStabilizer`.
 
@@ -368,6 +390,13 @@ example (G X : Type*) [Group G] [MulAction G X] (g : G) (x : X) :
   sorry
 ```
 
+:::solution
+```lean
+example (G X : Type*) [Group G] [MulAction G X] (g : G) (x : X) :
+    x ∈ MulAction.fixedBy X g ↔ g • x = x := MulAction.mem_fixedBy
+```
+:::
+
 ## Conjugation of elements
 
 `ConjClasses G` is the type of conjugacy classes, and `Subgroup.center G` is the center $`Z(G)`.
@@ -392,9 +421,27 @@ example (G : Type*) [Group G] (g h : G) :
   sorry
 ```
 
+:::solution
+```lean
+example (G : Type*) [Group G] (g h : G) :
+    orderOf (g * h * g⁻¹) = orderOf h := by
+  have hs : SemiconjBy g h (g * h * g⁻¹) := by
+    show g * h = g * h * g⁻¹ * g
+    group
+  exact (hs.orderOf_eq g).symm
+```
+:::
+
 Finally, conjugacy is trivial in an abelian group: conjugation does nothing at all.
 
 ```lean
 example (G : Type*) [CommGroup G] (g h : G) : g * h * g⁻¹ = h := by
   sorry
 ```
+
+:::solution
+```lean
+example (G : Type*) [CommGroup G] (g h : G) : g * h * g⁻¹ = h :=
+  mul_inv_cancel_comm g h
+```
+:::

@@ -483,6 +483,15 @@ example : IsAddCyclic (ZMod 3 × ZMod 5) := by
   sorry
 ```
 
+:::solution
+```lean
+example : IsAddCyclic (ZMod 3 × ZMod 5) :=
+  (AddEquiv.isAddCyclic
+    (ZMod.chineseRemainder (m := 3) (n := 5) (by decide)).toAddEquiv).mp
+    inferInstance
+```
+:::
+
 ## Some ring theory prerequisites
 
 Both halves of the proposition that a PID is a Noetherian UFD are available by instance search from `IsPrincipalIdealRing`: the Noetherian half is `PrincipalIdealRing.isNoetherianRing`, and the unique-factorization half is the `UniqueFactorizationMonoid` instance on a principal ideal domain.
@@ -520,6 +529,14 @@ example (R : Type*) [Semiring R] (M : Type*) [AddCommMonoid M] [Module R M] :
   sorry
 ```
 
+:::solution
+```lean
+example (R : Type*) [Semiring R] (M : Type*) [AddCommMonoid M] [Module R M] :
+    IsNoetherian R M ↔ WellFoundedGT (Submodule R M) :=
+  isNoetherian_iff'
+```
+:::
+
 ## The structure theorem
 
 The primary form is `Module.equiv_free_prod_directSum`: a finitely generated module (`Module.Finite R M`) over a PID is isomorphic to a free part `Fin n →₀ R` times a direct sum of quotients `R ⧸ R ∙ p i ^ e i` by prime-power ideals.
@@ -549,6 +566,13 @@ example (R : Type*) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] (d : ℕ)
   sorry
 ```
 
+:::solution
+```lean
+example (R : Type*) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] (d : ℕ) :
+    IsNoetherian R (Fin d → R) := inferInstance
+```
+:::
+
 ## Uniqueness of primary form
 
 Mathlib records the rank of a free module as `Module.finrank R M`, defined without reference to any particular basis; `Module.finrank_eq_card_basis` then says any finite basis has exactly that many elements.
@@ -571,6 +595,16 @@ example (R : Type*) [CommRing R] [Nontrivial R] (M : Type*) [AddCommGroup M] [Mo
     Fintype.card ι = Fintype.card κ := by
   sorry
 ```
+
+:::solution
+```lean
+example (R : Type*) [CommRing R] [Nontrivial R] (M : Type*) [AddCommGroup M] [Module R M]
+    {ι κ : Type*} [Fintype ι] [Fintype κ]
+    (b : Module.Basis ι R M) (c : Module.Basis κ R M) :
+    Fintype.card ι = Fintype.card κ := by
+  rw [← Module.finrank_eq_card_basis b, ← Module.finrank_eq_card_basis c]
+```
+:::
 
 ## Smith normal form
 
@@ -596,6 +630,15 @@ example (R : Type*) [CommRing R] (x y u v : R) (h : x * u + y * v = 1) :
   sorry
 ```
 
+:::solution
+```lean
+example (R : Type*) [CommRing R] (x y u v : R) (h : x * u + y * v = 1) :
+    Matrix.det !![x, y; -v, u] = 1 := by
+  rw [Matrix.det_fin_two_of]
+  linear_combination h
+```
+:::
+
 ## Problems
 
 The first problem asks you to show that a vector space with a finite spanning set is $`k^{\oplus n}`.
@@ -608,3 +651,11 @@ example (k : Type*) [Field k] (V : Type*) [AddCommGroup V] [Module k V]
     [FiniteDimensional k V] : ∃ n : ℕ, Nonempty (V ≃ₗ[k] (Fin n → k)) := by
   sorry
 ```
+
+:::solution
+```lean
+example (k : Type*) [Field k] (V : Type*) [AddCommGroup V] [Module k V]
+    [FiniteDimensional k V] : ∃ n : ℕ, Nonempty (V ≃ₗ[k] (Fin n → k)) :=
+  ⟨Module.finrank k V, ⟨(Module.finBasis k V).equivFun⟩⟩
+```
+:::

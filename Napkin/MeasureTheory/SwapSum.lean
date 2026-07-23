@@ -328,6 +328,15 @@ example {α : Type*} [MeasurableSpace α] (f : ℕ → α → ℝ)
   sorry
 ```
 
+:::solution
+```lean
+example {α : Type*} [MeasurableSpace α] (f : ℕ → α → ℝ)
+    (hf : ∀ n, Measurable (f n)) :
+    Measurable (fun x => Filter.limsup (fun n => f n x) Filter.atTop) :=
+  Measurable.limsup hf
+```
+:::
+
 ## Fatou's lemma
 
 `MeasureTheory.lintegral_liminf_le` is exactly Fatou's lemma in Mathlib (for `lintegral`, the `ℝ≥0∞`-valued integral); the corresponding tool for the Bochner integral, where a dominating hypothesis is needed for the integrals to even converge, is the dominated convergence theorem `MeasureTheory.tendsto_integral_of_dominated_convergence`.
@@ -351,6 +360,20 @@ example {α : Type*} [MeasurableSpace α] (μ : MeasureTheory.Measure α)
     ∫⁻ x, f x ∂μ ≤ Filter.liminf (fun n => ∫⁻ x, F n x ∂μ) Filter.atTop := by
   sorry
 ```
+
+:::solution
+```lean
+example {α : Type*} [MeasurableSpace α] (μ : MeasureTheory.Measure α)
+    (f : α → ENNReal) (F : ℕ → α → ENNReal) (hF : ∀ n, Measurable (F n))
+    (h : ∀ x, Filter.Tendsto (fun n => F n x) Filter.atTop (nhds (f x))) :
+    ∫⁻ x, f x ∂μ ≤
+      Filter.liminf (fun n => ∫⁻ x, F n x ∂μ) Filter.atTop := by
+  have hf : ∀ x, f x = Filter.liminf (fun n => F n x) Filter.atTop :=
+    fun x => (h x).liminf_eq.symm
+  simp_rw [hf]
+  exact MeasureTheory.lintegral_liminf_le hF
+```
+:::
 
 ## Everything else
 
@@ -384,6 +407,17 @@ example (n : ℕ) (hn : 0 < n) :
   sorry
 ```
 
+:::solution
+```lean
+example (n : ℕ) (hn : 0 < n) :
+    ∫⁻ _x in Set.Ioo (0 : ℝ) (1 / n), (n : ENNReal) ∂volume = 1 := by
+  have hn' : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr hn.ne'
+  rw [setLIntegral_const, Real.volume_Ioo, sub_zero,
+    ← ENNReal.ofReal_natCast, ← ENNReal.ofReal_mul (Nat.cast_nonneg n),
+    mul_one_div, div_self hn', ENNReal.ofReal_one]
+```
+:::
+
 ## Fubini and Tonelli
 
 `MeasureTheory.lintegral_prod_swap` and `MeasureTheory.lintegral_prod` are Mathlib's Tonelli (for the `ℝ≥0∞`-valued `lintegral`); `MeasureTheory.integral_prod` and `MeasureTheory.integral_prod_swap` are Fubini (for the Bochner `integral`, with an `Integrable` hypothesis).
@@ -409,3 +443,14 @@ example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
     ∫⁻ x, ∫⁻ y, f x y ∂ν ∂μ = ∫⁻ y, ∫⁻ x, f x y ∂μ ∂ν := by
   sorry
 ```
+
+:::solution
+```lean
+example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
+    {μ : MeasureTheory.Measure α} {ν : MeasureTheory.Measure β}
+    [MeasureTheory.SFinite μ] [MeasureTheory.SFinite ν]
+    (f : α → β → ENNReal) (hf : Measurable (Function.uncurry f)) :
+    ∫⁻ x, ∫⁻ y, f x y ∂ν ∂μ = ∫⁻ y, ∫⁻ x, f x y ∂μ ∂ν :=
+  MeasureTheory.lintegral_lintegral_swap hf.aemeasurable
+```
+:::

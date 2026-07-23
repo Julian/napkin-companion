@@ -319,6 +319,14 @@ example (G : Type*) [Group G] (p : ℕ) [Subsingleton (Sylow p G)]
   sorry
 ```
 
+:::solution
+```lean
+example (G : Type*) [Group G] (p : ℕ) [Subsingleton (Sylow p G)]
+    (P : Sylow p G) : (P : Subgroup G).Normal :=
+  Sylow.normal_of_subsingleton P
+```
+:::
+
 ## Proving Sylow's theorem
 
 The normalizer of a subgroup $`H` is `Subgroup.normalizer H`, the stabilizer of $`H` under conjugation, and it always contains $`H`.
@@ -345,6 +353,14 @@ example (G : Type*) [Group G] (p : ℕ) [Fact p.Prime] [Finite (Sylow p G)]
   sorry
 ```
 
+:::solution
+```lean
+example (G : Type*) [Group G] (p : ℕ) [Fact p.Prime] [Finite (Sylow p G)]
+    (P Q : Sylow p G) : Nonempty (P ≃* Q) :=
+  ⟨Sylow.equiv P Q⟩
+```
+:::
+
 ## Simple groups and Jordan-Hölder
 
 `IsSimpleGroup G` is the predicate that $`G` is nontrivial and has no normal subgroups other than `⊥` and `⊤`.
@@ -368,6 +384,14 @@ example (p : ℕ) [hp : Fact p.Prime] : IsSimpleAddGroup (ZMod p) := by
   sorry
 ```
 
+:::solution
+```lean
+example (p : ℕ) [hp : Fact p.Prime] : IsSimpleAddGroup (ZMod p) := by
+  rw [AddCommGroup.is_simple_iff_prime_card]
+  simpa using hp.out
+```
+:::
+
 ## Problems
 
 Cauchy's theorem says a prime $`p` dividing $`|G|` is realized as the order of some element.
@@ -378,3 +402,11 @@ example (G : Type*) [Group G] [Fintype G] (p : ℕ) [Fact p.Prime]
     (h : p ∣ Fintype.card G) : ∃ g : G, orderOf g = p := by
   sorry
 ```
+
+:::solution
+```lean
+example (G : Type*) [Group G] [Fintype G] (p : ℕ) [Fact p.Prime]
+    (h : p ∣ Fintype.card G) : ∃ g : G, orderOf g = p :=
+  exists_prime_orderOf_dvd_card p h
+```
+:::
