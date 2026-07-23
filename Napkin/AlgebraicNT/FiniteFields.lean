@@ -310,6 +310,13 @@ example (p : ℕ) [Fact p.Prime] : Fintype.card (ZMod p) = p := by
   sorry
 ```
 
+:::solution
+```lean
+example (p : ℕ) [Fact p.Prime] : Fintype.card (ZMod p) = p :=
+  ZMod.card p
+```
+:::
+
 ## Finite fields have prime power order
 
 This is `CharP.char_is_prime`, which needs only that $`F` is a nontrivial ring without zero divisors — the proof above never used inverses.
@@ -332,6 +339,14 @@ example (F : Type*) [CommRing F] (p : ℕ) [Fact p.Prime] [CharP F p]
     (a b : F) : (a + b) ^ p = a ^ p + b ^ p := by
   sorry
 ```
+
+:::solution
+```lean
+example (F : Type*) [CommRing F] (p : ℕ) [Fact p.Prime] [CharP F p]
+    (a b : F) : (a + b) ^ p = a ^ p + b ^ p := by
+  rw [add_pow_char]
+```
+:::
 
 ## All finite fields are isomorphic
 
@@ -360,6 +375,13 @@ example (p : ℕ) [Fact p.Prime] (x : ZMod p) : x ^ p = x := by
   sorry
 ```
 
+:::solution
+```lean
+example (p : ℕ) [Fact p.Prime] (x : ZMod p) : x ^ p = x :=
+  ZMod.pow_card x
+```
+:::
+
 ## The Galois theory of finite fields
 
 As a ring homomorphism the Frobenius is `frobenius F p` (defined on any commutative semiring of characteristic $`p` — there it need not be surjective!); upgraded to an element of the Galois group of an extension of finite fields it is `FiniteField.frobeniusAlgEquivOfAlgebraic`, whose underlying function is `(· ^ q)` with $`q` the cardinality of the base field.
@@ -376,6 +398,15 @@ example (F : Type*) [CommRing F] (p : ℕ) [Fact p.Prime] [CharP F p]
   sorry
 ```
 
+:::solution
+```lean
+example (F : Type*) [CommRing F] (p : ℕ) [Fact p.Prime] [CharP F p]
+    (a b : F) :
+    frobenius F p (a + b) = frobenius F p a + frobenius F p b :=
+  map_add (frobenius F p) a b
+```
+:::
+
 ## Extra: The multiplicative group of a finite field
 
 The proposition is an instance: `IsCyclic Fˣ` is inferred for any finite field (indeed for the units of any finite division ring or any finite subgroup of the units of a domain, via `subgroup_units_cyclic`), so a generator is always available as `IsCyclic.exists_generator`.
@@ -388,3 +419,11 @@ example (K : Type*) [Field K] [Fintype K] (i : ℕ) :
     (∀ x : Kˣ, x ^ i = 1) ↔ Fintype.card K - 1 ∣ i := by
   sorry
 ```
+
+:::solution
+```lean
+example (K : Type*) [Field K] [Fintype K] (i : ℕ) :
+    (∀ x : Kˣ, x ^ i = 1) ↔ Fintype.card K - 1 ∣ i :=
+  FiniteField.forall_pow_eq_one_iff (K := K) i
+```
+:::

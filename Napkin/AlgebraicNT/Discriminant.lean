@@ -94,6 +94,12 @@ example : NumberField.discr ℚ = 1 := by
   sorry
 ```
 
+:::solution
+```lean
+example : NumberField.discr ℚ = 1 := NumberField.discr_rat
+```
+:::
+
 ## Root representation of the discriminant
 
 For a power basis, the discriminant has the root representation `Algebra.discr_powerBasis_eq_prod`: the product of the squared differences of the images of the generator under the embeddings (with the $`c^{2n-2}` factor absent since minimal polynomials are monic).
@@ -118,6 +124,15 @@ example (K L : Type*) [Field K] [Field L] [Algebra K L] [Module.Finite K L]
   sorry
 ```
 
+:::solution
+```lean
+example (K L : Type*) [Field K] [Field L] [Algebra K L] [Module.Finite K L]
+    [Algebra.IsSeparable K L] {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (b : Module.Basis ι K L) : Algebra.discr K b ≠ 0 :=
+  Algebra.discr_not_zero_of_basis K b
+```
+:::
+
 ## Discriminant of a cyclotomic field
 
 The cyclotomic computation asked for in the first problem is `IsCyclotomicExtension.discr_odd_prime`: for an odd prime $`p`, the discriminant of the power basis of a $`p`th cyclotomic extension is $`(-1)^{\frac{p-1}{2}} p^{p-2}`.
@@ -133,6 +148,19 @@ example {p : ℕ} {K : Type*} {L : Type*} {ζ : L}
       = (-1) ^ ((p - 1) / 2) * p ^ (p - 2) := by
   sorry
 ```
+
+:::solution
+```lean
+example {p : ℕ} {K : Type*} {L : Type*} {ζ : L}
+    [Field K] [Field L] [Algebra K L]
+    [IsCyclotomicExtension {p} K L] [hp : Fact p.Prime]
+    (hζ : IsPrimitiveRoot ζ p) (hirr : Irreducible (Polynomial.cyclotomic p K))
+    (hodd : p ≠ 2) :
+    Algebra.discr K (hζ.powerBasis K).basis
+      = (-1) ^ ((p - 1) / 2) * p ^ (p - 2) :=
+  IsCyclotomicExtension.discr_odd_prime hζ hirr hodd
+```
+:::
 
 ## The Hermite–Minkowski bound
 
@@ -152,5 +180,13 @@ example (K : Type*) [Field K] [NumberField K] (h : 1 < Module.finrank ℚ K) :
     1 < |NumberField.discr K| := by
   sorry
 ```
+
+:::solution
+```lean
+example (K : Type*) [Field K] [NumberField K] (h : 1 < Module.finrank ℚ K) :
+    1 < |NumberField.discr K| :=
+  lt_trans one_lt_two (NumberField.abs_discr_gt_two h)
+```
+:::
 
 Brill's theorem and the Stickelberger theorem, on the other hand, are not yet in Mathlib.

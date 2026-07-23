@@ -677,6 +677,15 @@ example (K : Type*) [Field K] [NumberField K]
   sorry
 ```
 
+:::solution
+```lean
+example (K : Type*) [Field K] [NumberField K]
+    (w : NumberField.InfinitePlace K) :
+    w.IsReal ∨ w.IsComplex :=
+  w.isReal_or_isComplex
+```
+:::
+
 ## Modular arithmetic with infinite primes
 
 Here the formalization stops keeping up: the moduli, rays $`P_K(\mathfrak m)`, ray class groups $`C_K(\mathfrak m)`, and congruence subgroups of this section are _not_ in Mathlib.
@@ -701,6 +710,13 @@ The class number of any principal ideal ring is $`1`, and $`\mathbb Z` is one, s
 example : Fintype.card (ClassGroup ℤ) = 1 := by
   sorry
 ```
+
+:::solution
+```lean
+example : Fintype.card (ClassGroup ℤ) = 1 :=
+  card_classGroup_eq_one
+```
+:::
 
 ## Frobenius element and Artin symbol
 
@@ -733,6 +749,18 @@ example (n : ℕ) [NeZero n] (K L : Type*) [Field K] [Field L] [Algebra K L]
     (f g : L ≃ₐ[K] L) : f * g = g * f := by
   sorry
 ```
+
+:::solution
+```lean
+example (n : ℕ) [NeZero n] (K L : Type*) [Field K] [Field L] [Algebra K L]
+    [IsCyclotomicExtension {n} K L]
+    (h : Irreducible (Polynomial.cyclotomic n K))
+    (f g : L ≃ₐ[K] L) : f * g = g * f := by
+  let e := IsCyclotomicExtension.autEquivPow L h
+  apply e.injective
+  rw [map_mul, map_mul, mul_comm]
+```
+:::
 
 ## Artin reciprocity
 
@@ -784,6 +812,14 @@ example (I G : Type*) [CommGroup I] [CommGroup G] (D : ArtinMapData I G)
   sorry
 ```
 
+:::solution
+```lean
+example (I G : Type*) [CommGroup I] [CommGroup G] (D : ArtinMapData I G)
+    (x y : I) (hx : x ∈ D.ray) : D.artin (x * y) = D.artin y := by
+  rw [map_mul, D.artin_eq_one_of_mem_ray hx, one_mul]
+```
+:::
+
 The lower-bound case $`H(L/K, \mathfrak m) = P_K(\mathfrak m)` — the cyclotomic, Kronecker–Weber prototype — makes the ray class group *equal to* the Galois group, via `rayClassEquiv`.
 When it happens, the ray class number is exactly $`|\operatorname{Gal}(L/K)|`.
 Feed the bijection of `D.rayClassEquiv h` to `Nat.card_eq_of_bijective` to move the cardinalities across.
@@ -793,6 +829,14 @@ example (I G : Type*) [CommGroup I] [CommGroup G] (D : ArtinMapData I G)
     (h : D.artin.ker = D.ray) : Nat.card (I ⧸ D.ray) = Nat.card G := by
   sorry
 ```
+
+:::solution
+```lean
+example (I G : Type*) [CommGroup I] [CommGroup G] (D : ArtinMapData I G)
+    (h : D.artin.ker = D.ray) : Nat.card (I ⧸ D.ray) = Nat.card G :=
+  Nat.card_eq_of_bijective _ (D.rayClassEquiv h).bijective
+```
+:::
 
 The conductor is packaged the same way, as `ConductorData`: a distinguished modulus $`\mathfrak f` together with the predicate "$`P_K(\mathfrak m) \subseteq H(L/K, \mathfrak m)`", and reciprocity's claim that this predicate holds for exactly the multiples of $`\mathfrak f`.
 Its fields are the conductor `C.conductor`, the admissibility predicate `C.IsAdmissible`, and `C.reciprocity`, which equates admissibility of $`\mathfrak m` with $`\mathfrak f \mid \mathfrak m`.
@@ -816,6 +860,14 @@ example (M : Type*) [CommMonoid M] (C : ConductorData M) (m : M) :
   sorry
 ```
 
+:::solution
+```lean
+example (M : Type*) [CommMonoid M] (C : ConductorData M) (m : M) :
+    C.IsAdmissible (C.conductor * m) :=
+  C.isAdmissible_of_dvd C.isAdmissible_conductor (dvd_mul_right C.conductor m)
+```
+:::
+
 What Mathlib does have is the abelian prototype this whole chapter points back to: the law of quadratic reciprocity for the Legendre symbol, {name}`legendreSym.quadratic_reciprocity`.
 
 ```lean
@@ -833,6 +885,14 @@ example (p q : ℕ) [Fact p.Prime] [Fact q.Prime] (hp : p % 4 = 1) (hq : q ≠ 2
     legendreSym q p = legendreSym p q := by
   sorry
 ```
+
+:::solution
+```lean
+example (p q : ℕ) [Fact p.Prime] [Fact q.Prime] (hp : p % 4 = 1) (hq : q ≠ 2) :
+    legendreSym q p = legendreSym p q :=
+  legendreSym.quadratic_reciprocity_one_mod_four hp hq
+```
+:::
 
 ## Application: Generalization of sum of two squares
 
@@ -852,3 +912,11 @@ example (p : ℕ) [Fact p.Prime] (hp : p % 4 = 1) :
     ∃ a b : ℕ, a ^ 2 + b ^ 2 = p := by
   sorry
 ```
+
+:::solution
+```lean
+example (p : ℕ) [Fact p.Prime] (hp : p % 4 = 1) :
+    ∃ a b : ℕ, a ^ 2 + b ^ 2 = p :=
+  Nat.Prime.sq_add_sq (by omega)
+```
+:::

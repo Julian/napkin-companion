@@ -582,6 +582,15 @@ example :
   sorry
 ```
 
+:::solution
+```lean
+example :
+    Ideal.span {(3 : ℤ)} * Ideal.span {(5 : ℤ)} = Ideal.span {(15 : ℤ)} := by
+  rw [Ideal.span_singleton_mul_span_singleton]
+  norm_num
+```
+:::
+
 "To divide is to contain" is a genuine theorem rather than a definition: divisibility `I ∣ J` means literally `∃ K, J = I * K`, and in a Dedekind domain the two agree:
 
 ```lean
@@ -602,6 +611,14 @@ example (A : Type*) [CommRing A] [IsDedekindDomain A] {p : Ideal A}
     (hp : p ≠ ⊥) : Prime p ↔ p.IsPrime := by
   sorry
 ```
+
+:::solution
+```lean
+example (A : Type*) [CommRing A] [IsDedekindDomain A] {p : Ideal A}
+    (hp : p ≠ ⊥) : Prime p ↔ p.IsPrime :=
+  Ideal.prime_iff_isPrime hp
+```
+:::
 
 ## Dedekind domains
 
@@ -629,6 +646,13 @@ example : IsDedekindDomain ℤ := by
   sorry
 ```
 
+:::solution
+```lean
+example : IsDedekindDomain ℤ := by
+  infer_instance
+```
+:::
+
 ## Unique factorization works
 
 The theorem is delivered as an instance: in a Dedekind domain, the ideals — with the multiplication defined above — form a `UniqueFactorizationMonoid`, the same abstraction that expressed unique factorization of _elements_ in the flavors-of-rings chapter, now applied one level up:
@@ -648,6 +672,14 @@ example (A : Type*) [CommRing A] [IsDedekindDomain A] {I : Ideal A} :
   sorry
 ```
 
+:::solution
+```lean
+example (A : Type*) [CommRing A] [IsDedekindDomain A] {I : Ideal A} :
+    Irreducible I ↔ Prime I :=
+  UniqueFactorizationMonoid.irreducible_iff_prime
+```
+:::
+
 ## The factoring algorithm
 
 The theorem lives in `Mathlib.NumberTheory.KummerDedekind`, in maximum generality (any Dedekind domain downstairs, any prime not dividing the _conductor_ — the ideal-theoretic version of our $`j`): `KummerDedekind.normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` is the bijection between the prime factors of $`(p)` upstairs and the irreducible factors of $`f` mod $`p`, and `multiplicity_factors_map_eq_multiplicity` matches up the exponents $`e_i`.
@@ -663,6 +695,16 @@ example :
   sorry
 ```
 
+:::solution
+```lean
+example :
+    Ideal.span {(⟨5, 2⟩ : GaussianInt)} * Ideal.span {(⟨5, -2⟩ : GaussianInt)}
+      = Ideal.span {(29 : GaussianInt)} := by
+  have : (⟨5, 2⟩ : GaussianInt) * ⟨5, -2⟩ = 29 := by decide
+  rw [Ideal.span_singleton_mul_span_singleton, this]
+```
+:::
+
 ## Fractional ideals
 
 The type is `FractionalIdeal A⁰ K` — the `A⁰` records that denominators are taken from the nonzero elements of `A` (the "non-zero-divisors") — defined for any domain, with the equivalent finitely-generated-submodule description from the problems as the actual underlying definition.
@@ -677,6 +719,15 @@ example (A : Type*) [CommRing A] [IsDedekindDomain A]
     (J : FractionalIdeal A⁰ K) (hJ : J ≠ 0) : J * J⁻¹ = 1 := by
   sorry
 ```
+
+:::solution
+```lean
+example (A : Type*) [CommRing A] [IsDedekindDomain A]
+    (K : Type*) [Field K] [Algebra A K] [IsFractionRing A K]
+    (J : FractionalIdeal A⁰ K) (hJ : J ≠ 0) : J * J⁻¹ = 1 :=
+  mul_inv_cancel₀ hJ
+```
+:::
 
 ## The ideal norm
 
@@ -699,3 +750,11 @@ example (S : Type*) [CommRing S] [IsDedekindDomain S] [Module.Free ℤ S]
     {I : Ideal S} : Ideal.absNorm I = 1 ↔ I = ⊤ := by
   sorry
 ```
+
+:::solution
+```lean
+example (S : Type*) [CommRing S] [IsDedekindDomain S] [Module.Free ℤ S]
+    {I : Ideal S} : Ideal.absNorm I = 1 ↔ I = ⊤ :=
+  Ideal.absNorm_eq_one_iff
+```
+:::

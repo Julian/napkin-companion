@@ -861,6 +861,16 @@ example (R : Type*) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
   sorry
 ```
 
+:::solution
+```lean
+example (R : Type*) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
+    (C : ClassGroup R) : C = 1 := by
+  refine ClassGroup.induction (FractionRing R) (fun I => ?_) C
+  exact ClassGroup.mk_eq_one_iff.mpr
+    (I : FractionalIdeal R⁰ (FractionRing R)).isPrincipal
+```
+:::
+
 ## The discriminant of a number field
 
 The discriminant is `NumberField.discr K`, an integer by construction:
@@ -879,6 +889,13 @@ Confirm that its discriminant is $`1`.
 example : NumberField.discr ℚ = 1 := by
   sorry
 ```
+
+:::solution
+```lean
+example : NumberField.discr ℚ = 1 :=
+  NumberField.discr_rat
+```
+:::
 
 ## The signature of a number field
 
@@ -900,6 +917,15 @@ example (K : Type*) [Field K] [NumberField K] :
       = Module.finrank ℚ K := by
   sorry
 ```
+
+:::solution
+```lean
+example (K : Type*) [Field K] [NumberField K] :
+    InfinitePlace.nrRealPlaces K + 2 * InfinitePlace.nrComplexPlaces K
+      = Module.finrank ℚ K :=
+  InfinitePlace.card_add_two_mul_card_eq_rank K
+```
+:::
 
 ## Minkowski's theorem
 
@@ -931,6 +957,18 @@ example {E : Type*} [AddCommGroup E] [Module ℝ E] (s : Set E)
   sorry
 ```
 
+:::solution
+```lean
+example {E : Type*} [AddCommGroup E] [Module ℝ E] (s : Set E)
+    (hne : s.Nonempty) (hconv : Convex ℝ s) (hsymm : ∀ x ∈ s, -x ∈ s) :
+    (0 : E) ∈ s := by
+  obtain ⟨x, hx⟩ := hne
+  have h := hconv hx (hsymm x hx) (by norm_num : (0 : ℝ) ≤ 1 / 2)
+    (by norm_num : (0 : ℝ) ≤ 1 / 2) (by norm_num)
+  simpa using h
+```
+:::
+
 ## The Minkowski bound
 
 This whole section is formalized: `NumberField.mixedEmbedding.minkowskiBound K I` is (up to packaging) the right-hand side for the fractional ideal `I`, the trap box is the "convex body" `convexBodyLT`, and `NumberField.mixedEmbedding.exists_ne_zero_mem_ideal_lt` produces the nonzero $`\alpha \in \mathfrak{a}` with all its embeddings small, exactly by feeding the box to the Minkowski theorem above.
@@ -944,6 +982,15 @@ example (K : Type*) [Field K] [NumberField K]
     0 < NumberField.mixedEmbedding.minkowskiBound K I := by
   sorry
 ```
+
+:::solution
+```lean
+example (K : Type*) [Field K] [NumberField K]
+    (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
+    0 < NumberField.mixedEmbedding.minkowskiBound K I :=
+  NumberField.mixedEmbedding.minkowskiBound_pos K I
+```
+:::
 
 ## The class group is finite
 
@@ -964,6 +1011,14 @@ example (K : Type*) [Field K] [NumberField K] :
     0 < NumberField.classNumber K := by
   sorry
 ```
+
+:::solution
+```lean
+example (K : Type*) [Field K] [NumberField K] :
+    0 < NumberField.classNumber K :=
+  NumberField.classNumber_pos K
+```
+:::
 
 ## Computation of class numbers
 
@@ -988,6 +1043,14 @@ example (K : Type*) [Field K] [NumberField K] (I : Ideal (𝓞 K)) :
   sorry
 ```
 
+:::solution
+```lean
+example (K : Type*) [Field K] [NumberField K] (I : Ideal (𝓞 K)) :
+    (Ideal.absNorm I : 𝓞 K) ∈ I :=
+  Ideal.absNorm_mem I
+```
+:::
+
 ## Optional: Proof that the ring of integers is a free ℤ-module
 
 This second proof is the one Mathlib's development follows: the pairing $`(x,y) \mapsto \operatorname{Tr}(xy)` is `Algebra.traceForm`, its nondegeneracy (the invertible matrix above) is `traceForm_nondegenerate`, and squeezing the integral closure inside the dual basis of the trace form is how `IsIntegralClosure.isNoetherian` — and from it the `Module.Free ℤ (𝓞 K)` instance — gets proved.
@@ -999,3 +1062,10 @@ Confirm that Mathlib already registers $`\mathcal{O}_K` as a free $`\mathbb{Z}`-
 example (K : Type*) [Field K] [NumberField K] : Module.Free ℤ (𝓞 K) := by
   sorry
 ```
+
+:::solution
+```lean
+example (K : Type*) [Field K] [NumberField K] : Module.Free ℤ (𝓞 K) :=
+  inferInstance
+```
+:::
