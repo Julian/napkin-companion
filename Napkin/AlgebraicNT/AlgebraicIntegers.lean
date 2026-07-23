@@ -309,6 +309,14 @@ example (α : ℂ) (h : IsIntegral ℚ α) : Irreducible (minpoly ℚ α) := by
   sorry
 ```
 
+:::solution
+```lean
+example (α : ℂ) (h : IsIntegral ℚ α) :
+    Irreducible (minpoly ℚ α) :=
+  minpoly.irreducible h
+```
+:::
+
 ## Algebraic numbers and algebraic integers
 
 The two definitions land on the predicates `IsAlgebraic ℚ α` (a root of _some_ nonzero rational polynomial) and `IsIntegral ℤ α` (a root of _some_ monic integer polynomial).
@@ -329,6 +337,14 @@ example (x y : ℂ) (hx : IsIntegral ℤ x) (hy : IsIntegral ℤ y) :
     IsIntegral ℤ (x + y) := by
   sorry
 ```
+
+:::solution
+```lean
+example (x y : ℂ) (hx : IsIntegral ℤ x) (hy : IsIntegral ℤ y) :
+    IsIntegral ℤ (x + y) :=
+  hx.add hy
+```
+:::
 
 ## Number fields
 
@@ -354,6 +370,14 @@ example (K : Type*) [Field K] [NumberField K] : CharZero K := by
   sorry
 ```
 
+:::solution
+```lean
+example (K : Type*) [Field K] [NumberField K] :
+    CharZero K :=
+  inferInstance
+```
+:::
+
 ## Primitive element theorem, and monogenic extensions
 
 Artin's theorem is `Field.exists_primitive_element`, stated for any finite separable field extension `E` of `F` (both hypotheses automatic for number fields, where separability comes free with characteristic zero): there exists `α : E` with `F⟮α⟯ = ⊤`, i.e. adjoining $`\alpha` already gives everything.
@@ -364,6 +388,14 @@ example (K : Type*) [Field K] [NumberField K] :
     ∃ α : K, IntermediateField.adjoin ℚ {α} = ⊤ := by
   sorry
 ```
+
+:::solution
+```lean
+example (K : Type*) [Field K] [NumberField K] :
+    ∃ α : K, IntermediateField.adjoin ℚ {α} = ⊤ :=
+  Field.exists_primitive_element ℚ K
+```
+:::
 
 ## Problems
 

@@ -442,6 +442,14 @@ example (A : Type*) [CommRing A] :
   sorry
 ```
 
+:::solution
+```lean
+example (A : Type*) [CommRing A] :
+    TopCat.Presheaf.IsSheaf (Spec.structureSheaf A).presheaf :=
+  (Spec.structureSheaf A).property
+```
+:::
+
 ## The value of distinguished open sets
 
 The distinguished open set $`D(f)` is `PrimeSpectrum.basicOpen f`, an element of the lattice of opens of `PrimeSpectrum A`, and `PrimeSpectrum.isBasis_basic_opens` records that these form a basis of the Zariski topology.
@@ -472,6 +480,14 @@ example (A : Type*) [CommRing A] :
   sorry
 ```
 
+:::solution
+```lean
+example (A : Type*) [CommRing A] :
+    PrimeSpectrum.basicOpen (1 : A) = ⊤ :=
+  PrimeSpectrum.basicOpen_one
+```
+:::
+
 ## The stalks of the structure sheaf
 
 The stalk of $`\operatorname{Spec} A` at $`\mathfrak{p}` is Mathlib's `Localization.AtPrime`, the localization $`A_\mathfrak{p}`, and it is automatically a local ring — exactly the "locally ringed" conclusion.
@@ -491,6 +507,15 @@ noncomputable example (A : Type*) [CommRing A] (p : PrimeSpectrum A) :
       (Spec.structureSheaf A).presheaf.stalk p := by
   sorry
 ```
+
+:::solution
+```lean
+noncomputable example (A : Type*) [CommRing A] (p : PrimeSpectrum A) :
+    Localization.AtPrime p.asIdeal ≃ₐ[A]
+      (Spec.structureSheaf A).presheaf.stalk p :=
+  StructureSheaf.stalkIso A p
+```
+:::
 
 ## Local rings and residue fields
 
@@ -519,6 +544,13 @@ example (K : Type*) [Field K] : IsLocalRing K := by
   sorry
 ```
 
+:::solution
+```lean
+example (K : Type*) [Field K] : IsLocalRing K := by
+  infer_instance
+```
+:::
+
 ## Functions are determined by germs, not values
 
 The nilradical $`\sqrt{(0)}` is `nilradical`, and `nilradical_eq_sInf` is the theorem that it equals the intersection of all prime ideals; "reduced" is then the statement that this intersection is trivial.
@@ -535,3 +567,10 @@ In a domain the only nilpotent is $`0`, since $`a^n = 0` forces $`a = 0`; this t
 example (A : Type*) [CommRing A] [IsDomain A] : IsReduced A := by
   sorry
 ```
+
+:::solution
+```lean
+example (A : Type*) [CommRing A] [IsDomain A] : IsReduced A := by
+  infer_instance
+```
+:::

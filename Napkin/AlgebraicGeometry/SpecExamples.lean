@@ -479,6 +479,15 @@ example (K : Type) [Field K] (x : PrimeSpectrum K) : x.asIdeal = ⊥ := by
   sorry
 ```
 
+:::solution
+```lean
+example (K : Type) [Field K] (x : PrimeSpectrum K) : x.asIdeal = ⊥ := by
+  rcases x.asIdeal.eq_bot_or_top with h | h
+  · exact h
+  · exact absurd h x.isPrime.ne_top
+```
+:::
+
 ## Spec ℂ\[x\], a one-dimensional line
 
 The closed sets are the vanishing loci `PrimeSpectrum.zeroLocus`, and each distinguished open $`D(r)` is its complement, packaged as `PrimeSpectrum.basicOpen`.
@@ -497,6 +506,13 @@ Show that `basicOpen 0` is the bottom open set `⊥`.
 example (R : Type) [CommRing R] : PrimeSpectrum.basicOpen (0 : R) = ⊥ := by
   sorry
 ```
+
+:::solution
+```lean
+example (R : Type) [CommRing R] : PrimeSpectrum.basicOpen (0 : R) = ⊥ :=
+  PrimeSpectrum.basicOpen_zero
+```
+:::
 
 ## Spec k\[x,y\]/(y-x²), the parabola
 
@@ -520,6 +536,14 @@ example (A : Type) [CommRing A] (I : Ideal A) :
     Function.Injective (comap (Ideal.Quotient.mk I)) := by
   sorry
 ```
+
+:::solution
+```lean
+example (A : Type) [CommRing A] (I : Ideal A) :
+    Function.Injective (comap (Ideal.Quotient.mk I)) :=
+  comap_injective_of_surjective _ Ideal.Quotient.mk_surjective
+```
+:::
 
 ## Long example: Spec k\[x,y\]/(xy), two axes
 
@@ -546,3 +570,12 @@ example (A : Type) [CommRing A] (r : A) (S : Type) [CommRing S] [Algebra A S]
     Function.Injective (comap (algebraMap A S)) := by
   sorry
 ```
+
+:::solution
+```lean
+example (A : Type) [CommRing A] (r : A) (S : Type) [CommRing S] [Algebra A S]
+    [IsLocalization.Away r S] :
+    Function.Injective (comap (algebraMap A S)) :=
+  (localization_away_isOpenEmbedding S r).injective
+```
+:::

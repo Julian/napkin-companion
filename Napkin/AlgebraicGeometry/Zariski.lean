@@ -451,6 +451,14 @@ example (R : Type*) [CommRing R] [IsNoetherianRing R] :
   sorry
 ```
 
+:::solution
+```lean
+example (R : Type*) [CommRing R] [IsNoetherianRing R] :
+    TopologicalSpace.NoetherianSpace (PrimeSpectrum R) :=
+  inferInstance
+```
+:::
+
 ## The Zariski topology on affine varieties
 
 The distinguished opens are `PrimeSpectrum.basicOpen`: `basicOpen r` is the locus of primes not containing $`r`, and these sets form a basis for the Zariski topology.
@@ -480,6 +488,15 @@ example {σ : Type*} (x y : MvPolynomial σ ℂ) :
   sorry
 ```
 
+:::solution
+```lean
+example {σ : Type*} (x y : MvPolynomial σ ℂ) :
+    PrimeSpectrum.basicOpen (x * y) =
+      PrimeSpectrum.basicOpen x ⊓ PrimeSpectrum.basicOpen y :=
+  PrimeSpectrum.basicOpen_mul x y
+```
+:::
+
 ## Coordinate rings
 
 Since the coordinate ring is presented as the quotient $`\mathbb{C}[x_1, \dots, x_n]/I`, it is literally the Mathlib quotient ring `MvPolynomial σ ℂ ⧸ I`, again a commutative ring, and the intrinsic object attached to a variety is the `PrimeSpectrum` of exactly this quotient — no longer remembering the embedding into $`\mathbb{A}^n`.
@@ -503,6 +520,16 @@ example {σ : Type*} [Finite σ] (I : Ideal (MvPolynomial σ ℂ))
   sorry
 ```
 
+:::solution
+```lean
+example {σ : Type*} [Finite σ] (I : Ideal (MvPolynomial σ ℂ))
+    (h : I.IsRadical) :
+    MvPolynomial.vanishingIdeal ℂ (MvPolynomial.zeroLocus ℂ I) = I := by
+  rw [MvPolynomial.vanishingIdeal_zeroLocus_eq_radical]
+  exact h.radical
+```
+:::
+
 ## The sheaf of regular functions
 
 A rational function $`f/g` is defined away from the zeros of its denominator.
@@ -524,6 +551,15 @@ example {σ : Type*} (g : MvPolynomial σ ℂ) :
   sorry
 ```
 
+:::solution
+```lean
+example {σ : Type*} (g : MvPolynomial σ ℂ) :
+    IsOpen (PrimeSpectrum.basicOpen g :
+      Set (PrimeSpectrum (MvPolynomial σ ℂ))) :=
+  (PrimeSpectrum.basicOpen g).isOpen
+```
+:::
+
 ## Regular functions on distinguished open sets
 
 The ring $`\left\{ f/g^k \right\}` of regular functions on $`D(g)` is exactly the localization of $`\mathbb{C}[V]` away from $`g`, the property `IsLocalization.Away`; this identification is how the structure sheaf on an affine scheme computes its sections over a basic open.
@@ -543,6 +579,14 @@ example {σ : Type*} (g : MvPolynomial σ ℂ) (n : ℕ) (hn : 0 < n) :
   sorry
 ```
 
+:::solution
+```lean
+example {σ : Type*} (g : MvPolynomial σ ℂ) (n : ℕ) (hn : 0 < n) :
+    PrimeSpectrum.basicOpen (g ^ n) = PrimeSpectrum.basicOpen g :=
+  PrimeSpectrum.basicOpen_pow g n hn
+```
+:::
+
 ## Baby ringed spaces
 
 The full definition the chapter is deferring to is `AlgebraicGeometry.RingedSpace`: a topological space together with a sheaf of _commutative rings_ (not merely rings of $`\mathbb{C}`-valued functions), the "grown-up" version of the baby ringed space above.
@@ -558,3 +602,10 @@ On the intrinsic object this is already available: the prime spectrum of any com
 example (R : Type*) [CommRing R] : CompactSpace (PrimeSpectrum R) := by
   sorry
 ```
+
+:::solution
+```lean
+example (R : Type*) [CommRing R] : CompactSpace (PrimeSpectrum R) :=
+  inferInstance
+```
+:::

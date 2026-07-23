@@ -403,6 +403,13 @@ example (K : Type*) [Field K] (x y : PrimeSpectrum K) : x = y := by
   sorry
 ```
 
+:::solution
+```lean
+example (K : Type*) [Field K] (x y : PrimeSpectrum K) : x = y :=
+  Subsingleton.elim x y
+```
+:::
+
 ## The Zariski topology on the spectrum
 
 The vanishing locus $`\mathbb{V}(I)` of a set or an ideal is `PrimeSpectrum.zeroLocus`, and the dual operation sending a set of points back to the ideal of everything vanishing on it is `PrimeSpectrum.vanishingIdeal`.
@@ -448,6 +455,14 @@ example (A : Type*) [CommRing A] [IsDomain A] :
   sorry
 ```
 
+:::solution
+```lean
+example (A : Type*) [CommRing A] [IsDomain A] :
+    IrreducibleSpace (PrimeSpectrum A) :=
+  inferInstance
+```
+:::
+
 ## Krull dimension
 
 The Krull dimension of a ring is `ringKrullDim`, valued in $`\mathbb{Z} \cup \{\pm\infty\}` so that the zero ring can land at $`-\infty`; the topological version, from chains of irreducible closed subspaces, is `topologicalKrullDim`, and the two agree on a spectrum.
@@ -465,6 +480,13 @@ Prove it.
 example (K : Type*) [Field K] : ringKrullDim K = 0 := by
   sorry
 ```
+
+:::solution
+```lean
+example (K : Type*) [Field K] : ringKrullDim K = 0 :=
+  ringKrullDim_eq_zero_of_field K
+```
+:::
 
 ## On radicals
 
@@ -495,3 +517,12 @@ example (A : Type*) [CommRing A] (I J : Ideal A) :
       ↔ I.radical = J.radical := by
   sorry
 ```
+
+:::solution
+```lean
+example (A : Type*) [CommRing A] (I J : Ideal A) :
+    PrimeSpectrum.zeroLocus (I : Set A) = PrimeSpectrum.zeroLocus (J : Set A)
+      ↔ I.radical = J.radical :=
+  PrimeSpectrum.zeroLocus_eq_iff
+```
+:::
