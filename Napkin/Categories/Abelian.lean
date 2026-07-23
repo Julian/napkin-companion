@@ -410,6 +410,14 @@ example (C : Type*) [Category C] [HasZeroMorphisms C] {A B : C} (f : A ⟶ B)
   sorry
 ```
 
+:::solution
+```lean
+example (C : Type*) [Category C] [HasZeroMorphisms C] {A B : C} (f : A ⟶ B)
+    [HasCokernel f] : f ≫ cokernel.π f = 0 :=
+  cokernel.condition f
+```
+:::
+
 ## Additive and abelian categories
 
 The "you can add morphisms" content is {name}`CategoryTheory.Preadditive`, an abelian-group structure on each hom-set with bilinear composition; an additive category is this together with a zero object and binary products.
@@ -432,6 +440,14 @@ example (C : Type*) [Category C] [Abelian C] {A B : C} (f : A ⟶ B)
   sorry
 ```
 
+:::solution
+```lean
+example (C : Type*) [Category C] [Abelian C] {A B : C} (f : A ⟶ B)
+    [Mono f] [Epi f] : IsIso f :=
+  isIso_of_mono_of_epi f
+```
+:::
+
 ## Exact sequences
 
 A composable pair $`A \xrightarrow{f} B \xrightarrow{g} C` with $`g \circ f = 0` is a {name}`CategoryTheory.ShortComplex`; the predicate {name}`CategoryTheory.ShortComplex.Exact` is exactly "the canonical map from the image to the kernel is an isomorphism", and {name}`CategoryTheory.ShortComplex.ShortExact` adds that the outer maps are monic and epic — the categorical $`0 \to A \to B \to C \to 0`.
@@ -452,6 +468,14 @@ example (C : Type*) [Category C] [Abelian C] (S : ShortComplex C)
     (hf : S.f = 0) : S.Exact ↔ Mono S.g := by
   sorry
 ```
+
+:::solution
+```lean
+example (C : Type*) [Category C] [Abelian C] (S : ShortComplex C)
+    (hf : S.f = 0) : S.Exact ↔ Mono S.g :=
+  S.exact_iff_mono hf
+```
+:::
 
 ## The Freyd–Mitchell embedding theorem
 
@@ -523,6 +547,15 @@ example (C : Type*) [Category C] [Abelian C] {A B : C} (f : A ⟶ B) :
   sorry
 ```
 
+:::solution
+```lean
+open CategoryTheory.Abelian.Pseudoelement in
+example (C : Type*) [Category C] [Abelian C] {A B : C} (f : A ⟶ B) :
+    pseudoApply f (0 : Abelian.Pseudoelement A) = 0 :=
+  apply_zero f
+```
+:::
+
 ## Breaking long exact sequences
 
 The first isomorphism theorem splices a map into the short exact sequence $`0 \to \mathrm{Ker}\, f \to A \to \mathrm{Img}\, f \to 0`.
@@ -541,3 +574,11 @@ example (C : Type*) [Category C] [Preadditive C] {S : ShortComplex C}
     (hS : S.ShortExact) : Epi S.g := by
   sorry
 ```
+
+:::solution
+```lean
+example (C : Type*) [Category C] [Preadditive C] {S : ShortComplex C}
+    (hS : S.ShortExact) : Epi S.g :=
+  hS.epi_g
+```
+:::

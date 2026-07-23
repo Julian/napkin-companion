@@ -498,6 +498,14 @@ example (p : ℕ) (x : PadicIntLim p) : proj p 0 x = 0 := by
   sorry
 ```
 
+:::solution
+```lean
+example (p : ℕ) (x : PadicIntLim p) : proj p 0 x = 0 := by
+  have : Subsingleton (ZMod (p ^ 0)) := by rw [pow_zero]; infer_instance
+  exact Subsingleton.elim _ _
+```
+:::
+
 Second, show the comparison map `ofPadicInt` is injective: two $`p`-adic integers with the same residues modulo every $`p^e` are equal (this is `PadicInt.ext_of_toZModPow`).
 After `intro x y h`, apply `PadicInt.ext_of_toZModPow.mp` and fix a level `n`; then `congrArg (proj p n) h` says the two compatible families agree at `n`, and the simp lemma `proj_ofPadicInt` rewrites each `proj p n (ofPadicInt p ·)` back to `PadicInt.toZModPow n ·`.
 
@@ -505,6 +513,17 @@ After `intro x y h`, apply `PadicInt.ext_of_toZModPow.mp` and fix a level `n`; t
 example (p : ℕ) [Fact p.Prime] : Function.Injective (ofPadicInt p) := by
   sorry
 ```
+
+:::solution
+```lean
+example (p : ℕ) [Fact p.Prime] : Function.Injective (ofPadicInt p) := by
+  intro x y h
+  apply PadicInt.ext_of_toZModPow.mp
+  intro n
+  have hn := congrArg (proj p n) h
+  simpa only [proj_ofPadicInt] using hn
+```
+:::
 
 The exercise asked you to check that $`\mathbb{Z}_p` is an integral domain.
 Mathlib packages "commutative ring with no zero divisors and $`0 \neq 1`" as the `IsDomain` class, and already registers the instance for `ℤ_[p]`, so `inferInstance` supplies it with no work on your part — the content is entirely in Mathlib's proof that `ℤ_[p]` has no zero divisors.
@@ -555,6 +574,14 @@ example (p : ℕ) [Fact p.Prime] (q r : ℚ_[p]) (h : ‖q‖ ≠ ‖r‖) :
   sorry
 ```
 
+:::solution
+```lean
+example (p : ℕ) [Fact p.Prime] (q r : ℚ_[p]) (h : ‖q‖ ≠ ‖r‖) :
+    ‖q + r‖ = max ‖q‖ ‖r‖ := by
+  exact IsUltrametricDist.norm_add_eq_max_of_norm_ne_norm h
+```
+:::
+
 ## Convergence of series
 
 The "$`x_k \to 0` iff convergent" miracle turns infinite sums into a much friendlier object than they are over $`\mathbb{R}`.
@@ -568,6 +595,15 @@ example (p : ℕ) [Fact p.Prime] (f : ℕ → ℚ_[p]) :
   sorry
 ```
 
+:::solution
+```lean
+open Filter Topology in
+example (p : ℕ) [Fact p.Prime] (f : ℕ → ℚ_[p]) :
+    Summable f ↔ Tendsto f cofinite (𝓝 0) := by
+  exact NonarchimedeanAddGroup.summable_iff_tendsto_cofinite_zero f
+```
+:::
+
 ## More fun with geometric series
 
 The geometric series formula holds verbatim in $`\mathbb{Q}_p`: for $`\|x\|_p < 1`, the sum $`\sum_{n \geq 0} x^n` converges to $`\frac{1}{1 - x}`.
@@ -578,6 +614,14 @@ example (p : ℕ) [Fact p.Prime] (x : ℚ_[p]) (h : ‖x‖ < 1) :
     ∑' n : ℕ, x ^ n = (1 - x)⁻¹ := by
   sorry
 ```
+
+:::solution
+```lean
+example (p : ℕ) [Fact p.Prime] (x : ℚ_[p]) (h : ‖x‖ < 1) :
+    ∑' n : ℕ, x ^ n = (1 - x)⁻¹ := by
+  exact tsum_geometric_of_norm_lt_one h
+```
+:::
 
 ## Completeness
 

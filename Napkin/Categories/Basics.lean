@@ -548,6 +548,13 @@ example (P : Type*) [PartialOrder P] (x y : P) (f : x ≅ y) : x = y := by
   sorry
 ```
 
+:::solution
+```lean
+example (P : Type*) [PartialOrder P] (x y : P) (f : x ≅ y) : x = y :=
+  le_antisymm (leOfHom f.hom) (leOfHom f.inv)
+```
+:::
+
 ## Special objects in categories
 
 An initial object has exactly one arrow to every object, and a terminal object exactly one arrow from every object; Mathlib records these as `IsInitial` and `IsTerminal`.
@@ -574,6 +581,14 @@ example (C : Type*) [Category C] {T₁ T₂ : C}
   sorry
 ```
 
+:::solution
+```lean
+example (C : Type*) [Category C] {T₁ T₂ : C}
+    (h₁ : IsTerminal T₁) (h₂ : IsTerminal T₂) : T₁ ≅ T₂ :=
+  h₁.uniqueUpToIso h₂
+```
+:::
+
 ## Binary products
 
 For categories with products in the categorical sense, Mathlib uses `HasBinaryProducts C` (or `HasBinaryProduct X Y` for a single pair), which packages the universal cone.
@@ -595,6 +610,14 @@ noncomputable example (C : Type*) [Category C] [HasBinaryProducts C]
   sorry
 ```
 
+:::solution
+```lean
+noncomputable example (C : Type*) [Category C] [HasBinaryProducts C]
+    (X Y Z : C) : (X ⨯ Y) ⨯ Z ≅ X ⨯ (Y ⨯ Z) :=
+  prod.associator X Y Z
+```
+:::
+
 ## Monic and epic maps
 
 `CategoryTheory.Mono f` says exactly that `f` cancels on the right: for all `Z` and `g h : Z ⟶ X`, `g ≫ f = h ≫ f → g = h` (recall `≫` reads left-to-right, opposite of `∘`).
@@ -614,3 +637,10 @@ example (C : Type*) [Category C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
     [Mono f] [Mono g] : Mono (f ≫ g) := by
   sorry
 ```
+
+:::solution
+```lean
+example (C : Type*) [Category C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [Mono f] [Mono g] : Mono (f ≫ g) := mono_comp f g
+```
+:::

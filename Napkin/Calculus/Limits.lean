@@ -557,6 +557,13 @@ example : sSup (Set.Icc (0 : ℝ) 1) = 1 := by
   sorry
 ```
 
+:::solution
+```lean
+example : sSup (Set.Icc (0 : ℝ) 1) = 1 :=
+  csSup_Icc (by norm_num)
+```
+:::
+
 ## Proofs of the two key completeness properties
 
 Mathlib doesn't define `ℝ` via Dedekind cuts.
@@ -578,6 +585,14 @@ example (s : Set ℝ) (hne : s.Nonempty) (b : ℝ) (hb : b ∈ upperBounds s) :
     sSup s ≤ b := by
   sorry
 ```
+
+:::solution
+```lean
+example (s : Set ℝ) (hne : s.Nonempty) (b : ℝ) (hb : b ∈ upperBounds s) :
+    sSup s ≤ b :=
+  csSup_le hne hb
+```
+:::
 
 ## Monotonic sequences
 
@@ -602,6 +617,15 @@ example (a : ℕ → ℝ) (hanti : Antitone a) (hnonneg : ∀ n, 0 ≤ a n) :
     ∃ L, Filter.Tendsto a Filter.atTop (nhds L) := by
   sorry
 ```
+
+:::solution
+```lean
+example (a : ℕ → ℝ) (hanti : Antitone a) (hnonneg : ∀ n, 0 ≤ a n) :
+    ∃ L, Filter.Tendsto a Filter.atTop (nhds L) :=
+  ⟨⨅ n, a n, tendsto_atTop_ciInf hanti ⟨0, by
+    rintro x ⟨n, rfl⟩; exact hnonneg n⟩⟩
+```
+:::
 
 ## Infinite series
 
@@ -630,6 +654,13 @@ example : ¬ Summable (fun n : ℕ => 1 / (n : ℝ)) := by
   sorry
 ```
 
+:::solution
+```lean
+example : ¬ Summable (fun n : ℕ => 1 / (n : ℝ)) :=
+  Real.not_summable_one_div_natCast
+```
+:::
+
 ## Series addition is not commutative: a horror story
 
 Mathlib's named predicate for absolute convergence is `Summable (fun k => ‖a k‖)`, with a wrapping abbreviation `Summable.abs` (and dually `Summable.norm` for normed spaces).
@@ -651,6 +682,13 @@ Prove it: if the series of absolute values is summable, so is the original.
 example (f : ℕ → ℝ) (h : Summable (fun k => |f k|)) : Summable f := by
   sorry
 ```
+
+:::solution
+```lean
+example (f : ℕ → ℝ) (h : Summable (fun k => |f k|)) : Summable f :=
+  h.of_abs
+```
+:::
 
 ## Limits of functions at points
 
@@ -676,6 +714,14 @@ example (f : ℝ → ℝ) (p : ℝ) :
   sorry
 ```
 
+:::solution
+```lean
+example (f : ℝ → ℝ) (p : ℝ) :
+    ContinuousAt f p ↔ Filter.Tendsto f (nhdsWithin p {p}ᶜ) (nhds (f p)) :=
+  continuousWithinAt_compl_self.symm
+```
+:::
+
 ## Limits of functions at infinity
 
 The limit $`x \to \infty` is encoded by the filter `Filter.atTop` (and dually `atBot` for $`-\infty`); the limit statement becomes `Filter.Tendsto f Filter.atTop (nhds L)`.
@@ -693,6 +739,13 @@ example : Filter.Tendsto (fun x : ℝ => 1 / x) Filter.atTop (nhds 0) := by
   sorry
 ```
 
+:::solution
+```lean
+example : Filter.Tendsto (fun x : ℝ => 1 / x) Filter.atTop (nhds 0) := by
+  simpa only [one_div] using tendsto_inv_atTop_zero
+```
+:::
+
 ## Problems
 
 The closed form $`1 / (1 - r)` for the geometric series is in Mathlib as `tsum_geometric_of_lt_one` for the nonnegative-base case, and as `tsum_geometric_of_abs_lt_one` for the general real case.
@@ -709,6 +762,13 @@ example (r : ℝ) (h : |r| < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ := by
   sorry
 ```
 
+:::solution
+```lean
+example (r : ℝ) (h : |r| < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
+  tsum_geometric_of_abs_lt_one h
+```
+:::
+
 For the comparison test, use `Summable.of_nonneg_of_le`: a nonnegative series dominated term-by-term by a summable one is itself summable.
 
 ```lean
@@ -716,3 +776,11 @@ example (a b : ℕ → ℝ) (hb : Summable (fun n => |b n|))
     (hle : ∀ n, |a n| ≤ |b n|) : Summable (fun n => |a n|) := by
   sorry
 ```
+
+:::solution
+```lean
+example (a b : ℕ → ℝ) (hb : Summable (fun n => |b n|))
+    (hle : ∀ n, |a n| ≤ |b n|) : Summable (fun n => |a n|) :=
+  Summable.of_nonneg_of_le (fun n => abs_nonneg _) hle hb
+```
+:::

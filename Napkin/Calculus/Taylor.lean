@@ -10,7 +10,9 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Analysis.Normed.Algebra.Exponential
 import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.ContDiff.Defs
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -376,6 +378,14 @@ example (r : ℝ) (h : |r| < 1) : HasSum (fun n : ℕ => r ^ n) (1 - r)⁻¹ := 
   sorry
 ```
 
+:::solution
+```lean
+example (r : ℝ) (h : |r| < 1) :
+    HasSum (fun n : ℕ => r ^ n) (1 - r)⁻¹ :=
+  hasSum_geometric_of_abs_lt_one h
+```
+:::
+
 ## Differentiating them
 
 Mathlib's term-by-term differentiation lives in `Mathlib.Analysis.Analytic.Within` and friends: `HasFPowerSeriesAt.hasDerivAt` produces the derivative, and `AnalyticOnNhd.contDiffOn` packages "$`f` is $`C^\infty` on the ball" in one shot.
@@ -391,6 +401,14 @@ example (n : ℕ) (x : ℝ) :
     HasDerivAt (fun x : ℝ => x ^ n) (n * x ^ (n - 1)) x := by
   sorry
 ```
+
+:::solution
+```lean
+example (n : ℕ) (x : ℝ) :
+    HasDerivAt (fun x : ℝ => x ^ n) (n * x ^ (n - 1)) x :=
+  hasDerivAt_pow n x
+```
+:::
 
 ## Analytic functions
 
@@ -421,6 +439,14 @@ example (f : ℝ → ℝ) (p : ℝ) (n : WithTop ℕ∞) (h : AnalyticAt ℝ f p
   sorry
 ```
 
+:::solution
+```lean
+example (f : ℝ → ℝ) (p : ℝ) (n : WithTop ℕ∞)
+    (h : AnalyticAt ℝ f p) : ContDiffAt ℝ n f p :=
+  h.contDiffAt
+```
+:::
+
 ## A definition of Euler's constant and exponentiation
 
 The power-series definition of $`\exp` is exactly Mathlib's definition path.
@@ -443,6 +469,13 @@ example : deriv Real.exp = Real.exp := by
   sorry
 ```
 
+:::solution
+```lean
+example : deriv Real.exp = Real.exp :=
+  Real.deriv_exp
+```
+:::
+
 ## This all works over complex numbers as well, except also complex analysis is heaven
 
 This is exactly the payoff of Mathlib parameterizing over a normed field `𝕜`: replacing `ℝ` with `ℂ` everywhere we wrote it above gets the complex theory for free.
@@ -459,6 +492,13 @@ example (z : ℂ) : AnalyticAt ℂ Complex.exp z := by
   sorry
 ```
 
+:::solution
+```lean
+example (z : ℂ) : AnalyticAt ℂ Complex.exp z :=
+  analyticAt_cexp
+```
+:::
+
 ## Problems
 
 `Complex.exp_mul_I` (the cleaner form) and `Complex.exp_eq_exp_re_mul_sin_add_cos` package Euler's formula in Mathlib.
@@ -473,3 +513,11 @@ example (θ : ℝ) : Complex.exp (θ * Complex.I) =
     Complex.cos θ + Complex.sin θ * Complex.I := by
   sorry
 ```
+
+:::solution
+```lean
+example (θ : ℝ) : Complex.exp (θ * Complex.I) =
+    Complex.cos θ + Complex.sin θ * Complex.I :=
+  Complex.exp_mul_I θ
+```
+:::
