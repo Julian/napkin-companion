@@ -372,6 +372,15 @@ example {σ : Type*} (i j : σ) :
   sorry
 ```
 
+:::solution
+```lean
+example {σ : Type*} (i j : σ) :
+    (MvPolynomial.X i * MvPolynomial.X j :
+      MvPolynomial σ ℂ).IsHomogeneous 2 :=
+  (MvPolynomial.isHomogeneous_X ℂ i).mul (MvPolynomial.isHomogeneous_X ℂ j)
+```
+:::
+
 ## The ambient space
 
 Projective space $`\mathbb{CP}^n` — nonzero vectors up to scaling, equivalently lines through the origin — is Mathlib's `Projectivization`, with a point named from a nonzero vector by `Projectivization.mk`.
@@ -426,6 +435,17 @@ example {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
   sorry
 ```
 
+:::solution
+```lean
+example {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
+    (v : V) (hv : v ≠ 0) (c : K) (hc : c ≠ 0) :
+    Projectivization.mk K (c • v) (smul_ne_zero hc hv)
+      = Projectivization.mk K v hv := by
+  rw [Projectivization.mk_eq_mk_iff']
+  exact ⟨c, rfl⟩
+```
+:::
+
 ## Homogeneous ideals
 
 The vanishing locus of an ideal has an adjoint, `ProjectiveSpectrum.vanishingIdeal`, recording the homogeneous ideal of "functions" vanishing on a set of points.
@@ -447,6 +467,16 @@ example {A σ : Type*} [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]
       ⊆ ProjectiveSpectrum.zeroLocus 𝒜 (I : Set A) := by
   sorry
 ```
+
+:::solution
+```lean
+example {A σ : Type*} [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]
+    (𝒜 : ℕ → σ) [GradedRing 𝒜] (I J : HomogeneousIdeal 𝒜) (h : I ≤ J) :
+    ProjectiveSpectrum.zeroLocus 𝒜 (J : Set A)
+      ⊆ ProjectiveSpectrum.zeroLocus 𝒜 (I : Set A) :=
+  ProjectiveSpectrum.zeroLocus_anti_mono_homogeneousIdeal 𝒜 h
+```
+:::
 
 ## As ringed spaces
 
@@ -476,6 +506,16 @@ example {ι A σ : Type*} [AddCommMonoid ι] [DecidableEq ι]
   sorry
 ```
 
+:::solution
+```lean
+example {ι A σ : Type*} [AddCommMonoid ι] [DecidableEq ι]
+    [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
+    (𝒜 : ι → σ) [GradedRing 𝒜] (x : Submonoid A)
+    (a b : HomogeneousLocalization 𝒜 x) : (a + b).val = a.val + b.val :=
+  HomogeneousLocalization.val_add a b
+```
+:::
+
 ## Examples of regular functions
 
 The numerators appearing in these regular functions are homogeneous polynomials of a fixed degree, so a sum like $`s^2 + 9t^2` from the $`\mathbb{CP}^1` example is again homogeneous of that degree.
@@ -487,3 +527,13 @@ example :
       MvPolynomial (Fin 2) ℂ).IsHomogeneous 2 := by
   sorry
 ```
+
+:::solution
+```lean
+example :
+    (MvPolynomial.X 0 ^ 2 + MvPolynomial.C 9 * MvPolynomial.X 1 ^ 2 :
+      MvPolynomial (Fin 2) ℂ).IsHomogeneous 2 :=
+  (MvPolynomial.isHomogeneous_X_pow 0 2).add
+    (MvPolynomial.isHomogeneous_C_mul_X_pow 9 1 2)
+```
+:::

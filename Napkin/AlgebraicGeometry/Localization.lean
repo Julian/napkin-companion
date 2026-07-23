@@ -426,6 +426,15 @@ example (A : Type*) [CommRing A] (S : Submonoid A) (B : Type*) [CommRing B]
   sorry
 ```
 
+:::solution
+```lean
+example (A : Type*) [CommRing A] (S : Submonoid A) (B : Type*) [CommRing B]
+    [Algebra A B] [IsLocalization S B] (hS : S ≤ nonZeroDivisors A) :
+    Function.Injective (algebraMap A B) :=
+  IsLocalization.injective B hS
+```
+:::
+
 ## Localization away from an element
 
 Localizing away from an element $`f` is localizing at the submonoid `Submonoid.powers f` of powers of $`f`, recorded as `Localization.Away f`.
@@ -446,6 +455,14 @@ example (A : Type*) [CommRing A] (f : A) :
   sorry
 ```
 
+:::solution
+```lean
+example (A : Type*) [CommRing A] (f : A) :
+    IsUnit (algebraMap A (Localization.Away f) f) :=
+  IsLocalization.map_units (Localization.Away f) ⟨f, Submonoid.mem_powers f⟩
+```
+:::
+
 ## Localization at a prime ideal
 
 Localizing at a prime ideal $`\mathfrak{p}` is localizing at its complement, which the primality of $`\mathfrak{p}` makes a submonoid `Ideal.primeCompl`; the resulting ring is `Localization.AtPrime`.
@@ -463,6 +480,14 @@ example (A : Type*) [CommRing A] (p : Ideal A) [p.IsPrime]
     {x y : A} (hx : x ∉ p) (hy : y ∉ p) : x * y ∉ p := by
   sorry
 ```
+
+:::solution
+```lean
+example (A : Type*) [CommRing A] (p : Ideal A) [p.IsPrime]
+    {x y : A} (hx : x ∉ p) (hy : y ∉ p) : x * y ∉ p := fun h =>
+  (‹p.IsPrime›.mem_or_mem h).elim hx hy
+```
+:::
 
 ## Prime ideals of localizations
 
@@ -485,6 +510,15 @@ example (A : Type*) [CommRing A] (S : Submonoid A) (B : Type*) [CommRing B]
     (q.comap (algebraMap A B)).IsPrime := by
   sorry
 ```
+
+:::solution
+```lean
+example (A : Type*) [CommRing A] (S : Submonoid A) (B : Type*) [CommRing B]
+    [Algebra A B] [IsLocalization S B] (q : Ideal B) [q.IsPrime] :
+    (q.comap (algebraMap A B)).IsPrime :=
+  Ideal.comap_isPrime (algebraMap A B) q
+```
+:::
 
 ## Prime ideals of quotients
 
@@ -509,3 +543,11 @@ example (A : Type*) [CommRing A] (I : Ideal A) (q : Ideal (A ⧸ I)) [q.IsPrime]
     (q.comap (Ideal.Quotient.mk I)).IsPrime := by
   sorry
 ```
+
+:::solution
+```lean
+example (A : Type*) [CommRing A] (I : Ideal A) (q : Ideal (A ⧸ I)) [q.IsPrime] :
+    (q.comap (Ideal.Quotient.mk I)).IsPrime :=
+  Ideal.comap_isPrime (Ideal.Quotient.mk I) q
+```
+:::

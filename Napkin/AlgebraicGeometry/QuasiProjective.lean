@@ -347,6 +347,14 @@ example (X : Scheme) (U : X.Opens) : Function.Injective U.ι.base := by
   sorry
 ```
 
+:::solution
+```lean
+example (X : Scheme) (U : X.Opens) :
+    Function.Injective U.ι.base :=
+  U.ι.isOpenEmbedding.injective
+```
+:::
+
 The image of that inclusion is exactly `U` sitting back inside `X`.
 Show that the range of `U.ι` on points is the underlying set of `U`; this is `Scheme.Opens.range_ι`.
 
@@ -354,6 +362,14 @@ Show that the range of `U.ι` on points is the underlying set of `U`; this is `S
 example (X : Scheme) (U : X.Opens) : Set.range U.ι.base = ↑U := by
   sorry
 ```
+
+:::solution
+```lean
+example (X : Scheme) (U : X.Opens) :
+    Set.range U.ι.base = ↑U :=
+  Scheme.Opens.range_ι U
+```
+:::
 
 ## The hyperbola effect
 
@@ -372,3 +388,11 @@ Show that the top open of $`\operatorname{Spec} R` is affine; the finisher is `i
 example (R : CommRingCat) : IsAffineOpen (⊤ : (Spec R).Opens) := by
   sorry
 ```
+
+:::solution
+```lean
+example (R : CommRingCat) :
+    IsAffineOpen (⊤ : (Spec R).Opens) :=
+  isAffineOpen_top (Spec R)
+```
+:::

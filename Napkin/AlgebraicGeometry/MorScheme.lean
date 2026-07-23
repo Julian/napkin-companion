@@ -463,6 +463,14 @@ example {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
   sorry
 ```
 
+:::solution
+```lean
+example {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
+    Spec.map (f ≫ g) = Spec.map g ≫ Spec.map f :=
+  Spec.map_comp f g
+```
+:::
+
 ## Morphisms of ringed spaces via stalks
 
 A morphism $`\pi \colon X \to Y` induces `Scheme.Hom.stalkMap`, going $`\mathcal{O}_{Y, \pi(p)} \to \mathcal{O}_{X, p}` — the opposite direction to $`\pi` on points, as a pullback of functions should.
@@ -482,6 +490,15 @@ example {X Y : Scheme} (f : X ⟶ Y) (U : Y.Opens) (x : X) (hx : f.base x ∈ U)
       f.app U ≫ X.presheaf.germ (f ⁻¹ᵁ U) x hx := by
   sorry
 ```
+
+:::solution
+```lean
+example {X Y : Scheme} (f : X ⟶ Y) (U : Y.Opens) (x : X) (hx : f.base x ∈ U) :
+    Y.presheaf.germ U (f.base x) hx ≫ f.stalkMap x =
+      f.app U ≫ X.presheaf.germ (f ⁻¹ᵁ U) x hx :=
+  f.germ_stalkMap U x hx
+```
+:::
 
 ## Morphisms of locally ringed spaces
 
@@ -542,6 +559,14 @@ example {R S : CommRingCat} :
   sorry
 ```
 
+:::solution
+```lean
+example {R S : CommRingCat} :
+    Function.Bijective (Spec.map : (R ⟶ S) → (Spec S ⟶ Spec R)) :=
+  Spec.homEquiv.symm.bijective
+```
+:::
+
 ## More examples of scheme morphisms
 
 A *scheme over $`S`* is a scheme equipped with a map $`X \to S`; such data is exactly an object of the slice category over $`S`.
@@ -557,6 +582,13 @@ Prove it by feeding both morphisms to `specZIsTerminal.hom_ext`.
 example (X : Scheme) (f g : X ⟶ Spec (.of ℤ)) : f = g := by
   sorry
 ```
+
+:::solution
+```lean
+example (X : Scheme) (f g : X ⟶ Spec (.of ℤ)) : f = g :=
+  specZIsTerminal.hom_ext f g
+```
+:::
 
 ## A little bit on non-affine schemes
 
@@ -576,3 +608,11 @@ example (R : CommRingCat) (f : Γ(Spec R, ⊤)) :
     IsLocalization.Away f Γ(Spec R, (Spec R).basicOpen f) := by
   sorry
 ```
+
+:::solution
+```lean
+example (R : CommRingCat) (f : Γ(Spec R, ⊤)) :
+    IsLocalization.Away f Γ(Spec R, (Spec R).basicOpen f) :=
+  (isAffineOpen_top (Spec R)).isLocalization_basicOpen f
+```
+:::

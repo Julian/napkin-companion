@@ -514,6 +514,15 @@ example {C : Type*} [Category C] (X : TopCat) (ℱ : TopCat.Presheaf C X)
   sorry
 ```
 
+:::solution
+```lean
+example {C : Type*} [Category C] (X : TopCat) (ℱ : TopCat.Presheaf C X)
+    (U : (Opens X)ᵒᵖ) :
+    ℱ.map (𝟙 U) = 𝟙 (ℱ.obj U) :=
+  ℱ.map_id U
+```
+:::
+
 ## Stalks and germs
 
 Mathlib builds the stalk `ℱ.stalk x` as the colimit over the open neighborhoods of `x`, exactly the $`\varinjlim_{U \ni p} \mathcal{F}(U)` of the category-lover's remark; this requires the value category to have colimits.
@@ -541,6 +550,16 @@ example {C : Type*} [Category C] [Limits.HasColimits C]
   sorry
 ```
 
+:::solution
+```lean
+example {C : Type*} [Category C] [Limits.HasColimits C]
+    (X : TopCat) (F : TopCat.Presheaf C X)
+    {U V : Opens X} (i : U ⟶ V) (x : X) (hx : x ∈ U) :
+    F.map i.op ≫ F.germ U x hx = F.germ V x (i.le hx) :=
+  F.germ_res i x hx
+```
+:::
+
 ## Sheaves
 
 A `TopCat.Sheaf C X` is a pre-sheaf bundled with the sheaf condition `TopCat.Presheaf.IsSheaf`.
@@ -560,6 +579,14 @@ example {C : Type*} [Category C] (X : TopCat) {F G : TopCat.Presheaf C X}
     (α : F ≅ G) (hF : F.IsSheaf) : G.IsSheaf := by
   sorry
 ```
+
+:::solution
+```lean
+example {C : Type*} [Category C] (X : TopCat) {F G : TopCat.Presheaf C X}
+    (α : F ≅ G) (hF : F.IsSheaf) : G.IsSheaf :=
+  TopCat.Presheaf.isSheaf_of_iso α hF
+```
+:::
 
 ## For sheaves, sections "are" sequences of germs
 
@@ -585,6 +612,17 @@ example (X : TopCat) (F : TopCat.Sheaf CommRingCat X) (U : Opens X)
     s = t := by
   sorry
 ```
+
+:::solution
+```lean
+example (X : TopCat) (F : TopCat.Sheaf CommRingCat X) (U : Opens X)
+    (s t : F.presheaf.obj (Opposite.op U))
+    (h : ∀ (x : X) (hx : x ∈ U),
+      F.presheaf.germ U x hx s = F.presheaf.germ U x hx t) :
+    s = t :=
+  TopCat.Presheaf.section_ext F U s t h
+```
+:::
 
 ## Sheafification (optional)
 
@@ -614,3 +652,11 @@ example (X : TopCat) (F : TopCat.Presheaf (Type _) X) (x : X) :
     Function.Bijective (F.stalkToFiber x) := by
   sorry
 ```
+
+:::solution
+```lean
+example (X : TopCat) (F : TopCat.Presheaf (Type _) X) (x : X) :
+    Function.Bijective (F.stalkToFiber x) :=
+  ⟨F.stalkToFiber_injective x, F.stalkToFiber_surjective x⟩
+```
+:::
