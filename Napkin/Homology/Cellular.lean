@@ -351,6 +351,17 @@ example (df dg : ℤ) :
   sorry
 ```
 
+:::solution
+```lean
+example (df dg : ℤ) :
+    (fun x : ℤ => df * x) ∘ (fun x : ℤ => dg * x)
+      = fun x : ℤ => df * dg * x := by
+  funext x
+  simp only [Function.comp_apply]
+  ring
+```
+:::
+
 To keep this shadow honest, the self-maps and their degrees are bundled as {name}`MapDegreeData`: a type `SelfMap` of self-maps of the sphere, whose monoid multiplication *is* composition, together with the degree presented as an honest monoid homomorphism `deg : SelfMap →* ℤ`.
 The two defining properties of the text — $`\deg(\operatorname{id}) = 1` and $`\deg(f \circ g) = \deg(f)\deg(g)` — are then nothing but {name}`map_one` and {name}`map_mul` for that homomorphism, and a constant map records its degree $`0` as a separate field.
 
@@ -368,6 +379,14 @@ example (D : MapDegreeData) (f g : D.SelfMap) :
   sorry
 ```
 
+:::solution
+```lean
+example (D : MapDegreeData) (f g : D.SelfMap) :
+    D.deg (f * g) = D.deg f * D.deg g :=
+  map_mul D.deg f g
+```
+:::
+
 Multiplicativity forces the degree of a map composed with itself to be a perfect square, $`\deg(f \circ f) = (\deg f)^2`.
 Prove it.
 
@@ -377,6 +396,14 @@ example (D : MapDegreeData) (f : D.SelfMap) :
   sorry
 ```
 
+:::solution
+```lean
+example (D : MapDegreeData) (f : D.SelfMap) :
+    D.deg (f * f) = (D.deg f) ^ 2 := by
+  rw [map_mul]; ring
+```
+:::
+
 This is the engine behind the hairy ball theorem: the antipodal map on an even sphere has degree $`-1`, so composing it with itself gives degree $`(-1)^2 = 1`, the same as $`\operatorname{id}`.
 Show that any self-map of degree $`-1` squares to one of degree $`1`.
 
@@ -385,6 +412,14 @@ example (D : MapDegreeData) (f : D.SelfMap) (h : D.deg f = -1) :
     D.deg (f * f) = 1 := by
   sorry
 ```
+
+:::solution
+```lean
+example (D : MapDegreeData) (f : D.SelfMap) (h : D.deg f = -1) :
+    D.deg (f * f) = 1 := by
+  rw [map_mul, h]; ring
+```
+:::
 
 ## Cellular chain complex
 
@@ -420,6 +455,14 @@ example (K : ChainComplex (ModuleCat ℤ) ℕ) (i j k : ℕ) :
   sorry
 ```
 
+:::solution
+```lean
+example (K : ChainComplex (ModuleCat ℤ) ℕ) (i j k : ℕ) :
+    K.d i j ≫ K.d j k = 0 :=
+  K.d_comp_d i j k
+```
+:::
+
 ## Application: Euler characteristic via Betti numbers
 
 The rank of a free $`\mathbb{Z}`-module is {name}`Module.finrank`; for the torus the group $`H_1 \cong \mathbb{Z}^2` has Betti number $`b_1 = 2`, and the alternating sum of $`b_0, b_1, b_2 = 1, 2, 1` is the Euler characteristic $`0`.
@@ -439,6 +482,16 @@ example :
   sorry
 ```
 
+:::solution
+```lean
+example :
+    (Module.finrank ℤ (Fin 1 → ℤ) : ℤ) - Module.finrank ℤ (Fin 2 → ℤ)
+      + Module.finrank ℤ (Fin 1 → ℤ) = 0 := by
+  simp only [Module.finrank_pi, Fintype.card_fin]
+  norm_num
+```
+:::
+
 The *combinatorial* side of the identity — the alternating sum $`\chi(X) = \sum_n (-1)^n \cdot \#(n\text{-cells})` counted straight off a CW decomposition — is packaged as {name}`CellStructure`: a count `cells : ℕ → ℕ` of the $`k`-cells in each dimension, bounded above by a top dimension `dim`, with {name}`CellStructure.eulerChar` the finite alternating sum.
 Mathlib's {name}`Topology.CWComplex` records the cells and attaching maps but has no cell-counting or Euler-characteristic API, so this too is a stopgap in `Napkin.Missing`.
 
@@ -450,6 +503,13 @@ example : CellStructure.torus.eulerChar = 0 := by
   sorry
 ```
 
+:::solution
+```lean
+example : CellStructure.torus.eulerChar = 0 :=
+  CellStructure.eulerChar_torus
+```
+:::
+
 The sphere formula makes the even/odd split visible: an even sphere has $`\chi = 2` and an odd sphere has $`\chi = 0`.
 Confirm both endpoints — $`\chi(S^2) = 2`, then $`\chi(S^1) = 0` — from {name}`CellStructure.eulerChar_sphere`.
 
@@ -460,6 +520,16 @@ example : (CellStructure.sphere 2).eulerChar = 2 := by
 example : (CellStructure.sphere 1).eulerChar = 0 := by
   sorry
 ```
+
+:::solution
+```lean
+example : (CellStructure.sphere 2).eulerChar = 2 := by
+  rw [CellStructure.eulerChar_sphere 2 (by norm_num)]; norm_num
+
+example : (CellStructure.sphere 1).eulerChar = 0 := by
+  rw [CellStructure.eulerChar_sphere 1 (by norm_num)]; norm_num
+```
+:::
 
 ## The cellular boundary formula
 
@@ -475,3 +545,11 @@ Make the torsion precise: show that this class is nonzero and yet is killed by $
 example : ((0, 1) : ℤ × ZMod 2) ≠ 0 ∧ (2 : ℕ) • ((0, 1) : ℤ × ZMod 2) = 0 := by
   sorry
 ```
+
+:::solution
+```lean
+example : ((0, 1) : ℤ × ZMod 2) ≠ 0
+    ∧ (2 : ℕ) • ((0, 1) : ℤ × ZMod 2) = 0 := by
+  refine ⟨?_, ?_⟩ <;> decide
+```
+:::

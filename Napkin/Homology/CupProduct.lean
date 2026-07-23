@@ -622,6 +622,16 @@ example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (x y : M) :
   sorry
 ```
 
+:::solution
+```lean
+example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (x y : M) :
+    ExteriorAlgebra.ι R x * ExteriorAlgebra.ι R y
+      = -(ExteriorAlgebra.ι R y * ExteriorAlgebra.ι R x) := by
+  rw [eq_neg_iff_add_eq_zero]
+  exact ExteriorAlgebra.ι_add_mul_swap x y
+```
+:::
+
 ## Cup products
 
 The cup product $`\smile` on singular cochains is not present in Mathlib, so the companion module `Napkin.Missing.CupProduct` defines it, `cup`, directly on the singular cochains `Cochain X R p` of the previous chapter.
@@ -675,6 +685,15 @@ example {X R : Type*} [CommRing R] {p q : ℕ}
   sorry
 ```
 
+:::solution
+```lean
+example {X R : Type*} [CommRing R] {p q : ℕ}
+    (a : Cochain X R p) (b₁ b₂ : Cochain X R q) :
+    cup a (b₁ + b₂) = cup a b₁ + cup a b₂ :=
+  cup_add_right a b₁ b₂
+```
+:::
+
 Show that cupping with the zero cochain gives zero.
 
 ```lean
@@ -682,6 +701,14 @@ example {X R : Type*} [CommRing R] {p q : ℕ} (a : Cochain X R p) :
     cup a (0 : Cochain X R q) = 0 := by
   sorry
 ```
+
+:::solution
+```lean
+example {X R : Type*} [CommRing R] {p q : ℕ} (a : Cochain X R p) :
+    cup a (0 : Cochain X R q) = 0 :=
+  cup_zero_right a
+```
+:::
 
 ## Wedge sums
 
@@ -699,6 +726,13 @@ Confirm that the multiplicative identity of $`R \times S` is the pair $`(1, 1)`.
 example (R S : Type*) [CommRing R] [CommRing S] : (1 : R × S) = (1, 1) := by
   sorry
 ```
+
+:::solution
+```lean
+example (R S : Type*) [CommRing R] [CommRing S] :
+    (1 : R × S) = (1, 1) := rfl
+```
+:::
 
 ## Cross product
 
@@ -721,6 +755,15 @@ example (R M N : Type*) [CommRing R] [AddCommGroup M] [AddCommGroup N]
   sorry
 ```
 
+:::solution
+```lean
+example (R M N : Type*) [CommRing R] [AddCommGroup M] [AddCommGroup N]
+    [Module R M] [Module R N] (a : M) (b c : N) :
+    a ⊗ₜ[R] (b + c) = a ⊗ₜ[R] b + a ⊗ₜ[R] c :=
+  TensorProduct.tmul_add a b c
+```
+:::
+
 ## Künneth formula
 
 The Künneth formula computes $`H^\bullet(X \times Y; R)` as a tensor product of graded rings, and while the cohomology rings are unavailable, the algebraic operation it uses is standard: Mathlib's `A ⊗[R] B` is the tensor product of two `R`-algebras, again an `R`-algebra.
@@ -739,3 +782,12 @@ example (R A B : Type*) [CommRing R] [CommRing A] [CommRing B]
     (a₁ ⊗ₜ[R] b₁) * (a₂ ⊗ₜ[R] b₂) = (a₁ * a₂) ⊗ₜ[R] (b₁ * b₂) := by
   sorry
 ```
+
+:::solution
+```lean
+example (R A B : Type*) [CommRing R] [CommRing A] [CommRing B]
+    [Algebra R A] [Algebra R B] (a₁ a₂ : A) (b₁ b₂ : B) :
+    (a₁ ⊗ₜ[R] b₁) * (a₂ ⊗ₜ[R] b₂) = (a₁ * a₂) ⊗ₜ[R] (b₁ * b₂) :=
+  Algebra.TensorProduct.tmul_mul_tmul a₁ a₂ b₁ b₂
+```
+:::

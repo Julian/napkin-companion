@@ -360,6 +360,14 @@ example {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
   sorry
 ```
 
+:::solution
+```lean
+example {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
+    [ContractibleSpace X] (e : X ≃ₕ Y) : ContractibleSpace Y :=
+  e.symm.contractibleSpace
+```
+:::
+
 ## The category of pairs
 
 The underlying single-space notion, homotopy equivalence, is Mathlib's {name}`ContinuousMap.HomotopyEquiv` (written `X ≃ₕ Y`).
@@ -398,6 +406,15 @@ example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
   sorry
 ```
 
+:::solution
+```lean
+example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
+    (N : Submodule R M) :
+    (pairShortComplex N).f ≫ (pairShortComplex N).g = 0 :=
+  (pairShortComplex N).zero
+```
+:::
+
 Every element of $`H_n(X, A)` has a representative in $`C(X)`, because the projection $`C(X) \to C(X, A)` hits every relative chain.
 Show that this projection is surjective; the quotient projection `N.mkQ` is surjective by {name}`Submodule.mkQ_surjective`.
 
@@ -406,6 +423,14 @@ example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
     (N : Submodule R M) : Function.Surjective N.mkQ := by
   sorry
 ```
+
+:::solution
+```lean
+example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
+    (N : Submodule R M) : Function.Surjective N.mkQ :=
+  Submodule.mkQ_surjective N
+```
+:::
 
 Collapsing $`X` onto a subspace that is all of it leaves nothing behind: when $`A = X`, the relative chains $`C(X, X)` have a single element, matching $`H_n(X, X) = 0`.
 Here `RelativeChains N` is by definition the quotient module `M ⧸ N`, and such a quotient is a subsingleton exactly when the subgroup is everything, recorded by {name}`Submodule.Quotient.subsingleton_iff`.
@@ -417,6 +442,14 @@ example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M] :
   sorry
 ```
 
+:::solution
+```lean
+example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M] :
+    Subsingleton (RelativeChains (⊤ : Submodule R M)) :=
+  Submodule.Quotient.subsingleton_iff.mpr rfl
+```
+:::
+
 Homotopy equivalence is reflexive: every space is homotopy equivalent to itself.
 Construct this identity homotopy equivalence with {name}`ContinuousMap.HomotopyEquiv.refl`.
 
@@ -424,3 +457,10 @@ Construct this identity homotopy equivalence with {name}`ContinuousMap.HomotopyE
 example (X : Type) [TopologicalSpace X] : X ≃ₕ X := by
   sorry
 ```
+
+:::solution
+```lean
+example (X : Type) [TopologicalSpace X] : X ≃ₕ X :=
+  ContinuousMap.HomotopyEquiv.refl X
+```
+:::

@@ -433,6 +433,14 @@ example {C : Type*} [Category C] [Abelian C] (S : ShortComplex C)
   sorry
 ```
 
+:::solution
+```lean
+example {C : Type*} [Category C] [Abelian C] (S : ShortComplex C)
+    (hS : S.ShortExact) : Mono S.f :=
+  hS.mono_f
+```
+:::
+
 ## The long exact sequence of homology groups
 
 This is one of the anchor theorems of homological algebra in Mathlib.
@@ -467,6 +475,16 @@ example {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
   sorry
 ```
 
+:::solution
+```lean
+example {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
+    {S : ShortComplex (HomologicalComplex C c)} (hS : S.ShortExact)
+    (i j : ι) (hij : c.Rel i j) :
+    HomologicalComplex.homologyMap S.g i ≫ hS.δ i j hij = 0 :=
+  hS.comp_δ i j hij
+```
+:::
+
 ## The Mayer–Vietoris sequence
 
 The splitting lemma is Mathlib's {name}`CategoryTheory.ShortComplex.Splitting`: a splitting of a short complex is exactly the retraction/section data of clauses (a) and (b), and it exhibits the middle object as the biproduct $`A \oplus C` of clause (c).
@@ -484,3 +502,11 @@ example {C : Type*} [Category C] [Abelian C] {S : ShortComplex C}
     (s : S.Splitting) : s.s ≫ S.g = 𝟙 S.X₃ := by
   sorry
 ```
+
+:::solution
+```lean
+example {C : Type*} [Category C] [Abelian C] {S : ShortComplex C}
+    (s : S.Splitting) : s.s ≫ S.g = 𝟙 S.X₃ :=
+  s.s_g
+```
+:::

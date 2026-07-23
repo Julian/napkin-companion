@@ -423,6 +423,15 @@ example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
   sorry
 ```
 
+:::solution
+```lean
+example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
+    (A : CochainComplex V ℕ) (i j k : ℕ) :
+    A.d i j ≫ A.d j k = 0 :=
+  A.d_comp_d i j k
+```
+:::
+
 ## Cohomology of spaces
 
 Mathlib does not build the singular cochain complex $`C^\bullet(X; G)` of a topological space, nor the singular cohomology groups $`H^n(X; G)`.
@@ -467,6 +476,15 @@ example {X : Type*} {G : Type*} [AddCommGroup G] {n : ℕ}
   sorry
 ```
 
+:::solution
+```lean
+example {X : Type*} {G : Type*} [AddCommGroup G] {n : ℕ}
+    (c₁ c₂ : Cochain X G n) :
+    coboundary (c₁ + c₂) = coboundary c₁ + coboundary c₂ :=
+  coboundary_add c₁ c₂
+```
+:::
+
 The prototype claimed a $`0`-cochain in $`\ker\delta` is constant on path components; combinatorially, $`\delta c = 0` forces `c` to agree across the two endpoints of every $`1`-simplex $`[v_0, v_1]`, because $`(\delta c)([v_0, v_1]) = c([v_1]) - c([v_0])`.
 To even state this we need to name the vertices of a $`1`-simplex.
 A `Simplex X n` is the tuple of its $`n + 1` vertices `Fin (n + 1) → X`, so a $`1`-simplex `v : Simplex X 1` has endpoints `v 0` and `v 1`.
@@ -493,6 +511,16 @@ example {X : Type*} {G : Type*} [AddCommGroup G] {c : Cochain X G 0}
       = c (Chain.ofSimplex fun _ => v 0) := by
   sorry
 ```
+
+:::solution
+```lean
+example {X : Type*} {G : Type*} [AddCommGroup G] {c : Cochain X G 0}
+    (h : coboundary c = 0) (v : Simplex X 1) :
+    c (Chain.ofSimplex fun _ => v 1)
+      = c (Chain.ofSimplex fun _ => v 0) :=
+  cocycle_zero_locally_constant h v
+```
+:::
 
 Underlying all of this is dualizing a _single_ map by $`\operatorname{Hom}(-, G)`, which Mathlib does have.
 Over a commutative ring `R` the dual $`\operatorname{Hom}(M, R)` is `Module.Dual R M`, and a linear map $`M \to N` dualizes — reversing direction — to `LinearMap.dualMap`.
@@ -523,6 +551,16 @@ example (R M N P : Type*) [CommRing R] [AddCommGroup M] [Module R M]
   sorry
 ```
 
+:::solution
+```lean
+example (R M N P : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
+    (f : M →ₗ[R] N) (g : N →ₗ[R] P) :
+    (g.comp f).dualMap = f.dualMap.comp g.dualMap :=
+  (LinearMap.dualMap_comp_dualMap f g).symm
+```
+:::
+
 ## Universal coefficient theorem
 
 Mathlib does have $`\operatorname{Ext}` groups (in `Mathlib.Algebra.Homology.DerivedCategory.Ext`), but they are set up in the general derived-category framework rather than the one-step free-resolution recipe used here, and the universal coefficient theorem itself is not part of the library.
@@ -543,3 +581,12 @@ example (F V : Type*) [Field F] [AddCommGroup V] [Module F V]
     Module.finrank F (Module.Dual F V) = Module.finrank F V := by
   sorry
 ```
+
+:::solution
+```lean
+example (F V : Type*) [Field F] [AddCommGroup V] [Module F V]
+    [FiniteDimensional F V] :
+    Module.finrank F (Module.Dual F V) = Module.finrank F V :=
+  Subspace.dual_finrank_eq
+```
+:::
