@@ -365,6 +365,14 @@ example {Ω : Type*} [TopologicalSpace Ω] [MeasurableSpace Ω] [BorelSpace Ω]
   sorry
 ```
 
+:::solution
+```lean
+example {Ω : Type*} [TopologicalSpace Ω] [MeasurableSpace Ω] [BorelSpace Ω]
+    (s : Set Ω) (hs : IsClosed s) : MeasurableSet s :=
+  hs.measurableSet
+```
+:::
+
 ## Measure spaces
 
 `MeasureTheory.Measure Ω` is Mathlib's measure structure: a function from sets to `ℝ≥0∞` (the extended nonneg reals — codomain `[0, +∞]` exactly as the book wants) carrying the empty-set and countable-additivity axioms as fields.
@@ -396,6 +404,18 @@ example {Ω : Type*} [MeasurableSpace Ω] (μ : MeasureTheory.Measure Ω)
   sorry
 ```
 
+:::solution
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] (μ : MeasureTheory.Measure Ω)
+    [MeasureTheory.IsProbabilityMeasure μ] (A : ℕ → Set Ω)
+    (hA : ∀ n, MeasurableSet (A n)) (h : ∀ n, μ (A n) = 1) :
+    μ (⋂ n, A n) = 1 := by
+  rw [← prob_compl_eq_zero_iff (MeasurableSet.iInter hA), Set.compl_iInter]
+  exact measure_iUnion_null fun n =>
+    (prob_compl_eq_zero_iff (hA n)).2 (h n)
+```
+:::
+
 ## Measurable functions
 
 `Measurable f` is the Mathlib predicate, defined exactly as the preimage condition above.
@@ -425,6 +445,15 @@ example {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β]
   sorry
 ```
 
+:::solution
+```lean
+example {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β]
+    [MeasurableSpace γ] {f : α → β} {g : β → γ}
+    (hf : Measurable f) (hg : Measurable g) : Measurable (g ∘ f) :=
+  hg.comp hf
+```
+:::
+
 ## On the word "almost"
 
 Mathlib's `MeasureTheory.ae μ` is the *almost-everywhere filter*: the filter on `Ω` whose sets are the measurable subsets of $`\Omega` whose complement is `μ`-null.
@@ -442,6 +471,14 @@ example {Ω : Type*} [MeasurableSpace Ω] (μ : MeasureTheory.Measure Ω)
     (P : Ω → Prop) (h : ∀ ω, P ω) : ∀ᵐ ω ∂μ, P ω := by
   sorry
 ```
+
+:::solution
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] (μ : MeasureTheory.Measure Ω)
+    (P : Ω → Prop) (h : ∀ ω, P ω) : ∀ᵐ ω ∂μ, P ω :=
+  ae_of_all μ h
+```
+:::
 
 :::aside "AEEqFun: quotienting out the noise"
 Mathlib's `MeasureTheory.AEEqFun μ E` (notation `α →ₘ[μ] E`) does the "equivalence classes of maps modulo agreement off a $`\mu`-null set" construction explicitly: it's the *quotient* of measurable functions by the almost-everywhere equality relation.

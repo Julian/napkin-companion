@@ -412,6 +412,14 @@ example {Ω : Type*} (𝒜 : Set (Set Ω)) (h : IsSetAlgebra 𝒜)
   sorry
 ```
 
+:::solution
+```lean
+example {Ω : Type*} (𝒜 : Set (Set Ω)) (h : IsSetAlgebra 𝒜)
+    (s t : Set Ω) (hs : s ∈ 𝒜) (ht : t ∈ 𝒜) : s ∩ t ∈ 𝒜 :=
+  h.inter_mem hs ht
+```
+:::
+
 ## Outer measures
 
 `OuterMeasure Ω` is Mathlib's outer measure structure: a function `Set Ω → ℝ≥0∞` carrying exactly these three axioms (`empty`, `mono`, and `iUnion_nat` for countable subadditivity) as fields.
@@ -431,6 +439,14 @@ example {Ω : Type*} (μ : OuterMeasure Ω) (s t : Set Ω) (h : s ⊆ t) :
     μ s ≤ μ t := by
   sorry
 ```
+
+:::solution
+```lean
+example {Ω : Type*} (μ : OuterMeasure Ω) (s t : Set Ω) (h : s ⊆ t) :
+    μ s ≤ μ t :=
+  μ.mono h
+```
+:::
 
 ## Carathéodory extension for outer measures
 
@@ -462,6 +478,14 @@ example {Ω : Type*} (μ : OuterMeasure Ω) (s : Set Ω)
   sorry
 ```
 
+:::solution
+```lean
+example {Ω : Type*} (μ : OuterMeasure Ω) (s : Set Ω)
+    (h : μ.IsCaratheodory s) : μ.IsCaratheodory sᶜ :=
+  μ.isCaratheodory_compl h
+```
+:::
+
 ## Defining the Lebesgue measure
 
 Mathlib short-circuits the whole construction for the user.
@@ -485,6 +509,13 @@ example (a : ℝ) : volume ({a} : Set ℝ) = 0 := by
   sorry
 ```
 
+:::solution
+```lean
+example (a : ℝ) : volume ({a} : Set ℝ) = 0 := by
+  simp
+```
+:::
+
 ## A fourth row: Carathéodory for pre-measures
 
 `SigmaFinite μ` is the Mathlib typeclass; `volume` on `ℝ` and `ℝ^n` carries it as a registered instance, since you can cover the line by `Set.Ico (-n) n` for `n : ℕ`.
@@ -498,6 +529,14 @@ Rewriting with `Real.volume_Ioo` turns the goal into `ENNReal.ofReal (n - -n) �
 example (n : ℕ) : volume (Set.Ioo (-(n : ℝ)) n) ≠ ⊤ := by
   sorry
 ```
+
+:::solution
+```lean
+example (n : ℕ) : volume (Set.Ioo (-(n : ℝ)) n) ≠ ⊤ := by
+  rw [Real.volume_Ioo]
+  exact ENNReal.ofReal_ne_top
+```
+:::
 
 ## Problems
 

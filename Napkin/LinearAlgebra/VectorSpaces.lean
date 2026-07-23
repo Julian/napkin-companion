@@ -851,6 +851,14 @@ example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
   sorry
 ```
 
+:::solution
+```lean
+example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    (r : R) (m : M) : (-r) • m = -(r • m) :=
+  neg_smul r m
+```
+:::
+
 ## Direct sums
 
 The (external) direct sum of two modules is their product with componentwise operations, and the $`n`-fold sum $`M^{\oplus n}` is the type of functions `Fin n → M`.
@@ -876,6 +884,15 @@ example (R M N : Type*) [CommRing R]
     (r : R) (m : M) (n : N) : r • ((m, n) : M × N) = (r • m, r • n) := by
   sorry
 ```
+
+:::solution
+```lean
+example (R M N : Type*) [CommRing R]
+    [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+    (r : R) (m : M) (n : N) : r • ((m, n) : M × N) = (r • m, r • n) :=
+  rfl
+```
+:::
 
 ## Linear independence, spans, and basis
 
@@ -919,6 +936,14 @@ example (R M ι : Type*) [CommRing R] [AddCommGroup M] [Module R M]
   sorry
 ```
 
+:::solution
+```lean
+example (R M ι : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    (b : Basis ι R M) : LinearIndependent R b :=
+  b.linearIndependent
+```
+:::
+
 ## Linear maps
 
 A linear map `V →ₗ[k] W` bundles a function with the additivity and scalar-action conditions, and an isomorphism of vector spaces is `V ≃ₗ[k] W`.
@@ -950,6 +975,16 @@ example (k V W : Type*) [Field k]
     T (a • v + b • w) = a • T v + b • T w := by
   sorry
 ```
+
+:::solution
+```lean
+example (k V W : Type*) [Field k]
+    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
+    (T : V →ₗ[k] W) (a b : k) (v w : V) :
+    T (a • v + b • w) = a • T v + b • T w := by
+  rw [map_add, map_smul, map_smul]
+```
+:::
 
 ## What is a matrix?
 
@@ -993,6 +1028,15 @@ example (k V ι : Type*) [Field k] [AddCommGroup V] [Module k V]
   sorry
 ```
 
+:::solution
+```lean
+example (k V ι : Type*) [Field k] [AddCommGroup V] [Module k V]
+    [Fintype ι] [DecidableEq ι] (b : Basis ι k V) :
+    LinearMap.toMatrix b b LinearMap.id = 1 :=
+  LinearMap.toMatrix_id b
+```
+:::
+
 ## Subspaces and picking convenient bases
 
 A subspace is a `Submodule k V`; the kernel and image of a linear map are submodules, and the span of a set of vectors is `Submodule.span`.
@@ -1032,3 +1076,11 @@ example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
     (N : Submodule k V) : (0 : V) ∈ N := by
   sorry
 ```
+
+:::solution
+```lean
+example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    (N : Submodule k V) : (0 : V) ∈ N :=
+  N.zero_mem
+```
+:::

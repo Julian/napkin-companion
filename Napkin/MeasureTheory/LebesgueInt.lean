@@ -8,6 +8,7 @@ import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 import Mathlib.MeasureTheory.Function.SimpleFunc
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 import Mathlib.MeasureTheory.Measure.Prod
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -301,6 +302,22 @@ example {α : Type*} [MeasurableSpace α] (μ : Measure α) (f : α → ℝ) :
   sorry
 ```
 
+:::solution
+```lean
+example {α : Type*} [MeasurableSpace α] (μ : Measure α) (f : α → ℝ) :
+    Integrable f μ ↔
+      Integrable (fun x => max (f x) 0) μ ∧
+        Integrable (fun x => max (-f x) 0) μ := by
+  constructor
+  · intro hf
+    exact ⟨hf.pos_part, hf.neg_part⟩
+  · rintro ⟨hp, hn⟩
+    refine (hp.sub hn).congr ?_
+    filter_upwards with x
+    simp
+```
+:::
+
 ## An equivalent definition
 
 The product measure on $`\Omega \times \mathbb{R}` is `MeasureTheory.Measure.prod μ ν`, and the "volume under the graph" identity is `volume_regionBetween_eq_lintegral` (the region $`R(f)` being `regionBetween 0 f` in Mathlib).
@@ -314,6 +331,15 @@ example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
     μ.prod ν (s ×ˢ t) = μ s * ν t := by
   sorry
 ```
+
+:::solution
+```lean
+example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
+    (μ : Measure α) (ν : Measure β) [SFinite ν] (s : Set α) (t : Set β) :
+    μ.prod ν (s ×ˢ t) = μ s * ν t :=
+  Measure.prod_prod s t
+```
+:::
 
 ## Relation to Riemann integrals (or: actually computing Lebesgue integrals)
 
@@ -329,6 +355,13 @@ example : ∫ x in (1 : ℝ)..4, x ^ 2 = 21 := by
   sorry
 ```
 
+:::solution
+```lean
+example : ∫ x in (1 : ℝ)..4, x ^ 2 = 21 := by
+  rw [integral_pow]; norm_num
+```
+:::
+
 ## Problems
 
 In Mathlib, the second part of "The indicator of the rationals" is essentially `MeasureTheory.integral_indicator_one` plus the Lebesgue-measure-of-`ℚ` calculation: since $`\mathbb{Q}` is countable and the Lebesgue measure has no atoms, `Set.Countable.measure_zero` concludes $`\mu(\mathbb{Q}) = 0` directly.
@@ -339,3 +372,13 @@ Carry that out: the indicator of the range of $`\mathbb{Q} \hookrightarrow \math
 example : ∫ x, (Set.range ((↑) : ℚ → ℝ)).indicator (1 : ℝ → ℝ) x = 0 := by
   sorry
 ```
+
+:::solution
+```lean
+example : ∫ x, (Set.range ((↑) : ℚ → ℝ)).indicator (1 : ℝ → ℝ) x = 0 := by
+  have hc : (Set.range ((↑) : ℚ → ℝ)).Countable := Set.countable_range _
+  rw [integral_indicator_one hc.measurableSet, measureReal_def,
+    hc.measure_zero]
+  simp
+```
+:::

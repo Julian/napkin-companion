@@ -244,6 +244,15 @@ example {G : Type*} [Group G] [MeasurableSpace G]
   sorry
 ```
 
+:::solution
+```lean
+example {G : Type*} [Group G] [MeasurableSpace G]
+    (μ : MeasureTheory.Measure G) [μ.IsMulLeftInvariant]
+    (g : G) : μ.map (g * ·) = μ :=
+  MeasureTheory.map_mul_left_eq_self μ g
+```
+:::
+
 ## The Pontryagin dual
 
 `PontryaginDual G` is Mathlib's type of characters, defined as `G →ₜ* Circle`: the continuous group homomorphisms into the unit circle, given the compact-open topology and pointwise multiplication that make it into another LCA group.
@@ -264,6 +273,14 @@ example (G : Type*) [CommGroup G] [TopologicalSpace G]
     DiscreteTopology (PontryaginDual G) := by
   sorry
 ```
+
+:::solution
+```lean
+example (G : Type*) [CommGroup G] [TopologicalSpace G]
+    [IsTopologicalGroup G] [CompactSpace G] :
+    DiscreteTopology (PontryaginDual G) := inferInstance
+```
+:::
 
 ## The orthonormal basis in the compact case
 
@@ -287,6 +304,14 @@ example {T : ℝ} [Fact (0 < T)] {m n : ℤ} (h : m ≠ n) :
     inner ℂ (fourierLp (T := T) 2 m) (fourierLp (T := T) 2 n) = 0 := by
   sorry
 ```
+
+:::solution
+```lean
+example {T : ℝ} [Fact (0 < T)] {m n : ℤ} (h : m ≠ n) :
+    inner ℂ (fourierLp (T := T) 2 m) (fourierLp (T := T) 2 n) = 0 :=
+  orthonormal_fourier.2 h
+```
+:::
 
 ## The Fourier transform of the non-compact case
 
@@ -316,6 +341,18 @@ example {V E : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
     (h'f : MeasureTheory.Integrable (𝓕 f)) : 𝓕⁻ (𝓕 f) = f := by
   sorry
 ```
+
+:::solution
+```lean
+open scoped FourierTransform in
+example {V E : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+    [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
+    [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
+    (f : V → E) (h : Continuous f) (hf : MeasureTheory.Integrable f)
+    (h'f : MeasureTheory.Integrable (𝓕 f)) : 𝓕⁻ (𝓕 f) = f :=
+  h.fourierInv_fourier_eq hf h'f
+```
+:::
 
 ## Summary
 
