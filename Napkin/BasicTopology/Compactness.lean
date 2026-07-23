@@ -470,6 +470,13 @@ example (X : Type*) [TopologicalSpace X] (s : Set X) (hs : s.Finite) :
   sorry
 ```
 
+:::solution
+```lean
+example (X : Type*) [TopologicalSpace X] (s : Set X) (hs : s.Finite) :
+    IsCompact s := hs.isCompact
+```
+:::
+
 The proposition that closed subsets of compact sets are compact is `IsCompact.of_isClosed_subset`.
 Its extra hypotheses ride along after the dot: with $`s` compact, $`t` closed, and $`t \subseteq s`, the term `hs.of_isClosed_subset ht h` is the whole proof that $`t` is compact.
 
@@ -479,6 +486,14 @@ example (X : Type*) [TopologicalSpace X] (s t : Set X)
     IsCompact t := by
   sorry
 ```
+
+:::solution
+```lean
+example (X : Type*) [TopologicalSpace X] (s t : Set X)
+    (hs : IsCompact s) (ht : IsClosed t) (h : t ⊆ s) :
+    IsCompact t := hs.of_isClosed_subset ht h
+```
+:::
 
 ## Criteria for compactness
 
@@ -558,6 +573,14 @@ example (X : Type*) [TopologicalSpace X] (s : Set X) (hs : IsCompact s)
   sorry
 ```
 
+:::solution
+```lean
+example (X : Type*) [TopologicalSpace X] (s : Set X) (hs : IsCompact s)
+    (hne : s.Nonempty) (f : X → ℝ) (hf : ContinuousOn f s) :
+    ∃ x ∈ s, IsMaxOn f s x := hs.exists_isMaxOn hne hf
+```
+:::
+
 Uniform continuity is the predicate `UniformContinuous`, and it lives on a `UniformSpace` rather than a metric space.
 A uniform space is the structure that lets us compare "closeness" uniformly across all points, generalizing the metric-space $`\delta`.
 Its uniformity filter `𝓤 α` collects the *entourages*: sets of pairs `(x, y)` that count as close, the abstract stand-ins for "$`d(x, y) < \delta`".
@@ -578,6 +601,14 @@ example (M N : Type*) [UniformSpace M] [UniformSpace N] [CompactSpace M]
   sorry
 ```
 
+:::solution
+```lean
+example (M N : Type*) [UniformSpace M] [UniformSpace N] [CompactSpace M]
+    (f : M → N) (hf : Continuous f) : UniformContinuous f :=
+  CompactSpace.uniformContinuous_of_continuous hf
+```
+:::
+
 ## Equivalence of formulations of compactness
 
 The Lebesgue number lemma is `lebesgue_number_lemma`: for an open cover of a compact set it produces an entourage $`V` such that every $`V`-ball around a point of the set sits inside a single cover element.
@@ -597,3 +628,10 @@ example (M : Type*) [PseudoMetricSpace M] (s : Set M) (hs : IsSeqCompact s) :
     TotallyBounded s := by
   sorry
 ```
+
+:::solution
+```lean
+example (M : Type*) [PseudoMetricSpace M] (s : Set M) (hs : IsSeqCompact s) :
+    TotallyBounded s := hs.totallyBounded
+```
+:::

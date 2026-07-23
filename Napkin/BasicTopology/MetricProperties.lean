@@ -278,6 +278,14 @@ example (M : Type*) [PseudoMetricSpace M] (s : Set M)
   sorry
 ```
 
+:::solution
+```lean
+example (M : Type*) [PseudoMetricSpace M] (s : Set M)
+    (h : TotallyBounded s) : Bornology.IsBounded s :=
+  h.isBounded
+```
+:::
+
 ## Completeness
 
 A sequence is modeled as a function `ℕ → M`, and the Cauchy condition is `CauchySeq`.
@@ -302,6 +310,14 @@ example (M : Type*) [PseudoMetricSpace M] (x : ℕ → M) (p : M)
   sorry
 ```
 
+:::solution
+```lean
+example (M : Type*) [PseudoMetricSpace M] (x : ℕ → M) (p : M)
+    (h : Filter.Tendsto x Filter.atTop (𝓝 p)) : CauchySeq x :=
+  h.cauchySeq
+```
+:::
+
 ## Let the buyer beware
 
 The fishy example pits $`(0, 1)` against $`\mathbb{R}`.
@@ -320,6 +336,13 @@ example : TotallyBounded (Set.Ioo (0 : ℝ) 1) := by
   sorry
 ```
 
+:::solution
+```lean
+example : TotallyBounded (Set.Ioo (0 : ℝ) 1) :=
+  totallyBounded_Ioo 0 1
+```
+:::
+
 ## Subspaces, and (inb4) a confusing linguistic point
 
 Completeness of a subset is `IsComplete`, and one half of the chapter's exercise — "a complete subset is closed" — is `IsComplete.isClosed`.
@@ -337,3 +360,11 @@ example (M : Type*) [MetricSpace M] [CompleteSpace M] (s : Set M)
     (h : IsClosed s) : IsComplete s := by
   sorry
 ```
+
+:::solution
+```lean
+example (M : Type*) [MetricSpace M] [CompleteSpace M] (s : Set M)
+    (h : IsClosed s) : IsComplete s :=
+  h.isComplete
+```
+:::

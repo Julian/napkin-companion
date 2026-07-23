@@ -306,6 +306,14 @@ example {M N : Type*} [MetricSpace M] [CompactSpace M] [MetricSpace N]
   sorry
 ```
 
+:::solution
+```lean
+example {M N : Type*} [MetricSpace M] [CompactSpace M] [MetricSpace N]
+    (f : M → N) (hf : Continuous f) : UniformContinuous f :=
+  CompactSpace.uniformContinuous_of_continuous hf
+```
+:::
+
 ## Dense sets and extension
 
 `Dense s` in Mathlib is the equivalent statement "`s.closure = univ`", or pointwise "`∀ x, x ∈ closure s`".
@@ -324,6 +332,16 @@ example (f g : ℝ → ℝ) (hf : Continuous f) (hg : Continuous g)
     (h : ∀ q : ℚ, f q = g q) : f = g := by
   sorry
 ```
+
+:::solution
+```lean
+example (f g : ℝ → ℝ) (hf : Continuous f) (hg : Continuous g)
+    (h : ∀ q : ℚ, f q = g q) : f = g := by
+  refine hf.ext_on Rat.denseRange_cast hg ?_
+  rintro _ ⟨q, rfl⟩
+  exact h q
+```
+:::
 
 ## Defining the Riemann integral
 
@@ -346,6 +364,13 @@ example (a b c : ℝ) : ∫ _ in a..b, c = (b - a) • c := by
   sorry
 ```
 
+:::solution
+```lean
+example (a b c : ℝ) : ∫ _ in a..b, c = (b - a) • c :=
+  intervalIntegral.integral_const c
+```
+:::
+
 ## Meshes
 
 `intervalIntegral.integral_eq_sub_of_hasDerivAt` is the FTC in Mathlib, and the proof there is the partition-and-MVT argument above.
@@ -367,6 +392,14 @@ example : ∫ x in (1 : ℝ)..4, x ^ 2 = 21 := by
   sorry
 ```
 
+:::solution
+```lean
+example : ∫ x in (1 : ℝ)..4, x ^ 2 = 21 := by
+  rw [integral_pow]
+  norm_num
+```
+:::
+
 ## Problems
 
 The chapter's first problem — a differentiable function with bounded derivative is uniformly continuous — factors in Mathlib into two steps: a bounded derivative makes the function Lipschitz (`Convex.lipschitzOnWith_of_nnnorm_deriv_le`, the MVT argument the hint suggests), and a Lipschitz function is uniformly continuous.
@@ -377,3 +410,12 @@ example {M N : Type*} [PseudoMetricSpace M] [PseudoMetricSpace N]
     (f : M → N) (K : NNReal) (h : LipschitzWith K f) : UniformContinuous f := by
   sorry
 ```
+
+:::solution
+```lean
+example {M N : Type*} [PseudoMetricSpace M] [PseudoMetricSpace N]
+    (f : M → N) (K : NNReal) (h : LipschitzWith K f) :
+    UniformContinuous f :=
+  h.uniformContinuous
+```
+:::

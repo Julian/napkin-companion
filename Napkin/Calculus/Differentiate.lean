@@ -449,6 +449,14 @@ example (f : ℝ → ℝ) (f' p : ℝ) (h : HasDerivAt f f' p) : ContinuousAt f 
   sorry
 ```
 
+:::solution
+```lean
+example (f : ℝ → ℝ) (f' p : ℝ) (h : HasDerivAt f f' p) :
+    ContinuousAt f p :=
+  h.continuousAt
+```
+:::
+
 ## How to compute them
 
 The sum, product, and chain rules show up as `HasDerivAt.add`, `HasDerivAt.mul`, and `HasDerivAt.comp` in Mathlib.
@@ -501,6 +509,19 @@ example (x : ℝ) :
   sorry
 ```
 
+:::solution
+```lean
+example (x : ℝ) :
+    HasDerivAt (fun x : ℝ => x^3 + 10*x^2 + 2019) (3*x^2 + 20*x) x := by
+  have h1 : HasDerivAt (fun x : ℝ => x^3) (3*x^2) x := by
+    simpa using hasDerivAt_pow 3 x
+  have h2 : HasDerivAt (fun x : ℝ => 10*x^2) (10*(2*x)) x := by
+    simpa using (hasDerivAt_pow 2 x).const_mul 10
+  rw [show (3*x^2 + 20*x : ℝ) = 3*x^2 + 10*(2*x) by ring]
+  exact (h1.add h2).add_const 2019
+```
+:::
+
 ## Local (and global) maximums
 
 `IsLocalMax f p` and `IsLocalMin f p` are the predicates in `Mathlib.Topology.Order.LocalExtr`, defined neighborhood-filter-style: "on a punctured neighborhood of $`p`, $`f(x) \leq f(p)`."
@@ -522,6 +543,13 @@ example (x : ℝ) : 1 + x ≤ Real.exp x := by
   sorry
 ```
 
+:::solution
+```lean
+example (x : ℝ) : 1 + x ≤ Real.exp x := by
+  rw [add_comm]; exact Real.add_one_le_exp x
+```
+:::
+
 ## Rolle and friends
 
 Mathlib has Rolle as `exists_deriv_eq_zero` (in `Deriv.MeanValue`) and several variants for different smoothness hypotheses.
@@ -532,6 +560,15 @@ example (f : ℝ → ℝ) (a b : ℝ) (hab : a < b) (hfc : ContinuousOn f (Set.I
     (hfI : f a = f b) : ∃ c ∈ Set.Ioo a b, deriv f c = 0 := by
   sorry
 ```
+
+:::solution
+```lean
+example (f : ℝ → ℝ) (a b : ℝ) (hab : a < b)
+    (hfc : ContinuousOn f (Set.Icc a b)) (hfI : f a = f b) :
+    ∃ c ∈ Set.Ioo a b, deriv f c = 0 :=
+  exists_deriv_eq_zero hab hfc hfI
+```
+:::
 
 The mean value theorem is `exists_hasDerivAt_eq_slope`.
 
@@ -565,6 +602,13 @@ The question asked you to show the absolute value function is not smooth; alread
 example : ¬ DifferentiableAt ℝ (fun x : ℝ => |x|) 0 := by
   sorry
 ```
+
+:::solution
+```lean
+example : ¬ DifferentiableAt ℝ (fun x : ℝ => |x|) 0 :=
+  not_differentiableAt_abs_zero
+```
+:::
 
 ## Problems
 

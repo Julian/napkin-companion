@@ -463,6 +463,13 @@ example (X : Type*) [TopologicalSpace X] [DiscreteTopology X] (S : Set X) :
     IsOpen S := by sorry
 ```
 
+:::solution
+```lean
+example (X : Type*) [TopologicalSpace X] [DiscreteTopology X] (S : Set X) :
+    IsOpen S := isOpen_discrete S
+```
+:::
+
 ## Continuity
 
 `Continuous f` is continuity, and `continuous_def` is precisely the open-set characterization that motivates the whole chapter: a function is continuous exactly when the pre-image of every open set is open.
@@ -483,6 +490,14 @@ example (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
   sorry
 ```
 
+:::solution
+```lean
+example (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
+    (h : X ≃ₜ Y) : Continuous h ∧ Continuous h.symm :=
+  ⟨h.continuous, h.symm.continuous⟩
+```
+:::
+
 ## Closed sets
 
 `IsClosed S` means the complement is open; `isOpen_compl_iff` is the equivalence.
@@ -500,12 +515,27 @@ example (X : Type*) [TopologicalSpace X] (S T : Set X)
     (hS : IsClosed S) (hT : IsClosed T) : IsClosed (S ∪ T) := by sorry
 ```
 
+:::solution
+```lean
+example (X : Type*) [TopologicalSpace X] (S T : Set X)
+    (hS : IsClosed S) (hT : IsClosed T) : IsClosed (S ∪ T) := hS.union hT
+```
+:::
+
 The EXERCISE that a function is continuous if and only if the pre-image of every closed set is closed is `continuous_iff_isClosed`.
 
 ```lean
 example (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) :
     Continuous f ↔ ∀ S : Set Y, IsClosed S → IsClosed (f ⁻¹' S) := by sorry
 ```
+
+:::solution
+```lean
+example (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) :
+    Continuous f ↔ ∀ S : Set Y, IsClosed S → IsClosed (f ⁻¹' S) :=
+  continuous_iff_isClosed
+```
+:::
 
 ## Hausdorff spaces
 
@@ -524,12 +554,25 @@ The QUESTION "all metric spaces are Hausdorff" is registered as an instance, so 
 example (X : Type*) [MetricSpace X] : T2Space X := by sorry
 ```
 
+:::solution
+```lean
+example (X : Type*) [MetricSpace X] : T2Space X := inferInstance
+```
+:::
+
 The PROBLEM "Hausdorff implies $`T_1`" — that every singleton `{p}` is closed — follows because `T2Space` already refines to `T1Space`, whose characteristic lemma is `isClosed_singleton`.
 
 ```lean
 example (X : Type*) [TopologicalSpace X] [T2Space X] (p : X) :
     IsClosed {p} := by sorry
 ```
+
+:::solution
+```lean
+example (X : Type*) [TopologicalSpace X] [T2Space X] (p : X) :
+    IsClosed {p} := isClosed_singleton
+```
+:::
 
 ## Subspaces
 
@@ -559,6 +602,13 @@ example (X : Type*) [TopologicalSpace X] :
     IsClopen (Set.univ : Set X) := by sorry
 ```
 
+:::solution
+```lean
+example (X : Type*) [TopologicalSpace X] :
+    IsClopen (Set.univ : Set X) := isClopen_univ
+```
+:::
+
 ## Path-connected spaces
 
 `Path x y` is a continuous function `[0,1] → X` with the specified endpoints; `PathConnectedSpace X` records that any two points have one.
@@ -576,6 +626,13 @@ example (X : Type*) [TopologicalSpace X] [PathConnectedSpace X] :
     ConnectedSpace X := by sorry
 ```
 
+:::solution
+```lean
+example (X : Type*) [TopologicalSpace X] [PathConnectedSpace X] :
+    ConnectedSpace X := inferInstance
+```
+:::
+
 ## Homotopy and simply connected spaces
 
 `Path.Homotopic α β` is the relation "there is a path homotopy from `α` to `β`", and `SimplyConnectedSpace X` is the corresponding space-level property.
@@ -585,6 +642,13 @@ As remarked, $`\simeq` is an equivalence relation; its reflexivity is `Path.Homo
 example (X : Type*) [TopologicalSpace X] (x y : X) (γ : Path x y) :
     γ.Homotopic γ := by sorry
 ```
+
+:::solution
+```lean
+example (X : Type*) [TopologicalSpace X] (x y : X) (γ : Path x y) :
+    γ.Homotopic γ := Path.Homotopic.refl γ
+```
+:::
 
 ## Bases of spaces
 
