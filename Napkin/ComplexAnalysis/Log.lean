@@ -251,6 +251,18 @@ example : Set.range (fun k : ℤ => 2 * k) = {n : ℤ | Even n} := by
     sorry
 ```
 
+:::solution
+```lean
+example : Set.range (fun k : ℤ => 2 * k) = {n : ℤ | Even n} := by
+  ext n
+  constructor
+  · rintro ⟨k, rfl⟩
+    exact ⟨k, two_mul k⟩
+  · rintro ⟨k, rfl⟩
+    exact ⟨k, two_mul k⟩
+```
+:::
+
 ## Complex logarithms
 
 The map $`\exp \colon \mathbb{C} \to \mathbb{C}^*` is a covering map, and covering-space lifting (`IsCoveringMap.existsUnique_continuousMap_lifts`) supplies a lift over a simply-connected domain.
@@ -279,6 +291,16 @@ example (f g : ℂ → ℂ) (z₀ : ℂ) (hfg : ∀ z, Complex.exp (g z) = f z)
   sorry
 ```
 
+:::solution
+```lean
+example (f g : ℂ → ℂ) (z₀ : ℂ) (hfg : ∀ z, Complex.exp (g z) = f z)
+    (hz : f z₀ = 0) : False := by
+  have hne := Complex.exp_ne_zero (g z₀)
+  rw [hfg z₀, hz] at hne
+  exact hne rfl
+```
+:::
+
 ## Some special cases
 
 `Complex.log` is the principal-branch logarithm, defined directly as `Complex.log z = Real.log ‖z‖ + Complex.arg z * Complex.I`, so its imaginary part lies in $`(-\pi, \pi]`; it is total on $`\mathbb{C}`, with the junk value `Real.log 0 = 0` at the origin.
@@ -305,3 +327,11 @@ The value comes from `Complex.hasDerivAt_log hz : HasDerivAt Complex.log z⁻¹ 
 example (z : ℂ) (hz : z ∈ Complex.slitPlane) : deriv Complex.log z = z⁻¹ := by
   sorry
 ```
+
+:::solution
+```lean
+example (z : ℂ) (hz : z ∈ Complex.slitPlane) :
+    deriv Complex.log z = z⁻¹ :=
+  (Complex.hasDerivAt_log hz).deriv
+```
+:::

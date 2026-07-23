@@ -541,6 +541,17 @@ example (C D : Type*) [Category C] [Category D] (F : C ⥤ D)
   sorry
 ```
 
+:::solution
+```lean
+example (C D : Type*) [Category C] [Category D] (F : C ⥤ D)
+    (A₁ A₂ : C) (e : A₁ ≅ A₂) : F.obj A₁ ≅ F.obj A₂ where
+  hom := F.map e.hom
+  inv := F.map e.inv
+  hom_inv_id := by rw [← F.map_comp, e.hom_inv_id, F.map_id]
+  inv_hom_id := by rw [← F.map_comp, e.inv_hom_id, F.map_id]
+```
+:::
+
 ## Covariant functors as indexed family of objects
 
 The product category $`\mathcal{A}^2` is the product of a category with itself, `C × C`; Mathlib puts a category instance on the product of any two categories, with morphisms the pairs `(f, g)`.
@@ -560,6 +571,14 @@ Construct it.
 example (C : Type*) [Category C] : C ⥤ C × C := by
   sorry
 ```
+
+:::solution
+```lean
+example (C : Type*) [Category C] : C ⥤ C × C where
+  obj A := (A, A)
+  map f := (f, f)
+```
+:::
 
 ## Contravariant functors
 
@@ -582,6 +601,13 @@ example (C D : Type*) [Category C] [Category D] (F : C ⥤ D) : Cᵒᵖ ⥤ Dᵒ
   sorry
 ```
 
+:::solution
+```lean
+example (C D : Type*) [Category C] [Category D] (F : C ⥤ D) :
+    Cᵒᵖ ⥤ Dᵒᵖ := F.op
+```
+:::
+
 ## Equivalence of categories
 
 An equivalence, written `C ≌ D`, packages the two functors and the two natural isomorphisms witnessing that the round trips are naturally isomorphic to the identities.
@@ -601,6 +627,13 @@ Produce it.
 example (C D : Type*) [Category C] [Category D] (e : C ≌ D) : D ≌ C := by
   sorry
 ```
+
+:::solution
+```lean
+example (C D : Type*) [Category C] [Category D] (e : C ≌ D) : D ≌ C :=
+  e.symm
+```
+:::
 
 ## Natural transformations
 
@@ -623,6 +656,14 @@ example (C D : Type*) [Category C] [Category D] (F G : C ⥤ D)
   sorry
 ```
 
+:::solution
+```lean
+example (C D : Type*) [Category C] [Category D] (F G : C ⥤ D)
+    (α : F ⟶ G) {A₁ A₂ : C} (f : A₁ ⟶ A₂) :
+    F.map f ≫ α.app A₂ = α.app A₁ ≫ G.map f := α.naturality f
+```
+:::
+
 ## The Yoneda lemma
 
 The bijection of the Yoneda lemma is `yonedaEquiv`: natural transformations $`H_A \to X` are in bijection with the elements of $`X(A)`.
@@ -641,3 +682,11 @@ example (C : Type*) [Category C] (X Y : C)
     (h : yoneda.obj X ≅ yoneda.obj Y) : X ≅ Y := by
   sorry
 ```
+
+:::solution
+```lean
+noncomputable example (C : Type*) [Category C] (X Y : C)
+    (h : yoneda.obj X ≅ yoneda.obj Y) : X ≅ Y :=
+  yoneda.preimageIso h
+```
+:::

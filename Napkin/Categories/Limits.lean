@@ -124,6 +124,15 @@ example {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y)
   sorry
 ```
 
+:::solution
+```lean
+example {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y)
+    (c c' : Fork f g) (hc : IsLimit c) (hc' : IsLimit c') :
+    c.pt ≅ c'.pt :=
+  IsLimit.conePointUniqueUpToIso hc hc'
+```
+:::
+
 A later problem asks you to show the equalizer map $`E \xrightarrow{e} X` is a monomorphism.
 Confirm that Mathlib already records this as an instance.
 
@@ -132,6 +141,14 @@ example {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y)
     [HasEqualizer f g] : Mono (equalizer.ι f g) := by
   sorry
 ```
+
+:::solution
+```lean
+example {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y)
+    [HasEqualizer f g] : Mono (equalizer.ι f g) :=
+  inferInstance
+```
+:::
 
 ## Pullback squares
 

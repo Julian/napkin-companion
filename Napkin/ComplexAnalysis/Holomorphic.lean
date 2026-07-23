@@ -596,6 +596,13 @@ example : Differentiable ℂ (fun z : ℂ => z ^ 3 + 2 * z + 1) := by
   sorry
 ```
 
+:::solution
+```lean
+example : Differentiable ℂ (fun z : ℂ => z ^ 3 + 2 * z + 1) := by
+  fun_prop
+```
+:::
+
 ## Contour integrals
 
 Mathlib gives this directly as `intervalIntegral` of the integrand `f (α t) * α' t`.
@@ -618,6 +625,13 @@ example : (∮ z in C((0 : ℂ), 1), (z - (0 : ℂ))⁻¹) = 2 * Real.pi * Compl
   by sorry
 ```
 
+:::solution
+```lean
+example : (∮ z in C((0 : ℂ), 1), (z - (0 : ℂ))⁻¹) = 2 * Real.pi * Complex.I :=
+  circleIntegral.integral_sub_center_inv 0 (by norm_num)
+```
+:::
+
 ## Cauchy-Goursat theorem
 
 `circleIntegral_eq_zero_of_differentiable_on_off_countable` is the closest raw lemma, but it asks for continuity on the closed disk plus differentiability off a countable set, which is fiddly to feed by hand.
@@ -629,6 +643,14 @@ example (f : ℂ → ℂ) (hf : Differentiable ℂ f) (c : ℂ) (R : ℝ) (hR : 
     (∮ z in C(c, R), f z) = 0 := by
   sorry
 ```
+
+:::solution
+```lean
+example (f : ℂ → ℂ) (hf : Differentiable ℂ f) (c : ℂ) (R : ℝ) (hR : 0 ≤ R) :
+    (∮ z in C(c, R), f z) = 0 :=
+  hf.diffContOnCl.circleIntegral_eq_zero hR
+```
+:::
 
 ## Cauchy's integral theorem
 
@@ -645,6 +667,15 @@ example (f : ℂ → ℂ) (c : ℂ) (R C : ℝ) (hR : 0 ≤ R)
     ‖∮ z in C(c, R), f z‖ ≤ 2 * Real.pi * R * C := by
   sorry
 ```
+
+:::solution
+```lean
+example (f : ℂ → ℂ) (c : ℂ) (R C : ℝ) (hR : 0 ≤ R)
+    (hf : ∀ z ∈ Metric.sphere c R, ‖f z‖ ≤ C) :
+    ‖∮ z in C(c, R), f z‖ ≤ 2 * Real.pi * R * C :=
+  circleIntegral.norm_integral_le_of_norm_le_const hR hf
+```
+:::
 
 ## Holomorphic functions are analytic
 
@@ -665,6 +696,13 @@ example (f : ℂ → ℂ) (hf : Differentiable ℂ f) : AnalyticOnNhd ℂ f Set.
   sorry
 ```
 
+:::solution
+```lean
+example (f : ℂ → ℂ) (hf : Differentiable ℂ f) : AnalyticOnNhd ℂ f Set.univ :=
+  Complex.analyticOnNhd_univ_iff_differentiable.mpr hf
+```
+:::
+
 ## Problems
 
 Liouville's theorem is `Differentiable.apply_eq_apply_of_bounded` in Mathlib: any entire $`f \colon \mathbb{C} \to \mathbb{C}` whose image is bounded takes the same value at every two points, i.e. is constant.
@@ -676,6 +714,14 @@ example (f : ℂ → ℂ) (hf : Differentiable ℂ f)
     (hb : Bornology.IsBounded (Set.range f)) (z w : ℂ) : f z = f w := by
   sorry
 ```
+
+:::solution
+```lean
+example (f : ℂ → ℂ) (hf : Differentiable ℂ f)
+    (hb : Bornology.IsBounded (Set.range f)) (z w : ℂ) : f z = f w :=
+  hf.apply_eq_apply_of_bounded hb z w
+```
+:::
 
 `AnalyticOnNhd.eqOn_zero_of_preconnected_of_eventuallyEq_zero` and the local version `AnalyticAt.eventually_eq_zero_or_eventually_ne_zero` give the "zeros are isolated" dichotomy: either $`f` vanishes on a neighborhood, or its zeros are locally isolated.
 

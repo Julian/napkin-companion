@@ -466,6 +466,15 @@ example (f : ℂ → ℂ) (z : ℂ) (hf : MeromorphicAt f z) :
   sorry
 ```
 
+:::solution
+```lean
+example (f : ℂ → ℂ) (z : ℂ) (hf : MeromorphicAt f z) :
+    meromorphicOrderAt (f * f) z
+      = meromorphicOrderAt f z + meromorphicOrderAt f z :=
+  meromorphicOrderAt_mul hf hf
+```
+:::
+
 ## Winding numbers and the residue theorem
 
 Mathlib does not have a winding-number API for complex contours, and it does not yet formalize residues or the residue theorem — there is no residue API to state them with.
@@ -516,6 +525,14 @@ example (a z₀ : ℂ) :
   sorry
 ```
 
+:::solution
+```lean
+example (a z₀ : ℂ) :
+    residue (fun z => a * (z - z₀)⁻¹) z₀ 1 = a := by
+  rw [residue_const_mul, residue_sub_center_inv z₀ one_ne_zero, mul_one]
+```
+:::
+
 Every other Laurent monomial contributes nothing: the residue of $`(z - w)^n` is $`0` for every $`n \neq -1`, which is `residue_sub_zpow_of_ne`.
 
 ```lean
@@ -531,6 +548,14 @@ example (w z₀ : ℂ) (r : ℝ) :
   sorry
 ```
 
+:::solution
+```lean
+example (w z₀ : ℂ) (r : ℝ) :
+    residue (fun z => (z - w) ^ (2 : ℤ)) z₀ r = 0 :=
+  residue_sub_zpow_of_ne (by decide) w z₀ r
+```
+:::
+
 ## Argument principle
 
 Mathlib has the logarithmic derivative itself as `logDeriv`, but not the meromorphic statement that $`f'/f` has a simple pole whose residue is exactly the order of $`f`; nor does it have the argument principle in any form, which would first need the residue theorem and a winding-number API.
@@ -545,6 +570,15 @@ example (f g : ℂ → ℂ) (x : ℂ) (hf : f x ≠ 0) (hg : g x ≠ 0)
   sorry
 ```
 
+:::solution
+```lean
+example (f g : ℂ → ℂ) (x : ℂ) (hf : f x ≠ 0) (hg : g x ≠ 0)
+    (hdf : DifferentiableAt ℂ f x) (hdg : DifferentiableAt ℂ g x) :
+    logDeriv (fun z => f z * g z) x = logDeriv f x + logDeriv g x :=
+  logDeriv_mul x hf hg hdf hdg
+```
+:::
+
 The principle itself — $`\frac{1}{2\pi i} \oint_\gamma \frac{f'}{f} = Z - P` — is out of reach, so `ArgumentPrincipleData` bundles it as a hypothesis, carrying the zero count $`Z` and pole count $`P` inside the contour.
 When $`f` has no poles, the contour integral counts the zeros outright; prove this, `zeros_eq_contour` doing the arithmetic.
 
@@ -554,6 +588,15 @@ example (D : ArgumentPrincipleData) (h : D.P = 0) :
       (∮ z in C(D.c, D.r), logDeriv D.f z) := by
   sorry
 ```
+
+:::solution
+```lean
+example (D : ArgumentPrincipleData) (h : D.P = 0) :
+    (D.Z : ℂ) = (2 * Real.pi * Complex.I)⁻¹ •
+      (∮ z in C(D.c, D.r), logDeriv D.f z) :=
+  D.zeros_eq_contour h
+```
+:::
 
 This is the engine behind Rouché's theorem: two pole-free functions whose logarithmic-derivative integrals agree must enclose the same number of zeros, `eq_zero_count_of_eq`.
 
@@ -583,6 +626,13 @@ Because $`\mathbb{C}` is algebraically closed, the number of roots counted with 
 example (f : ℂ[X]) : f.roots.card = f.natDegree := by
   sorry
 ```
+
+:::solution
+```lean
+example (f : ℂ[X]) : f.roots.card = f.natDegree :=
+  IsAlgClosed.card_roots_eq_natDegree
+```
+:::
 
 The open mapping theorem is `AnalyticOnNhd.is_constant_or_isOpen` in Mathlib (a nonconstant analytic function on a connected open set is either constant or an open map), and the maximum modulus principle is `Complex.eqOn_of_isPreconnected_of_isMaxOn_norm`.
 The maximum-modulus statement takes its cleanest form as a rigidity result: a function whose norm attains a maximum at an interior point of a connected open set is forced to be constant there.
