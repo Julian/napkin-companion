@@ -599,6 +599,14 @@ example (K : Type*) [Field K] [Algebra ℚ K] (φ : K →ₐ[ℚ] ℂ) (q : ℚ)
   sorry
 ```
 
+:::solution
+```lean
+example (K : Type*) [Field K] [Algebra ℚ K] (φ : K →ₐ[ℚ] ℂ) (q : ℚ) :
+    φ (algebraMap ℚ K q) = algebraMap ℚ ℂ q :=
+  φ.commutes q
+```
+:::
+
 ## Field extensions, algebraic extension, and splitting fields
 
 Since carriers are types rather than literal subsets, "one field sitting inside another" is expressed by an `Algebra F K` instance between two fields — the data of the inclusion map — and the degree $`[K:F]` is `Module.finrank F K`, exactly the vector-space dimension the definition prescribes.
@@ -627,6 +635,16 @@ example (F K L : Type*) [Field F] [Field K] [Field L]
   sorry
 ```
 
+:::solution
+```lean
+example (F K L : Type*) [Field F] [Field K] [Field L]
+    [Algebra F K] [Algebra K L] [Algebra F L] [IsScalarTower F K L]
+    [FiniteDimensional F K] [FiniteDimensional K L] :
+    Module.finrank F K * Module.finrank K L = Module.finrank F L :=
+  Module.finrank_mul_finrank F K L
+```
+:::
+
 ## Embeddings into algebraic closures for number fields
 
 The count of embeddings is `NumberField.Embeddings.card`, which appears when defining the discriminant; the theorem in the generality developed here — counting maps into any algebraically closed target — is `AlgHom.card`.
@@ -647,6 +665,14 @@ example (K : Type*) [Field K] [Algebra ℚ K] [FiniteDimensional ℚ K] :
   sorry
 ```
 
+:::solution
+```lean
+example (K : Type*) [Field K] [Algebra ℚ K] [FiniteDimensional ℚ K] :
+    Fintype.card (K →ₐ[ℚ] ℂ) = Module.finrank ℚ K :=
+  AlgHom.card (F := ℚ) (E := K) ℂ
+```
+:::
+
 ## Everyone hates characteristic 2: separable vs irreducible
 
 "$`F` has characteristic $`p`" is the typeclass `CharP F p`, with `CharZero F` (equivalent to `CharP F 0` via `charP_zero_iff_charZero`) as the way of saying characteristic zero.
@@ -665,6 +691,13 @@ The exercise asked you to show that a nonzero characteristic is prime.
 example (F : Type*) [Field F] (p : ℕ) [CharP F p] (hp : p ≠ 0) : p.Prime := by
   sorry
 ```
+
+:::solution
+```lean
+example (F : Type*) [Field F] (p : ℕ) [CharP F p] (hp : p ≠ 0) : p.Prime :=
+  CharP.char_prime_of_ne_zero F hp
+```
+:::
 
 ## Automorphism groups and Galois extensions
 
@@ -701,6 +734,17 @@ example (F K : Type*) [Field F] [Field K] [Algebra F K]
   sorry
 ```
 
+:::solution
+```lean
+example (F K : Type*) [Field F] [Field K] [Algebra F K]
+    (f : Polynomial F) (α : K) (h : Polynomial.aeval α f = 0)
+    (σ : K ≃ₐ[F] K) : Polynomial.aeval (σ α) f = 0 := by
+  have : Polynomial.aeval (σ α) f = σ (Polynomial.aeval α f) :=
+    Polynomial.aeval_algHom_apply σ.toAlgHom α f
+  rw [this, h, map_zero]
+```
+:::
+
 ## Fundamental theorem of Galois theory
 
 The bijection of part 1 is `IsGalois.intermediateFieldEquivSubgroup`, an order isomorphism between `IntermediateField F K` — the bundled "fields $`E` with $`F \subseteq E \subseteq K`" — and subgroups of the Galois group, with the order on subgroups dualized to record the inclusion reversal.
@@ -735,6 +779,15 @@ example (F K : Type*) [Field F] [Field K] [Algebra F K] [FiniteDimensional F K]
   sorry
 ```
 
+:::solution
+```lean
+example (F K : Type*) [Field F] [Field K] [Algebra F K] [FiniteDimensional F K]
+    (H : Subgroup (K ≃ₐ[F] K)) :
+    IntermediateField.fixingSubgroup (IntermediateField.fixedField H) = H :=
+  IntermediateField.fixingSubgroup_fixedField H
+```
+:::
+
 ## Problems
 
 The cyclotomic Galois group is computed once and for all by `IsPrimitiveRoot.autToPow`-adjacent machinery (for instance `IsPrimitiveRoot.autToPow_injective`); the packaged form is `IsCyclotomicExtension.autEquivPow`, valid for any cyclotomic extension.
@@ -746,6 +799,14 @@ example (F E : Type*) [Field F] [Field E] [Algebra F E] [FiniteDimensional F E]
     [Algebra.IsSeparable F E] : ∃ α : E, F⟮α⟯ = ⊤ := by
   sorry
 ```
+
+:::solution
+```lean
+example (F E : Type*) [Field F] [Field E] [Algebra F E] [FiniteDimensional F E]
+    [Algebra.IsSeparable F E] : ∃ α : E, F⟮α⟯ = ⊤ :=
+  Field.exists_primitive_element F E
+```
+:::
 
 ## (Optional) Proof that Galois extensions are splitting
 
@@ -766,3 +827,12 @@ example (F K : Type*) [Field F] [Field K] [Algebra F K]
     Fintype.card (K ≃ₐ[F] K) ≤ Module.finrank F K := by
   sorry
 ```
+
+:::solution
+```lean
+example (F K : Type*) [Field F] [Field K] [Algebra F K]
+    [FiniteDimensional F K] :
+    Fintype.card (K ≃ₐ[F] K) ≤ Module.finrank F K :=
+  AlgEquiv.card_le
+```
+:::

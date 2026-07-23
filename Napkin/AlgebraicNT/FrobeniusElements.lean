@@ -563,6 +563,14 @@ example (R : Type*) [CommRing R] (p : ℕ) [Fact p.Prime] [CharP R p]
   sorry
 ```
 
+:::solution
+```lean
+example (R : Type*) [CommRing R] (p : ℕ) [Fact p.Prime] [CharP R p]
+    (x y : R) : (x + y) ^ p = x ^ p + y ^ p :=
+  add_pow_char x y p
+```
+:::
+
 ## Conjugacy classes
 
 The conjugation computation is `IsArithFrobAt.conj`: if $`\sigma'` is a Frobenius at $`Q`, then $`\tau \sigma' \tau^{-1}` is a Frobenius at $`\tau \cdot Q`.
@@ -587,6 +595,15 @@ example {G : Type*} [Group G] (σ τ : G) :
     orderOf (τ * σ * τ⁻¹) = orderOf σ := by
   sorry
 ```
+
+:::solution
+```lean
+example {G : Type*} [Group G] (σ τ : G) :
+    orderOf (τ * σ * τ⁻¹) = orderOf σ := by
+  rw [← MulAut.conj_apply]
+  exact (MulAut.conj τ).orderOf_eq σ
+```
+:::
 
 Bundling a representative's conjugacy class turns the theorem into an object: the *Artin symbol* $`\operatorname{artinSymbol} R\, Q : \operatorname{ConjClasses} G`, the conjugacy-class-valued Frobenius that "Conjugacy classes in Galois groups" produces.
 Mathlib has the element-valued `arithFrobAt R G Q` and the conjugacy fact `isConj_arithFrobAt`, but not that packaging, so `Napkin.Missing.Frobenius` assembles it — to be retired the day Mathlib adopts a conjugacy-class-valued symbol.
@@ -624,6 +641,14 @@ example {G : Type*} [Group G] [Fintype G] (D : ChebotarevData G) :
   sorry
 ```
 
+:::solution
+```lean
+example {G : Type*} [Group G] [Fintype G] (D : ChebotarevData G) :
+    D.density 1 = 1 / (Nat.card G : ℝ) :=
+  D.density_one
+```
+:::
+
 Every conjugacy class is a subset of $`G`, so no class can be denser than the whole group.
 Show that each density is at most $`1`.
 
@@ -632,6 +657,15 @@ example {G : Type*} [Group G] [Fintype G] (D : ChebotarevData G)
     (C : ConjClasses G) : D.density C ≤ 1 := by
   sorry
 ```
+
+:::solution
+```lean
+example {G : Type*} [Group G] [Fintype G] (D : ChebotarevData G)
+    (C : ConjClasses G) : D.density C ≤ 1 := by
+  rw [D.chebotarev, div_le_one (by exact_mod_cast Nat.card_pos)]
+  exact_mod_cast Nat.card_le_card_of_injective _ Subtype.val_injective
+```
+:::
 
 Its most famous special case *is* in Mathlib, though: for $`K = \mathbb{Q}(\zeta_m)` the theorem specializes to Dirichlet's theorem on primes in arithmetic progressions (a problem at the end of this chapter), and that is `Nat.infinite_setOf_prime_and_eq_mod`, proved — as the classical route goes — with Dirichlet characters and their $`L`-series rather than with Frobenius elements.
 That special case is genuinely available: whenever $`a` is a unit mod $`m`, there are infinitely many primes congruent to $`a`.
@@ -653,6 +687,13 @@ Confirm that Mathlib knows the unit group of a prime field is cyclic.
 example (q : ℕ) [Fact q.Prime] : IsCyclic (ZMod q)ˣ := by
   sorry
 ```
+
+:::solution
+```lean
+example (q : ℕ) [Fact q.Prime] : IsCyclic (ZMod q)ˣ :=
+  inferInstance
+```
+:::
 
 ## Frobenius elements behave well with restriction
 
@@ -681,6 +722,17 @@ example (F K₁ E : Type*) [Field F] [Field K₁] [Field E] [Algebra F K₁]
   sorry
 ```
 
+:::solution
+```lean
+example (F K₁ E : Type*) [Field F] [Field K₁] [Field E] [Algebra F K₁]
+    [Algebra F E] [Algebra K₁ E] [IsScalarTower F K₁ E] [Normal F K₁]
+    [Normal F E] :
+    Function.Surjective
+      (AlgEquiv.restrictNormalHom K₁ : (E ≃ₐ[F] E) → (K₁ ≃ₐ[F] K₁)) :=
+  AlgEquiv.restrictNormalHom_surjective E
+```
+:::
+
 ## Application: Quadratic reciprocity
 
 The Legendre symbol and this theorem are `legendreSym` and `legendreSym.quadratic_reciprocity`:
@@ -702,6 +754,13 @@ example (p : ℕ) [Fact p.Prime] : IsSquare (-1 : ZMod p) ↔ p % 4 ≠ 3 := by
   sorry
 ```
 
+:::solution
+```lean
+example (p : ℕ) [Fact p.Prime] : IsSquare (-1 : ZMod p) ↔ p % 4 ≠ 3 :=
+  ZMod.exists_sq_eq_neg_one_iff
+```
+:::
+
 ## Frobenius elements control factorization
 
 The action of the Galois group on the roots of $`f` is itself a Mathlib bundle: `Polynomial.Gal f` is the Galois group of the splitting field, and `Polynomial.Gal.galActionHom` is its (faithful!) permutation action on the roots — precisely the object whose cycle structure item 3 speaks about.
@@ -717,6 +776,15 @@ example (F : Type*) [Field F] (f : Polynomial F) (E : Type*) [Field E]
   sorry
 ```
 
+:::solution
+```lean
+example (F : Type*) [Field F] (f : Polynomial F) (E : Type*) [Field E]
+    [Algebra F E] [Fact ((f.map (algebraMap F E)).Splits)] :
+    Function.Injective (Polynomial.Gal.galActionHom f E) :=
+  Polynomial.Gal.galActionHom_injective f E
+```
+:::
+
 ## Example application: IMO 2003 problem 6
 
 The solution's one non-elementary group-theoretic input — used to produce an element $`\sigma \in G` of order $`p` once $`p \mid \left\lvert G \right\rvert` — is Cauchy's theorem, `exists_prime_orderOf_dvd_card`.
@@ -728,6 +796,14 @@ example {G : Type*} [Group G] [Fintype G] (p : ℕ) [Fact p.Prime]
   sorry
 ```
 
+:::solution
+```lean
+example {G : Type*} [Group G] [Fintype G] (p : ℕ) [Fact p.Prime]
+    (hdvd : p ∣ Fintype.card G) : ∃ g : G, orderOf g = p :=
+  exists_prime_orderOf_dvd_card p hdvd
+```
+:::
+
 ## Problems
 
 The first problem's supplement — the value of $`\left( \frac 2p \right)` — is `ZMod.exists_sq_eq_two_iff`.
@@ -738,3 +814,11 @@ example (p : ℕ) [Fact p.Prime] (hp : p ≠ 2) :
     IsSquare (2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 7 := by
   sorry
 ```
+
+:::solution
+```lean
+example (p : ℕ) [Fact p.Prime] (hp : p ≠ 2) :
+    IsSquare (2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 7 :=
+  ZMod.exists_sq_eq_two_iff hp
+```
+:::

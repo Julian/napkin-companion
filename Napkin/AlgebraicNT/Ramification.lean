@@ -396,6 +396,14 @@ example (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
   sorry
 ```
 
+:::solution
+```lean
+example (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
+    (p : Ideal A) (P : Ideal B) [P.LiesOver p] : p = P.under A :=
+  Ideal.LiesOver.over
+```
+:::
+
 ## Primes ramify if and only if they divide the discriminant
 
 Being unramified at a prime is the predicate `Algebra.IsUnramifiedAt`, and the theorem above, in contrapositive, is `NumberField.not_dvd_discr_iff_forall_mem`: a prime does not divide `NumberField.discr K` exactly when every prime above it is unramified.
@@ -415,6 +423,16 @@ example (K : Type*) [Field K] [NumberField K] {p : ℤ} (hp : Prime p) :
         (p : 𝓞 K) ∈ P → Algebra.IsUnramifiedAt ℤ P := by
   sorry
 ```
+
+:::solution
+```lean
+example (K : Type*) [Field K] [NumberField K] {p : ℤ} (hp : Prime p) :
+    ¬ p ∣ NumberField.discr K ↔
+      ∀ (P : Ideal (𝓞 K)) (_ : P.IsPrime),
+        (p : 𝓞 K) ∈ P → Algebra.IsUnramifiedAt ℤ P :=
+  NumberField.not_dvd_discr_iff_forall_mem K (𝓞 K) hp
+```
+:::
 
 ## Inertial degrees
 
@@ -443,6 +461,22 @@ example (K : Type*) [Field K] [NumberField K] {p : ℤ} (hp : Prime p) :
           = Module.finrank ℚ K := by
   sorry
 ```
+
+:::solution
+```lean
+example (K : Type*) [Field K] [NumberField K] {p : ℤ} (hp : Prime p) :
+    ∑ P ∈ IsDedekindDomain.primesOverFinset (Ideal.span {p}) (𝓞 K),
+        Ideal.ramificationIdx (Ideal.span {p}) P
+          * Ideal.inertiaDeg (Ideal.span {p}) P
+          = Module.finrank ℚ K := by
+  have hb : Ideal.span {p} ≠ (⊥ : Ideal ℤ) :=
+    Ideal.span_singleton_eq_bot.not.mpr hp.ne_zero
+  haveI hpr : (Ideal.span {p}).IsPrime :=
+    (Ideal.span_singleton_prime hp.ne_zero).mpr hp
+  haveI : (Ideal.span {p}).IsMaximal := hpr.isMaximal hb
+  exact Ideal.sum_ramification_inertia (𝓞 K) ℚ K hb
+```
+:::
 
 ## The magic of Galois extensions
 
@@ -473,6 +507,16 @@ example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] (p : Ideal A)
   sorry
 ```
 
+:::solution
+```lean
+example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] (p : Ideal A)
+    (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
+    [IsGaloisGroup G A B]
+    (P Q : Ideal.primesOver p B) : ∃ σ : G, σ • P = Q :=
+  MulAction.exists_smul_eq G P Q
+```
+:::
+
 ## (Optional) Decomposition and inertia groups
 
 Since the group action on `primesOver p (𝓞 K)` is already available, the decomposition group needs no new definition either: it is `MulAction.stabilizer Gal(K/ℚ) 𝔭`, the completely general stabilizer-of-a-point subgroup from the group actions chapter.
@@ -495,6 +539,17 @@ example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] {p : Ideal A}
       = (MulAction.stabilizer G P).map (MulAut.conj σ).toMonoidHom := by
   sorry
 ```
+
+:::solution
+```lean
+example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] {p : Ideal A}
+    (G : Type*) [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
+    (P : Ideal.primesOver p B) (σ : G) :
+    MulAction.stabilizer G (σ • P)
+      = (MulAction.stabilizer G P).map (MulAut.conj σ).toMonoidHom :=
+  MulAction.stabilizer_smul_eq_stabilizer_map_conj σ P
+```
+:::
 
 The surjectivity theorem for $`\theta` and the named inertia group are the one part of this chapter without a polished Mathlib incarnation yet: the action, its transitivity, and the stabilizer are all there, but the map $`D_\mathfrak{p} \to \operatorname{Gal}((\mathcal{O}_K/\mathfrak{p})/\mathbb{F}_p)` and the tower $`K^I/K^D` story are, at the time of writing, work in progress in the community's Frobenius-element development.
 The next chapter's protagonist depends on exactly this machinery, so the gap is actively being closed.

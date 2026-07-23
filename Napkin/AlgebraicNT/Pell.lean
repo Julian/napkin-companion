@@ -237,6 +237,13 @@ example {K : Type*} [Field K] [NumberField K] (x : 𝓞 K) (h : IsUnit x)
   sorry
 ```
 
+:::solution
+```lean
+example {K : Type*} [Field K] [NumberField K] (x : 𝓞 K) (h : IsUnit x)
+    (n : ℕ) : IsUnit (x ^ n) := h.pow n
+```
+:::
+
 ## Dirichlet's unit theorem
 
 $`\mu(\mathcal{O}_K)` is `torsion K`, the subgroup of elements of finite order in `(𝓞 K)ˣ`; it is finite and cyclic (both registered as instances), and `rootsOfUnity_eq_torsion` identifies it with the roots of $`x^n - 1` for $`n` the `torsionOrder`.
@@ -262,6 +269,13 @@ example {K : Type*} [Field K] [NumberField K] : IsCyclic (torsion K) := by
   sorry
 ```
 
+:::solution
+```lean
+example {K : Type*} [Field K] [NumberField K] :
+    IsCyclic (torsion K) := inferInstance
+```
+:::
+
 ## Finding fundamental units
 
 Pell's equation makes the notion of a fundamental unit fully concrete.
@@ -283,6 +297,13 @@ example {d : ℤ} {a b : Pell.Solution₁ d} (ha : Pell.IsFundamental a)
   sorry
 ```
 
+:::solution
+```lean
+example {d : ℤ} {a b : Pell.Solution₁ d} (ha : Pell.IsFundamental a)
+    (hb : Pell.IsFundamental b) : a = b := ha.subsingleton hb
+```
+:::
+
 ## Pell's equation
 
 Mathlib develops Pell's equation in exactly this spirit: `Pell.Solution₁ d` is the group of norm-one elements of `ℤ√d`, existence of a nontrivial solution for positive nonsquare $`d` is `Pell.exists_of_not_isSquare`, and the fundamental solution generates everything:
@@ -302,3 +323,9 @@ Build the corresponding element of `Pell.Solution₁ 5` by checking that $`9^2 -
 ```lean
 example : Pell.Solution₁ 5 := Pell.Solution₁.mk 9 4 (by sorry)
 ```
+
+:::solution
+```lean
+example : Pell.Solution₁ 5 := Pell.Solution₁.mk 9 4 (by norm_num)
+```
+:::

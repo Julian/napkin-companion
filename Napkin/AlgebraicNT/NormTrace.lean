@@ -431,6 +431,14 @@ example (K : Type*) [Field K] [NumberField K] (α β : K) :
   sorry
 ```
 
+:::solution
+```lean
+example (K : Type*) [Field K] [NumberField K] (α β : K) :
+    Algebra.norm ℚ (α * β) = Algebra.norm ℚ α * Algebra.norm ℚ β :=
+  map_mul (Algebra.norm ℚ) α β
+```
+:::
+
 ## The ring of integers
 
 This is `NumberField.RingOfIntegers K`, with scoped notation `𝓞 K`, defined as `integralClosure ℤ K` — the subalgebra of elements of `K` satisfying `IsIntegral ℤ`, which is exactly "the algebraic integers of $`K`" without needing an ambient $`\mathbb{C}`.
@@ -466,6 +474,15 @@ example (K : Type*) [Field K] [NumberField K]
   sorry
 ```
 
+:::solution
+```lean
+example (K : Type*) [Field K] [NumberField K]
+    (x : NumberField.RingOfIntegers K) :
+    IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1 :=
+  NumberField.isUnit_iff_norm
+```
+:::
+
 ## On monogenic extensions
 
 "Power basis" is a first-class notion: `PowerBasis ℤ (𝓞 K)` bundles a $`\theta` together with the proof that its powers form a basis, and much of the norm/trace/discriminant API is stated against an arbitrary `PowerBasis` for exactly this reason.
@@ -479,3 +496,12 @@ example (K : Type*) [Field K] [NumberField K]
     Module.finrank ℤ (NumberField.RingOfIntegers K) = pb.dim := by
   sorry
 ```
+
+:::solution
+```lean
+example (K : Type*) [Field K] [NumberField K]
+    (pb : PowerBasis ℤ (NumberField.RingOfIntegers K)) :
+    Module.finrank ℤ (NumberField.RingOfIntegers K) = pb.dim :=
+  pb.finrank
+```
+:::
