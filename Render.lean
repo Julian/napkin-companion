@@ -636,9 +636,21 @@ document.addEventListener('DOMContentLoaded', function () {
     '5.1': 16, '5.2': 17, '5.3': 18,
     '6.1': 19, '6.2': 20, '6.3': 21, '6.4': 22
   };
-  var roman = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII',
-               'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI',
-               'XVII', 'XVIII', 'XIX', 'XX'];
+  // Convert a positive integer to a Roman numeral (valid for 1..3999,
+  // which comfortably covers any number of parts). Returns null outside
+  // that range so callers can leave the input untouched rather than
+  // emitting a wrong numeral.
+  var toRoman = function (n) {
+    if (!(n >= 1 && n <= 3999)) return null;
+    var table = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'],
+                 [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'],
+                 [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']];
+    var out = '';
+    for (var i = 0; i < table.length; i++) {
+      while (n >= table[i][0]) { out += table[i][1]; n -= table[i][0]; }
+    }
+    return out;
+  };
 
   // Translate one Verso number string. Returns the new string (with
   // any preserved trailing whitespace) or `null` if the input
@@ -650,7 +662,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var parts = body.split('.');
     if (parts.length === 1) {
       var n = parseInt(parts[0], 10);
-      var r = roman[n];
+      var r = toRoman(n);
       return r ? leading + r + '.' + trailing : null;
     }
     var key = parts[0] + '.' + parts[1];
