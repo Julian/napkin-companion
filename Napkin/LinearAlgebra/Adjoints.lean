@@ -374,6 +374,16 @@ example (k V W : Type*) [Field k]
   sorry
 ```
 
+:::solution
+```lean
+example (k V W : Type*) [Field k]
+    [AddCommGroup V] [Module k V]
+    [AddCommGroup W] [Module k W]
+    (T : V →ₗ[k] W) (f : Module.Dual k W) (v : V) :
+    Module.Dual.transpose T f v = f (T v) := rfl
+```
+:::
+
 ## Identifying with the dual space
 
 Given an inner product, `InnerProductSpace.toDualMap` sends a vector $`x` to the functional $`y \mapsto \langle x, y \rangle`, so evaluating it recovers the inner product.
@@ -394,6 +404,16 @@ example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
     (w : V) (h : ∀ v, inner 𝕜 v w = 0) : w = 0 := by
   sorry
 ```
+
+:::solution
+```lean
+example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
+    [InnerProductSpace 𝕜 V]
+    (w : V) (h : ∀ v, inner 𝕜 v w = 0) : w = 0 := by
+  have hw := h w
+  rwa [inner_self_eq_zero] at hw
+```
+:::
 
 ## The adjoint (conjugate transpose)
 
@@ -420,6 +440,18 @@ example {𝕜 V W : Type*} [RCLike 𝕜]
   sorry
 ```
 
+:::solution
+```lean
+example {𝕜 V W : Type*} [RCLike 𝕜]
+    [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
+    [NormedAddCommGroup W] [InnerProductSpace 𝕜 W]
+    [FiniteDimensional 𝕜 V] [FiniteDimensional 𝕜 W]
+    (T : V →ₗ[𝕜] W) (v : V) (w : W) :
+    inner 𝕜 v (T.adjoint w) = inner 𝕜 (T v) w :=
+  LinearMap.adjoint_inner_right T v w
+```
+:::
+
 ## Eigenvalues of normal maps
 
 `LinearMap.IsSymmetric` captures the self-adjoint condition without taking the adjoint — it asserts the inner-product equation directly.
@@ -443,6 +475,16 @@ example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
   sorry
 ```
 
+:::solution
+```lean
+example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
+    [InnerProductSpace 𝕜 V]
+    (T : V →ₗ[𝕜] V) (hT : T.IsSymmetric) (μ : 𝕜)
+    (hμ : Module.End.HasEigenvalue T μ) : starRingEnd 𝕜 μ = μ :=
+  hT.conj_eigenvalue_eq_self hμ
+```
+:::
+
 The key orthogonality step of the spectral theorem: eigenvectors of a self-adjoint map with distinct eigenvalues are orthogonal.
 Mathlib packages the general statement (over eigenspaces) as `LinearMap.IsSymmetric.orthogonalFamily_eigenspaces`, but the two-vector case is a short direct computation worth doing by hand.
 
@@ -459,3 +501,27 @@ example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
     inner 𝕜 v w = 0 := by
   sorry
 ```
+
+:::solution
+```lean
+example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
+    [InnerProductSpace 𝕜 V]
+    (T : V →ₗ[𝕜] V) (hT : T.IsSymmetric) (μ ν : 𝕜) (v w : V)
+    (hv : T v = μ • v) (hw : T w = ν • w) (hμν : μ ≠ ν) :
+    inner 𝕜 v w = 0 := by
+  by_cases hvz : v = 0
+  · simp [hvz]
+  · have key := hT v w
+    rw [hv, hw, inner_smul_left, inner_smul_right] at key
+    have hvec : Module.End.HasEigenvector T μ v :=
+      ⟨Module.End.mem_eigenspace_iff.mpr hv, hvz⟩
+    have hμeig : Module.End.HasEigenvalue T μ :=
+      Module.End.hasEigenvalue_of_hasEigenvector hvec
+    rw [hT.conj_eigenvalue_eq_self hμeig] at key
+    have hzero : (μ - ν) * inner 𝕜 v w = 0 := by
+      rw [sub_mul, key, sub_self]
+    rcases mul_eq_zero.mp hzero with h | h
+    · exact absurd (sub_eq_zero.mp h) hμν
+    · exact h
+```
+:::

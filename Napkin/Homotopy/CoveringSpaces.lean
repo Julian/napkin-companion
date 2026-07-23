@@ -484,6 +484,14 @@ example :
   sorry
 ```
 
+:::solution
+```lean
+example :
+    IsCoveringMap fun z : ℂ ↦ (⟨_, z.exp_ne_zero⟩ : {z : ℂ // z ≠ 0}) :=
+  Complex.isCoveringMap_exp
+```
+:::
+
 ## Lifting theorem
 
 Mathlib carries out exactly this compactness argument once and for all, packaging the result as {name}`IsCoveringMap.liftPath`: from a covering map, a path $`\gamma` in the base, a chosen start $`e` in the fiber, and a proof that $`\gamma(0) = p(e)`, it produces the lifted path.
@@ -525,6 +533,16 @@ example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
   sorry
 ```
 
+:::solution
+```lean
+example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
+    {p : E → B} (cov : IsCoveringMap p) (g₁ g₂ : I → E)
+    (h₁ : Continuous g₁) (h₂ : Continuous g₂)
+    (he : p ∘ g₁ = p ∘ g₂) (h0 : g₁ 0 = g₂ 0) : g₁ = g₂ :=
+  cov.eq_of_comp_eq h₁ h₂ he 0 h0
+```
+:::
+
 ## Lifting correspondence
 
 The lifting correspondence $`\Phi \colon [\gamma] \mapsto \tilde\gamma(1)` is well-defined on homotopy classes because homotopic paths lift, from a common start, to paths with a common endpoint.
@@ -548,6 +566,15 @@ example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
   sorry
 ```
 
+:::solution
+```lean
+example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
+    {p : E → B} (cov : IsCoveringMap p) (e : E) :
+    cov.liftPath (.const I (p e)) e rfl = .const I e :=
+  cov.liftPath_const rfl
+```
+:::
+
 ## Regular coverings
 
 Mathlib records when such a quotient projection is a covering map as {name}`IsQuotientCoveringMap`, phrased for a group $`G` acting on $`E` with $`E \to E/G` the orbit projection.
@@ -567,6 +594,15 @@ example {E X G : Type*} [TopologicalSpace E] [TopologicalSpace X] [Group G]
     IsCoveringMap f := by
   sorry
 ```
+
+:::solution
+```lean
+example {E X G : Type*} [TopologicalSpace E] [TopologicalSpace X] [Group G]
+    [MulAction G E] {f : E → X} (hf : IsQuotientCoveringMap f G) :
+    IsCoveringMap f :=
+  hf.isCoveringMap
+```
+:::
 
 ## The algebra of fundamental groups
 
@@ -592,6 +628,17 @@ example {E₁ E₂ B : Type*} [TopologicalSpace E₁] [TopologicalSpace E₂]
     (x : E₁) (hx : f x = g x) : f = g := by
   sorry
 ```
+
+:::solution
+```lean
+example {E₁ E₂ B : Type*} [TopologicalSpace E₁] [TopologicalSpace E₂]
+    [TopologicalSpace B] [PreconnectedSpace E₁] {p : E₂ → B}
+    (cov : IsCoveringMap p) (f g : E₁ → E₂)
+    (hf : Continuous f) (hg : Continuous g) (he : p ∘ f = p ∘ g)
+    (x : E₁) (hx : f x = g x) : f = g :=
+  cov.eq_of_comp_eq hf hg he x hx
+```
+:::
 
 ## The classification theorem
 
@@ -636,6 +683,14 @@ example {G : Type*} [Group G] (D : CoveringClassificationData G)
   sorry
 ```
 
+:::solution
+```lean
+example {G : Type*} [Group G] (D : CoveringClassificationData G)
+    (H₁ H₂ : Subgroup G) (h : D.corr H₁ = D.corr H₂) : H₁ = H₂ :=
+  D.corr.injective h
+```
+:::
+
 The regular covers are, by definition, those matched with normal subgroups — the equivalence is bundled as the field `D.regular_iff_normal`.
 Read off one direction: apply the forward implication `(D.regular_iff_normal H).mp` to `h`.
 
@@ -644,3 +699,11 @@ example {G : Type*} [Group G] (D : CoveringClassificationData G)
     (H : Subgroup G) (h : D.Regular (D.corr H)) : H.Normal := by
   sorry
 ```
+
+:::solution
+```lean
+example {G : Type*} [Group G] (D : CoveringClassificationData G)
+    (H : Subgroup G) (h : D.Regular (D.corr H)) : H.Normal :=
+  (D.regular_iff_normal H).mp h
+```
+:::

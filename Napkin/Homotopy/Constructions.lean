@@ -492,6 +492,14 @@ example (n : ℕ) (x : EuclideanSpace ℝ (Fin (n + 1))) :
   sorry
 ```
 
+:::solution
+```lean
+example (n : ℕ) (x : EuclideanSpace ℝ (Fin (n + 1))) :
+    x ∈ Metric.sphere (0 : EuclideanSpace ℝ (Fin (n + 1))) 1 ↔ ‖x‖ = 1 :=
+  mem_sphere_zero_iff_norm
+```
+:::
+
 ## Quotient topology
 
 The two clauses of the definition are exactly how a quotient carries a topology in Mathlib.
@@ -513,6 +521,14 @@ example {X : Type*} [TopologicalSpace X] (s : Setoid X) :
   sorry
 ```
 
+:::solution
+```lean
+example {X : Type*} [TopologicalSpace X] (s : Setoid X) :
+    Continuous (Quotient.mk s) :=
+  continuous_coinduced_rng
+```
+:::
+
 ## Product topology
 
 Mathlib puts the product topology on $`X \times Y` automatically, and the "an open set need not be a rectangle, but is a union of rectangles" content is exactly the criterion `isOpen_prod_iff`: a set is open precisely when every point it contains sits inside some rectangle $`U \times V` contained in the set.
@@ -531,6 +547,15 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     IsOpen (U ×ˢ V) := by
   sorry
 ```
+
+:::solution
+```lean
+example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    (U : Set X) (V : Set Y) (hU : IsOpen U) (hV : IsOpen V) :
+    IsOpen (U ×ˢ V) :=
+  hU.prod hV
+```
+:::
 
 ## Disjoint union and wedge sum
 
@@ -551,6 +576,14 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] :
     IsClopen (Set.range (Sum.inl : X → X ⊕ Y)) := by
   sorry
 ```
+
+:::solution
+```lean
+example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] :
+    IsClopen (Set.range (Sum.inl : X → X ⊕ Y)) :=
+  isClopen_range_inl
+```
+:::
 
 Mathlib has no wedge sum on the shelf, but the definition above is a recipe we can follow literally: take the disjoint union $`X \oplus Y`, and quotient by the equivalence relation that glues $`x_0` to $`y_0` and nothing else.
 The one subtlety is that "glues $`x_0` to $`y_0` and nothing else" must be spelled out as a genuine equivalence relation — reflexive, symmetric, and transitive — before we may hand it to the quotient machinery.
@@ -573,6 +606,15 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
   sorry
 ```
 
+:::solution
+```lean
+example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    (x₀ : X) (y₀ : Y) :
+    WedgeSum.inl x₀ y₀ x₀ = WedgeSum.inr x₀ y₀ y₀ :=
+  WedgeSum.inl_base_eq_inr_base x₀ y₀
+```
+:::
+
 Each space still sits inside the wedge, and it does so continuously: the inclusion $`X \hookrightarrow X \vee Y` is $`x \mapsto [\,\mathrm{inl}\,x\,]`, a quotient projection composed with the sum inclusion.
 Show that the inclusion of the first space is continuous.
 
@@ -581,6 +623,14 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     (x₀ : X) (y₀ : Y) : Continuous (WedgeSum.inl x₀ y₀) := by
   sorry
 ```
+
+:::solution
+```lean
+example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    (x₀ : X) (y₀ : Y) : Continuous (WedgeSum.inl x₀ y₀) :=
+  WedgeSum.continuous_inl x₀ y₀
+```
+:::
 
 Away from the basepoint the gluing does nothing, so the inclusion loses no information there.
 Show that if two points of $`X` have the same image under $`\mathrm{inl}`, they were equal to begin with.
@@ -591,6 +641,15 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     (h : WedgeSum.inl x₀ y₀ x = WedgeSum.inl x₀ y₀ x') : x = x' := by
   sorry
 ```
+
+:::solution
+```lean
+example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    (x₀ : X) (y₀ : Y) {x x' : X}
+    (h : WedgeSum.inl x₀ y₀ x = WedgeSum.inl x₀ y₀ x') : x = x' :=
+  WedgeSum.inl_injOn x₀ y₀ h
+```
+:::
 
 ## CW complexes
 
@@ -613,6 +672,13 @@ example : CompactSpace (UnitAddCircle × UnitAddCircle) := by
   sorry
 ```
 
+:::solution
+```lean
+example : CompactSpace (UnitAddCircle × UnitAddCircle) :=
+  inferInstance
+```
+:::
+
 ## Real projective space
 
 The "lines through the origin" description is the one Mathlib formalizes: `Projectivization` takes a field $`K` and a vector space $`V` and returns the quotient of the nonzero vectors by the scaling relation.
@@ -634,6 +700,15 @@ example (n : ℕ) (v w : Fin (n + 1) → ℝ) (hv : v ≠ 0) (hw : w ≠ 0) :
   sorry
 ```
 
+:::solution
+```lean
+example (n : ℕ) (v w : Fin (n + 1) → ℝ) (hv : v ≠ 0) (hw : w ≠ 0) :
+    Projectivization.mk ℝ v hv = Projectivization.mk ℝ w hw ↔
+      ∃ a : ℝˣ, a • w = v :=
+  Projectivization.mk_eq_mk_iff ℝ v w hv hw
+```
+:::
+
 ## Complex projective space
 
 Complex projective $`n`-space is the same construction over $`\mathbb{C}`.
@@ -651,3 +726,12 @@ example (n : ℕ) (v w : Fin (n + 1) → ℂ) (hv : v ≠ 0) (hw : w ≠ 0) :
       ∃ a : ℂˣ, a • w = v := by
   sorry
 ```
+
+:::solution
+```lean
+example (n : ℕ) (v w : Fin (n + 1) → ℂ) (hv : v ≠ 0) (hw : w ≠ 0) :
+    Projectivization.mk ℂ v hv = Projectivization.mk ℂ w hw ↔
+      ∃ a : ℂˣ, a • w = v :=
+  Projectivization.mk_eq_mk_iff ℂ v w hv hw
+```
+:::

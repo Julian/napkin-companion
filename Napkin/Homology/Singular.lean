@@ -537,6 +537,14 @@ example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
   sorry
 ```
 
+:::solution
+```lean
+example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
+    (C : ChainComplex V ℕ) (j : ℕ) : C.d 0 j = 0 :=
+  C.shape 0 j (by simp)
+```
+:::
+
 ## The singular homology groups
 
 For an abstract complex, the cycles-modulo-boundaries recipe $`Z_n / B_n` is {name}`HomologicalComplex.homology`.
@@ -558,6 +566,15 @@ noncomputable example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
     C.homology i ⟶ D.homology i := by
   sorry
 ```
+
+:::solution
+```lean
+noncomputable example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
+    [CategoryWithHomology V] {C D : ChainComplex V ℕ} (f : C ⟶ D) (i : ℕ) :
+    C.homology i ⟶ D.homology i :=
+  HomologicalComplex.homologyMap f i
+```
+:::
 
 The topological payoff — that $`H_n` is a homotopy-invariant functor on spaces, and concrete computations such as $`H_n(S^m)` — relies on the geometric input (the prism operator, excision) that is not yet packaged in Mathlib for a general space, so the exercises here stay on the chain-complex side, which is complete.
 
@@ -593,6 +610,16 @@ example {V : Type*} [Category V] [Preadditive V] [CategoryWithHomology V]
   sorry
 ```
 
+:::solution
+```lean
+example {V : Type*} [Category V] [Preadditive V] [CategoryWithHomology V]
+    {C D : ChainComplex V ℕ} (f g : C ⟶ D) (h : Homotopy f g) (i : ℕ) :
+    HomologicalComplex.homologyMap f i =
+      HomologicalComplex.homologyMap g i :=
+  h.homologyMap_eq i
+```
+:::
+
 ## More examples of chain complexes
 
 The augmented singular complex $`\widetilde C_\bullet(X)`, which appends a copy of $`\mathbb{Z}` in degree $`-1`, is an instance of Mathlib's {name}`ChainComplex.augment`: it inserts a chosen object below degree $`0` along an augmentation map whose composite with $`\partial` vanishes.
@@ -613,3 +640,12 @@ example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
     (ChainComplex.augment C f w).d 1 0 = f := by
   sorry
 ```
+
+:::solution
+```lean
+example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
+    (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0) :
+    (ChainComplex.augment C f w).d 1 0 = f :=
+  ChainComplex.augment_d_one_zero C f w
+```
+:::

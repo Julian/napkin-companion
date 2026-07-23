@@ -547,6 +547,16 @@ example {X : Type*} [TopologicalSpace X] {x y z : X}
   sorry
 ```
 
+:::solution
+```lean
+example {X : Type*} [TopologicalSpace X] {x y z : X}
+    {p₀ p₁ : Path x y} {q₀ q₁ : Path y z}
+    (hp : p₀.Homotopic p₁) (hq : q₀.Homotopic q₁) :
+    (p₀.trans q₀).Homotopic (p₁.trans q₁) :=
+  hp.hcomp hq
+```
+:::
+
 ## Fundamental groups
 
 Mathlib names the fundamental group {name}`FundamentalGroup`, so that `FundamentalGroup X x₀` carries the {name}`Group` instance whose multiplication is $`\ast`, whose identity is the do-nothing loop {name}`Path.refl`, and whose inverse is the backwards loop {name}`Path.symm`.
@@ -573,6 +583,14 @@ example {X : Type*} [TopologicalSpace X] [SimplyConnectedSpace X] (x : X)
   sorry
 ```
 
+:::solution
+```lean
+example {X : Type*} [TopologicalSpace X] [SimplyConnectedSpace X] (x : X)
+    (p q : FundamentalGroup X x) : p = q :=
+  Subsingleton.elim p q
+```
+:::
+
 ## Higher homotopy groups
 
 Mathlib takes exactly the cube-with-boundary-fused route: {name}`GenLoop` is the type of continuous maps $`[0, 1]^n \to X` sending the whole boundary to $`x_0`, and {name}`HomotopyGroup.Pi`, written `π_ n X x`, is its set of homotopy classes.
@@ -592,6 +610,14 @@ example {X : Type*} [TopologicalSpace X] (x : X) (n : ℕ)
     (a b : π_ (n + 2) X x) : a * b = b * a := by
   sorry
 ```
+
+:::solution
+```lean
+example {X : Type*} [TopologicalSpace X] (x : X) (n : ℕ)
+    (a b : π_ (n + 2) X x) : a * b = b * a :=
+  mul_comm a b
+```
+:::
 
 ## Homotopy equivalent spaces
 
@@ -614,6 +640,14 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
   sorry
 ```
 
+:::solution
+```lean
+example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    (h : X ≃ₜ Y) : X ≃ₕ Y :=
+  h.toHomotopyEquiv
+```
+:::
+
 ## The pointed homotopy category
 
 Mathlib already assembles the groupoid version of the functor $`\pi_1`: {name}`FundamentalGroupoid.fundamentalGroupoidFunctor` is a functor from the category of topological spaces to the category of groupoids, sending each space to its fundamental groupoid and each continuous map to the induced functor.
@@ -632,3 +666,11 @@ example {X : Type*} [TopologicalSpace X] [ContractibleSpace X] (x : X)
     (p q : FundamentalGroup X x) : p = q := by
   sorry
 ```
+
+:::solution
+```lean
+example {X : Type*} [TopologicalSpace X] [ContractibleSpace X] (x : X)
+    (p q : FundamentalGroup X x) : p = q :=
+  Subsingleton.elim p q
+```
+:::
