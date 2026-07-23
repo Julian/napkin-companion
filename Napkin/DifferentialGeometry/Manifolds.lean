@@ -411,6 +411,14 @@ example {H : Type*} [TopologicalSpace H] {M : Type*} [TopologicalSpace M]
   sorry
 ```
 
+:::solution
+```lean
+example {H : Type*} [TopologicalSpace H] {M : Type*} [TopologicalSpace M]
+    [ChartedSpace H M] (x : M) : x ∈ (chartAt H x).source :=
+  mem_chart_source H x
+```
+:::
+
 ## Smooth manifolds
 
 Mathlib bundles "the topological manifold structure plus a smoothness compatibility" into the typeclass `IsManifold I n M`, where `I` is a *model with corners* — packaging the choice of model space (typically $`\mathbb{R}^n`) and any boundary structure — and `n : WithTop ℕ∞` records the smoothness order ($`C^k`, $`C^\infty`, or analytic).
@@ -451,6 +459,17 @@ example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   sorry
 ```
 
+:::solution
+```lean
+example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {n : WithTop ℕ∞} :
+    ContMDiff I I n (id : M → M) :=
+  contMDiff_id
+```
+:::
+
 ## Regular value theorem
 
 The regular value theorem is not yet packaged as a one-liner in Mathlib's manifold library, but its essential ingredients are.
@@ -472,6 +491,21 @@ example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     (hf : IsLocalDiffeomorphAt I J n f x) : ContMDiffAt I J n f x := by
   sorry
 ```
+
+:::solution
+```lean
+example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+    {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+    {H' : Type*} [TopologicalSpace H'] {J : ModelWithCorners 𝕜 E' H'}
+    {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
+    {n : WithTop ℕ∞} {f : M → N} {x : M}
+    (hf : IsLocalDiffeomorphAt I J n f x) : ContMDiffAt I J n f x :=
+  hf.contMDiffAt
+```
+:::
 
 ## Differential forms on manifolds
 
@@ -505,6 +539,17 @@ example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   sorry
 ```
 
+:::solution
+```lean
+example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {n : ℕ}
+    (ω : ManifoldForm I M n) (hω : ManifoldForm.Nonvanishing ω) :
+    ManifoldForm.Orientable (I := I) (M := M) n :=
+  ManifoldForm.Orientable.of_volumeForm ω hω
+```
+:::
+
 The anchor tying these forms back to calculus is the *differential* $`df` of a scalar function `f : M → ℝ`, packaged as the $`1`-form `ManifoldForm.differential f`.
 Its value at $`p` on a single tangent vector is the directional derivative — the manifold derivative `mfderiv I 𝓘(ℝ) f p` applied to that vector.
 Show that evaluating it reads off exactly that `mfderiv`; the finisher is `ManifoldForm.differential_eval`.
@@ -519,6 +564,18 @@ example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   sorry
 ```
 
+:::solution
+```lean
+example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+    (f : M → ℝ) (p : M) (v : Fin 1 → TangentSpace I p) :
+    ManifoldForm.eval (ManifoldForm.differential f) p v
+      = mfderiv I (modelWithCornersSelf ℝ ℝ) f p (v 0) :=
+  ManifoldForm.differential_eval f p v
+```
+:::
+
 The exterior derivative $`d` and the pullbacks that phrase the chart-compatibility are out of reach — the de-Rham complex is unformalized — so `ManifoldForm.ExteriorDerivative` bundles $`d`'s defining properties (degree-raising, linear, $`d^2 = 0`, and agreeing on $`0`-forms with the genuine differential $`df` via `d_ofScalar`, which rules out the trivial $`d \equiv 0`) as a hypothesis.
 From that bundled data alone, the fact underlying Stokes' theorem — every exact form is closed — is derivable.
 Unfold `D.Exact α` to a witness $`\alpha = d\beta`, then the $`d^2 = 0` field `D.dd` closes it.
@@ -531,6 +588,18 @@ example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {α : ManifoldForm I M (k + 1)} (h : D.Exact α) : D.Closed α := by
   sorry
 ```
+
+:::solution
+```lean
+example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+    (D : ManifoldForm.ExteriorDerivative (I := I) (M := M)) {k : ℕ}
+    {α : ManifoldForm I M (k + 1)} (h : D.Exact α) : D.Closed α := by
+  obtain ⟨β, rfl⟩ := h
+  exact D.dd k β
+```
+:::
 
 ## Stokes' theorem for manifolds
 
@@ -569,6 +638,18 @@ example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   sorry
 ```
 
+:::solution
+```lean
+example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M] (x : M) :
+    mfderiv I I (id : M → M) x
+      = ContinuousLinearMap.id 𝕜 (TangentSpace I x) :=
+  mfderiv_id
+```
+:::
+
 ## The cotangent space
 
 The "cotangent space as $`\mathfrak{m}/\mathfrak{m}^2`" picture is the one Mathlib carries on the algebraic-geometry side.
@@ -589,3 +670,11 @@ example (K : Type*) [Field K] :
     Subsingleton (IsLocalRing.CotangentSpace K) := by
   sorry
 ```
+
+:::solution
+```lean
+example (K : Type*) [Field K] :
+    Subsingleton (IsLocalRing.CotangentSpace K) :=
+  IsLocalRing.subsingleton_cotangentSpace_iff.mpr (Field.toIsField K)
+```
+:::

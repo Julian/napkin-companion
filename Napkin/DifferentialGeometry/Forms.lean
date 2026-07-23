@@ -547,6 +547,14 @@ example (V : Type*) [AddCommGroup V] [Module ℝ V]
   sorry
 ```
 
+:::solution
+```lean
+example (V : Type*) [AddCommGroup V] [Module ℝ V]
+    (ω : V [⋀^Fin 2]→ₗ[ℝ] ℝ) (v : V) : ω ![v, v] = 0 :=
+  ω.map_eq_zero_of_eq ![v, v] (i := 0) (j := 1) rfl (by decide)
+```
+:::
+
 To assemble the *pointwise* form $`\alpha \colon U \to \Lambda^k` — a value of $`\Lambda^k` at every point — `Napkin.Missing.DifferentialForms` packages `DiffForm E k` as `E → (E [⋀^Fin k]→L[ℝ] ℝ)`, using the continuous alternating maps so that "smooth in the point" at least starts from a continuous fibre.
 The pointwise sum and scalar multiple make `DiffForm E k` a real vector space, inherited from the function-space structure.
 
@@ -565,6 +573,14 @@ example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
   sorry
 ```
 
+:::solution
+```lean
+example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
+    (f : E → ℝ) (p : E) :
+    DiffForm.eval (DiffForm.ofScalar f) p ![] = f p := rfl
+```
+:::
+
 The doubled-vector vanishing just above is only the degenerate case of the full alternating law $`\alpha_p(v_1, v_2) = -\alpha_p(v_2, v_1)`; through the shim these are `DiffForm.eval_eq_zero_of_eq` and its parent `DiffForm.eval_swap`.
 Prove the swap law itself for a pointwise $`2`-form: exchanging the two tangent vectors negates the value.
 `DiffForm.eval_swap` states this for a composition with `Equiv.swap i j`, so instantiate it at `i = 0`, `j = 1` on `![w, v]` — then `simpa` reduces `![w, v] ∘ Equiv.swap 0 1` back to `![v, w]`.
@@ -575,6 +591,16 @@ example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
     DiffForm.eval α p ![v, w] = - DiffForm.eval α p ![w, v] := by
   sorry
 ```
+
+:::solution
+```lean
+example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
+    (α : DiffForm E 2) (p : E) (v w : E) :
+    DiffForm.eval α p ![v, w] = - DiffForm.eval α p ![w, v] := by
+  have h := DiffForm.eval_swap α p ![w, v] (i := 0) (j := 1) (by decide)
+  simpa using h
+```
+:::
 
 ## Exterior derivatives
 
@@ -610,6 +636,15 @@ example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
   sorry
 ```
 
+:::solution
+```lean
+example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
+    (D : ExteriorDerivative E) (c : ℝ) {α : DiffForm E 2}
+    (h : D.Closed α) : D.Closed (c • α) := by
+  rw [ExteriorDerivative.Closed, D.map_smul, h, smul_zero]
+```
+:::
+
 Underneath is the purely algebraic shadow of $`d^2 = 0`: the fact that in the exterior algebra a wedge square vanishes, $`dx \wedge dx = 0`, packaged as `ExteriorAlgebra.ι_sq_zero`.
 
 ```lean
@@ -627,6 +662,15 @@ example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (x y : M) :
       = -(ExteriorAlgebra.ι R y * ExteriorAlgebra.ι R x) := by
   sorry
 ```
+
+:::solution
+```lean
+example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (x y : M) :
+    ExteriorAlgebra.ι R x * ExteriorAlgebra.ι R y
+      = -(ExteriorAlgebra.ι R y * ExteriorAlgebra.ι R x) :=
+  eq_neg_of_add_eq_zero_left (ExteriorAlgebra.ι_add_mul_swap (R := R) x y)
+```
+:::
 
 ## Digression: wedge of duals versus dual of wedge
 
@@ -663,3 +707,12 @@ example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
     ExteriorAlgebra.ι R m * (ExteriorAlgebra.ι R m * x) = 0 := by
   sorry
 ```
+
+:::solution
+```lean
+example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    (m : M) (x : ExteriorAlgebra R M) :
+    ExteriorAlgebra.ι R m * (ExteriorAlgebra.ι R m * x) = 0 := by
+  rw [← mul_assoc, ExteriorAlgebra.ι_sq_zero, zero_mul]
+```
+:::

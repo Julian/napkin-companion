@@ -343,6 +343,15 @@ example (f : ℝ → ℝ) (f' x : ℝ) :
   sorry
 ```
 
+:::solution
+```lean
+open ContinuousLinearMap in
+example (f : ℝ → ℝ) (f' x : ℝ) :
+    HasDerivAt f f' x ↔ HasFDerivAt f (toSpanSingleton ℝ f') x :=
+  hasDerivAt_iff_hasFDerivAt
+```
+:::
+
 As the remark notes, differentiability implies continuity.
 `HasFDerivAt.continuousAt` is the corresponding Mathlib lemma — Fréchet-differentiable at a point implies continuous there.
 
@@ -354,6 +363,17 @@ example {V W : Type*}
     ContinuousAt f p := by
   sorry
 ```
+
+:::solution
+```lean
+example {V W : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V]
+    [NormedAddCommGroup W] [NormedSpace ℝ W]
+    (f : V → W) (f' : V →L[ℝ] W) (p : V) (h : HasFDerivAt f f' p) :
+    ContinuousAt f p :=
+  h.continuousAt
+```
+:::
 
 ## The projection principle
 
@@ -369,6 +389,18 @@ example {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
   sorry
 ```
 
+:::solution
+```lean
+open ContinuousLinearMap in
+example {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Φ : V → (ι → ℝ)) (Φ' : V →L[ℝ] (ι → ℝ)) (x : V) :
+    HasFDerivAt Φ Φ' x ↔
+      ∀ i, HasFDerivAt (fun v => Φ v i) ((proj i).comp Φ') x :=
+  hasFDerivAt_pi'
+```
+:::
+
 ## Total and partial derivatives
 
 `Mathlib.Analysis.Calculus.LineDeriv.Basic`'s `lineDeriv 𝕜 f x v` is the directional derivative — the partial derivative in the book is exactly `lineDeriv ℝ f p (e_i)`.
@@ -382,6 +414,17 @@ example {V W : Type*}
     HasLineDerivAt ℝ f (L v) p v := by
   sorry
 ```
+
+:::solution
+```lean
+example {V W : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V]
+    [NormedAddCommGroup W] [NormedSpace ℝ W]
+    (f : V → W) (L : V →L[ℝ] W) (p v : V) (h : HasFDerivAt f L p) :
+    HasLineDerivAt ℝ f (L v) p v :=
+  h.hasLineDerivAt v
+```
+:::
 
 The theorem "continuous partials implies differentiable" is `hasFDerivAt_of_lineDeriv_continuous` (and the more general `hasFDerivAt_of_partialDeriv_continuous` on `EuclideanSpace`): if all directional derivatives exist on a neighborhood and are continuous at the point, then the Fréchet derivative exists and assembles from them.
 
@@ -401,6 +444,17 @@ example {V W : Type*}
   sorry
 ```
 
+:::solution
+```lean
+example {V W : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V]
+    [NormedAddCommGroup W] [NormedSpace ℝ W]
+    (f : V → W) (p : V) (h : ContDiffAt ℝ 2 f p) :
+    IsSymmSndFDerivAt ℝ f p :=
+  h.isSymmSndFDerivAt (by simp)
+```
+:::
+
 ## Problems
 
 The first problem is the Chain Rule, $`(Dh)_p = (Dg)_{f(p)} \circ (Df)_p`.
@@ -416,3 +470,16 @@ example {V W X : Type*}
     HasFDerivAt (g ∘ f) (g'.comp f') p := by
   sorry
 ```
+
+:::solution
+```lean
+example {V W X : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V]
+    [NormedAddCommGroup W] [NormedSpace ℝ W]
+    [NormedAddCommGroup X] [NormedSpace ℝ X]
+    (f : V → W) (g : W → X) (f' : V →L[ℝ] W) (g' : W →L[ℝ] X) (p : V)
+    (hg : HasFDerivAt g g' (f p)) (hf : HasFDerivAt f f' p) :
+    HasFDerivAt (g ∘ f) (g'.comp f') p :=
+  hg.comp p hf
+```
+:::

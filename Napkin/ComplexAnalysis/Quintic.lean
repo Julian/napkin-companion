@@ -5,6 +5,7 @@ import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.GroupTheory.Solvable
 import Mathlib.GroupTheory.SpecificGroups.Alternating
+import Mathlib.GroupTheory.SpecificGroups.Alternating.Simple
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -185,6 +186,13 @@ example (G : Type*) [Group G] (x y : Abelianization G) : x * y = y * x := by
   sorry
 ```
 
+:::solution
+```lean
+example (G : Type*) [Group G] (x y : Abelianization G) :
+    x * y = y * x := mul_comm x y
+```
+:::
+
 A group is *solvable* when its derived series eventually reaches the trivial subgroup.
 Mathlib spells this `IsSolvable G`, a typeclass on a group whose single field asserts the existence of an `n` with `derivedSeries G n = ⊥`.
 The unfold lemma is `isSolvable_def`.
@@ -200,3 +208,13 @@ Show that $`A_5` is not solvable.
 example : ¬ IsSolvable (alternatingGroup (Fin 5)) := by
   sorry
 ```
+
+:::solution
+```lean
+example : ¬ IsSolvable (alternatingGroup (Fin 5)) := by
+  haveI : IsSimpleGroup (alternatingGroup (Fin 5)) :=
+    alternatingGroup.isSimpleGroup (by simp)
+  rw [← IsSimpleGroup.comm_iff_isSolvable]
+  decide
+```
+:::

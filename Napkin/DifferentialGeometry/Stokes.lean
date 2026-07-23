@@ -499,6 +499,13 @@ example : ∫ x in (0:ℝ)..1, x = 1/2 := by
   sorry
 ```
 
+:::solution
+```lean
+example : ∫ x in (0:ℝ)..1, x = 1/2 := by
+  rw [integral_id]; norm_num
+```
+:::
+
 ## Pullbacks
 
 The single-point version of the pullback lives in `Mathlib.LinearAlgebra.Alternating.Basic` as `AlternatingMap.compLinearMap`: given an alternating $`k`-form $`f \colon M^k \to N` and a linear map $`g \colon M_2 \to M`, it produces the alternating $`k`-form $`(v_1, \dots, v_k) \mapsto f(g v_1, \dots, g v_k)` on $`M_2^k`.
@@ -526,6 +533,15 @@ example {R M N ι : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
   sorry
 ```
 
+:::solution
+```lean
+example {R M N ι : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [AddCommMonoid N] [Module R N] (f : M [⋀^ι]→ₗ[R] N) :
+    f.compLinearMap LinearMap.id = f := by
+  ext v; simp
+```
+:::
+
 ## Cells
 
 The closest Mathlib structure for a cell's domain is `BoxIntegral.Box`, which packages an $`n`-dimensional rectangular box as a pair of corner points; the integration story for forms over boxes is then routed through `BoxIntegral.integral` and `MeasureTheory.integral` against the standard volume measure `MeasureTheory.volume`.
@@ -541,6 +557,15 @@ example (R : ℝ) : ∫ _θ in (0:ℝ)..(2*Real.pi), ∫ r in (0:ℝ)..R, r
     = Real.pi * R^2 := by
   sorry
 ```
+
+:::solution
+```lean
+example (R : ℝ) : ∫ _θ in (0:ℝ)..(2*Real.pi), ∫ r in (0:ℝ)..R, r
+    = Real.pi * R^2 := by
+  simp only [integral_id, intervalIntegral.integral_const, smul_eq_mul]
+  ring
+```
+:::
 
 ## Boundaries
 
@@ -566,6 +591,14 @@ example {X : Type*} {n : ℕ} (c : Chain X (n + 2)) :
   sorry
 ```
 
+:::solution
+```lean
+example {X : Type*} {n : ℕ} (c : Chain X (n + 2)) :
+    boundary (boundary c) = 0 := by
+  exact boundary_boundary c
+```
+:::
+
 Because `boundary` is an additive homomorphism, the text's rule $`\partial(\sum a_i c_i) = \sum a_i \partial c_i` is automatic; prove its additive shadow, that the boundary of a sum of chains is the sum of their boundaries.
 
 ```lean
@@ -573,6 +606,14 @@ example {X : Type*} {n : ℕ} (c₁ c₂ : Chain X (n + 1)) :
     boundary (c₁ + c₂) = boundary c₁ + boundary c₂ := by
   sorry
 ```
+
+:::solution
+```lean
+example {X : Type*} {n : ℕ} (c₁ c₂ : Chain X (n + 1)) :
+    boundary (c₁ + c₂) = boundary c₁ + boundary c₂ := by
+  exact map_add boundary c₁ c₂
+```
+:::
 
 The one-dimensional shadow of all this is visible already in plain calculus: the boundary of a subdivided interval telescopes to its endpoints, mirroring $`\partial [a, b] = \{b\} - \{a\}`.
 Prove that a telescoping sum of successive differences collapses to the difference of the endpoints.
@@ -582,6 +623,14 @@ example (g : ℕ → ℝ) (n : ℕ) :
     ∑ i ∈ Finset.range n, (g (i+1) - g i) = g n - g 0 := by
   sorry
 ```
+
+:::solution
+```lean
+example (g : ℕ → ℝ) (n : ℕ) :
+    ∑ i ∈ Finset.range n, (g (i+1) - g i) = g n - g 0 := by
+  exact Finset.sum_range_sub g n
+```
+:::
 
 ## Stokes' theorem
 
@@ -598,6 +647,13 @@ example (a b : ℝ) : ∫ _x in a..b, (1:ℝ) = b - a := by
   sorry
 ```
 
+:::solution
+```lean
+example (a b : ℝ) : ∫ _x in a..b, (1:ℝ) = b - a := by
+  rw [intervalIntegral.integral_const, smul_eq_mul, mul_one]
+```
+:::
+
 ## Back to Earth: a comparison to vector calculus
 
 The Mathlib name for the elementary cross product on $`\mathbb{R}^3` is `crossProduct` (in the root namespace, written `⨯₃`); the algebraic Hodge-star machinery on exterior powers does not yet have a unified Mathlib home, although `crossProduct` makes the $`n = 3` case fully usable.
@@ -609,3 +665,10 @@ Since both sides are functions `Fin 3 → ℝ`, take an `ext i`, split the three
 example : crossProduct (![1,0,0] : Fin 3 → ℝ) ![0,1,0] = ![0,0,1] := by
   sorry
 ```
+
+:::solution
+```lean
+example : crossProduct (![1,0,0] : Fin 3 → ℝ) ![0,1,0] = ![0,0,1] := by
+  ext i; fin_cases i <;> simp [crossProduct]
+```
+:::
