@@ -384,6 +384,13 @@ example {T : ℝ} : AddCircle.toCircle (0 : AddCircle T) = 1 := by
   sorry
 ```
 
+:::solution
+```lean
+example {T : ℝ} : AddCircle.toCircle (0 : AddCircle T) = 1 := by
+  simp
+```
+:::
+
 ## A reminder on Hilbert spaces
 
 An orthonormal basis in this Hilbert-space sense — one whose possibly-infinite linear combinations reach the whole space — is a `HilbertBasis ι ℂ V`, and its `repr` field is precisely the map sending $`x` to its coefficient sequence $`(a_\xi)_\xi`, bundled as an isometric isomorphism onto the sequence space `ℓ²`.
@@ -415,6 +422,15 @@ example {ι : Type*} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E
   sorry
 ```
 
+:::solution
+```lean
+example {ι : Type*} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E]
+    (b : HilbertBasis ι ℂ E) (x : E) (i : ι) :
+    b.repr x i = inner ℂ (b i) x :=
+  b.repr_apply_apply x i
+```
+:::
+
 ## Binary Fourier analysis on \{±1\}ⁿ
 
 Mathlib has no dedicated theory of Boolean functions $`\{\pm1\}^n \to \mathbb{C}` and their multilinear expansions, so `Napkin.Missing.BooleanFourier` sets one up directly.
@@ -433,6 +449,13 @@ example (x : BoolCube 3) : chi ∅ x = 1 := by
   sorry
 ```
 
+:::solution
+```lean
+example (x : BoolCube 3) : chi ∅ x = 1 :=
+  chi_empty x
+```
+:::
+
 Each character takes values in $`\{\pm1\}` — that is `chi_eq_one_or` — because it is a product of $`\pm1`'s; the fact underneath it is that $`\chi_S` squares to $`1`.
 
 ```lean
@@ -440,6 +463,14 @@ example (S : Finset (Fin 3)) (x : BoolCube 3) :
     chi S x * chi S x = 1 := by
   sorry
 ```
+
+:::solution
+```lean
+example (S : Finset (Fin 3)) (x : BoolCube 3) :
+    chi S x * chi S x = 1 :=
+  chi_mul_self S x
+```
+:::
 
 The averaging inner product $`\langle f, g \rangle = \frac{1}{2^n} \sum_x f(x) \overline{g(x)}` is `boolInner`, and the Fourier coefficient $`\widehat{f}(S) = \langle f, \chi_S\rangle` is `boolFourierCoeff`.
 The heart of the theory — that the $`2^n` characters are orthonormal, hence a basis — is `chi_boolInner`, which discharges the earlier exercise asking for their orthonormality.
@@ -459,6 +490,15 @@ example {n : ℕ} (f : BoolFn n) :
       = (2 ^ n : ℂ)⁻¹ * ∑ x, f x := by
   sorry
 ```
+
+:::solution
+```lean
+example {n : ℕ} (f : BoolFn n) :
+    boolFourierCoeff f (∅ : Finset (Fin n))
+      = (2 ^ n : ℂ)⁻¹ * ∑ x, f x :=
+  boolFourierCoeff_empty f
+```
+:::
 
 ## Fourier analysis on finite groups Z
 
@@ -487,6 +527,14 @@ example {A : Type*} [AddGroup A] [Fintype A] (ψ : AddChar A ℂ) (h : ψ ≠ 0)
     ∑ x, ψ x = 0 := by
   sorry
 ```
+
+:::solution
+```lean
+example {A : Type*} [AddGroup A] [Fintype A] (ψ : AddChar A ℂ) (h : ψ ≠ 0) :
+    ∑ x, ψ x = 0 :=
+  AddChar.sum_eq_zero_iff_ne_zero.mpr h
+```
+:::
 
 For the cyclic case the whole package — with the form $`\xi \cdot x = (\xi x)/n` baked in — is the discrete Fourier transform `ZMod.dft`, a linear equivalence on functions on $`\mathbb{Z}/N\mathbb{Z}` (denoted `𝓕` within its namespace):
 
@@ -532,6 +580,13 @@ example {T : ℝ} (x : AddCircle T) : fourier 0 x = 1 := by
   sorry
 ```
 
+:::solution
+```lean
+example {T : ℝ} (x : AddCircle T) : fourier 0 x = 1 :=
+  fourier_zero
+```
+:::
+
 Consequently the exercise's identity $`\widehat{f}(0) = \frac{1}{2\pi}\int f` holds by definition: at $`n = 0` the character drops out of the integral, leaving the plain average of $`f` against the normalized measure.
 
 ```lean
@@ -540,6 +595,15 @@ example {T : ℝ} [hT : Fact (0 < T)] {E : Type*} [NormedAddCommGroup E]
     fourierCoeff f 0 = ∫ t : AddCircle T, f t ∂AddCircle.haarAddCircle := by
   sorry
 ```
+
+:::solution
+```lean
+example {T : ℝ} [hT : Fact (0 < T)] {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℂ E] (f : AddCircle T → E) :
+    fourierCoeff f 0 = ∫ t : AddCircle T, f t ∂AddCircle.haarAddCircle := by
+  simp [fourierCoeff]
+```
+:::
 
 ## Summary, and another teaser
 
@@ -550,6 +614,14 @@ The first of these is an additive equivalence between $`\mathbb{Z}/n\mathbb{Z}` 
 example {n : ℕ} [NeZero n] : ZMod n ≃+ AddChar (ZMod n) ℂ := by
   sorry
 ```
+
+:::solution
+```lean
+noncomputable example {n : ℕ} [NeZero n] :
+    ZMod n ≃+ AddChar (ZMod n) ℂ :=
+  AddChar.zmodAddEquiv
+```
+:::
 
 ## Parseval and friends
 
@@ -576,6 +648,16 @@ example {T : ℝ} [hT : Fact (0 < T)]
   sorry
 ```
 
+:::solution
+```lean
+example {T : ℝ} [hT : Fact (0 < T)]
+    (f : Lp ℂ 2 (@AddCircle.haarAddCircle T hT)) :
+    ∑' i : ℤ, ‖fourierCoeff (f : AddCircle T → ℂ) i‖ ^ 2
+      = ∫ t : AddCircle T, ‖f t‖ ^ 2 ∂AddCircle.haarAddCircle :=
+  tsum_sq_fourierCoeff f
+```
+:::
+
 ## Application: Basel problem
 
 The sum itself is `hasSum_zeta_two`:
@@ -598,6 +680,14 @@ The first problem below asks for $`\sum_{n \ge 1} \frac{1}{n^4} = \frac{\pi^4}{9
 example : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 4) (Real.pi ^ 4 / 90) := by
   sorry
 ```
+
+:::solution
+```lean
+example :
+    HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 4) (Real.pi ^ 4 / 90) :=
+  hasSum_zeta_four
+```
+:::
 
 ## Application: Arrow's Impossibility Theorem
 

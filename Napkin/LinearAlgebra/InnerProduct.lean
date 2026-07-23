@@ -380,6 +380,14 @@ example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] (v w : V) :
   sorry
 ```
 
+:::solution
+```lean
+example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] (v w : V) :
+    inner ℂ v w = starRingEnd ℂ (inner ℂ w v) :=
+  (inner_conj_symm v w).symm
+```
+:::
+
 ## Norms
 
 The defining identity $`\|v\|^2 = \langle v, v \rangle` is `@inner_self_eq_norm_sq` (real case) and `@inner_self_eq_norm_sq_to_K` (over a general `RCLike` field).
@@ -407,6 +415,15 @@ example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℝ V] (v w : V)
   sorry
 ```
 
+:::solution
+```lean
+example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℝ V] (v w : V)
+    (h : inner ℝ v w = 0) : ‖v‖ ^ 2 + ‖w‖ ^ 2 = ‖v + w‖ ^ 2 := by
+  rw [norm_add_sq_real, h]
+  ring
+```
+:::
+
 ## Orthogonality
 
 `Orthonormal 𝕜 v` packages "norm-1 and pairwise orthogonal" into a single proposition over an indexed family `v : ι → E`, sidestepping the question of whether the family is finite or infinite.
@@ -431,6 +448,15 @@ example (𝕜 E : Type*) [RCLike 𝕜] [NormedAddCommGroup E]
   sorry
 ```
 
+:::solution
+```lean
+example (𝕜 E : Type*) [RCLike 𝕜] [NormedAddCommGroup E]
+    [InnerProductSpace 𝕜 E] {ι : Type*} (v : ι → E)
+    (h : Orthonormal 𝕜 v) : LinearIndependent 𝕜 v :=
+  h.linearIndependent
+```
+:::
+
 ## Hilbert spaces
 
 There's no separate `HilbertSpace` typeclass in Mathlib; "Hilbert space" is the conjunction of `InnerProductSpace 𝕜 E` and `CompleteSpace E`.
@@ -443,3 +469,11 @@ example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℝ V]
     [FiniteDimensional ℝ V] : CompleteSpace V := by
   sorry
 ```
+
+:::solution
+```lean
+example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+    [FiniteDimensional ℝ V] : CompleteSpace V :=
+  FiniteDimensional.complete ℝ V
+```
+:::

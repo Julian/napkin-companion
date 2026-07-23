@@ -455,6 +455,15 @@ example (k V : Type*) [Field k] [IsAlgClosed k] [AddCommGroup V] [Module k V]
   sorry
 ```
 
+:::solution
+```lean
+example (k V : Type*) [Field k] [IsAlgClosed k] [AddCommGroup V] [Module k V]
+    [FiniteDimensional k V] [Nontrivial V] (T : Module.End k V) :
+    ∃ μ : k, T.HasEigenvalue μ :=
+  T.exists_eigenvalue
+```
+:::
+
 ## Nilpotent maps
 
 Nilpotency is Mathlib's `IsNilpotent`, meaning some power is zero.
@@ -473,6 +482,15 @@ example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
     μ = 0 := by
   sorry
 ```
+
+:::solution
+```lean
+example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    (T : Module.End k V) (hT : IsNilpotent T) (μ : k)
+    (hμ : T.HasEigenvalue μ) : μ = 0 :=
+  (hμ.isNilpotent_of_isNilpotent hT).eq_zero
+```
+:::
 
 ## Algebraic and geometric multiplicity
 
@@ -499,3 +517,19 @@ example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
       ≤ Module.finrank k (T.genEigenspace μ n) := by
   sorry
 ```
+
+:::solution
+```lean
+example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    (T : Module.End k V) (μ : k) (n : ℕ) (hn : 0 < n) :
+    T.eigenspace μ ≤ T.genEigenspace μ n :=
+  Module.End.eigenspace_le_genEigenspace hn
+
+example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    [FiniteDimensional k V] (T : Module.End k V) (μ : k) (n : ℕ)
+    (hn : 0 < n) :
+    Module.finrank k (T.eigenspace μ)
+      ≤ Module.finrank k (T.genEigenspace μ n) :=
+  Submodule.finrank_mono (Module.End.eigenspace_le_genEigenspace hn)
+```
+:::

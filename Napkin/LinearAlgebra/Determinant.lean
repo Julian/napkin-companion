@@ -324,6 +324,15 @@ example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (x y : M) :
   sorry
 ```
 
+:::solution
+```lean
+example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (x y : M) :
+    ExteriorAlgebra.ι R x * ExteriorAlgebra.ι R y
+      = -(ExteriorAlgebra.ι R y * ExteriorAlgebra.ι R x) :=
+  eq_neg_of_add_eq_zero_left (ExteriorAlgebra.ι_add_mul_swap x y)
+```
+:::
+
 ## The determinant
 
 `Matrix.det` computes the determinant on square matrices, accessible via `M.det` once a `Fintype` and `DecidableEq` for the index type are in scope.
@@ -350,6 +359,14 @@ example {n : Type*} [Fintype n] [DecidableEq n] {k : Type*}
   sorry
 ```
 
+:::solution
+```lean
+example {n : Type*} [Fintype n] [DecidableEq n] {k : Type*}
+    [CommRing k] (M N : Matrix n n k) : (M * N).det = M.det * N.det :=
+  Matrix.det_mul M N
+```
+:::
+
 The problem "determinant detects isomorphism" says $`T` is invertible exactly when $`\det T \neq 0`.
 Over a field the invertible elements are the nonzero ones, and Mathlib phrases the general statement with `IsUnit`: a matrix is invertible exactly when its determinant is.
 
@@ -358,6 +375,14 @@ example {n : Type*} [Fintype n] [DecidableEq n] {k : Type*}
     [CommRing k] (M : Matrix n n k) : IsUnit M ↔ IsUnit M.det := by
   sorry
 ```
+
+:::solution
+```lean
+example {n : Type*} [Fintype n] [DecidableEq n] {k : Type*}
+    [CommRing k] (M : Matrix n n k) : IsUnit M ↔ IsUnit M.det :=
+  Matrix.isUnit_iff_isUnit_det M
+```
+:::
 
 ## Characteristic polynomials, and Cayley-Hamilton
 
@@ -377,3 +402,11 @@ example {n : Type*} [DecidableEq n] [Fintype n] {k : Type*} [CommRing k]
     (M : Matrix n n k) : Polynomial.aeval M M.charpoly = 0 := by
   sorry
 ```
+
+:::solution
+```lean
+example {n : Type*} [DecidableEq n] [Fintype n] {k : Type*} [CommRing k]
+    (M : Matrix n n k) : Polynomial.aeval M M.charpoly = 0 :=
+  Matrix.aeval_self_charpoly M
+```
+:::

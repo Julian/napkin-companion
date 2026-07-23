@@ -359,6 +359,16 @@ example (k V W : Type*) [Field k]
   sorry
 ```
 
+:::solution
+```lean
+example (k V W : Type*) [Field k]
+    [AddCommGroup V] [Module k V] [FiniteDimensional k V]
+    [AddCommGroup W] [Module k W] [FiniteDimensional k W] :
+    Module.finrank k (V ⊗[k] W) = Module.finrank k V * Module.finrank k W :=
+  Module.finrank_tensorProduct
+```
+:::
+
 ## Dual space
 
 `Module.Dual k V` is the type of linear maps `V → k`, viewed as a $`k`-module.
@@ -385,6 +395,15 @@ example (k V ι : Type*) [Field k] [AddCommGroup V] [Module k V]
     b.dualBasis i (b j) = if j = i then 1 else 0 := by
   sorry
 ```
+
+:::solution
+```lean
+example (k V ι : Type*) [Field k] [AddCommGroup V] [Module k V]
+    [DecidableEq ι] [Fintype ι] (b : Module.Basis ι k V) (i j : ι) :
+    b.dualBasis i (b j) = if j = i then 1 else 0 :=
+  b.dualBasis_apply_self i j
+```
+:::
 
 ## V∨ ⊗ W gives matrices from V to W
 
@@ -419,6 +438,16 @@ example (k V W : Type*) [CommRing k]
   sorry
 ```
 
+:::solution
+```lean
+example (k V W : Type*) [CommRing k]
+    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
+    (f : Module.Dual k V) (w : W) (v : V) :
+    dualTensorHom k V W (f ⊗ₜ[k] w) v = f v • w :=
+  dualTensorHom_apply f v w
+```
+:::
+
 ## The trace
 
 `LinearMap.trace k V` is the basis-free trace on `End k V` (for finite-dimensional `V`).
@@ -448,3 +477,14 @@ example (k V W : Type*) [Field k]
     LinearMap.trace k V (g ∘ₗ f) = LinearMap.trace k W (f ∘ₗ g) := by
   sorry
 ```
+
+:::solution
+```lean
+example (k V W : Type*) [Field k]
+    [AddCommGroup V] [Module k V] [FiniteDimensional k V]
+    [AddCommGroup W] [Module k W] [FiniteDimensional k W]
+    (f : V →ₗ[k] W) (g : W →ₗ[k] V) :
+    LinearMap.trace k V (g ∘ₗ f) = LinearMap.trace k W (f ∘ₗ g) :=
+  LinearMap.trace_comp_comm' f g
+```
+:::
