@@ -505,21 +505,35 @@ example {C : Type*} [Category C] (X : TopCat) (ℱ : TopCat.Presheaf C X)
 ```
 
 Because a pre-sheaf is packaged as a functor, the two restriction axioms come for free from functoriality: restricting along the identity inclusion is the identity map, `ℱ.map (𝟙 U) = 𝟙 (ℱ.obj U)`, and restricting through an intermediate open agrees with restricting directly.
-Confirm the first of these — the `res_{U,U}` axiom — directly.
+The first of these — the `res_{U,U}` axiom — is exactly `ℱ.map_id`.
 
 ```lean
 example {C : Type*} [Category C] (X : TopCat) (ℱ : TopCat.Presheaf C X)
     (U : (Opens X)ᵒᵖ) :
-    ℱ.map (𝟙 U) = 𝟙 (ℱ.obj U) := by
+    ℱ.map (𝟙 U) = 𝟙 (ℱ.obj U) :=
+  ℱ.map_id U
+```
+
+There is more hiding here than the identity inclusion, though: the open sets form a *posetal* category, one in which there is at most one arrow between any two objects.
+So the identity is in fact the *only* self-map `U ⟶ U`, and its restriction map must be the identity — no matter which arrow you were handed.
+Prove this stronger statement: for an arbitrary `i : U ⟶ U`, the restriction `ℱ.map i` is the identity.
+The thinness of the category is what forces `i = 𝟙 U` (`Subsingleton.elim`); after substituting, `ℱ.map_id` finishes.
+
+```lean
+example {C : Type*} [Category C] (X : TopCat) (ℱ : TopCat.Presheaf C X)
+    (U : (Opens X)ᵒᵖ) (i : U ⟶ U) :
+    ℱ.map i = 𝟙 (ℱ.obj U) := by
   sorry
 ```
 
 :::solution
 ```lean
 example {C : Type*} [Category C] (X : TopCat) (ℱ : TopCat.Presheaf C X)
-    (U : (Opens X)ᵒᵖ) :
-    ℱ.map (𝟙 U) = 𝟙 (ℱ.obj U) :=
-  ℱ.map_id U
+    (U : (Opens X)ᵒᵖ) (i : U ⟶ U) :
+    ℱ.map i = 𝟙 (ℱ.obj U) := by
+  -- Opens form a thin category, so i is forced to equal 𝟙 U.
+  obtain rfl : i = 𝟙 U := Subsingleton.elim _ _
+  exact ℱ.map_id U
 ```
 :::
 
@@ -539,24 +553,37 @@ noncomputable example {C : Type*} [Category C] [Limits.HasColimits C]
   ℱ.germ U x hx
 ```
 
-Germs are compatible with restriction: taking a section over `V`, restricting it to a smaller `U`, and then taking its germ at a point `x ∈ U` gives the same germ as taking the germ of the original section directly.
-Prove this compatibility.
+Germs are compatible with restriction: restricting a section along `i : U ⟶ V` and then taking its germ agrees with taking the germ of the original section directly.
+As a statement about the restriction and germ *maps*, this is the commuting triangle `F.germ_res`.
 
-```lean
-example {C : Type*} [Category C] [Limits.HasColimits C]
-    (X : TopCat) (F : TopCat.Presheaf C X)
-    {U V : Opens X} (i : U ⟶ V) (x : X) (hx : x ∈ U) :
-    F.map i.op ≫ F.germ U x hx = F.germ V x (i.le hx) := by
-  sorry
-```
-
-:::solution
 ```lean
 example {C : Type*} [Category C] [Limits.HasColimits C]
     (X : TopCat) (F : TopCat.Presheaf C X)
     {U V : Opens X} (i : U ⟶ V) (x : X) (hx : x ∈ U) :
     F.map i.op ≫ F.germ U x hx = F.germ V x (i.le hx) :=
   F.germ_res i x hx
+```
+
+For a sheaf of rings the maps are honest functions, so the same fact can be read *pointwise*: the germ of the restriction of `s` equals the germ of `s`.
+Derive this applied form from the map-level identity above.
+The move is to fold the two function applications back into a composite (`ConcreteCategory.comp_apply`, run backwards), turning the goal into the triangle `germ_res`, which then closes it.
+
+```lean
+example (X : TopCat) (F : TopCat.Presheaf CommRingCat X)
+    {U V : Opens X} (i : U ⟶ V) (x : X) (hx : x ∈ U)
+    (s : F.obj (Opposite.op V)) :
+    F.germ U x hx (F.map i.op s) = F.germ V x (i.le hx) s := by
+  sorry
+```
+
+:::solution
+```lean
+example (X : TopCat) (F : TopCat.Presheaf CommRingCat X)
+    {U V : Opens X} (i : U ⟶ V) (x : X) (hx : x ∈ U)
+    (s : F.obj (Opposite.op V)) :
+    F.germ U x hx (F.map i.op s) = F.germ V x (i.le hx) s := by
+  -- Re-assemble the two applications into a composite, then use germ_res.
+  rw [← ConcreteCategory.comp_apply, F.germ_res i x hx]
 ```
 :::
 
@@ -571,20 +598,31 @@ example {C : Type*} [Category C] (X : TopCat) (F : TopCat.Sheaf C X) :
     F.presheaf.IsSheaf := F.2
 ```
 
-Since the sheaf condition is stated for pre-sheaves, it is invariant under isomorphism: if `F` is a sheaf and `G` is isomorphic to `F`, then `G` is a sheaf too.
-Prove it.
+Since the sheaf condition is stated for pre-sheaves, it is invariant under isomorphism: if `F` is a sheaf and `G` is isomorphic to `F`, then `G` is a sheaf too, transported along `α` by `TopCat.Presheaf.isSheaf_of_iso`.
 
 ```lean
 example {C : Type*} [Category C] (X : TopCat) {F G : TopCat.Presheaf C X}
-    (α : F ≅ G) (hF : F.IsSheaf) : G.IsSheaf := by
+    (α : F ≅ G) (hF : F.IsSheaf) : G.IsSheaf :=
+  TopCat.Presheaf.isSheaf_of_iso α hF
+```
+
+An isomorphism runs both ways, so this transport is really an *equivalence* of the two sheaf conditions.
+Upgrade the one-directional fact into the iff `F.IsSheaf ↔ G.IsSheaf`, without reaching for the packaged `isSheaf_of_iso_iff`.
+Assemble the two halves by hand: the forward direction transports along `α`, and the backward one along its inverse `α.symm`.
+
+```lean
+example {C : Type*} [Category C] (X : TopCat) {F G : TopCat.Presheaf C X}
+    (α : F ≅ G) : F.IsSheaf ↔ G.IsSheaf := by
   sorry
 ```
 
 :::solution
 ```lean
 example {C : Type*} [Category C] (X : TopCat) {F G : TopCat.Presheaf C X}
-    (α : F ≅ G) (hF : F.IsSheaf) : G.IsSheaf :=
-  TopCat.Presheaf.isSheaf_of_iso α hF
+    (α : F ≅ G) : F.IsSheaf ↔ G.IsSheaf :=
+  -- Transport along α one way, along its inverse α.symm the other.
+  ⟨TopCat.Presheaf.isSheaf_of_iso α,
+    TopCat.Presheaf.isSheaf_of_iso α.symm⟩
 ```
 :::
 
@@ -601,19 +639,8 @@ noncomputable example (X : TopCat) (F : TopCat.Sheaf CommRingCat X)
 ```
 
 The exercise "sections are determined by stalks" asks you to show the map $`\mathcal{F}(U) \to \prod_{p \in U} \mathcal{F}_p` sending a section to its germs is injective.
-Concretely: two sections `s` and `t` over `U` whose germs agree at every point of `U` must be equal.
-Prove it — `TopCat.Presheaf.section_ext` is the relevant lemma.
+Concretely: two sections `s` and `t` over `U` whose germs agree at every point of `U` must be equal, which is `TopCat.Presheaf.section_ext`.
 
-```lean
-example (X : TopCat) (F : TopCat.Sheaf CommRingCat X) (U : Opens X)
-    (s t : F.presheaf.obj (Opposite.op U))
-    (h : ∀ (x : X) (hx : x ∈ U),
-      F.presheaf.germ U x hx s = F.presheaf.germ U x hx t) :
-    s = t := by
-  sorry
-```
-
-:::solution
 ```lean
 example (X : TopCat) (F : TopCat.Sheaf CommRingCat X) (U : Opens X)
     (s t : F.presheaf.obj (Opposite.op U))
@@ -621,6 +648,29 @@ example (X : TopCat) (F : TopCat.Sheaf CommRingCat X) (U : Opens X)
       F.presheaf.germ U x hx s = F.presheaf.germ U x hx t) :
     s = t :=
   TopCat.Presheaf.section_ext F U s t h
+```
+
+Injectivity has a familiar corollary for maps of rings: it is detected by the kernel.
+Deduce that a section all of whose germs vanish is itself zero.
+Compare `s` against the zero section using `section_ext`; the remaining germ equality holds because each germ map is a ring homomorphism, so it sends `0` to `0` (`map_zero`).
+
+```lean
+example (X : TopCat) (F : TopCat.Sheaf CommRingCat X) (U : Opens X)
+    (s : F.presheaf.obj (Opposite.op U))
+    (h : ∀ (x : X) (hx : x ∈ U), F.presheaf.germ U x hx s = 0) :
+    s = 0 := by
+  sorry
+```
+
+:::solution
+```lean
+example (X : TopCat) (F : TopCat.Sheaf CommRingCat X) (U : Opens X)
+    (s : F.presheaf.obj (Opposite.op U))
+    (h : ∀ (x : X) (hx : x ∈ U), F.presheaf.germ U x hx s = 0) :
+    s = 0 := by
+  -- Compare s with 0; germ is a ring hom, so germ 0 = 0 matches h.
+  refine TopCat.Presheaf.section_ext F U s 0 fun x hx => ?_
+  rw [h x hx, map_zero]
 ```
 :::
 

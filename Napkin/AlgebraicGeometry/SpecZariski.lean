@@ -395,8 +395,15 @@ Mathlib's `PrimeSpectrum A` is the type whose terms are the prime ideals of $`A`
 example (A : Type*) [CommRing A] : Type _ := PrimeSpectrum A
 ```
 
-If $`k` is a field, its only prime ideal is $`(0)`, so $`\operatorname{Spec} k` is a single point.
-Show that any two points of the spectrum of a field are equal.
+If $`k` is a field, its only prime ideal is $`(0)`, so $`\operatorname{Spec} k` is a single point; being a subsingleton, any two of its points coincide, `Subsingleton.elim`.
+
+```lean
+example (K : Type*) [Field K] (x y : PrimeSpectrum K) : x = y :=
+  Subsingleton.elim x y
+```
+
+Prove that *directly* from the ideal theory, exposing why the spectrum collapses.
+Two points are equal once their underlying ideals are (`PrimeSpectrum.ext`), and every prime ideal of a field is $`(0)`: a field has only $`\bot` and $`\top` (`Ideal.eq_bot_or_top`), while a prime ideal is never $`\top` (`Ideal.IsPrime.ne_top`), so `Or.resolve_right` pins each ideal to $`\bot`.
 
 ```lean
 example (K : Type*) [Field K] (x y : PrimeSpectrum K) : x = y := by
@@ -405,8 +412,11 @@ example (K : Type*) [Field K] (x y : PrimeSpectrum K) : x = y := by
 
 :::solution
 ```lean
-example (K : Type*) [Field K] (x y : PrimeSpectrum K) : x = y :=
-  Subsingleton.elim x y
+example (K : Type*) [Field K] (x y : PrimeSpectrum K) : x = y := by
+  -- Each point's prime ideal is neither ⊤, so it must be ⊥; then use ext.
+  have hx : x.asIdeal = ⊥ := x.asIdeal.eq_bot_or_top.resolve_right x.2.ne_top
+  have hy : y.asIdeal = ⊥ := y.asIdeal.eq_bot_or_top.resolve_right y.2.ne_top
+  exact PrimeSpectrum.ext (hx.trans hy.symm)
 ```
 :::
 
@@ -473,18 +483,29 @@ example (A : Type*) [CommRing A] :
   PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim A
 ```
 
-A field has only the two ideals $`(0)` and itself, hence no strict chain of primes, so its Krull dimension is $`0`.
-Prove it.
+A field has only the two ideals $`(0)` and itself, hence no strict chain of primes, so its ring Krull dimension is $`0`, `ringKrullDim_eq_zero_of_field`.
 
 ```lean
-example (K : Type*) [Field K] : ringKrullDim K = 0 := by
+example (K : Type*) [Field K] : ringKrullDim K = 0 :=
+  ringKrullDim_eq_zero_of_field K
+```
+
+Now read that dimension off the *topology* instead.
+Prove the topological Krull dimension of $`\operatorname{Spec} k` is $`0` by chaining the two facts above: rewrite along `PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim` to pass to the ring, then collapse it with `ringKrullDim_eq_zero_of_field`.
+
+```lean
+example (K : Type*) [Field K] :
+    topologicalKrullDim (PrimeSpectrum K) = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (K : Type*) [Field K] : ringKrullDim K = 0 :=
-  ringKrullDim_eq_zero_of_field K
+example (K : Type*) [Field K] :
+    topologicalKrullDim (PrimeSpectrum K) = 0 := by
+  -- Topological and ring dimension agree; the ring dimension is 0.
+  rw [PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim,
+    ringKrullDim_eq_zero_of_field K]
 ```
 :::
 
@@ -508,21 +529,35 @@ example (A : Type*) [CommRing A] (I : Ideal A) :
   PrimeSpectrum.zeroLocus_radical I
 ```
 
-Finally, radical ideals correspond to closed sets: two ideals cut out the same vanishing locus exactly when they have the same radical.
-Show this.
+Finally, radical ideals correspond to closed sets: two ideals cut out the same vanishing locus exactly when they have the same radical, `PrimeSpectrum.zeroLocus_eq_iff`.
 
-```lean
-example (A : Type*) [CommRing A] (I J : Ideal A) :
-    PrimeSpectrum.zeroLocus (I : Set A) = PrimeSpectrum.zeroLocus (J : Set A)
-      ↔ I.radical = J.radical := by
-  sorry
-```
-
-:::solution
 ```lean
 example (A : Type*) [CommRing A] (I J : Ideal A) :
     PrimeSpectrum.zeroLocus (I : Set A) = PrimeSpectrum.zeroLocus (J : Set A)
       ↔ I.radical = J.radical :=
   PrimeSpectrum.zeroLocus_eq_iff
+```
+
+This is exactly what makes the correspondence *injective*: a radical ideal is pinned down by its closed set.
+Prove that two radical ideals (each equal to its own radical) with the same vanishing locus are equal — feed the equal loci through the forward direction of `zeroLocus_eq_iff` to match their radicals, then rewrite by the two radical hypotheses.
+
+```lean
+example (A : Type*) [CommRing A] (I J : Ideal A)
+    (hI : I.radical = I) (hJ : J.radical = J)
+    (h : PrimeSpectrum.zeroLocus (I : Set A)
+      = PrimeSpectrum.zeroLocus (J : Set A)) : I = J := by
+  sorry
+```
+
+:::solution
+```lean
+example (A : Type*) [CommRing A] (I J : Ideal A)
+    (hI : I.radical = I) (hJ : J.radical = J)
+    (h : PrimeSpectrum.zeroLocus (I : Set A)
+      = PrimeSpectrum.zeroLocus (J : Set A)) : I = J := by
+  -- Equal loci give equal radicals; each radical ideal is its own radical.
+  have hr := PrimeSpectrum.zeroLocus_eq_iff.mp h
+  rw [hI, hJ] at hr
+  exact hr
 ```
 :::

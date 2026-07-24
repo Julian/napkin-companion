@@ -339,35 +339,62 @@ noncomputable example (X : Scheme) (U : X.Opens) : Scheme := U.toScheme
 example (X : Scheme) (U : X.Opens) : IsOpenImmersion U.ι := inferInstance
 ```
 
-An open immersion is in particular an open embedding on points, so `U.ι.isOpenEmbedding` gives a bundled `IsOpenEmbedding`.
-Extract from it that the inclusion of an open subscheme is injective on points; the finisher is `.injective`.
+An open immersion is in particular an open embedding on points, so `U.ι.isOpenEmbedding` gives a bundled `IsOpenEmbedding`, from which `.injective` extracts that the inclusion of an open subscheme is injective on points.
 
-```lean
-example (X : Scheme) (U : X.Opens) : Function.Injective U.ι.base := by
-  sorry
-```
-
-:::solution
 ```lean
 example (X : Scheme) (U : X.Opens) :
     Function.Injective U.ι.base :=
   U.ι.isOpenEmbedding.injective
 ```
-:::
 
-The image of that inclusion is exactly `U` sitting back inside `X`.
-Show that the range of `U.ι` on points is the underlying set of `U`; this is `Scheme.Opens.range_ι`.
+Injectivity is exactly the statement that the inclusion reflects equality of points, so package it as an equivalence: two points of `U` have the same image in `X` if and only if they are already equal.
+Split with `constructor`; the forward direction feeds the hypothesis to the injectivity above, and the backward direction is immediate once you rewrite along the equality.
 
 ```lean
-example (X : Scheme) (U : X.Opens) : Set.range U.ι.base = ↑U := by
+example (X : Scheme) (U : X.Opens) (x y : U) :
+    U.ι.base x = U.ι.base y ↔ x = y := by
   sorry
 ```
 
 :::solution
 ```lean
+example (X : Scheme) (U : X.Opens) (x y : U) :
+    U.ι.base x = U.ι.base y ↔ x = y := by
+  constructor
+  · -- Forward: the underlying map is injective.
+    intro h
+    exact U.ι.isOpenEmbedding.injective h
+  · -- Backward: equal points have equal images.
+    intro h
+    rw [h]
+```
+:::
+
+The image of that inclusion is exactly `U` sitting back inside `X`; that the range of `U.ι` on points is the underlying set of `U` is `Scheme.Opens.range_ι`.
+
+```lean
 example (X : Scheme) (U : X.Opens) :
     Set.range U.ι.base = ↑U :=
   Scheme.Opens.range_ι U
+```
+
+Read that range description as a surjectivity statement onto `U`: every point of `X` lying in `U` is the image of some point of the open subscheme.
+Rewrite the membership backwards along `Scheme.Opens.range_ι` to turn it into membership in the range, then `obtain` the preimage witness.
+
+```lean
+example (X : Scheme) (U : X.Opens) (x : X) (hx : x ∈ (U : Set X)) :
+    ∃ y : U, U.ι.base y = x := by
+  sorry
+```
+
+:::solution
+```lean
+example (X : Scheme) (U : X.Opens) (x : X) (hx : x ∈ (U : Set X)) :
+    ∃ y : U, U.ι.base y = x := by
+  -- Membership in U is membership in the range of the inclusion.
+  rw [← Scheme.Opens.range_ι U] at hx
+  obtain ⟨y, hy⟩ := hx
+  exact ⟨y, hy⟩
 ```
 :::
 
@@ -381,18 +408,28 @@ example {X : Scheme} {U : X.Opens} (hU : IsAffineOpen U) (f : Γ(X, U)) :
     IsAffineOpen (X.basicOpen f) := hU.basicOpen f
 ```
 
-The starting point of the trick is that the whole affine space is itself a (distinguished) affine open.
-Show that the top open of $`\operatorname{Spec} R` is affine; the finisher is `isAffineOpen_top`, which needs only that $`\operatorname{Spec} R` is affine.
+The starting point of the trick is that the whole affine space is itself a (distinguished) affine open; that the top open of $`\operatorname{Spec} R` is affine is `isAffineOpen_top`, which needs only that $`\operatorname{Spec} R` is affine.
 
 ```lean
-example (R : CommRingCat) : IsAffineOpen (⊤ : (Spec R).Opens) := by
+example (R : CommRingCat) :
+    IsAffineOpen (⊤ : (Spec R).Opens) :=
+  isAffineOpen_top (Spec R)
+```
+
+Now run the hyperbola effect on $`\operatorname{Spec} R` itself: a basic open $`D(f)` cut out by a global function `f` is again affine.
+Chain the two facts — feed the affineness of the top open (`isAffineOpen_top`) into `IsAffineOpen.basicOpen` at the section `f`.
+
+```lean
+example (R : CommRingCat) (f : Γ(Spec R, ⊤)) :
+    IsAffineOpen ((Spec R).basicOpen f) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (R : CommRingCat) :
-    IsAffineOpen (⊤ : (Spec R).Opens) :=
-  isAffineOpen_top (Spec R)
+example (R : CommRingCat) (f : Γ(Spec R, ⊤)) :
+    IsAffineOpen ((Spec R).basicOpen f) :=
+  -- D(f) is a basic open of the affine top, so `basicOpen` applies.
+  (isAffineOpen_top (Spec R)).basicOpen f
 ```
 :::

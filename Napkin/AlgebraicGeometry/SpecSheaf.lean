@@ -471,20 +471,31 @@ noncomputable example (A : CommRingCat) :
 ```
 
 The prose observed in passing that $`\operatorname{Spec} A = D(1)` is itself distinguished open, which is exactly what let the global sections reappear as $`A[1/1] = A`.
-Prove that identity: the distinguished open of the unit is the whole space, `⊤`.
-The finishing lemma is `PrimeSpectrum.basicOpen_one`.
+That identity — the distinguished open of the unit is the whole space `⊤` — is `PrimeSpectrum.basicOpen_one`.
 
 ```lean
 example (A : Type*) [CommRing A] :
-    PrimeSpectrum.basicOpen (1 : A) = ⊤ := by
+    PrimeSpectrum.basicOpen (1 : A) = ⊤ :=
+  PrimeSpectrum.basicOpen_one
+```
+
+The more useful structural fact is how these opens interact with products: multiplying a function by another can only shrink where it is invertible, so $`D(fg) \subseteq D(f)`, matching the chapter's $`D(x) \cap D(y) = D(xy)`.
+Prove that containment by assembling two facts rather than reaching for the packaged `basicOpen_mul_le_left`.
+First rewrite $`D(fg)` as the meet $`D(f) \sqcap D(g)` with `PrimeSpectrum.basicOpen_mul`, then project onto the left factor with `inf_le_left`.
+
+```lean
+example (A : Type*) [CommRing A] (f g : A) :
+    PrimeSpectrum.basicOpen (f * g) ≤ PrimeSpectrum.basicOpen f := by
   sorry
 ```
 
 :::solution
 ```lean
-example (A : Type*) [CommRing A] :
-    PrimeSpectrum.basicOpen (1 : A) = ⊤ :=
-  PrimeSpectrum.basicOpen_one
+example (A : Type*) [CommRing A] (f g : A) :
+    PrimeSpectrum.basicOpen (f * g) ≤ PrimeSpectrum.basicOpen f := by
+  -- D(fg) is the meet D(f) ⊓ D(g), which sits below its left factor.
+  rw [PrimeSpectrum.basicOpen_mul]
+  exact inf_le_left
 ```
 :::
 
@@ -537,17 +548,29 @@ example (R : Type*) [CommRing R] [IsLocalRing R] (a : R) :
 ```
 
 The chapter asked whether fields are local rings.
-A field has exactly the two ideals $`(0)` and the whole field, so its unique maximal ideal is $`(0)`, and Mathlib registers this as an instance directly — so the goal is closed by `inferInstance`.
+A field has exactly the two ideals $`(0)` and the whole field, so its unique maximal ideal is $`(0)`, and this is registered as an instance directly.
 
 ```lean
-example (K : Type*) [Field K] : IsLocalRing K := by
+example (K : Type*) [Field K] : IsLocalRing K := inferInstance
+```
+
+The characterization above becomes especially transparent for a field: for any $`a`, either $`a` or $`1 - a` is a unit.
+Verify it directly, which also recovers the "either $`a` or $`1-a` is a unit" problem in the concrete case.
+Split on whether $`a = 0` (`rcases eq_or_ne a 0`); when $`a = 0` the other term is $`1`, and when $`a \neq 0` a nonzero element of a field is a unit by `isUnit_iff_ne_zero`.
+
+```lean
+example (K : Type*) [Field K] (a : K) : IsUnit a ∨ IsUnit (1 - a) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (K : Type*) [Field K] : IsLocalRing K := by
-  infer_instance
+example (K : Type*) [Field K] (a : K) : IsUnit a ∨ IsUnit (1 - a) := by
+  rcases eq_or_ne a 0 with rfl | ha
+  · -- a = 0 leaves 1 - 0 = 1, a unit.
+    right; rw [sub_zero]; exact isUnit_one
+  · -- a ≠ 0 is itself a unit in a field.
+    exact Or.inl (isUnit_iff_ne_zero.mpr ha)
 ```
 :::
 
@@ -561,16 +584,29 @@ example (A : Type*) [CommRing A] :
 ```
 
 The chapter asked whether integral domains are reduced.
-In a domain the only nilpotent is $`0`, since $`a^n = 0` forces $`a = 0`; this too is an instance Mathlib already carries, so `inferInstance` again discharges the goal.
+In a domain the only nilpotent is $`0`, since $`a^n = 0` forces $`a = 0`; this too is an instance already carried.
 
 ```lean
-example (A : Type*) [CommRing A] [IsDomain A] : IsReduced A := by
+example (A : Type*) [CommRing A] [IsDomain A] : IsReduced A := inferInstance
+```
+
+The description of the nilradical as $`\bigcap_\mathfrak{p} \mathfrak{p}` is exactly what powers the chapter's claim that a nilpotent function vanishes at *every* point.
+Prove that consequence: a nilpotent element lies in every prime ideal.
+Rewrite membership in the nilradical with `mem_nilradical`, expand the nilradical as the infimum of the primes with `nilradical_eq_sInf`, and then read off the coordinate at $`\mathfrak{p}` with `Ideal.mem_sInf`.
+
+```lean
+example (A : Type*) [CommRing A] (x : A) (hx : IsNilpotent x)
+    (p : Ideal A) [p.IsPrime] : x ∈ p := by
   sorry
 ```
 
 :::solution
 ```lean
-example (A : Type*) [CommRing A] [IsDomain A] : IsReduced A := by
-  infer_instance
+example (A : Type*) [CommRing A] (x : A) (hx : IsNilpotent x)
+    (p : Ideal A) [p.IsPrime] : x ∈ p := by
+  -- Nilpotent ⟹ in the nilradical = ⋂ of all primes ⟹ in this prime.
+  have hmem : x ∈ nilradical A := mem_nilradical.mpr hx
+  rw [nilradical_eq_sInf, Ideal.mem_sInf] at hmem
+  exact hmem ‹p.IsPrime›
 ```
 :::

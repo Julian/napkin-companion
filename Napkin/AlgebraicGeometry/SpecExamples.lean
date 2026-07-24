@@ -499,18 +499,34 @@ example (R : Type) [CommRing R] (r : R) :
   PrimeSpectrum.basicOpen_eq_zeroLocus_compl r
 ```
 
-The zero function vanishes everywhere, so its distinguished open $`D(0)` is empty.
-Show that `basicOpen 0` is the bottom open set `⊥`.
+The zero function vanishes everywhere, so its distinguished open $`D(0)` is empty: `basicOpen 0` is the bottom open set `⊥`.
 
 ```lean
-example (R : Type) [CommRing R] : PrimeSpectrum.basicOpen (0 : R) = ⊥ := by
+example (R : Type) [CommRing R] : PrimeSpectrum.basicOpen (0 : R) = ⊥ :=
+  PrimeSpectrum.basicOpen_zero
+```
+
+A point $`\mathfrak{p}` lies in $`D(r)` exactly when $`r` does *not* vanish there, that is $`r \notin \mathfrak{p}`, which is `PrimeSpectrum.mem_basicOpen`.
+Combine this with primality to see the distinguished opens are closed under products: if $`r` and $`s` both fail to vanish at $`\mathfrak{p}`, then neither does $`rs`.
+Rewrite all three memberships through `mem_basicOpen`, then read off the goal from `IsPrime.mem_or_mem`, which turns $`rs \in \mathfrak{p}` into $`r \in \mathfrak{p} \vee s \in \mathfrak{p}`.
+
+```lean
+example (R : Type) [CommRing R] (r s : R) (p : PrimeSpectrum R)
+    (hr : p ∈ PrimeSpectrum.basicOpen r)
+    (hs : p ∈ PrimeSpectrum.basicOpen s) :
+    p ∈ PrimeSpectrum.basicOpen (r * s) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (R : Type) [CommRing R] : PrimeSpectrum.basicOpen (0 : R) = ⊥ :=
-  PrimeSpectrum.basicOpen_zero
+example (R : Type) [CommRing R] (r s : R) (p : PrimeSpectrum R)
+    (hr : p ∈ PrimeSpectrum.basicOpen r)
+    (hs : p ∈ PrimeSpectrum.basicOpen s) :
+    p ∈ PrimeSpectrum.basicOpen (r * s) := by
+  -- r*s ∈ p would force r ∈ p or s ∈ p, contradicting hr, hs.
+  rw [PrimeSpectrum.mem_basicOpen] at hr hs ⊢
+  exact fun h => (p.isPrime.mem_or_mem h).elim hr hs
 ```
 :::
 
@@ -528,20 +544,30 @@ example (A : Type) [CommRing A] (I : Ideal A) :
   rw [range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective, Ideal.mk_ker]
 ```
 
-Part of that homeomorphism onto $`\mathbb{V}(I)` is that the points of $`\operatorname{Spec} A/I` inject into $`\operatorname{Spec} A`.
-Show that the induced map is injective.
+Part of that homeomorphism onto $`\mathbb{V}(I)` is that the points of $`\operatorname{Spec} A/I` inject into $`\operatorname{Spec} A`; that the induced map is injective is `comap_injective_of_surjective`.
 
 ```lean
 example (A : Type) [CommRing A] (I : Ideal A) :
-    Function.Injective (comap (Ideal.Quotient.mk I)) := by
+    Function.Injective (comap (Ideal.Quotient.mk I)) :=
+  comap_injective_of_surjective _ Ideal.Quotient.mk_surjective
+```
+
+The image lands in $`\mathbb{V}(I)`: a pulled-back prime always *contains* $`I`, which is what "points of $`\operatorname{Spec} A/I` are the primes containing $`I`" means.
+Rewrite the pulled-back ideal with `PrimeSpectrum.comap_asIdeal` into an `Ideal.comap`, then note $`I` is the kernel of the quotient map (`Ideal.mk_ker`), which always sits inside a `comap` (`Ideal.ker_le_comap`).
+
+```lean
+example (A : Type) [CommRing A] (I : Ideal A) (q : PrimeSpectrum (A ⧸ I)) :
+    I ≤ (comap (Ideal.Quotient.mk I) q).asIdeal := by
   sorry
 ```
 
 :::solution
 ```lean
-example (A : Type) [CommRing A] (I : Ideal A) :
-    Function.Injective (comap (Ideal.Quotient.mk I)) :=
-  comap_injective_of_surjective _ Ideal.Quotient.mk_surjective
+example (A : Type) [CommRing A] (I : Ideal A) (q : PrimeSpectrum (A ⧸ I)) :
+    I ≤ (comap (Ideal.Quotient.mk I) q).asIdeal := by
+  -- The pulled-back ideal is a comap, and I = ker(mk) ≤ any comap.
+  rw [PrimeSpectrum.comap_asIdeal]
+  exact Ideal.mk_ker.symm.trans_le (Ideal.ker_le_comap _)
 ```
 :::
 
@@ -561,21 +587,35 @@ example (A : Type) [CommRing A] (r : A) (S : Type) [CommRing S] [Algebra A S]
   localization_away_isOpenEmbedding S r
 ```
 
-Because that open embedding identifies $`D(r)` with a subspace of $`\operatorname{Spec} A`, the induced map is in particular injective.
-Show that localizing away from $`r` gives an injective map on spectra.
+Because that open embedding identifies $`D(r)` with a subspace of $`\operatorname{Spec} A`, the induced map is in particular injective; `.injective` extracts this from the embedding.
 
 ```lean
 example (A : Type) [CommRing A] (r : A) (S : Type) [CommRing S] [Algebra A S]
     [IsLocalization.Away r S] :
-    Function.Injective (comap (algebraMap A S)) := by
+    Function.Injective (comap (algebraMap A S)) :=
+  (localization_away_isOpenEmbedding S r).injective
+```
+
+Dually to the quotient case, the image is the distinguished open $`D(r)`: a pulled-back prime never *contains* $`r`.
+The reason is that $`r` becomes a unit in $`A[1/r]` (`IsLocalization.Away.algebraMap_isUnit`), and a prime ideal contains no unit.
+Assume $`r` were in the pulled-back ideal; rewrite with `comap_asIdeal` and `Ideal.mem_comap` to reach $`\operatorname{algebraMap} r \in \mathfrak{q}`, then derive $`\mathfrak{q} = \top` via `Ideal.eq_top_of_isUnit_mem`, contradicting `q.isPrime.ne_top`.
+
+```lean
+example (A : Type) [CommRing A] (r : A) (S : Type) [CommRing S] [Algebra A S]
+    [IsLocalization.Away r S] (q : PrimeSpectrum S) :
+    r ∉ (comap (algebraMap A S) q).asIdeal := by
   sorry
 ```
 
 :::solution
 ```lean
 example (A : Type) [CommRing A] (r : A) (S : Type) [CommRing S] [Algebra A S]
-    [IsLocalization.Away r S] :
-    Function.Injective (comap (algebraMap A S)) :=
-  (localization_away_isOpenEmbedding S r).injective
+    [IsLocalization.Away r S] (q : PrimeSpectrum S) :
+    r ∉ (comap (algebraMap A S) q).asIdeal := by
+  -- r maps to a unit of A[1/r]; a prime contains no unit.
+  rw [PrimeSpectrum.comap_asIdeal, Ideal.mem_comap]
+  intro h
+  exact q.isPrime.ne_top
+    (Ideal.eq_top_of_isUnit_mem _ h (IsLocalization.Away.algebraMap_isUnit r))
 ```
 :::
