@@ -269,20 +269,33 @@ example (M : Type*) [PseudoMetricSpace M] (s : Set M) : Prop :=
   TotallyBounded s
 ```
 
-The chapter asks you to show that "totally bounded" implies "bounded".
-The finished statement is `TotallyBounded.isBounded`; your job is to invoke it.
+That "totally bounded" implies "bounded" is a one-liner, `TotallyBounded.isBounded`:
 
 ```lean
 example (M : Type*) [PseudoMetricSpace M] (s : Set M)
-    (h : TotallyBounded s) : Bornology.IsBounded s := by
+    (h : TotallyBounded s) : Bornology.IsBounded s :=
+  h.isBounded
+```
+
+Boundedness itself is best read as "fits inside a ball", and proving it usually means *exhibiting* such a ball.
+Show that if every point of `s` lies within distance `1` of a fixed centre `c`, then `s` is bounded.
+No single lemma does this — you assemble it: build the containment `s ⊆ closedBall c 1` by hand (a point of `s` satisfies `dist x c ≤ 1`, which is exactly `Metric.mem_closedBall`), observe a closed ball is bounded (`Metric.isBounded_closedBall`), and transport that along the containment with `Bornology.IsBounded.subset`.
+
+```lean
+example (M : Type*) [PseudoMetricSpace M] (s : Set M) (c : M)
+    (h : ∀ x ∈ s, dist x c ≤ 1) : Bornology.IsBounded s := by
   sorry
 ```
 
 :::solution
 ```lean
-example (M : Type*) [PseudoMetricSpace M] (s : Set M)
-    (h : TotallyBounded s) : Bornology.IsBounded s :=
-  h.isBounded
+example (M : Type*) [PseudoMetricSpace M] (s : Set M) (c : M)
+    (h : ∀ x ∈ s, dist x c ≤ 1) : Bornology.IsBounded s := by
+  -- Repackage the hypothesis as a set containment into the unit ball.
+  have hsub : s ⊆ Metric.closedBall c 1 :=
+    fun x hx => Metric.mem_closedBall.mpr (h x hx)
+  -- A closed ball is bounded, and boundedness passes to subsets.
+  exact (Metric.isBounded_closedBall).subset hsub
 ```
 :::
 
@@ -301,20 +314,35 @@ example (M : Type*) [PseudoMetricSpace M] (x : ℕ → M) : Prop :=
 recall : CompleteSpace ℝ
 ```
 
-The chapter's first question asks you to show that a convergent sequence is automatically Cauchy.
-Here $`x` converges to $`p` is `Filter.Tendsto x Filter.atTop (𝓝 p)`, and the result you want is `Filter.Tendsto.cauchySeq`.
+One direction is free in any metric space: a convergent sequence is Cauchy, `Filter.Tendsto.cauchySeq` (here $`x` converges to $`p` is `Filter.Tendsto x Filter.atTop (𝓝 p)`).
 
 ```lean
 example (M : Type*) [PseudoMetricSpace M] (x : ℕ → M) (p : M)
-    (h : Filter.Tendsto x Filter.atTop (𝓝 p)) : CauchySeq x := by
+    (h : Filter.Tendsto x Filter.atTop (𝓝 p)) : CauchySeq x :=
+  h.cauchySeq
+```
+
+Completeness is exactly the *converse* holding, so the two notions become equivalent.
+Prove that in a `CompleteSpace`, a sequence converges iff it is Cauchy.
+Split the iff with `constructor`; the forward direction reuses the fact above once you unpack the limit (`rintro ⟨p, hp⟩`), and the backward direction is the one place completeness is used — it hands you a limit through `cauchySeq_tendsto_of_complete`.
+
+```lean
+example (M : Type*) [PseudoMetricSpace M] [CompleteSpace M] (x : ℕ → M) :
+    (∃ p, Filter.Tendsto x Filter.atTop (𝓝 p)) ↔ CauchySeq x := by
   sorry
 ```
 
 :::solution
 ```lean
-example (M : Type*) [PseudoMetricSpace M] (x : ℕ → M) (p : M)
-    (h : Filter.Tendsto x Filter.atTop (𝓝 p)) : CauchySeq x :=
-  h.cauchySeq
+example (M : Type*) [PseudoMetricSpace M] [CompleteSpace M] (x : ℕ → M) :
+    (∃ p, Filter.Tendsto x Filter.atTop (𝓝 p)) ↔ CauchySeq x := by
+  constructor
+  · -- Convergent ⟹ Cauchy; unpack the witness limit first.
+    rintro ⟨p, hp⟩
+    exact hp.cauchySeq
+  · -- Completeness is what supplies a limit for a Cauchy sequence.
+    intro h
+    exact cauchySeq_tendsto_of_complete h
 ```
 :::
 
@@ -329,7 +357,8 @@ example : Bornology.IsBounded (Set.Ioo (0 : ℝ) 1) :=
 ```
 
 It is even totally bounded, witnessing the claim that $`(0, 1)` is totally bounded yet (as `CompleteSpace ℝ` above and the homeomorphism $`(0,1) \cong \mathbb{R}` together show) not complete.
-Prove it using `totallyBounded_Ioo`.
+There is a lemma `totallyBounded_Ioo` that closes this in one shot, but prove it instead by *shrinking to a set you already understand* — the technique that generalises.
+The closed interval $`[0,1]` is compact (`isCompact_Icc`), hence totally bounded (`IsCompact.totallyBounded`); since $`(0,1) \subseteq [0,1]` (`Set.Ioo_subset_Icc_self`), total boundedness restricts to the subset (`TotallyBounded.subset`).
 
 ```lean
 example : TotallyBounded (Set.Ioo (0 : ℝ) 1) := by
@@ -339,7 +368,9 @@ example : TotallyBounded (Set.Ioo (0 : ℝ) 1) := by
 :::solution
 ```lean
 example : TotallyBounded (Set.Ioo (0 : ℝ) 1) :=
-  totallyBounded_Ioo 0 1
+  -- Icc is compact ⟹ totally bounded, and Ioo lives inside it.
+  (isCompact_Icc (a := (0 : ℝ)) (b := 1)).totallyBounded.subset
+    Set.Ioo_subset_Icc_self
 ```
 :::
 
@@ -352,19 +383,21 @@ example (M : Type*) [MetricSpace M] (s : Set M)
     (h : IsComplete s) : IsClosed s := h.isClosed
 ```
 
-The other half asks you to prove that, inside a complete ambient space, a closed subset is complete.
-That direction is `IsClosed.isComplete`.
+The other half — inside a complete ambient space, a closed subset is complete — is `IsClosed.isComplete`.
+Rather than invoke it bare, package *both* halves into one statement: in a complete space, a subset is complete iff it is closed.
+Split with `constructor` (or give the pair directly with `⟨_, _⟩`); each direction is one of the two named facts, and it is worth noticing that only the `⟸` direction actually uses completeness of the ambient space.
 
 ```lean
-example (M : Type*) [MetricSpace M] [CompleteSpace M] (s : Set M)
-    (h : IsClosed s) : IsComplete s := by
+example (M : Type*) [MetricSpace M] [CompleteSpace M] (s : Set M) :
+    IsComplete s ↔ IsClosed s := by
   sorry
 ```
 
 :::solution
 ```lean
-example (M : Type*) [MetricSpace M] [CompleteSpace M] (s : Set M)
-    (h : IsClosed s) : IsComplete s :=
-  h.isComplete
+example (M : Type*) [MetricSpace M] [CompleteSpace M] (s : Set M) :
+    IsComplete s ↔ IsClosed s :=
+  -- ⟹ holds in any metric space; ⟸ is where completeness enters.
+  ⟨fun h => h.isClosed, fun h => h.isComplete⟩
 ```
 :::
