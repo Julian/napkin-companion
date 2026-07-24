@@ -481,6 +481,16 @@ example (P : Type*) [Preorder P] {D E : Set P} (hDE : D ⊆ E)
   sorry
 ```
 
+:::solution
+```lean
+example (P : Type*) [Preorder P] {D E : Set P} (hDE : D ⊆ E)
+    (hD : Forcing.Dense D) : Forcing.Dense E := by
+  intro p
+  obtain ⟨q, hq, hqp⟩ := hD p
+  exact ⟨q, hDE hq, hqp⟩
+```
+:::
+
 ## More properties of posets
 
 A `Forcing.IsForcingFilter` is a nonempty, upward-closed set of conditions any two of which are compatible — the text's definition verbatim.
@@ -503,6 +513,15 @@ example (P : Type*) [Preorder P] [OrderTop P] {G : Set P}
   sorry
 ```
 
+:::solution
+```lean
+example (P : Type*) [Preorder P] [OrderTop P] {G : Set P}
+    (h : Forcing.IsForcingFilter G) : ⊤ ∈ G := by
+  obtain ⟨p, hp⟩ := h.nonempty
+  exact h.upward_closed hp le_top
+```
+:::
+
 For a _countable_ model the Rasiowa–Sikorski lemma builds a generic filter, and this is one of the few genuinely set-theoretic statements of the chapter that Mathlib does have — as `Order.idealOfCofinals`.
 Given a starting condition and a countable family of cofinal (dense) sets, it produces an ideal meeting every one of them.
 
@@ -521,6 +540,15 @@ example (P : Type*) [Preorder P] {𝒟 : Set (Set P)} {G D : Set P}
     (G ∩ D).Nonempty := by
   sorry
 ```
+
+:::solution
+```lean
+example (P : Type*) [Preorder P] {𝒟 : Set (Set P)} {G D : Set P}
+    (h : Forcing.IsGeneric 𝒟 G) (hD : D ∈ 𝒟) (hd : Forcing.Dense D) :
+    (G ∩ D).Nonempty :=
+  h.2 D hD hd
+```
+:::
 
 ## Names, and the generic extension
 
@@ -541,3 +569,11 @@ example (α : Type*) [Preorder α] [WellFoundedLT α] (a : α) :
     Acc (· < ·) a := by
   sorry
 ```
+
+:::solution
+```lean
+example (α : Type*) [Preorder α] [WellFoundedLT α] (a : α) :
+    Acc (· < ·) a :=
+  WellFoundedLT.apply a
+```
+:::

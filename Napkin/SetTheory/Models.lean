@@ -559,6 +559,12 @@ example : Extensional zfSetModel := by
   sorry
 ```
 
+:::solution
+```lean
+example : Extensional zfSetModel := zfSetModel_extensional
+```
+:::
+
 As a first taste of the general first-order framework alongside, show that every structure satisfies the trivially true sentence $`\top`.
 The named lemma is `Sentence.realize_top` (supply the structure `M`), and `simp` finds it unaided.
 
@@ -566,6 +572,13 @@ The named lemma is `Sentence.realize_top` (supply the structure `M`), and `simp`
 example (L : Language) (M : Type*) [L.Structure M] : M ⊨ (⊤ : L.Sentence) := by
   sorry
 ```
+
+:::solution
+```lean
+example (L : Language) (M : Type*) [L.Structure M] :
+    M ⊨ (⊤ : L.Sentence) := by simp
+```
+:::
 
 ## Sentences and satisfaction
 
@@ -589,6 +602,13 @@ example (L : Language) (M : Type*) [L.Structure M] (φ ψ : L.Sentence) :
     M ⊨ φ ⊓ ψ ↔ M ⊨ φ ∧ M ⊨ ψ := by
   sorry
 ```
+
+:::solution
+```lean
+example (L : Language) (M : Type*) [L.Structure M] (φ ψ : L.Sentence) :
+    M ⊨ φ ⊓ ψ ↔ M ⊨ φ ∧ M ⊨ ψ := Sentence.realize_inf M
+```
+:::
 
 ## The Levy hierarchy
 
@@ -616,6 +636,14 @@ example (L : Language) (M : Type*) [L.Structure M] (S : L.ElementarySubstructure
   sorry
 ```
 
+:::solution
+```lean
+example (L : Language) (M : Type*) [L.Structure M]
+    (S : L.ElementarySubstructure M) (φ : L.Sentence) :
+    (S ⊨ φ) ↔ M ⊨ φ := S.elementarilyEquivalent.realize_sentence φ
+```
+:::
+
 The Tarski–Vaught test itself is stated and proved in Mathlib for general structures, but only inside the proof that the Löwenheim–Skolem construction lands in an elementary substructure; there is no standalone ZFC-flavored version.
 
 ## Obtaining the axioms of ZFC
@@ -639,6 +667,13 @@ Rewrite with `ZFSet.mem_powerset` (shown above) to reduce the goal to `x ⊆ x`,
 example (x : ZFSet) : x ∈ x.powerset := by
   sorry
 ```
+
+:::solution
+```lean
+example (x : ZFSet) : x ∈ x.powerset :=
+  ZFSet.mem_powerset.mpr (subset_refl x)
+```
+:::
 
 ## Mostowski collapse
 
@@ -683,6 +718,13 @@ example {𝓜 : SetModel} (π : MostowskiCollapse 𝓜) :
   sorry
 ```
 
+:::solution
+```lean
+example {𝓜 : SetModel} (π : MostowskiCollapse 𝓜) :
+    Foundation 𝓜 := π.foundation
+```
+:::
+
 One step further: no element of a collapsible model is a member of itself, since Foundation forbids $`a \mathrel{E} a`.
 Well-foundedness gives asymmetry — `π.foundation.asymmetric a a` turns a proof of `𝓜.mem a a` into a proof of `¬ 𝓜.mem a a`, so applying it to the hypothesis twice closes the goal.
 
@@ -691,6 +733,14 @@ example {𝓜 : SetModel} (π : MostowskiCollapse 𝓜)
     (a : 𝓜.carrier) : ¬ 𝓜.mem a a := by
   sorry
 ```
+
+:::solution
+```lean
+example {𝓜 : SetModel} (π : MostowskiCollapse 𝓜)
+    (a : 𝓜.carrier) : ¬ 𝓜.mem a a := fun h =>
+  π.foundation.asymmetric a a h h
+```
+:::
 
 ## Adding an inaccessible, and countable models
 
@@ -713,6 +763,13 @@ example (L : Language) (T : L.Theory) (h : T.IsSatisfiable) :
     T.IsFinitelySatisfiable := by
   sorry
 ```
+
+:::solution
+```lean
+example (L : Language) (T : L.Theory) (h : T.IsSatisfiable) :
+    T.IsFinitelySatisfiable := h.isFinitelySatisfiable
+```
+:::
 
 Everything genuinely set-theoretic in this section, though, stays on paper.
 That there is no model of ZFC provable in ZFC (Gödel's second incompleteness theorem, `Con(ZFC)`), that $`V_\kappa` is a model for $`\kappa` inaccessible, that a *countable transitive* model of ZFC then exists, the Skolem-function packaging of Choice, and forcing — none of these is in Mathlib.

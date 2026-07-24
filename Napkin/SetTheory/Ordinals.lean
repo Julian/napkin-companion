@@ -447,6 +447,13 @@ example : Order.IsSuccLimit Ordinal.omega0 := by
   sorry
 ```
 
+:::solution
+```lean
+example : Order.IsSuccLimit Ordinal.omega0 :=
+  Ordinal.isSuccLimit_omega0
+```
+:::
+
 ## Ordinals are "tall"
 
 Because $`\operatorname{On}` is a proper class, there is no largest ordinal: past every ordinal there is a strictly greater one, namely its successor.
@@ -455,6 +462,13 @@ Because $`\operatorname{On}` is a proper class, there is no largest ordinal: pas
 example (α : Ordinal) : ∃ β, α < β := by
   sorry
 ```
+
+:::solution
+```lean
+example (α : Ordinal) : ∃ β, α < β :=
+  ⟨α + 1, lt_add_one α⟩
+```
+:::
 
 ## Transfinite induction and recursion
 
@@ -482,6 +496,14 @@ That is exactly this well-foundedness: no sequence can strictly decrease forever
 example : ¬ ∃ f : ℕ → Ordinal, ∀ n, f (n + 1) < f n := by
   sorry
 ```
+
+:::solution
+```lean
+example : ¬ ∃ f : ℕ → Ordinal, ∀ n, f (n + 1) < f n := by
+  rintro ⟨f, hf⟩
+  exact (RelEmbedding.natGT f hf).not_wellFounded wellFounded_lt
+```
+:::
 
 ## Ordinal arithmetic
 
@@ -517,6 +539,14 @@ example : (2 : Ordinal) ^ Ordinal.omega0 = Ordinal.omega0 := by
   sorry
 ```
 
+:::solution
+```lean
+example : (2 : Ordinal) ^ Ordinal.omega0 = Ordinal.omega0 :=
+  Ordinal.opow_omega0 one_lt_two
+    (by exact_mod_cast Ordinal.natCast_lt_omega0 2)
+```
+:::
+
 ## The hierarchy of sets
 
 Back in genuine ∈-sets, the von Neumann hierarchy is `ZFSet.vonNeumann` (with notation `V_ `), and the rank of a set is `ZFSet.rank`; the completeness theorem — every set has a rank — is the fact making `rank` total.
@@ -538,3 +568,11 @@ Show that if $`y \in x` then $`\operatorname{rank}(y) < \operatorname{rank}(x)`.
 example (x y : ZFSet) (h : y ∈ x) : ZFSet.rank y < ZFSet.rank x := by
   sorry
 ```
+
+:::solution
+```lean
+example (x y : ZFSet) (h : y ∈ x) :
+    ZFSet.rank y < ZFSet.rank x :=
+  ZFSet.rank_lt_of_mem h
+```
+:::

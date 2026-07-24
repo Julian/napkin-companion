@@ -273,6 +273,12 @@ example : ℵ₁ ≤ 𝔠 := by
   sorry
 ```
 
+:::solution
+```lean
+example : ℵ₁ ≤ 𝔠 := aleph_one_le_continuum
+```
+:::
+
 ## Adding in reals
 
 A generic branch $`G \colon \omega \to 2` encodes one real number, and each $`G_\alpha` was read off as a subset of $`\mathbb{N}`.
@@ -291,6 +297,14 @@ example : #(ℕ → Bool) = 𝔠 := by
   sorry
 ```
 
+:::solution
+```lean
+example : #(ℕ → Bool) = 𝔠 := by
+  rw [mk_arrow]
+  simp
+```
+:::
+
 ## The countable chain condition
 
 The countable chain condition asks that every strong antichain be countable, and "countable" is exactly "cardinality below $`\aleph_1`": a cardinal lies below $`\aleph_1` precisely when it is at most $`\aleph_0`.
@@ -306,6 +320,13 @@ Rewriting by `lt_aleph_one_iff` and then `le_aleph0_iff_set_countable` finishes 
 example {α : Type} (s : Set α) : s.Countable ↔ #s < ℵ₁ := by
   sorry
 ```
+
+:::solution
+```lean
+example {α : Type} (s : Set α) : s.Countable ↔ #s < ℵ₁ := by
+  rw [lt_aleph_one_iff, le_aleph0_iff_set_countable]
+```
+:::
 
 ## Preserving cardinals
 
@@ -326,6 +347,14 @@ Rewriting `2` as `1 + 1` (with `one_add_one_eq_two`) lets `isRegular_aleph_add_o
 example : Cardinal.IsRegular (aleph 2) := by
   sorry
 ```
+
+:::solution
+```lean
+example : Cardinal.IsRegular (aleph 2) := by
+  rw [← one_add_one_eq_two]
+  exact isRegular_aleph_add_one 1
+```
+:::
 
 ## The additive poset
 
@@ -402,6 +431,14 @@ example (c : Cardinal) (h : ¬ c ≤ ℵ₀) : ℵ₁ ≤ c := by
   sorry
 ```
 
+:::solution
+```lean
+example (c : Cardinal) (h : ¬ c ≤ ℵ₀) : ℵ₁ ≤ c := by
+  rw [← lt_aleph_one_iff, not_lt] at h
+  exact h
+```
+:::
+
 Every condition extends the empty condition $`1_\mathbb{P}`, because nothing is weaker than committing to nothing.
 Prove that each Cohen condition refines the top; since $`1_\mathbb{P}` is the order's `⊤`, this is `le_top`.
 
@@ -409,6 +446,12 @@ Prove that each Cohen condition refines the top; since $`1_\mathbb{P}` is the or
 example {κ : Type} (p : CohenAdd κ) : p ≤ ⊤ := by
   sorry
 ```
+
+:::solution
+```lean
+example {κ : Type} (p : CohenAdd κ) : p ≤ ⊤ := le_top
+```
+:::
 
 Finally, the common `root` of a $`\Delta`-system sits inside every one of its sets, since it *is* the intersection of any two.
 Show this for the two sets of a $`\Delta`-system indexed by `Bool`, feeding `true ≠ false` to `DeltaSystem.root_subset`.
@@ -418,3 +461,11 @@ example {α : Type} [DecidableEq α] (S : DeltaSystem α Bool) :
     S.root ⊆ S.sets true := by
   sorry
 ```
+
+:::solution
+```lean
+example {α : Type} [DecidableEq α] (S : DeltaSystem α Bool) :
+    S.root ⊆ S.sets true :=
+  S.root_subset (show (true : Bool) ≠ false by decide)
+```
+:::

@@ -407,6 +407,13 @@ example (α β : Type u) (h1 : #α ≤ #β) (h2 : #β ≤ #α) : #α = #β := by
   sorry
 ```
 
+:::solution
+```lean
+example (α β : Type u) (h1 : #α ≤ #β) (h2 : #β ≤ #α) : #α = #β :=
+  le_antisymm h1 h2
+```
+:::
+
 ## Aleph numbers
 
 Cantor's theorem is `Cardinal.cantor`: for every cardinal $`c`, one has $`c < 2^c`.
@@ -427,6 +434,14 @@ Prove it, using that the cardinality of $`\mathcal{P}(X)` is $`2^{\left\lvert X 
 example (α : Type*) : #α < #(Set α) := by
   sorry
 ```
+
+:::solution
+```lean
+example (α : Type*) : #α < #(Set α) := by
+  rw [Cardinal.mk_set]
+  exact Cardinal.cantor _
+```
+:::
 
 ## Cardinal arithmetic
 
@@ -451,6 +466,13 @@ example (κ : Cardinal) (h : ℵ₀ ≤ κ) : κ + κ = κ := by
   sorry
 ```
 
+:::solution
+```lean
+example (κ : Cardinal) (h : ℵ₀ ≤ κ) : κ + κ = κ := by
+  rw [Cardinal.add_eq_max h, max_self]
+```
+:::
+
 ## Cardinal exponentiation
 
 Exponentiation of cardinals is the operation `HPow.hPow`, and the prototype $`2^\kappa = \left\lvert \mathcal{P}(\kappa) \right\rvert` is `Cardinal.mk_set`.
@@ -465,6 +487,12 @@ In particular $`2^{\aleph_0} > \aleph_0`, so the continuum is uncountable — a 
 example : ℵ₀ < 2 ^ ℵ₀ := by
   sorry
 ```
+
+:::solution
+```lean
+example : ℵ₀ < 2 ^ ℵ₀ := Cardinal.cantor ℵ₀
+```
+:::
 
 ## Cofinality
 
@@ -485,6 +513,13 @@ example (κ : Cardinal) (h : ℵ₀ ≤ κ) : (Order.succ κ).IsRegular := by
   sorry
 ```
 
+:::solution
+```lean
+example (κ : Cardinal) (h : ℵ₀ ≤ κ) : (Order.succ κ).IsRegular :=
+  Cardinal.isRegular_succ h
+```
+:::
+
 ## Inaccessible cardinals
 
 Mathlib bundles a strongly inaccessible cardinal as `Cardinal.IsInaccessible`: uncountable, equal to its own cofinality, and a strong limit.
@@ -500,3 +535,10 @@ Extract that fact from the bundled predicate.
 example (κ : Cardinal) (h : κ.IsInaccessible) : κ.IsRegular := by
   sorry
 ```
+
+:::solution
+```lean
+example (κ : Cardinal) (h : κ.IsInaccessible) : κ.IsRegular :=
+  h.isRegular
+```
+:::
