@@ -315,6 +315,14 @@ example : ¬ ∃ f : ℕ → Ordinal, ∀ n, f (n + 1) < f n := by
   sorry
 ```
 
+:::solution
+```lean
+example : ¬ ∃ f : ℕ → Ordinal, ∀ n, f (n + 1) < f n := by
+  rintro ⟨f, hf⟩
+  exact not_strictAnti_of_wellFoundedLT f (strictAnti_nat_of_succ_lt hf)
+```
+:::
+
 ## Wrapping up functional equations
 
 "Independent over $`\mathbb{Q}`" is `LinearIndependent` for the $`\mathbb{Q}`-vector space $`\mathbb{R}`, and a spanning independent set is a `Module.Basis` — the *Hamel basis* of $`\mathbb{R}` over $`\mathbb{Q}`.
@@ -333,6 +341,13 @@ Confirm this: the Hamel basis is `LinearIndependent` over $`\mathbb{Q}`.
 example : LinearIndependent ℚ (Module.Basis.ofVectorSpace ℚ ℝ) := by
   sorry
 ```
+
+:::solution
+```lean
+example : LinearIndependent ℚ (Module.Basis.ofVectorSpace ℚ ℝ) :=
+  (Module.Basis.ofVectorSpace ℚ ℝ).linearIndependent
+```
+:::
 
 ## Zorn's lemma
 
@@ -354,3 +369,12 @@ example {P : Type*} [PartialOrder P]
     ∃ m : P, IsMax m := by
   sorry
 ```
+
+:::solution
+```lean
+example {P : Type*} [PartialOrder P]
+    (h : ∀ c : Set P, IsChain (· ≤ ·) c → ∃ ub, ∀ p ∈ c, p ≤ ub) :
+    ∃ m : P, IsMax m :=
+  zorn_le fun c hc => h c hc
+```
+:::

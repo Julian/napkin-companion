@@ -565,6 +565,15 @@ example {M : Type*} [MetricSpace M] (x y z : M) :
   sorry
 ```
 
+:::solution
+```lean
+example {M : Type*} [MetricSpace M] (x y z : M) :
+    dist x z - dist y z ≤ dist x y := by
+  rw [sub_le_iff_le_add]
+  exact dist_triangle x y z
+```
+:::
+
 ## Convergence in metric spaces
 
 Convergence of `x : ℕ → M` to a limit `l` is written `Filter.Tendsto x Filter.atTop (𝓝 l)`.
@@ -592,6 +601,13 @@ Mathlib packages this fact under the name `tendsto_one_div_atTop_nhds_zero_nat`.
 example : Filter.Tendsto (fun n : ℕ => 1 / (n : ℝ)) Filter.atTop (𝓝 0) := by
   sorry
 ```
+
+:::solution
+```lean
+example : Filter.Tendsto (fun n : ℕ => 1 / (n : ℝ)) Filter.atTop (𝓝 0) :=
+  tendsto_one_div_atTop_nhds_zero_nat
+```
+:::
 
 ## Continuous maps
 
@@ -635,6 +651,16 @@ example {M N : Type*} [MetricSpace M] [MetricSpace N] (f : M → N)
   sorry
 ```
 
+:::solution
+```lean
+example {M N : Type*} [MetricSpace M] [MetricSpace N] (f : M → N)
+    (x : ℕ → M) (p : M) (hf : Continuous f)
+    (hx : Filter.Tendsto x Filter.atTop (𝓝 p)) :
+    Filter.Tendsto (fun n => f (x n)) Filter.atTop (𝓝 (f p)) :=
+  (hf.tendsto p).comp hx
+```
+:::
+
 ## Homeomorphisms
 
 A homeomorphism is `Homeomorph M N` (notation `M ≃ₜ N`), bundling the bijection with both continuities:
@@ -664,6 +690,16 @@ example (M N : Type*) [MetricSpace M] [MetricSpace N]
 example (M N L : Type*) [MetricSpace M] [MetricSpace N] [MetricSpace L]
     (f : M ≃ₜ N) (g : N ≃ₜ L) : M ≃ₜ L := sorry
 ```
+
+:::solution
+```lean
+example (M N : Type*) [MetricSpace M] [MetricSpace N]
+    (f : M ≃ₜ N) : N ≃ₜ M := f.symm
+
+example (M N L : Type*) [MetricSpace M] [MetricSpace N] [MetricSpace L]
+    (f : M ≃ₜ N) (g : N ≃ₜ L) : M ≃ₜ L := f.trans g
+```
+:::
 
 ## Product metric
 
@@ -695,6 +731,17 @@ example {M N : Type*} [MetricSpace M] [MetricSpace N]
   sorry
 ```
 
+:::solution
+```lean
+example {M N : Type*} [MetricSpace M] [MetricSpace N]
+    (x : ℕ → M) (y : ℕ → N) (a : M) (b : N) :
+    Filter.Tendsto (fun n => (x n, y n)) Filter.atTop (𝓝 (a, b)) ↔
+      Filter.Tendsto x Filter.atTop (𝓝 a) ∧
+        Filter.Tendsto y Filter.atTop (𝓝 b) :=
+  Prod.tendsto_iff (fun n => (x n, y n)) (a, b)
+```
+:::
+
 And one more, restating the first end-of-chapter problem: subtraction on $`\mathbb{R}` is continuous.
 (The library name is `continuous_sub`.)
 
@@ -702,6 +749,12 @@ And one more, restating the first end-of-chapter problem: subtraction on $`\math
 example : Continuous fun p : ℝ × ℝ => p.1 - p.2 := by
   sorry
 ```
+
+:::solution
+```lean
+example : Continuous fun p : ℝ × ℝ => p.1 - p.2 := continuous_sub
+```
+:::
 
 ## Open sets
 
@@ -747,6 +800,16 @@ example {M : Type*} [MetricSpace M] (U : ℕ → Set M)
   sorry
 ```
 
+:::solution
+```lean
+example {M : Type*} [MetricSpace M] (s t : Set M)
+    (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ∩ t) := hs.inter ht
+
+example {M : Type*} [MetricSpace M] (U : ℕ → Set M)
+    (h : ∀ i, IsOpen (U i)) : IsOpen (⋃ i, U i) := isOpen_iUnion h
+```
+:::
+
 ## Closed sets
 
 Closedness is `IsClosed S`; the chapter's closure-under-limits characterization is `IsClosed.mem_of_tendsto`:
@@ -781,3 +844,10 @@ example {M : Type*} [MetricSpace M] (S : Set M) :
     IsClosed (closure S) := by
   sorry
 ```
+
+:::solution
+```lean
+example {M : Type*} [MetricSpace M] (S : Set M) :
+    IsClosed (closure S) := isClosed_closure
+```
+:::

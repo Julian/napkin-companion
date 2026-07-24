@@ -354,6 +354,13 @@ example {X : Type*} (f : X → Set X) : ¬ Function.Surjective f := by
   sorry
 ```
 
+:::solution
+```lean
+example {X : Type*} (f : X → Set X) : ¬ Function.Surjective f :=
+  Function.cantor_surjective f
+```
+:::
+
 ## The language of set theory
 
 Mathlib takes the "everything is a set" stance literally: `ZFSet` is a single type whose every element is itself a `ZFSet`, and membership is a relation `ZFSet → ZFSet → Prop`, the formal $`\in`.
@@ -370,6 +377,13 @@ Prove it from the hypothesis that $`x` and $`y` have exactly the same members.
 example (x y : ZFSet) (h : ∀ z : ZFSet, z ∈ x ↔ z ∈ y) : x = y := by
   sorry
 ```
+
+:::solution
+```lean
+example (x y : ZFSet) (h : ∀ z : ZFSet, z ∈ x ↔ z ∈ y) : x = y :=
+  ZFSet.ext h
+```
+:::
 
 ## The axioms of ZFC
 
@@ -401,6 +415,13 @@ example (x : ZFSet) : x ∉ x := by
   sorry
 ```
 
+:::solution
+```lean
+example (x : ZFSet) : x ∉ x :=
+  ZFSet.mem_irrefl x
+```
+:::
+
 ## Encoding
 
 An ordered pair $`(x, y) = \{\{x\}, \{x, y\}\}` is `ZFSet.pair`, and the natural numbers live inside `ZFSet.omega`, which by `ZFSet.omega_zero` contains $`0 = \varnothing`.
@@ -418,6 +439,14 @@ example (x y a b : ZFSet) :
     ZFSet.pair x y = ZFSet.pair a b ↔ x = a ∧ y = b := by
   sorry
 ```
+
+:::solution
+```lean
+example (x y a b : ZFSet) :
+    ZFSet.pair x y = ZFSet.pair a b ↔ x = a ∧ y = b :=
+  ZFSet.pair_inj
+```
+:::
 
 ## Choice and well-ordering
 
@@ -437,6 +466,13 @@ example (α : Type*) : WellFounded (WellOrderingRel : α → α → Prop) := by
   sorry
 ```
 
+:::solution
+```lean
+example (α : Type*) : WellFounded (WellOrderingRel : α → α → Prop) :=
+  WellOrderingRel.isWellOrder.wf
+```
+:::
+
 ## Sets vs classes
 
 Mathlib's `Class` is literally a `Set ZFSet`, a predicate on sets, and the von Neumann universe $`V` is `Class.univ`.
@@ -454,3 +490,10 @@ Prove $`V \notin V`.
 example : Class.univ ∉ Class.univ := by
   sorry
 ```
+
+:::solution
+```lean
+example : Class.univ ∉ Class.univ :=
+  Class.univ_notMem_univ
+```
+:::

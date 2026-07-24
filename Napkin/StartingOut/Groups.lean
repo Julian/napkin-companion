@@ -778,6 +778,17 @@ example (G : Type*) [CommGroup G] : G ≃* G where
   map_mul' := by sorry
 ```
 
+:::solution
+```lean
+example (G : Type*) [CommGroup G] : G ≃* G where
+  toFun := fun g => g⁻¹
+  invFun := fun g => g⁻¹
+  left_inv := fun _ => inv_inv _
+  right_inv := fun _ => inv_inv _
+  map_mul' := fun a b => mul_inv a b
+```
+:::
+
 ## Orders and Lagrange
 
 The cardinality of a type is `Nat.card`, which is `0` for infinite types.
@@ -830,6 +841,17 @@ example : addOrderOf (1 : ZMod 6) = 6 := by sorry
 example : addOrderOf (3 : ZMod 6) = 2 := by sorry
 ```
 
+:::solution
+```lean
+example : addOrderOf (1 : ZMod 6) = 6 := ZMod.addOrderOf_one 6
+
+example : addOrderOf (3 : ZMod 6) = 2 := by
+  have h3 : (3 : ZMod 6) = ((3 : ℕ) : ZMod 6) := by norm_cast
+  rw [h3, ZMod.addOrderOf_coe 3 (by norm_num)]
+  norm_num
+```
+:::
+
 ## Subgroups
 
 A subgroup is `Subgroup G` — a structure bundling a subset of $`G` together with proofs that it's closed under multiplication, identity, and inverse:
@@ -878,3 +900,10 @@ Your turn: the trivial subgroup $`\bot` really does contain nothing but the iden
 example (G : Type*) [Group G] (g : G) (h : g ∈ (⊥ : Subgroup G)) :
     g = 1 := by sorry
 ```
+
+:::solution
+```lean
+example (G : Type*) [Group G] (g : G) (h : g ∈ (⊥ : Subgroup G)) :
+    g = 1 := by rwa [Subgroup.mem_bot] at h
+```
+:::
