@@ -221,6 +221,14 @@ example {Ω : Type*} [MeasurableSpace Ω] {A : Set Ω} (hA : MeasurableSet A) :
   sorry
 ```
 
+:::solution
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] {A : Set Ω} (hA : MeasurableSet A) :
+    Measurable (Set.indicator A (1 : Ω → ℝ)) :=
+  measurable_const.indicator hA
+```
+:::
+
 The Lean statement of linearity of expectation is `MeasureTheory.integral_add`, and it exposes a hypothesis the one-line proof quietly relies on: both integrals on the right must exist.
 
 ```lean
@@ -260,6 +268,13 @@ example (μ : Measure ℝ) : Monotone ⇑(cdf μ) := by
   sorry
 ```
 
+:::solution
+```lean
+example (μ : Measure ℝ) : Monotone ⇑(cdf μ) :=
+  (cdf μ).mono
+```
+:::
+
 ## Examples of random variables
 
 Discrete distributions such as the Bernoulli live in Mathlib as `PMF` (probability mass functions), e.g. `PMF.bernoulli p` for the coin flip; a `PMF` can be turned into a genuine measure with `PMF.toMeasure`.
@@ -279,6 +294,13 @@ example (m : ℝ) (v : NNReal) : IsProbabilityMeasure (gaussianReal m v) := by
   sorry
 ```
 
+:::solution
+```lean
+example (m : ℝ) (v : NNReal) : IsProbabilityMeasure (gaussianReal m v) :=
+  inferInstance
+```
+:::
+
 ## Characteristic functions
 
 The characteristic function of a *measure* is `MeasureTheory.charFun`, defined for measures on any inner-product space at once (so the same definition serves random vectors):
@@ -297,6 +319,13 @@ One sanity check falls straight out of the definition: since $`e^{i \cdot 0 \cdo
 example (μ : Measure ℝ) [IsProbabilityMeasure μ] : charFun μ 0 = 1 := by
   sorry
 ```
+
+:::solution
+```lean
+example (μ : Measure ℝ) [IsProbabilityMeasure μ] : charFun μ 0 = 1 := by
+  simp [charFun_zero]
+```
+:::
 
 ## Independent random variables
 
@@ -321,3 +350,11 @@ example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} {X Y : Ω → ℝ}
     (h : IndepFun X Y μ) : IndepFun Y X μ := by
   sorry
 ```
+
+:::solution
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} {X Y : Ω → ℝ}
+    (h : IndepFun X Y μ) : IndepFun Y X μ :=
+  h.symm
+```
+:::

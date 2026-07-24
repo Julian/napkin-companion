@@ -306,6 +306,14 @@ example (n : ℕ) (ψ : EuclideanSpace ℂ (Fin n)) :
   sorry
 ```
 
+:::solution
+```lean
+example (n : ℕ) (ψ : EuclideanSpace ℂ (Fin n)) :
+    inner ℂ ψ ψ = (‖ψ‖ : ℂ) ^ 2 :=
+  inner_self_eq_norm_sq_to_K ψ
+```
+:::
+
 ## The state space
 
 The space $`\mathbb{C}^{\oplus n}` with its standard Hermitian form is `EuclideanSpace ℂ (Fin n)`: definitionally just `Fin n → ℂ`, but carrying the inner product, norm, and finite-dimensional Hilbert structure that the chapter assumes.
@@ -324,6 +332,13 @@ When $`\dim H = n` there are $`n` basis states $`|0\rangle, \dots, |n-1\rangle`;
 example (n : ℕ) : Module.finrank ℂ (EuclideanSpace ℂ (Fin n)) = n := by
   sorry
 ```
+
+:::solution
+```lean
+example (n : ℕ) : Module.finrank ℂ (EuclideanSpace ℂ (Fin n)) = n :=
+  finrank_euclideanSpace_fin
+```
+:::
 
 ## Observations
 
@@ -363,6 +378,16 @@ example {n : ℕ}
   sorry
 ```
 
+:::solution
+```lean
+example {n : ℕ}
+    (T : EuclideanSpace ℂ (Fin n) →ₗ[ℂ] EuclideanSpace ℂ (Fin n))
+    (hT : T.IsSymmetric) (x : EuclideanSpace ℂ (Fin n)) :
+    (starRingEnd ℂ) (inner ℂ (T x) x) = inner ℂ (T x) x := by
+  rw [inner_conj_symm, hT x x]
+```
+:::
+
 ## Entanglement
 
 `Mathlib.Analysis.InnerProductSpace.TensorProduct` lifts the inner product on each factor to `E ⊗[𝕜] F`, so the tensor product of two finite-dimensional Hilbert spaces is again a finite-dimensional Hilbert space — no extra work needed.
@@ -384,3 +409,13 @@ example :
       = 4 := by
   sorry
 ```
+
+:::solution
+```lean
+example :
+    Module.finrank ℂ
+      (TensorProduct ℂ (EuclideanSpace ℂ (Fin 2)) (EuclideanSpace ℂ (Fin 2)))
+      = 4 := by
+  rw [Module.finrank_tensorProduct, finrank_euclideanSpace_fin]
+```
+:::

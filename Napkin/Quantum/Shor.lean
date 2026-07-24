@@ -247,12 +247,28 @@ example (N : ℕ) [NeZero N] (j : Fin N) : qft N j 0 = qft N 0 j := by
   sorry
 ```
 
+:::solution
+```lean
+example (N : ℕ) [NeZero N] (j : Fin N) : qft N j 0 = qft N 0 j := by
+  rw [qft_apply_zero_right, qft_apply_zero_left]
+```
+:::
+
 On a single basis state the transform does nothing: $`\mathrm{qft}\ 1` is the $`1 \times 1` identity.
 
 ```lean
 example : qft 1 = 1 := by
   sorry
 ```
+
+:::solution
+```lean
+example : qft 1 = 1 := by
+  ext j k
+  fin_cases j; fin_cases k
+  simp [qft, Real.sqrt_one]
+```
+:::
 
 For $`N = 2` the root of unity is $`\omega_2 = -1`, so the bottom-right entry is $`-\frac{1}{\sqrt{2}}`; this $`U_{\text{QFT}}` is exactly the Hadamard gate.
 
@@ -261,6 +277,20 @@ example : qft 2 1 1 = (-1 / Real.sqrt 2 : ℂ) := by
   sorry
 ```
 
+:::solution
+```lean
+example : qft 2 1 1 = (-1 / Real.sqrt 2 : ℂ) := by
+  unfold qft
+  have h : (2 : ℂ) * (Real.pi : ℂ) * Complex.I *
+      ((((1 : Fin 2).val : ℂ) * ((1 : Fin 2).val : ℂ))) / (2 : ℕ) =
+        (Real.pi : ℂ) * Complex.I := by
+    simp only [Fin.val_one, Nat.cast_one, mul_one, Nat.cast_ofNat]
+    ring
+  rw [h, Complex.exp_pi_mul_I]
+  ring
+```
+:::
+
 Every $`\omega_N` is an $`N`-th root of unity, so its $`N`-th power is $`1`.
 
 ```lean
@@ -268,6 +298,14 @@ example (N : ℕ) (hN : N ≠ 0) :
     Complex.exp (2 * Real.pi * Complex.I / N) ^ N = 1 := by
   sorry
 ```
+
+:::solution
+```lean
+example (N : ℕ) (hN : N ≠ 0) :
+    Complex.exp (2 * Real.pi * Complex.I / N) ^ N = 1 :=
+  (Complex.isPrimitiveRoot_exp N hN).pow_eq_one
+```
+:::
 
 The interference that makes the transform detect periodicity comes from the identity $`\sum_{j=0}^{N-1} \omega_N^{\,j} = 0` when $`N > 1`: the powers of a primitive root sum to zero.
 Prove it with the geometric-sum lemma for primitive roots.
@@ -278,6 +316,15 @@ example (N : ℕ) (hN : 1 < N) :
       Complex.exp (2 * Real.pi * Complex.I / N) ^ j = 0 := by
   sorry
 ```
+
+:::solution
+```lean
+example (N : ℕ) (hN : 1 < N) :
+    ∑ j ∈ Finset.range N,
+      Complex.exp (2 * Real.pi * Complex.I / N) ^ j = 0 :=
+  (Complex.isPrimitiveRoot_exp N (by omega)).geom_sum_eq_zero hN
+```
+:::
 
 ## The quantum Fourier transform
 
@@ -298,12 +345,26 @@ example (ζ : ℂ) : (Matrix.diagonal ![(1 : ℂ), ζ]).det = ζ := by
   sorry
 ```
 
+:::solution
+```lean
+example (ζ : ℂ) : (Matrix.diagonal ![(1 : ℂ), ζ]).det = ζ := by
+  simp [Matrix.det_diagonal, Fin.prod_univ_two]
+```
+:::
+
 Its trace is $`1 + \zeta`.
 
 ```lean
 example (ζ : ℂ) : (Matrix.diagonal ![(1 : ℂ), ζ]).trace = 1 + ζ := by
   sorry
 ```
+
+:::solution
+```lean
+example (ζ : ℂ) : (Matrix.diagonal ![(1 : ℂ), ζ]).trace = 1 + ζ := by
+  simp [Matrix.trace, Matrix.diag, Fin.sum_univ_two]
+```
+:::
 
 ## Shor's algorithm
 
@@ -337,6 +398,13 @@ example (M : ℕ) (x : (ZMod M)ˣ) : orderOf x ∣ Nat.totient M := by
   sorry
 ```
 
+:::solution
+```lean
+example (M : ℕ) (x : (ZMod M)ˣ) : orderOf x ∣ Nat.totient M :=
+  orderOf_dvd_of_pow_eq_one (ZMod.pow_totient x)
+```
+:::
+
 The reduction to factoring is concrete.
 Take $`M = 15` and $`x = 4`: then $`4^2 \equiv 1 \pmod{15}` while $`4 \not\equiv \pm 1`, so the two greatest common divisors $`\gcd(4 - 1, 15)` and $`\gcd(4 + 1, 15)` split $`15 = 3 \cdot 5`.
 
@@ -350,6 +418,12 @@ Recover the factor $`3` as $`\gcd(4 - 1, 15)`.
 example : Nat.gcd (4 - 1) 15 = 3 := by
   sorry
 ```
+
+:::solution
+```lean
+example : Nat.gcd (4 - 1) 15 = 3 := by decide
+```
+:::
 
 The final classical step reads $`r` off a continued fraction expansion.
 The expansion of a real number is `GenContFract.of`, and its convergents are `convs` (or the equivalent `convs'`).

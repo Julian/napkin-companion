@@ -698,6 +698,14 @@ example {Ω : Type*} {m : MeasurableSpace Ω} (ℱ : Filtration ℕ m) (i j : �
   sorry
 ```
 
+:::solution
+```lean
+example {Ω : Type*} {m : MeasurableSpace Ω} (ℱ : Filtration ℕ m) (i j : ℕ)
+    (h : i ≤ j) : ℱ i ≤ ℱ j :=
+  ℱ.mono h
+```
+:::
+
 ## Conditional expectation
 
 The conditional expectation is `MeasureTheory.condExp m μ X`, written `μ[X|m]` — the function $`\eta`, defined via exactly the Radon-Nikodym route the proof gestures at.
@@ -744,6 +752,17 @@ example {α E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace
   sorry
 ```
 
+:::solution
+```lean
+example {α E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+    {m m₀ : MeasurableSpace α} {μ : Measure α} (hm : m ≤ m₀)
+    [SigmaFinite (μ.trim hm)] {f : α → E}
+    (hf : StronglyMeasurable[m] f) (hfi : Integrable f μ) :
+    μ[f | m] = f :=
+  condExp_of_stronglyMeasurable hm hf hfi
+```
+:::
+
 ## Supermartingales
 
 The three definitions are `MeasureTheory.Supermartingale`, `Submartingale`, and `Martingale`, each taking the process, the filtration, and the measure:
@@ -774,6 +793,16 @@ example {Ω E ι : Type*} [Preorder ι] {m0 : MeasurableSpace Ω} {μ : Measure 
   sorry
 ```
 
+:::solution
+```lean
+example {Ω E ι : Type*} [Preorder ι] {m0 : MeasurableSpace Ω} {μ : Measure Ω}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] [PartialOrder E]
+    (f : ι → Ω → E) (ℱ : Filtration ι m0) :
+    Martingale f ℱ μ ↔ Supermartingale f ℱ μ ∧ Submartingale f ℱ μ :=
+  martingale_iff
+```
+:::
+
 ## Optional stopping
 
 All three bullets have Mathlib names.
@@ -802,3 +831,12 @@ example {Ω ι : Type*} {m : MeasurableSpace Ω} [Preorder ι]
     IsStoppingTime ℱ (fun _ => (i : WithTop ι)) := by
   sorry
 ```
+
+:::solution
+```lean
+example {Ω ι : Type*} {m : MeasurableSpace Ω} [Preorder ι]
+    (ℱ : Filtration ι m) (i : ι) :
+    IsStoppingTime ℱ (fun _ => (i : WithTop ι)) :=
+  isStoppingTime_const ℱ i
+```
+:::

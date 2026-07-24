@@ -374,12 +374,26 @@ example (a b : Bool) : (a && b) = !(!a || !b) := by
   sorry
 ```
 
+:::solution
+```lean
+example (a b : Bool) : (a && b) = !(!a || !b) := by
+  cases a <;> cases b <;> rfl
+```
+:::
+
 The NOT gate is its own inverse — the first hint that it is reversible.
 
 ```lean
 example (a : Bool) : !(!a) = a := by
   sorry
 ```
+
+:::solution
+```lean
+example (a : Bool) : !(!a) = a := by
+  cases a <;> rfl
+```
+:::
 
 ## Reversible classical logic
 
@@ -401,6 +415,14 @@ example : Function.Bijective cnot := by
   sorry
 ```
 
+:::solution
+```lean
+example : Function.Bijective cnot :=
+  Function.Involutive.bijective (by
+    rintro ⟨x, y⟩; cases x <;> cases y <;> rfl)
+```
+:::
+
 The Toffoli gate flips its last bit exactly when both controls are $`1`, i.e. $`(x, y, z) \mapsto (x, y, (x \wedge y) \oplus z)`.
 Show that it, too, is its own inverse.
 
@@ -411,6 +433,13 @@ def toffoli (p : Bool × Bool × Bool) : Bool × Bool × Bool :=
 example : Function.Involutive toffoli := by
   sorry
 ```
+
+:::solution
+```lean
+example : Function.Involutive toffoli := by
+  rintro ⟨x, y, z⟩; cases x <;> cases y <;> cases z <;> rfl
+```
+:::
 
 ## Quantum logic gates
 
@@ -461,12 +490,31 @@ example : pauliZ * pauliZ = 1 := by
   sorry
 ```
 
+:::solution
+```lean
+example : pauliZ * pauliZ = 1 := by
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    simp [pauliZ, Matrix.mul_apply, Fin.sum_univ_two]
+```
+:::
+
 Because $`\sigma_y` is real-antisymmetric with the $`\pm i` off the diagonal, its square uses $`i^2 = -1`; show $`\sigma_y^2 = I` as well.
 
 ```lean
 example : pauliY * pauliY = 1 := by
   sorry
 ```
+
+:::solution
+```lean
+example : pauliY * pauliY = 1 := by
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    simp [pauliY, Matrix.mul_apply, Fin.sum_univ_two,
+      Complex.I_mul_I]
+```
+:::
 
 The Hadamard gate is self-adjoint: its conjugate transpose $`H^\dagger` (written `Hᴴ`) equals $`H`, because every entry is real.
 Prove this.
@@ -476,6 +524,15 @@ example : hadamardᴴ = hadamard := by
   sorry
 ```
 
+:::solution
+```lean
+example : hadamardᴴ = hadamard := by
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    simp [hadamard, Matrix.conjTranspose_apply, Matrix.smul_apply]
+```
+:::
+
 Finally, a Pauli matrix really is a quantum gate: it lies in `Matrix.unitaryGroup (Fin 2) ℂ`.
 Since $`\sigma_x` is self-adjoint, its unitarity reduces to $`\sigma_x^2 = I`.
 
@@ -483,6 +540,17 @@ Since $`\sigma_x` is self-adjoint, its unitarity reduces to $`\sigma_x^2 = I`.
 example : pauliX ∈ Matrix.unitaryGroup (Fin 2) ℂ := by
   sorry
 ```
+
+:::solution
+```lean
+example : pauliX ∈ Matrix.unitaryGroup (Fin 2) ℂ := by
+  rw [Matrix.mem_unitaryGroup_iff]
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    simp [pauliX, Matrix.mul_apply, Fin.sum_univ_two,
+      Matrix.star_apply]
+```
+:::
 
 ## Deutsch-Jozsa algorithm
 
@@ -500,6 +568,15 @@ example (n : ℕ) :
       = 2 ^ (n + 1) := by
   sorry
 ```
+
+:::solution
+```lean
+example (n : ℕ) :
+    Module.finrank ℂ (EuclideanSpace ℂ (Fin (2 ^ (n + 1))))
+      = 2 ^ (n + 1) := by
+  rw [finrank_euclideanSpace_fin]
+```
+:::
 
 ## Measurement
 
@@ -528,6 +605,14 @@ example {n : ℕ} (ψ : QubitState n) (i : Fin (2 ^ n)) :
   sorry
 ```
 
+:::solution
+```lean
+example {n : ℕ} (ψ : QubitState n) (i : Fin (2 ^ n)) :
+    0 ≤ bornProb ψ i :=
+  bornProb_nonneg ψ i
+```
+:::
+
 No single outcome can be more likely than certain: for a normalized state, the probability of any one basis string is at most $`1` — it is one term of a sum of nonnegative numbers that totals $`1`.
 
 ```lean
@@ -535,3 +620,16 @@ example {n : ℕ} (ψ : QubitState n) (h : Normalized ψ)
     (i : Fin (2 ^ n)) : bornProb ψ i ≤ 1 := by
   sorry
 ```
+
+:::solution
+```lean
+example {n : ℕ} (ψ : QubitState n) (h : Normalized ψ)
+    (i : Fin (2 ^ n)) : bornProb ψ i ≤ 1 := by
+  have hsum : ∑ j, bornProb ψ j = 1 := sum_bornProb_normalized ψ h
+  calc bornProb ψ i
+      ≤ ∑ j, bornProb ψ j :=
+        Finset.single_le_sum (fun j _ => bornProb_nonneg ψ j)
+          (Finset.mem_univ i)
+    _ = 1 := hsum
+```
+:::
