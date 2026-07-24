@@ -550,17 +550,30 @@ To get $`+\infty` you cast into `ℝ≥0∞` (`ENNReal`) or work in `EReal`, whe
 The sequence forms $`\sup_n a_n`, $`\inf_n a_n` are `iSup` and `iInf` indexed by `ℕ`: `⨆ n, a n` and `⨅ n, a n` (the `\Sup` and `\Inf` symbols, both Unicode); they unfold to `sSup` of the range of the sequence.
 
 The example $`\sup [0,1] = 1` is `csSup_Icc`.
-Fill in the proof that the supremum of the closed unit interval is $`1`.
 
 ```lean
-example : sSup (Set.Icc (0 : ℝ) 1) = 1 := by
+example : sSup (Set.Icc (0 : ℝ) 1) = 1 :=
+  csSup_Icc (by norm_num)
+```
+
+That value is forced by the two defining halves of "least upper bound", which the `IsLUB` predicate bundles as `IsLeast (upperBounds s) x`.
+Prove directly that $`1` *is* the least upper bound of $`[0,1]`: split with `constructor` into the two obligations, showing $`1` is an upper bound (every $`x \in [0,1]` has $`x \leq 1`) and then the least one (any upper bound $`b` must dominate $`1`, since $`1 \in [0,1]`).
+
+```lean
+example : IsLUB (Set.Icc (0 : ℝ) 1) 1 := by
   sorry
 ```
 
 :::solution
 ```lean
-example : sSup (Set.Icc (0 : ℝ) 1) = 1 :=
-  csSup_Icc (by norm_num)
+example : IsLUB (Set.Icc (0 : ℝ) 1) 1 := by
+  constructor
+  · -- 1 is an upper bound: every point of [0,1] is ≤ 1.
+    intro x hx
+    exact hx.2
+  · -- and it is the least one: any upper bound dominates 1 ∈ [0,1].
+    intro b hb
+    exact hb ⟨by norm_num, le_refl 1⟩
 ```
 :::
 
@@ -578,19 +591,29 @@ example (s : Set ℝ) (hbdd : BddAbove s) (x : ℝ) (hx : x ∈ s) :
     x ≤ sSup s := le_csSup hbdd hx
 ```
 
-Prove the dual half: any upper bound of a nonempty set dominates its supremum.
+The dual half — any upper bound of a nonempty set dominates its supremum — is `csSup_le`.
 
 ```lean
 example (s : Set ℝ) (hne : s.Nonempty) (b : ℝ) (hb : b ∈ upperBounds s) :
-    sSup s ≤ b := by
+    sSup s ≤ b := csSup_le hne hb
+```
+
+Put the two halves to work together.
+If a set actually *contains* an upper bound of itself, that element is its maximum, and the supremum lands exactly there.
+Prove $`\sup s = b` whenever $`b \in s` is an upper bound: squeeze by `le_antisymm`, bounding $`\sup s \leq b` with `csSup_le` (the set is nonempty because $`b` is in it) and $`b \leq \sup s` with `le_csSup` (the set is bounded above because $`b` bounds it).
+
+```lean
+example (s : Set ℝ) (b : ℝ) (hb : b ∈ s) (hub : b ∈ upperBounds s) :
+    sSup s = b := by
   sorry
 ```
 
 :::solution
 ```lean
-example (s : Set ℝ) (hne : s.Nonempty) (b : ℝ) (hb : b ∈ upperBounds s) :
-    sSup s ≤ b :=
-  csSup_le hne hb
+example (s : Set ℝ) (b : ℝ) (hb : b ∈ s) (hub : b ∈ upperBounds s) :
+    sSup s = b :=
+  -- Antisymmetry: sSup s ≤ b since b bounds s, and b ≤ sSup s since b ∈ s.
+  le_antisymm (csSup_le ⟨b, hb⟩ hub) (le_csSup ⟨b, hub⟩ hb)
 ```
 :::
 
@@ -647,17 +670,30 @@ example (f : ℕ → ℝ) (hf : Summable f) :
 The Mathlib repackaging of the boundedness criterion is `summable_iff_cauchySeq_finset` for the general case, and for nonnegative reals indexed by `ℕ`, `summable_iff_not_tendsto_nat_atTop` cleanly says: a nonnegative series is summable iff its partial sums don't diverge to `⊤`.
 
 The harmonic series $`\sum_k \frac{1}{k}` diverges; its Mathlib witness is `Real.not_summable_one_div_natCast`.
-Restate this as non-summability.
 
 ```lean
-example : ¬ Summable (fun n : ℕ => 1 / (n : ℝ)) := by
+example : ¬ Summable (fun n : ℕ => 1 / (n : ℝ)) :=
+  Real.not_summable_one_div_natCast
+```
+
+The harmonic series is the cautionary tale for the *converse* of a basic fact: the terms of any summable series must tend to zero (`Summable.tendsto_atTop_zero`), yet $`\frac1k \to 0` while $`\sum \frac1k` diverges — so "terms $`\to 0`" is necessary but not sufficient.
+Use the necessary direction as a divergence test: prove the constant series $`\sum 1` diverges.
+Assume it were summable, extract the terms-tend-to-zero conclusion, and collide it with `tendsto_const_nhds` (the constant sequence tends to $`1`) via uniqueness of limits, `tendsto_nhds_unique`.
+
+```lean
+example : ¬ Summable (fun _ : ℕ => (1 : ℝ)) := by
   sorry
 ```
 
 :::solution
 ```lean
-example : ¬ Summable (fun n : ℕ => 1 / (n : ℝ)) :=
-  Real.not_summable_one_div_natCast
+example : ¬ Summable (fun _ : ℕ => (1 : ℝ)) := by
+  intro h
+  -- A summable series forces its terms to 0 …
+  have h0 := h.tendsto_atTop_zero
+  -- … but the constant-1 sequence tends to 1, and 1 ≠ 0.
+  have := tendsto_nhds_unique h0 tendsto_const_nhds
+  norm_num at this
 ```
 :::
 
@@ -676,17 +712,27 @@ example (f : ℕ → ℝ) (e : ℕ ≃ ℕ) (h : Summable f) : Summable (f ∘ e
 ```
 
 The proposition "absolute convergence implies convergence" is `Summable.of_abs`.
-Prove it: if the series of absolute values is summable, so is the original.
 
 ```lean
-example (f : ℕ → ℝ) (h : Summable (fun k => |f k|)) : Summable f := by
+example (f : ℕ → ℝ) (h : Summable (fun k => |f k|)) : Summable f :=
+  h.of_abs
+```
+
+With that bridge, absolutely convergent series are closed under addition.
+Prove that if $`\sum |f_k|` and $`\sum |g_k|` both converge, then $`\sum (f_k + g_k)` converges: turn each absolute-convergence hypothesis into plain summability with `.of_abs`, then combine the two with `Summable.add`.
+
+```lean
+example (f g : ℕ → ℝ) (hf : Summable (fun k => |f k|))
+    (hg : Summable (fun k => |g k|)) : Summable (fun k => f k + g k) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (f : ℕ → ℝ) (h : Summable (fun k => |f k|)) : Summable f :=
-  h.of_abs
+example (f g : ℕ → ℝ) (hf : Summable (fun k => |f k|))
+    (hg : Summable (fun k => |g k|)) : Summable (fun k => f k + g k) :=
+  -- Recover ordinary summability of each series, then add them.
+  (hf.of_abs).add (hg.of_abs)
 ```
 :::
 
@@ -706,19 +752,30 @@ The requirement that $`p` is not an isolated point has no single predicate named
 Without this, the punctured-neighborhood filter is the principal filter on the empty set, and *every* `L` would tautologically be a limit — a degenerate case, which is exactly why we exclude isolated points.
 
 The chapter's question asked you to bridge continuity and limits.
-Show that $`f` is continuous at $`p` exactly when it tends to $`f(p)` along the punctured neighborhood; `continuousWithinAt_compl_self` does the work.
+Continuity at $`p` is *equivalent* to tending to $`f(p)` along the punctured neighborhood; `continuousWithinAt_compl_self` does the work.
 
 ```lean
 example (f : ℝ → ℝ) (p : ℝ) :
-    ContinuousAt f p ↔ Filter.Tendsto f (nhdsWithin p {p}ᶜ) (nhds (f p)) := by
+    ContinuousAt f p ↔ Filter.Tendsto f (nhdsWithin p {p}ᶜ) (nhds (f p)) :=
+  continuousWithinAt_compl_self.symm
+```
+
+Prove the forward direction from a more elementary principle: convergence along a filter descends to any coarser one.
+Since the punctured neighborhood is coarser than the full one, `nhdsWithin p {p}ᶜ ≤ nhds p` (which is `nhdsWithin_le_nhds`), a continuous function — which by definition tends to $`f(p)` along the *full* neighborhood — still tends to $`f(p)` along the punctured one.
+Chase this with `Filter.Tendsto.mono_left`, feeding it the containment of filters.
+
+```lean
+example (f : ℝ → ℝ) (p : ℝ) (h : ContinuousAt f p) :
+    Filter.Tendsto f (nhdsWithin p {p}ᶜ) (nhds (f p)) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (f : ℝ → ℝ) (p : ℝ) :
-    ContinuousAt f p ↔ Filter.Tendsto f (nhdsWithin p {p}ᶜ) (nhds (f p)) :=
-  continuousWithinAt_compl_self.symm
+example (f : ℝ → ℝ) (p : ℝ) (h : ContinuousAt f p) :
+    Filter.Tendsto f (nhdsWithin p {p}ᶜ) (nhds (f p)) :=
+  -- ContinuousAt is convergence along 𝓝 p; restrict to the coarser 𝓝[≠] p.
+  h.mono_left nhdsWithin_le_nhds
 ```
 :::
 
@@ -732,17 +789,28 @@ recall Filter.atTop {α : Type*} [Preorder α] : Filter α :=
   ⨅ a, Filter.principal (Set.Ici a)
 ```
 
-The example $`\lim_{x \to \infty} 1/x = 0` becomes a `Tendsto` claim along `atTop`; `tendsto_inv_atTop_zero` is the key.
+The example $`\lim_{x \to \infty} 1/x = 0` becomes a `Tendsto` claim along `atTop`; `tendsto_inv_atTop_zero` is the key (after rewriting $`1/x` as $`x^{-1}` with `one_div`).
 
 ```lean
 example : Filter.Tendsto (fun x : ℝ => 1 / x) Filter.atTop (nhds 0) := by
+  simpa only [one_div] using tendsto_inv_atTop_zero
+```
+
+The arithmetic of limits lets you scale this.
+Prove $`\lim_{x \to \infty} \frac{2}{x} = 0`: rewrite $`\frac{2}{x} = 2 \cdot \frac1x`, recall the base limit above, and scale it by the constant $`2` with `Filter.Tendsto.const_mul` (whose limit $`2 \cdot 0` simplifies back to $`0`).
+
+```lean
+example : Filter.Tendsto (fun x : ℝ => 2 / x) Filter.atTop (nhds 0) := by
   sorry
 ```
 
 :::solution
 ```lean
-example : Filter.Tendsto (fun x : ℝ => 1 / x) Filter.atTop (nhds 0) := by
-  simpa only [one_div] using tendsto_inv_atTop_zero
+example : Filter.Tendsto (fun x : ℝ => 2 / x) Filter.atTop (nhds 0) := by
+  -- 2/x = 2·(1/x); scale the limit 1/x → 0 by the constant 2.
+  have h : Filter.Tendsto (fun x : ℝ => 1 / x) Filter.atTop (nhds 0) := by
+    simpa only [one_div] using tendsto_inv_atTop_zero
+  simpa only [mul_one_div, mul_zero] using h.const_mul (2 : ℝ)
 ```
 :::
 
@@ -755,17 +823,27 @@ recall tsum_geometric_of_lt_one {r : ℝ} (h₁ : 0 ≤ r) (h₂ : r < 1) :
     ∑' n : ℕ, r ^ n = (1 - r)⁻¹
 ```
 
-For the geometric series problem, evaluate the sum for any $`|r| < 1` using the general lemma.
+For the geometric series problem, the general lemma `tsum_geometric_of_abs_lt_one` evaluates the sum for any $`|r| < 1`.
 
 ```lean
-example (r : ℝ) (h : |r| < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ := by
+example (r : ℝ) (h : |r| < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
+  tsum_geometric_of_abs_lt_one h
+```
+
+Turn the closed form into a concrete number.
+Compute $`\sum_{n \geq 0} (1/2)^n = 2`: since $`0 \leq \frac12 < 1`, `tsum_geometric_of_lt_one` rewrites the sum as $`(1 - \frac12)^{-1}`, after which `norm_num` finishes the arithmetic.
+
+```lean
+example : ∑' n : ℕ, (1 / 2 : ℝ) ^ n = 2 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (r : ℝ) (h : |r| < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
-  tsum_geometric_of_abs_lt_one h
+example : ∑' n : ℕ, (1 / 2 : ℝ) ^ n = 2 := by
+  -- Sum = (1 - 1/2)⁻¹ = 2 by the geometric-series formula.
+  rw [tsum_geometric_of_lt_one (by norm_num) (by norm_num)]
+  norm_num
 ```
 :::
 

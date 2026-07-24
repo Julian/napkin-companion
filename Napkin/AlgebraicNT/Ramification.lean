@@ -387,20 +387,32 @@ example (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
     P ∈ Ideal.primesOver p B ↔ P.IsPrime ∧ P.LiesOver p := Iff.rfl
 ```
 
-The "lies over" relation says exactly that $`(p)` is the contraction of $`P` back down to the base ring; that is `p = P.under A`.
-Show that a prime lying over `p` recovers `p` as its contraction — that recovery is exactly the class field `Ideal.LiesOver.over`.
+The "lies over" relation says exactly that $`(p)` is the contraction of $`P` back down to the base ring; that is `p = P.under A`, and that recovery is exactly the class field `Ideal.LiesOver.over`.
 
 ```lean
 example (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
-    (p : Ideal A) (P : Ideal B) [P.LiesOver p] : p = P.under A := by
+    (p : Ideal A) (P : Ideal B) [P.LiesOver p] : p = P.under A :=
+  Ideal.LiesOver.over
+```
+
+Membership in `Ideal.primesOver p B` bundles primality together with lying over, so a single element of it carries both facts at once.
+Peel `P ∈ Ideal.primesOver p B` apart with `obtain` — the definitional unfolding from the first block turns it into a pair — and read `p` off the `LiesOver` half through its `.over` field.
+
+```lean
+example (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
+    (p : Ideal A) (P : Ideal B) (hP : P ∈ Ideal.primesOver p B) :
+    p = P.under A := by
   sorry
 ```
 
 :::solution
 ```lean
 example (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
-    (p : Ideal A) (P : Ideal B) [P.LiesOver p] : p = P.under A :=
-  Ideal.LiesOver.over
+    (p : Ideal A) (P : Ideal B) (hP : P ∈ Ideal.primesOver p B) :
+    p = P.under A := by
+  -- Membership packs primality with `LiesOver`; the latter recovers p.
+  obtain ⟨_, hlo⟩ := hP
+  exact hlo.over
 ```
 :::
 
@@ -409,7 +421,7 @@ example (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
 Being unramified at a prime is the predicate `Algebra.IsUnramifiedAt`, and the theorem above, in contrapositive, is `NumberField.not_dvd_discr_iff_forall_mem`: a prime does not divide `NumberField.discr K` exactly when every prime above it is unramified.
 (The existence of ramified primes for $`K \neq \mathbb{Q}` — combining this with the Hermite-Minkowski bound $`|\Delta_K| > 1` from the class group chapter — is `NumberField.exists_not_isUnramifiedAt_int` in `Mathlib.NumberTheory.NumberField.ExistsRamified`.)
 
-State the contrapositive form for yourself, for the ring of integers $`\mathcal{O}_K` itself: a rational prime avoids the discriminant exactly when every prime containing it is unramified.
+The contrapositive form, for the ring of integers $`\mathcal{O}_K` itself, reads: a rational prime avoids the discriminant exactly when every prime containing it is unramified.
 Specialized to `𝓞 K`, the Dedekind-domain, finiteness, and integral-closure hypotheses are all automatic, and the whole biconditional is `NumberField.not_dvd_discr_iff_forall_mem K (𝓞 K) hp`.
 
 ```lean -show
@@ -420,17 +432,35 @@ open scoped NumberField
 example (K : Type*) [Field K] [NumberField K] {p : ℤ} (hp : Prime p) :
     ¬ p ∣ NumberField.discr K ↔
       ∀ (P : Ideal (𝓞 K)) (_ : P.IsPrime),
-        (p : 𝓞 K) ∈ P → Algebra.IsUnramifiedAt ℤ P := by
+        (p : 𝓞 K) ∈ P → Algebra.IsUnramifiedAt ℤ P :=
+  NumberField.not_dvd_discr_iff_forall_mem K (𝓞 K) hp
+```
+
+Read in the ramified direction, this is the chapter's headline: a prime that divides the discriminant must ramify somewhere.
+Extract that consequence — from $`p \mid \Delta_K`, produce an actual prime $`P` above $`p` that fails to be unramified.
+The biconditional's right-hand side is a universal "every prime above $`p` is unramified"; since $`p` divides the discriminant that universal must fail, so negate it (`.mpr` turns "all unramified" back into "$`p` avoids the discriminant", contradicting the hypothesis) and let `push_neg` hand you the offending prime.
+
+```lean
+example (K : Type*) [Field K] [NumberField K] {p : ℤ} (hp : Prime p)
+    (hdvd : p ∣ NumberField.discr K) :
+    ∃ (P : Ideal (𝓞 K)) (_ : P.IsPrime),
+      (p : 𝓞 K) ∈ P ∧ ¬ Algebra.IsUnramifiedAt ℤ P := by
   sorry
 ```
 
 :::solution
 ```lean
-example (K : Type*) [Field K] [NumberField K] {p : ℤ} (hp : Prime p) :
-    ¬ p ∣ NumberField.discr K ↔
-      ∀ (P : Ideal (𝓞 K)) (_ : P.IsPrime),
-        (p : 𝓞 K) ∈ P → Algebra.IsUnramifiedAt ℤ P :=
-  NumberField.not_dvd_discr_iff_forall_mem K (𝓞 K) hp
+example (K : Type*) [Field K] [NumberField K] {p : ℤ} (hp : Prime p)
+    (hdvd : p ∣ NumberField.discr K) :
+    ∃ (P : Ideal (𝓞 K)) (_ : P.IsPrime),
+      (p : 𝓞 K) ∈ P ∧ ¬ Algebra.IsUnramifiedAt ℤ P := by
+  -- p ∣ discr ⇒ the "all unramified" side fails, exposing a ramified prime.
+  have key : ¬ ∀ (P : Ideal (𝓞 K)) (_ : P.IsPrime),
+      (p : 𝓞 K) ∈ P → Algebra.IsUnramifiedAt ℤ P := fun hR =>
+    (NumberField.not_dvd_discr_iff_forall_mem K (𝓞 K) hp).mpr hR hdvd
+  push_neg at key
+  obtain ⟨P, hP, hmem, hunram⟩ := key
+  exact ⟨P, hP, hmem, hunram⟩
 ```
 :::
 
@@ -496,14 +526,24 @@ example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   Ideal.ramificationIdx_eq_of_isGaloisGroup p P Q G
 ```
 
-Use transitivity to show that any two primes above $`p` are related by some element of the Galois group.
-With the `MulAction.IsPretransitive` instance above in scope, `MulAction.exists_smul_eq` hands you that group element directly.
+Transitivity itself is `MulAction.exists_smul_eq`: with the `MulAction.IsPretransitive` instance above in scope, any two primes above $`p` are related by some element of the Galois group.
 
 ```lean
 example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] (p : Ideal A)
     (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
     [IsGaloisGroup G A B]
-    (P Q : Ideal.primesOver p B) : ∃ σ : G, σ • P = Q := by
+    (P Q : Ideal.primesOver p B) : ∃ σ : G, σ • P = Q :=
+  MulAction.exists_smul_eq G P Q
+```
+
+A transitive action lets you not just relate two primes but *chain* the relation: composing the automorphism sending $`P` to $`Q` with the one sending $`Q` to $`R` sends $`P` all the way to $`R`.
+Prove it — `obtain` a group element for each leg, then combine them with the group operation, unfolding $`(\tau\sigma) \cdot P` through the action axiom `mul_smul`.
+
+```lean
+example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] (p : Ideal A)
+    (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
+    [IsGaloisGroup G A B]
+    (P Q R : Ideal.primesOver p B) : ∃ σ : G, σ • P = R := by
   sorry
 ```
 
@@ -512,8 +552,11 @@ example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] (p : Ideal A)
 example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] (p : Ideal A)
     (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
     [IsGaloisGroup G A B]
-    (P Q : Ideal.primesOver p B) : ∃ σ : G, σ • P = Q :=
-  MulAction.exists_smul_eq G P Q
+    (P Q R : Ideal.primesOver p B) : ∃ σ : G, σ • P = R := by
+  -- Chain the two witnesses P → Q → R via the action axiom `mul_smul`.
+  obtain ⟨σ, hσ⟩ := MulAction.exists_smul_eq G P Q
+  obtain ⟨τ, hτ⟩ := MulAction.exists_smul_eq G Q R
+  exact ⟨τ * σ, by rw [mul_smul, hσ, hτ]⟩
 ```
 :::
 
@@ -528,19 +571,8 @@ example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] {p : Ideal A}
 ```
 
 An automorphism lies in the decomposition group exactly when it fixes $`\mathfrak{p}`, which is by definition `MulAction.mem_stabilizer_iff`.
-A more substantial fact — the one behind the different fixed fields of conjugate primes above — is that the decomposition groups of $`\mathfrak{p}` and $`\sigma\mathfrak{p}` are conjugate: $`D_{\sigma\mathfrak{p}} = \sigma D_\mathfrak{p} \sigma^{-1}`.
-Prove it; the finisher is `MulAction.stabilizer_smul_eq_stabilizer_map_conj`.
+A more substantial fact — the one behind the different fixed fields of conjugate primes above — is that the decomposition groups of $`\mathfrak{p}` and $`\sigma\mathfrak{p}` are conjugate: $`D_{\sigma\mathfrak{p}} = \sigma D_\mathfrak{p} \sigma^{-1}`, which is `MulAction.stabilizer_smul_eq_stabilizer_map_conj`.
 
-```lean
-example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] {p : Ideal A}
-    (G : Type*) [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
-    (P : Ideal.primesOver p B) (σ : G) :
-    MulAction.stabilizer G (σ • P)
-      = (MulAction.stabilizer G P).map (MulAut.conj σ).toMonoidHom := by
-  sorry
-```
-
-:::solution
 ```lean
 example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] {p : Ideal A}
     (G : Type*) [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
@@ -548,6 +580,33 @@ example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] {p : Ideal A}
     MulAction.stabilizer G (σ • P)
       = (MulAction.stabilizer G P).map (MulAut.conj σ).toMonoidHom :=
   MulAction.stabilizer_smul_eq_stabilizer_map_conj σ P
+```
+
+One consequence pins down a decomposition group's relationship to its own elements.
+When $`\sigma` itself fixes $`\mathfrak{p}` — that is, $`\sigma \in D_\mathfrak{p}` — conjugating $`D_\mathfrak{p}` by $`\sigma` returns $`D_\mathfrak{p}` unchanged, so every element of a decomposition group normalizes it.
+Prove it: feed $`\sigma\mathfrak{p} = \mathfrak{p}` (which `MulAction.mem_stabilizer_iff` extracts from membership) back into the conjugation identity above.
+
+```lean
+example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] {p : Ideal A}
+    (G : Type*) [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
+    (P : Ideal.primesOver p B) (σ : G)
+    (hσ : σ ∈ MulAction.stabilizer G P) :
+    (MulAction.stabilizer G P).map (MulAut.conj σ).toMonoidHom
+      = MulAction.stabilizer G P := by
+  sorry
+```
+
+:::solution
+```lean
+example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] {p : Ideal A}
+    (G : Type*) [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
+    (P : Ideal.primesOver p B) (σ : G)
+    (hσ : σ ∈ MulAction.stabilizer G P) :
+    (MulAction.stabilizer G P).map (MulAut.conj σ).toMonoidHom
+      = MulAction.stabilizer G P := by
+  -- σ fixes P, so conjugating its stabilizer lands back on itself.
+  rw [← MulAction.stabilizer_smul_eq_stabilizer_map_conj σ P,
+      MulAction.mem_stabilizer_iff.mp hσ]
 ```
 :::
 

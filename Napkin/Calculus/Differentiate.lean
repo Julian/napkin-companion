@@ -442,18 +442,32 @@ Mathlib bites the bullet on the multivariable issue from the start: the "real" d
 The single-real-number `deriv` (for functions of one real or complex variable) is the value that linear map takes at `1`.
 Reading `deriv f p` as "the slope at `p`" matches the book's convention once you know what `fderiv` is being collapsed to.
 
-The exercise asked you to show that a function differentiable at $`p` is continuous there; the answer is `HasDerivAt.continuousAt`.
+The exercise asked you to show that a function differentiable at $`p` is continuous there; the atomic fact is `HasDerivAt.continuousAt`.
 
 ```lean
-example (f : ℝ → ℝ) (f' p : ℝ) (h : HasDerivAt f f' p) : ContinuousAt f p := by
+example (f : ℝ → ℝ) (f' p : ℝ) (h : HasDerivAt f f' p) :
+    ContinuousAt f p :=
+  h.continuousAt
+```
+
+To see the shape of a real argument, combine that with the sum rule.
+If $`f` and $`g` are each differentiable at $`p`, then their sum is continuous at $`p`.
+Glue the two derivatives with `HasDerivAt.add`, which reports that the sum is again differentiable, then read off continuity with `HasDerivAt.continuousAt`.
+
+```lean
+example (f g : ℝ → ℝ) (f' g' p : ℝ) (hf : HasDerivAt f f' p)
+    (hg : HasDerivAt g g' p) :
+    ContinuousAt (fun x => f x + g x) p := by
   sorry
 ```
 
 :::solution
 ```lean
-example (f : ℝ → ℝ) (f' p : ℝ) (h : HasDerivAt f f' p) :
-    ContinuousAt f p :=
-  h.continuousAt
+example (f g : ℝ → ℝ) (f' g' p : ℝ) (hf : HasDerivAt f f' p)
+    (hg : HasDerivAt g g' p) :
+    ContinuousAt (fun x => f x + g x) p := by
+  -- The sum is differentiable (HasDerivAt.add), hence continuous.
+  exact (hf.add hg).continuousAt
 ```
 :::
 
@@ -540,13 +554,25 @@ The proposition $`e^x \geq 1 + x` is `Real.add_one_le_exp` (with strict variant 
 
 ```lean
 example (x : ℝ) : 1 + x ≤ Real.exp x := by
+  rw [add_comm]; exact Real.add_one_le_exp x
+```
+
+Fermat's theorem on stationary points is itself worth assembling in the chapter's $`f'`-notation, where the derivative is a hypothesis rather than the total `deriv`.
+Given `HasDerivAt f f' p` and that $`p` is a local maximum, show the recorded slope $`f'` vanishes.
+The bridge is `HasDerivAt.deriv`, which pins `deriv f p = f'`; rewrite the goal along it to turn $`f'` into `deriv f p`, and then `IsLocalMax.deriv_eq_zero` closes it.
+
+```lean
+example (f : ℝ → ℝ) (f' p : ℝ) (h : IsLocalMax f p)
+    (hd : HasDerivAt f f' p) : f' = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (x : ℝ) : 1 + x ≤ Real.exp x := by
-  rw [add_comm]; exact Real.add_one_le_exp x
+example (f : ℝ → ℝ) (f' p : ℝ) (h : IsLocalMax f p)
+    (hd : HasDerivAt f f' p) : f' = 0 := by
+  -- HasDerivAt pins deriv f p = f'; Fermat sends that value to 0.
+  rw [← hd.deriv]; exact h.deriv_eq_zero
 ```
 :::
 
@@ -556,19 +582,11 @@ Mathlib has Rolle as `exists_deriv_eq_zero` (in `Deriv.MeanValue`) and several v
 The proof there is exactly the sketch above.
 
 ```lean
-example (f : ℝ → ℝ) (a b : ℝ) (hab : a < b) (hfc : ContinuousOn f (Set.Icc a b))
-    (hfI : f a = f b) : ∃ c ∈ Set.Ioo a b, deriv f c = 0 := by
-  sorry
-```
-
-:::solution
-```lean
 example (f : ℝ → ℝ) (a b : ℝ) (hab : a < b)
     (hfc : ContinuousOn f (Set.Icc a b)) (hfI : f a = f b) :
     ∃ c ∈ Set.Ioo a b, deriv f c = 0 :=
   exists_deriv_eq_zero hab hfc hfI
 ```
-:::
 
 The mean value theorem is `exists_hasDerivAt_eq_slope`.
 
@@ -578,6 +596,30 @@ recall exists_hasDerivAt_eq_slope (f f' : ℝ → ℝ) {a b : ℝ}
     (hff' : ∀ x ∈ Set.Ioo a b, HasDerivAt f (f' x) x) :
     ∃ c ∈ Set.Ioo a b, f' c = (f b - f a) / (b - a)
 ```
+
+That Rolle is genuinely the flat special case of the mean value theorem is worth proving directly.
+Feed the pointwise-derivative hypotheses to `exists_hasDerivAt_eq_slope`, which hands you a $`c` where $`f'(c)` equals the secant slope $`\frac{f(b) - f(a)}{b - a}`; then use $`f(a) = f(b)` to collapse that slope to $`0`.
+After `obtain`ing the point, the rewrite `rw [hslope, hfI, sub_self, zero_div]` walks the numerator down to zero.
+
+```lean
+example (f f' : ℝ → ℝ) (a b : ℝ) (hab : a < b)
+    (hfc : ContinuousOn f (Set.Icc a b))
+    (hff' : ∀ x ∈ Set.Ioo a b, HasDerivAt f (f' x) x)
+    (hfI : f a = f b) : ∃ c ∈ Set.Ioo a b, f' c = 0 := by
+  sorry
+```
+
+:::solution
+```lean
+example (f f' : ℝ → ℝ) (a b : ℝ) (hab : a < b)
+    (hfc : ContinuousOn f (Set.Icc a b))
+    (hff' : ∀ x ∈ Set.Ioo a b, HasDerivAt f (f' x) x)
+    (hfI : f a = f b) : ∃ c ∈ Set.Ioo a b, f' c = 0 := by
+  -- MVT gives slope (f b - f a)/(b - a); f a = f b makes it vanish.
+  obtain ⟨c, hc, hslope⟩ := exists_hasDerivAt_eq_slope f f' hab hfc hff'
+  exact ⟨c, hc, by rw [hslope, hfI, sub_self, zero_div]⟩
+```
+:::
 
 The MVT-based monotonicity statements behind the racetrack principle are `strictMonoOn_of_hasDerivWithinAt_pos` and friends in `Deriv.MeanValue`, building toward the full "$`f' \geq g' \Rightarrow f \geq g + \text{const}`" picture.
 Mathlib has the ratio mean value theorem as `exists_ratio_hasDerivAt_eq_ratio_slope`.
@@ -596,17 +638,31 @@ example (f : ℝ → ℝ) : Prop := ContDiff ℝ ∞ f
 
 Mathlib formalizes a related construction in `Mathlib.Analysis.SpecialFunctions.SmoothTransition` (`Real.smoothTransition`), which uses a quotient of two such exponentials to build a smooth $`[0, 1]`-valued cutoff.
 
-The question asked you to show the absolute value function is not smooth; already it fails to be differentiable at $`0`, recorded as `not_differentiableAt_abs_zero`.
+The question asked you to show the absolute value function is not smooth; the atomic obstruction is that it already fails to be differentiable at $`0`, recorded as `not_differentiableAt_abs_zero`.
 
 ```lean
-example : ¬ DifferentiableAt ℝ (fun x : ℝ => |x|) 0 := by
+example : ¬ DifferentiableAt ℝ (fun x : ℝ => |x|) 0 :=
+  not_differentiableAt_abs_zero
+```
+
+Now upgrade that single-point failure into the full claim that $`|x|` is not smooth.
+Assume `ContDiff ℝ ∞`, extract differentiability everywhere with `ContDiff.differentiable` (whose side goal $`\infty \neq 0` is arithmetic), specialize it at $`0` via `Differentiable.differentiableAt`, and feed the result to the model fact above for the contradiction.
+
+```lean
+open scoped ContDiff in
+example : ¬ ContDiff ℝ ∞ (fun x : ℝ => |x|) := by
   sorry
 ```
 
 :::solution
 ```lean
-example : ¬ DifferentiableAt ℝ (fun x : ℝ => |x|) 0 :=
-  not_differentiableAt_abs_zero
+open scoped ContDiff in
+example : ¬ ContDiff ℝ ∞ (fun x : ℝ => |x|) := by
+  -- Smoothness ⟹ differentiable everywhere ⟹ differentiable at 0,
+  -- which |·| is not.
+  intro h
+  exact not_differentiableAt_abs_zero
+    ((h.differentiable (by simp)).differentiableAt)
 ```
 :::
 

@@ -302,15 +302,30 @@ example (f : ℝ → ℝ) : UniformContinuous f ↔
 
 ```lean
 example {M N : Type*} [MetricSpace M] [CompactSpace M] [MetricSpace N]
-    (f : M → N) (hf : Continuous f) : UniformContinuous f := by
+    (f : M → N) (hf : Continuous f) : UniformContinuous f :=
+  CompactSpace.uniformContinuous_of_continuous hf
+```
+
+Away from the compact case one proves uniform continuity by hand, and the tool is the metric characterization `Metric.uniformContinuous_iff` above: it reduces the goal to producing, for each $`\varepsilon`, a working $`\delta`.
+A *nonexpansive* map — one with $`d(f(x), f(y)) \le d(x, y)` — is the cleanest instance: $`\delta = \varepsilon` works verbatim, exactly as $`\delta = \varepsilon^2` did for $`\sqrt{x}` in the chapter.
+Rewrite with the characterization, then offer $`\varepsilon` back as the $`\delta` (`refine fun ε hε => ⟨ε, hε, ?_⟩`) and chain the nonexpansive bound past `dist x y < ε` with `lt_of_le_of_lt`.
+
+```lean
+example {M N : Type*} [MetricSpace M] [MetricSpace N] (f : M → N)
+    (hf : ∀ x y, dist (f x) (f y) ≤ dist x y) :
+    UniformContinuous f := by
   sorry
 ```
 
 :::solution
 ```lean
-example {M N : Type*} [MetricSpace M] [CompactSpace M] [MetricSpace N]
-    (f : M → N) (hf : Continuous f) : UniformContinuous f :=
-  CompactSpace.uniformContinuous_of_continuous hf
+example {M N : Type*} [MetricSpace M] [MetricSpace N] (f : M → N)
+    (hf : ∀ x y, dist (f x) (f y) ≤ dist x y) :
+    UniformContinuous f := by
+  -- Take δ = ε; the nonexpansive bound turns dist x y < ε into the goal.
+  rw [Metric.uniformContinuous_iff]
+  refine fun ε hε => ⟨ε, hε, fun x y hxy => ?_⟩
+  exact lt_of_le_of_lt (hf x y) hxy
 ```
 :::
 
@@ -355,19 +370,31 @@ For continuous $`f \colon [a, b] \to \mathbb{R}` it agrees with the Riemann inte
 The Riemann construction in this chapter exists for pedagogy, and to motivate why one would want the Lebesgue/Bochner setup in the next part of the book.
 :::
 
-The rectangle-sum functional $`\Sigma` sends a single constant rectangle of height $`c` over $`[a, b]` to its area $`(b - a) c`.
-Confirm the integral does the same on a constant, via `intervalIntegral.integral_const` (a single application, applied to `c`, closes it).
+The rectangle-sum functional $`\Sigma` sends a single constant rectangle of height $`c` over $`[a, b]` to its area $`(b - a) c`, which is exactly `intervalIntegral.integral_const`.
 The right-hand side is written with the scalar action `•` rather than `*` because the interval integral is Banach-valued in general: the real number `(b - a)` *scales* the value `c`, and for a real `c` that scaling is just ordinary multiplication.
 
 ```lean
-example (a b c : ℝ) : ∫ _ in a..b, c = (b - a) • c := by
+example (a b c : ℝ) : ∫ _ in a..b, c = (b - a) • c :=
+  intervalIntegral.integral_const c
+```
+
+What makes $`\Sigma` — and the integral extending it — a genuine *linear* functional is that it respects sums.
+Prove the additive half on constants: the integral of $`c + d` splits as the sum of the two integrals.
+Rewrite all three integrals to their areas with `intervalIntegral.integral_const`; the leftover goal — the area of $`c + d` equals the sum of the areas of $`c` and $`d` — is `smul_add`.
+
+```lean
+example (a b c d : ℝ) :
+    ∫ _ in a..b, (c + d) = (∫ _ in a..b, c) + ∫ _ in a..b, d := by
   sorry
 ```
 
 :::solution
 ```lean
-example (a b c : ℝ) : ∫ _ in a..b, c = (b - a) • c :=
-  intervalIntegral.integral_const c
+example (a b c d : ℝ) :
+    ∫ _ in a..b, (c + d) = (∫ _ in a..b, c) + ∫ _ in a..b, d := by
+  -- Each integral is an area; linearity is then `smul_add`.
+  rw [intervalIntegral.integral_const, intervalIntegral.integral_const,
+    intervalIntegral.integral_const, smul_add]
 ```
 :::
 
@@ -403,19 +430,33 @@ example : ∫ x in (1 : ℝ)..4, x ^ 2 = 21 := by
 ## Problems
 
 The chapter's first problem — a differentiable function with bounded derivative is uniformly continuous — factors in Mathlib into two steps: a bounded derivative makes the function Lipschitz (`Convex.lipschitzOnWith_of_nnnorm_deriv_le`, the MVT argument the hint suggests), and a Lipschitz function is uniformly continuous.
-The exercise below isolates that *second* step, which stands on its own for any Lipschitz map with no derivative in sight; its finisher is `LipschitzWith.uniformContinuous` (that is, `h.uniformContinuous`).
+That *second* step stands on its own for any Lipschitz map with no derivative in sight, and its finisher is `LipschitzWith.uniformContinuous` (that is, `h.uniformContinuous`).
 
-```lean
-example {M N : Type*} [PseudoMetricSpace M] [PseudoMetricSpace N]
-    (f : M → N) (K : NNReal) (h : LipschitzWith K f) : UniformContinuous f := by
-  sorry
-```
-
-:::solution
 ```lean
 example {M N : Type*} [PseudoMetricSpace M] [PseudoMetricSpace N]
     (f : M → N) (K : NNReal) (h : LipschitzWith K f) :
     UniformContinuous f :=
   h.uniformContinuous
+```
+
+The Lipschitz maps are closed under composition — with constant the product $`K_f K_g` — so a composite of Lipschitz maps is again uniformly continuous.
+Chain the two hypotheses with `LipschitzWith.comp` into a single `LipschitzWith` fact for `f ∘ g`, then discharge the goal with `uniformContinuous` as above.
+
+```lean
+example {M N P : Type*} [PseudoMetricSpace M] [PseudoMetricSpace N]
+    [PseudoMetricSpace P] (f : N → P) (g : M → N) (Kf Kg : NNReal)
+    (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
+    UniformContinuous (f ∘ g) := by
+  sorry
+```
+
+:::solution
+```lean
+example {M N P : Type*} [PseudoMetricSpace M] [PseudoMetricSpace N]
+    [PseudoMetricSpace P] (f : N → P) (g : M → N) (Kf Kg : NNReal)
+    (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
+    UniformContinuous (f ∘ g) :=
+  -- The composite is Lipschitz, hence uniformly continuous.
+  (hf.comp hg).uniformContinuous
 ```
 :::

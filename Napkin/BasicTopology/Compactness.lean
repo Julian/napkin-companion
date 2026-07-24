@@ -466,14 +466,25 @@ We will lean on this dot-notation shorthand repeatedly below.
 
 ```lean
 example (X : Type*) [TopologicalSpace X] (s : Set X) (hs : s.Finite) :
-    IsCompact s := by
+    IsCompact s := hs.isCompact
+```
+
+Now put that fact to work rather than restating it.
+Attaching finitely many stray points to a compact set cannot spoil compactness: given `s` compact and `t` finite, show `s ∪ t` is compact.
+Turn the finite piece into a compact one with the worked model above (`ht.isCompact`), then glue the two compacts together with `IsCompact.union`.
+
+```lean
+example (X : Type*) [TopologicalSpace X] (s t : Set X)
+    (hs : IsCompact s) (ht : t.Finite) : IsCompact (s ∪ t) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (X : Type*) [TopologicalSpace X] (s : Set X) (hs : s.Finite) :
-    IsCompact s := hs.isCompact
+example (X : Type*) [TopologicalSpace X] (s t : Set X)
+    (hs : IsCompact s) (ht : t.Finite) : IsCompact (s ∪ t) :=
+  -- The finite part is compact, and a union of two compacts is compact.
+  hs.union ht.isCompact
 ```
 :::
 
@@ -483,15 +494,25 @@ Its extra hypotheses ride along after the dot: with $`s` compact, $`t` closed, a
 ```lean
 example (X : Type*) [TopologicalSpace X] (s t : Set X)
     (hs : IsCompact s) (ht : IsClosed t) (h : t ⊆ s) :
-    IsCompact t := by
+    IsCompact t := hs.of_isClosed_subset ht h
+```
+
+In a Hausdorff space this pairs with another fact into a clean statement: the intersection of two compact sets is again compact.
+The key is that a compact set in a Hausdorff space is closed (`IsCompact.isClosed`), so `s ∩ t` is a closed subset of the compact `t` (assembled from `IsClosed.inter` and `Set.inter_subset_right`); the worked model then finishes it.
+
+```lean
+example (X : Type*) [TopologicalSpace X] [T2Space X] (s t : Set X)
+    (hs : IsCompact s) (ht : IsCompact t) : IsCompact (s ∩ t) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (X : Type*) [TopologicalSpace X] (s t : Set X)
-    (hs : IsCompact s) (ht : IsClosed t) (h : t ⊆ s) :
-    IsCompact t := hs.of_isClosed_subset ht h
+example (X : Type*) [TopologicalSpace X] [T2Space X] (s t : Set X)
+    (hs : IsCompact s) (ht : IsCompact t) : IsCompact (s ∩ t) :=
+  -- s is closed (Hausdorff), so s ∩ t is a closed subset of compact t.
+  ht.of_isClosed_subset (hs.isClosed.inter ht.isClosed)
+    Set.inter_subset_right
 ```
 :::
 
@@ -569,7 +590,17 @@ This one feeds it two further hypotheses: `hs.exists_isMaxOn hne hf` hands back 
 ```lean
 example (X : Type*) [TopologicalSpace X] (s : Set X) (hs : IsCompact s)
     (hne : s.Nonempty) (f : X → ℝ) (hf : ContinuousOn f s) :
-    ∃ x ∈ s, IsMaxOn f s x := by
+    ∃ x ∈ s, IsMaxOn f s x := hs.exists_isMaxOn hne hf
+```
+
+The conclusion is packaged as `IsMaxOn`; unpack it into the concrete bound it stands for.
+Prove that the function attains a value dominating every other: `∃ x ∈ s, ∀ y ∈ s, f y ≤ f x`.
+Pull the maximizer out of the worked model with `obtain`, then read off the pointwise inequality using `isMaxOn_iff`.
+
+```lean
+example (X : Type*) [TopologicalSpace X] (s : Set X) (hs : IsCompact s)
+    (hne : s.Nonempty) (f : X → ℝ) (hf : ContinuousOn f s) :
+    ∃ x ∈ s, ∀ y ∈ s, f y ≤ f x := by
   sorry
 ```
 
@@ -577,7 +608,10 @@ example (X : Type*) [TopologicalSpace X] (s : Set X) (hs : IsCompact s)
 ```lean
 example (X : Type*) [TopologicalSpace X] (s : Set X) (hs : IsCompact s)
     (hne : s.Nonempty) (f : X → ℝ) (hf : ContinuousOn f s) :
-    ∃ x ∈ s, IsMaxOn f s x := hs.exists_isMaxOn hne hf
+    ∃ x ∈ s, ∀ y ∈ s, f y ≤ f x := by
+  -- Grab the maximizer, then turn IsMaxOn into the pointwise bound.
+  obtain ⟨x, hx, hmax⟩ := hs.exists_isMaxOn hne hf
+  exact ⟨x, hx, isMaxOn_iff.mp hmax⟩
 ```
 :::
 
@@ -597,15 +631,28 @@ It is not dot-notation on `hf` (its namespace is `CompactSpace`, not `Continuous
 
 ```lean
 example (M N : Type*) [UniformSpace M] [UniformSpace N] [CompactSpace M]
-    (f : M → N) (hf : Continuous f) : UniformContinuous f := by
+    (f : M → N) (hf : Continuous f) : UniformContinuous f :=
+  CompactSpace.uniformContinuous_of_continuous hf
+```
+
+Chain that with the fact that uniformly continuous maps compose.
+Given `f : M → N` merely continuous out of the compact `M`, and `g : N → P` already uniformly continuous, show `g ∘ f` is uniformly continuous.
+Heine-Cantor upgrades `f` to uniformly continuous, and `UniformContinuous.comp` stitches the two together.
+
+```lean
+example (M N P : Type*) [UniformSpace M] [UniformSpace N] [UniformSpace P]
+    [CompactSpace M] (f : M → N) (g : N → P) (hf : Continuous f)
+    (hg : UniformContinuous g) : UniformContinuous (g ∘ f) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (M N : Type*) [UniformSpace M] [UniformSpace N] [CompactSpace M]
-    (f : M → N) (hf : Continuous f) : UniformContinuous f :=
-  CompactSpace.uniformContinuous_of_continuous hf
+example (M N P : Type*) [UniformSpace M] [UniformSpace N] [UniformSpace P]
+    [CompactSpace M] (f : M → N) (g : N → P) (hf : Continuous f)
+    (hg : UniformContinuous g) : UniformContinuous (g ∘ f) :=
+  -- Heine-Cantor makes f uniformly continuous; then compose with g.
+  hg.comp (CompactSpace.uniformContinuous_of_continuous hf)
 ```
 :::
 
@@ -625,13 +672,24 @@ This is the promised analogue of the worked `IsCompact.totallyBounded` above, so
 
 ```lean
 example (M : Type*) [PseudoMetricSpace M] (s : Set M) (hs : IsSeqCompact s) :
-    TotallyBounded s := by
+    TotallyBounded s := hs.totallyBounded
+```
+
+Total boundedness is the stronger notion; chase it down to ordinary boundedness.
+Show that a sequentially compact set is bounded (`Bornology.IsBounded`).
+The worked model supplies total boundedness, and `TotallyBounded.isBounded` weakens that to boundedness.
+
+```lean
+example (M : Type*) [PseudoMetricSpace M] (s : Set M)
+    (hs : IsSeqCompact s) : Bornology.IsBounded s := by
   sorry
 ```
 
 :::solution
 ```lean
-example (M : Type*) [PseudoMetricSpace M] (s : Set M) (hs : IsSeqCompact s) :
-    TotallyBounded s := hs.totallyBounded
+example (M : Type*) [PseudoMetricSpace M] (s : Set M)
+    (hs : IsSeqCompact s) : Bornology.IsBounded s :=
+  -- Sequential compactness ⟹ totally bounded ⟹ bounded.
+  hs.totallyBounded.isBounded
 ```
 :::
