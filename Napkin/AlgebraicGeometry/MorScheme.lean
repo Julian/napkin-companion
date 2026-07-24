@@ -454,20 +454,30 @@ Here is the identity half, worked out.
 example (R : CommRingCat) : Spec.map (𝟙 R) = 𝟙 (Spec R) := Spec.map_id R
 ```
 
-Now do the composition half yourself.
-Because `Spec` is contravariant the two factors come out in the _reversed_ order; the finisher is `Spec.map_comp`.
+Because `Spec` is contravariant, the composition half comes out with the two factors in the _reversed_ order; that is `Spec.map_comp`.
 
 ```lean
 example {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
-    Spec.map (f ≫ g) = Spec.map g ≫ Spec.map f := by
+    Spec.map (f ≫ g) = Spec.map g ≫ Spec.map f :=
+  Spec.map_comp f g
+```
+
+Put functoriality to work: a ring isomorphism ought to become a scheme isomorphism.
+Suppose `f : R ⟶ S` and `g : S ⟶ R` compose to the identity one way, `f ≫ g = 𝟙 R`; show their `Spec` images cancel the _other_ way, `Spec.map g ≫ Spec.map f = 𝟙 (Spec R)`.
+Fold the composite back up with `Spec.map_comp` run backwards, rewrite along the hypothesis, and finish with `Spec.map_id`.
+
+```lean
+example {R S : CommRingCat} (f : R ⟶ S) (g : S ⟶ R) (h : f ≫ g = 𝟙 R) :
+    Spec.map g ≫ Spec.map f = 𝟙 (Spec R) := by
   sorry
 ```
 
 :::solution
 ```lean
-example {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
-    Spec.map (f ≫ g) = Spec.map g ≫ Spec.map f :=
-  Spec.map_comp f g
+example {R S : CommRingCat} (f : R ⟶ S) (g : S ⟶ R) (h : f ≫ g = 𝟙 R) :
+    Spec.map g ≫ Spec.map f = 𝟙 (Spec R) := by
+  -- Reassemble the product as Spec.map (f ≫ g), then f ≫ g = 𝟙 collapses it.
+  rw [← Spec.map_comp, h, Spec.map_id]
 ```
 :::
 
@@ -551,19 +561,30 @@ noncomputable example : AffineScheme ≌ CommRingCatᵒᵖ :=
 ```
 
 Its concrete shadow is that $`\psi \mapsto \operatorname{Spec} \psi` is a bijection between ring homomorphisms $`R \to S` and scheme morphisms $`\operatorname{Spec} S \to \operatorname{Spec} R`.
-Prove this bijection; the inverse equivalence `Spec.homEquiv.symm` has `Spec.map` as its forward map, so `.bijective` finishes it.
+The inverse equivalence `Spec.homEquiv.symm` has `Spec.map` as its forward map, so its `.bijective` records the bijection at once.
 
 ```lean
 example {R S : CommRingCat} :
-    Function.Bijective (Spec.map : (R ⟶ S) → (Spec S ⟶ Spec R)) := by
+    Function.Bijective (Spec.map : (R ⟶ S) → (Spec S ⟶ Spec R)) :=
+  Spec.homEquiv.symm.bijective
+```
+
+The injective half carries real geometric content: a scheme map determines its ring homomorphism, and you _recover_ the homomorphism by taking global sections — precisely `Spec.preimage`, the inverse direction.
+Prove directly that `Spec.map f = Spec.map g` forces `f = g`, by applying `Spec.preimage` to both sides with `congrArg` and simplifying the two round-trips `Spec.preimage (Spec.map _)` away.
+
+```lean
+example {R S : CommRingCat} (f g : R ⟶ S) (h : Spec.map f = Spec.map g) :
+    f = g := by
   sorry
 ```
 
 :::solution
 ```lean
-example {R S : CommRingCat} :
-    Function.Bijective (Spec.map : (R ⟶ S) → (Spec S ⟶ Spec R)) :=
-  Spec.homEquiv.symm.bijective
+example {R S : CommRingCat} (f g : R ⟶ S) (h : Spec.map f = Spec.map g) :
+    f = g := by
+  -- Taking global sections (Spec.preimage) inverts Spec.map on both sides.
+  have := congrArg Spec.preimage h
+  simpa using this
 ```
 :::
 
@@ -575,18 +596,27 @@ A *scheme over $`S`* is a scheme equipped with a map $`X \to S`; such data is ex
 example (S X : Scheme) (f : X ⟶ S) : Over S := Over.mk f
 ```
 
-Since $`\operatorname{Spec} \mathbb{Z}` is terminal, a "$`\mathbb{Z}`-scheme structure" carries no information: any two morphisms $`X \to \operatorname{Spec} \mathbb{Z}` coincide.
-Prove it by feeding both morphisms to `specZIsTerminal.hom_ext`.
+Since $`\operatorname{Spec} \mathbb{Z}` is terminal, a "$`\mathbb{Z}`-scheme structure" carries no information: any two morphisms $`X \to \operatorname{Spec} \mathbb{Z}` coincide, which is `specZIsTerminal.hom_ext`.
 
 ```lean
-example (X : Scheme) (f g : X ⟶ Spec (.of ℤ)) : f = g := by
+example (X : Scheme) (f g : X ⟶ Spec (.of ℤ)) : f = g :=
+  specZIsTerminal.hom_ext f g
+```
+
+Terminality bundles both halves — existence _and_ uniqueness — into one slogan: there is exactly one such morphism.
+Assemble that `Unique` structure by hand: the canonical morphism is `specZIsTerminal.from X`, and any other morphism equals it again by `hom_ext`.
+
+```lean
+noncomputable example (X : Scheme) : Unique (X ⟶ Spec (.of ℤ)) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (X : Scheme) (f g : X ⟶ Spec (.of ℤ)) : f = g :=
-  specZIsTerminal.hom_ext f g
+noncomputable example (X : Scheme) : Unique (X ⟶ Spec (.of ℤ)) where
+  -- `from` supplies the morphism; `hom_ext` says every morphism equals it.
+  default := specZIsTerminal.from X
+  uniq f := specZIsTerminal.hom_ext f _
 ```
 :::
 

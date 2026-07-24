@@ -362,22 +362,31 @@ example {A σ : Type*} [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]
     HomogeneousIdeal 𝒜 := HomogeneousIdeal.irrelevant 𝒜
 ```
 
-The defining feature of the grading is that a product of homogeneous elements is homogeneous, with degrees adding.
-Show that in $`\mathbb{C}[x_0, \dots, x_n]` the product $`x_i x_j` is homogeneous of degree $`2`.
+The defining feature of the grading is that a product of homogeneous elements is homogeneous, with degrees adding; combined with `MvPolynomial.isHomogeneous_X`, this shows the product $`x_i x_j` is homogeneous of degree $`2`.
 
-```lean
-example {σ : Type*} (i j : σ) :
-    (MvPolynomial.X i * MvPolynomial.X j :
-      MvPolynomial σ ℂ).IsHomogeneous 2 := by
-  sorry
-```
-
-:::solution
 ```lean
 example {σ : Type*} (i j : σ) :
     (MvPolynomial.X i * MvPolynomial.X j :
       MvPolynomial σ ℂ).IsHomogeneous 2 :=
   (MvPolynomial.isHomogeneous_X ℂ i).mul (MvPolynomial.isHomogeneous_X ℂ j)
+```
+
+The same degree-additivity, applied to a polynomial with itself, shows that squaring doubles the degree.
+Prove that if $`f` is homogeneous of degree $`d` then $`f^2` is homogeneous of degree $`2d`: rewrite $`f^2` as $`f \cdot f` with `pow_two` and $`2d` as $`d + d` with `two_mul`, then close with `MvPolynomial.IsHomogeneous.mul`.
+
+```lean
+example {σ : Type*} (f : MvPolynomial σ ℂ) (d : ℕ)
+    (hf : f.IsHomogeneous d) : (f ^ 2).IsHomogeneous (2 * d) := by
+  sorry
+```
+
+:::solution
+```lean
+example {σ : Type*} (f : MvPolynomial σ ℂ) (d : ℕ)
+    (hf : f.IsHomogeneous d) : (f ^ 2).IsHomogeneous (2 * d) := by
+  -- f^2 = f * f, whose degree is d + d = 2*d.
+  rw [pow_two, two_mul]
+  exact hf.mul hf
 ```
 :::
 
@@ -458,23 +467,43 @@ example {A σ : Type*} [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]
   ProjectiveSpectrum.vanishingIdeal t
 ```
 
-Show the inclusion-reversing property: if $`I \subseteq J` are homogeneous ideals then $`\mathbb{V}_+(J) \subseteq \mathbb{V}_+(I)`.
+The inclusion-reversing property — if $`I \subseteq J` are homogeneous ideals then $`\mathbb{V}_+(J) \subseteq \mathbb{V}_+(I)` — is `ProjectiveSpectrum.zeroLocus_anti_mono_homogeneousIdeal`.
 
-```lean
-example {A σ : Type*} [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]
-    (𝒜 : ℕ → σ) [GradedRing 𝒜] (I J : HomogeneousIdeal 𝒜) (h : I ≤ J) :
-    ProjectiveSpectrum.zeroLocus 𝒜 (J : Set A)
-      ⊆ ProjectiveSpectrum.zeroLocus 𝒜 (I : Set A) := by
-  sorry
-```
-
-:::solution
 ```lean
 example {A σ : Type*} [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]
     (𝒜 : ℕ → σ) [GradedRing 𝒜] (I J : HomogeneousIdeal 𝒜) (h : I ≤ J) :
     ProjectiveSpectrum.zeroLocus 𝒜 (J : Set A)
       ⊆ ProjectiveSpectrum.zeroLocus 𝒜 (I : Set A) :=
   ProjectiveSpectrum.zeroLocus_anti_mono_homogeneousIdeal 𝒜 h
+```
+
+Together with the Galois connection this makes $`\mathbb{V}_+` a closure operator: reapplying it to the vanishing ideal of $`\mathbb{V}_+(I)` recovers exactly $`\mathbb{V}_+(I)`.
+Prove this idempotence by `Set.Subset.antisymm`; one inclusion is the antitone law above applied to `ProjectiveSpectrum.homogeneousIdeal_le_vanishingIdeal_zeroLocus`, the other is the Galois-connection unit `ProjectiveSpectrum.subset_zeroLocus_vanishingIdeal`.
+
+```lean
+example {A σ : Type*} [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]
+    (𝒜 : ℕ → σ) [GradedRing 𝒜] (I : HomogeneousIdeal 𝒜) :
+    ProjectiveSpectrum.zeroLocus 𝒜
+        (ProjectiveSpectrum.vanishingIdeal
+          (ProjectiveSpectrum.zeroLocus 𝒜 (I : Set A)) : Set A)
+      = ProjectiveSpectrum.zeroLocus 𝒜 (I : Set A) := by
+  sorry
+```
+
+:::solution
+```lean
+example {A σ : Type*} [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]
+    (𝒜 : ℕ → σ) [GradedRing 𝒜] (I : HomogeneousIdeal 𝒜) :
+    ProjectiveSpectrum.zeroLocus 𝒜
+        (ProjectiveSpectrum.vanishingIdeal
+          (ProjectiveSpectrum.zeroLocus 𝒜 (I : Set A)) : Set A)
+      = ProjectiveSpectrum.zeroLocus 𝒜 (I : Set A) := by
+  apply Set.Subset.antisymm
+  · -- I ≤ 𝕀(𝕍₊ I), so anti-monotonicity shrinks the reapplied locus.
+    exact ProjectiveSpectrum.zeroLocus_anti_mono_homogeneousIdeal 𝒜
+      (ProjectiveSpectrum.homogeneousIdeal_le_vanishingIdeal_zeroLocus 𝒜 I)
+  · -- Every point of 𝕍₊ I already lies in the reconstructed locus.
+    exact ProjectiveSpectrum.subset_zeroLocus_vanishingIdeal 𝒜 _
 ```
 :::
 
@@ -495,18 +524,8 @@ recall {ι A σ : Type*} [AddCommMonoid ι] [DecidableEq ι]
     CommRing (HomogeneousLocalization 𝒜 x)
 ```
 
-Because these fractions add like fractions, taking the value commutes with addition.
-Show that `HomogeneousLocalization.val` respects the ring addition.
+Because these fractions add like fractions, taking the value commutes with addition — that is `HomogeneousLocalization.val_add`.
 
-```lean
-example {ι A σ : Type*} [AddCommMonoid ι] [DecidableEq ι]
-    [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
-    (𝒜 : ι → σ) [GradedRing 𝒜] (x : Submonoid A)
-    (a b : HomogeneousLocalization 𝒜 x) : (a + b).val = a.val + b.val := by
-  sorry
-```
-
-:::solution
 ```lean
 example {ι A σ : Type*} [AddCommMonoid ι] [DecidableEq ι]
     [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
@@ -514,26 +533,62 @@ example {ι A σ : Type*} [AddCommMonoid ι] [DecidableEq ι]
     (a b : HomogeneousLocalization 𝒜 x) : (a + b).val = a.val + b.val :=
   HomogeneousLocalization.val_add a b
 ```
-:::
 
-## Examples of regular functions
-
-The numerators appearing in these regular functions are homogeneous polynomials of a fixed degree, so a sum like $`s^2 + 9t^2` from the $`\mathbb{CP}^1` example is again homogeneous of that degree.
-Show that $`s^2 + 9t^2` is homogeneous of degree $`2`, writing $`s = x_0` and $`t = x_1`.
+Taking the value respects multiplication too (`HomogeneousLocalization.val_mul`), so it is a ring homomorphism and commutes with any combination of fractions.
+Confirm this on a mixed expression: show the value of $`ab + c` is $`a\cdot b + c`, by rewriting first with `val_add` and then with `val_mul`.
 
 ```lean
-example :
-    (MvPolynomial.X 0 ^ 2 + MvPolynomial.C 9 * MvPolynomial.X 1 ^ 2 :
-      MvPolynomial (Fin 2) ℂ).IsHomogeneous 2 := by
+example {ι A σ : Type*} [AddCommMonoid ι] [DecidableEq ι]
+    [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
+    (𝒜 : ι → σ) [GradedRing 𝒜] (x : Submonoid A)
+    (a b c : HomogeneousLocalization 𝒜 x) :
+    (a * b + c).val = a.val * b.val + c.val := by
   sorry
 ```
 
 :::solution
+```lean
+example {ι A σ : Type*} [AddCommMonoid ι] [DecidableEq ι]
+    [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
+    (𝒜 : ι → σ) [GradedRing 𝒜] (x : Submonoid A)
+    (a b c : HomogeneousLocalization 𝒜 x) :
+    (a * b + c).val = a.val * b.val + c.val := by
+  -- val is a ring hom: it distributes over both + and *.
+  rw [HomogeneousLocalization.val_add, HomogeneousLocalization.val_mul]
+```
+:::
+
+## Examples of regular functions
+
+The numerators appearing in these regular functions are homogeneous polynomials of a fixed degree, so a sum like $`s^2 + 9t^2` from the $`\mathbb{CP}^1` example (writing $`s = x_0` and $`t = x_1`) is again homogeneous of that degree, built from `MvPolynomial.isHomogeneous_X_pow` and `MvPolynomial.isHomogeneous_C_mul_X_pow`.
+
 ```lean
 example :
     (MvPolynomial.X 0 ^ 2 + MvPolynomial.C 9 * MvPolynomial.X 1 ^ 2 :
       MvPolynomial (Fin 2) ℂ).IsHomogeneous 2 :=
   (MvPolynomial.isHomogeneous_X_pow 0 2).add
     (MvPolynomial.isHomogeneous_C_mul_X_pow 9 1 2)
+```
+
+This works because the degree-$`n` polynomials are closed under both scaling by constants and addition, which is exactly the shape $`f + c\,g` of that example.
+Prove the general closure: if $`f` and $`g` are homogeneous of degree $`n` then so is $`f + c\,g` for any constant $`c`.
+A constant $`\mathbb{C}\,c` is homogeneous of degree $`0` (`MvPolynomial.isHomogeneous_C`), so $`c\,g` stays in degree $`0 + n = n` after `MvPolynomial.IsHomogeneous.mul`; then combine with `MvPolynomial.IsHomogeneous.add`.
+
+```lean
+example {σ : Type*} (f g : MvPolynomial σ ℂ) (c : ℂ) (n : ℕ)
+    (hf : f.IsHomogeneous n) (hg : g.IsHomogeneous n) :
+    (f + MvPolynomial.C c * g).IsHomogeneous n := by
+  sorry
+```
+
+:::solution
+```lean
+example {σ : Type*} (f g : MvPolynomial σ ℂ) (c : ℂ) (n : ℕ)
+    (hf : f.IsHomogeneous n) (hg : g.IsHomogeneous n) :
+    (f + MvPolynomial.C c * g).IsHomogeneous n := by
+  -- C c is degree 0, so C c * g stays in degree 0 + n = n; then add.
+  have hcg : (MvPolynomial.C c * g).IsHomogeneous n := by
+    simpa using (MvPolynomial.isHomogeneous_C σ c).mul hg
+  exact hf.add hcg
 ```
 :::

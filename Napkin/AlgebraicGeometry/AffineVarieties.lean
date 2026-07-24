@@ -436,7 +436,17 @@ example {σ k : Type*} [Field k] (K : Type*) [Field K] [Algebra k K]
 ```
 
 One of the examples was that the empty set is the zero locus of the constant polynomial $`1`, which generates the whole ideal $`\top`.
-Show that this vanishing set really is empty.
+That the whole ideal cuts out nothing is `MvPolynomial.zeroLocus_top`, which records the locus as the bottom set $`\bot`.
+
+```lean
+example {σ : Type*} :
+    MvPolynomial.zeroLocus ℂ (⊤ : Ideal (MvPolynomial σ ℂ)) = ⊥ :=
+  MvPolynomial.zeroLocus_top
+```
+
+Rather than cite that lemma, prove the emptiness directly, exposing *why* it holds.
+A point of the locus would make every polynomial of the ideal vanish, in particular the constant $`1`, forcing $`1 = 0` in $`\mathbb{C}`.
+Reduce to a single point with `Set.eq_empty_iff_forall_notMem`, feed the membership the polynomial $`1` (which lies in $`\top` by `Submodule.mem_top`), rewrite the evaluation with `map_one`, and close with `one_ne_zero`.
 
 ```lean
 example {σ : Type*} :
@@ -448,8 +458,12 @@ example {σ : Type*} :
 ```lean
 example {σ : Type*} :
     MvPolynomial.zeroLocus ℂ (⊤ : Ideal (MvPolynomial σ ℂ)) = ∅ := by
-  rw [MvPolynomial.zeroLocus_top]
-  rfl
+  -- A point of the locus makes the constant 1 vanish, i.e. (1 : ℂ) = 0.
+  rw [Set.eq_empty_iff_forall_notMem]
+  intro x hx
+  have h1 : aeval x (1 : MvPolynomial σ ℂ) = 0 := hx 1 Submodule.mem_top
+  rw [map_one] at h1
+  exact one_ne_zero h1
 ```
 :::
 
@@ -466,17 +480,29 @@ example (σ : Type*) [Finite σ] :
 ```
 
 Being Noetherian is exactly what makes every ideal finitely generated, so that a variety can always be named with finitely many polynomials.
-Extract a finite generating set from an arbitrary ideal.
+That every ideal is `Ideal.FG` follows from the `IsNoetherianRing` instance.
 
 ```lean
-example {σ : Type*} [Finite σ] (I : Ideal (MvPolynomial σ ℂ)) : I.FG := by
+example {σ : Type*} [Finite σ] (I : Ideal (MvPolynomial σ ℂ)) : I.FG :=
+  (isNoetherianRing_iff.mp inferInstance).noetherian I
+```
+
+Being finitely generated *is* the existence of a finite generating set, so unpack it into one.
+Produce, for an arbitrary ideal, a finite set of polynomials whose span is the whole ideal — the witness is exactly what `Ideal.FG` provides, reached by `obtain`ing on the fact above.
+
+```lean
+example {σ : Type*} [Finite σ] (I : Ideal (MvPolynomial σ ℂ)) :
+    ∃ S : Finset (MvPolynomial σ ℂ), Ideal.span (S : Set _) = I := by
   sorry
 ```
 
 :::solution
 ```lean
-example {σ : Type*} [Finite σ] (I : Ideal (MvPolynomial σ ℂ)) : I.FG :=
-  (isNoetherianRing_iff.mp inferInstance).noetherian I
+example {σ : Type*} [Finite σ] (I : Ideal (MvPolynomial σ ℂ)) :
+    ∃ S : Finset (MvPolynomial σ ℂ), Ideal.span (S : Set _) = I := by
+  -- `FG` unfolds to exactly this finite generating set.
+  obtain ⟨S, hS⟩ := (isNoetherianRing_iff.mp inferInstance).noetherian I
+  exact ⟨S, hS⟩
 ```
 :::
 
@@ -508,39 +534,62 @@ example {σ k : Type*} [Field k] (K : Type*) [Field K] [Algebra k K] :
   MvPolynomial.zeroLocus_vanishingIdeal_galoisConnection
 ```
 
-The problems open by asking you to show $`I \subseteq \sqrt I`.
-Prove this containment.
+The problems open by asking you to show $`I \subseteq \sqrt I`; this containment is `Ideal.le_radical`.
 
 ```lean
-example {R : Type*} [CommRing R] (I : Ideal R) : I ≤ I.radical := by
+example {R : Type*} [CommRing R] (I : Ideal R) : I ≤ I.radical :=
+  Ideal.le_radical
+```
+
+The reverse containment is exactly what it means for an ideal to be radical: `Ideal.IsRadical` unfolds to $`\sqrt I \le I`.
+Combine the two directions to show that a radical ideal equals its own radical, $`\sqrt I = I`.
+The forward containment is the model above, the reverse is the hypothesis itself, and `le_antisymm` glues them.
+
+```lean
+example {R : Type*} [CommRing R] (I : Ideal R) (h : I.IsRadical) :
+    I.radical = I := by
   sorry
 ```
 
 :::solution
 ```lean
-example {R : Type*} [CommRing R] (I : Ideal R) : I ≤ I.radical :=
-  Ideal.le_radical
+example {R : Type*} [CommRing R] (I : Ideal R) (h : I.IsRadical) :
+    I.radical = I :=
+  -- `h : √I ≤ I` and `le_radical : I ≤ √I` pin down equality.
+  le_antisymm h Ideal.le_radical
 ```
 :::
 
 ## Pictures of varieties in the affine line
 
-The proposition that $`\mathbb{V}(-)` is inclusion-reversing — bigger ideals cut out smaller varieties — is `MvPolynomial.zeroLocus_anti_mono`.
-Verify it: if $`I \subseteq J` then the zero locus of $`J` sits inside the zero locus of $`I`.
+The proposition that $`\mathbb{V}(-)` is inclusion-reversing — bigger ideals cut out smaller varieties — is `MvPolynomial.zeroLocus_anti_mono`: if $`I \subseteq J` then the zero locus of $`J` sits inside the zero locus of $`I`.
 
 ```lean
 example {σ k : Type*} [Field k] (K : Type*) [Field K] [Algebra k K]
     (I J : Ideal (MvPolynomial σ k)) (h : I ≤ J) :
-    zeroLocus K J ⊆ zeroLocus K I := by
+    zeroLocus K J ⊆ zeroLocus K I :=
+  MvPolynomial.zeroLocus_anti_mono h
+```
+
+Put inclusion-reversal to work on the sum $`I + J`, which is the smallest ideal containing both.
+Since $`I` and $`J` each sit inside $`I + J`, its variety must sit inside both of theirs — this is one half of the fact that $`\mathbb{V}(I + J) = \mathbb{V}(I) \cap \mathbb{V}(J)`.
+Prove the containment by applying `zeroLocus_anti_mono` to each of `le_sup_left` and `le_sup_right`, then combining the two with `Set.subset_inter`.
+
+```lean
+example {σ k : Type*} [Field k] (K : Type*) [Field K] [Algebra k K]
+    (I J : Ideal (MvPolynomial σ k)) :
+    zeroLocus K (I ⊔ J) ⊆ zeroLocus K I ∩ zeroLocus K J := by
   sorry
 ```
 
 :::solution
 ```lean
 example {σ k : Type*} [Field k] (K : Type*) [Field K] [Algebra k K]
-    (I J : Ideal (MvPolynomial σ k)) (h : I ≤ J) :
-    zeroLocus K J ⊆ zeroLocus K I :=
-  MvPolynomial.zeroLocus_anti_mono h
+    (I J : Ideal (MvPolynomial σ k)) :
+    zeroLocus K (I ⊔ J) ⊆ zeroLocus K I ∩ zeroLocus K J :=
+  -- I, J ≤ I ⊔ J, so anti-monotonicity shrinks the locus into each.
+  Set.subset_inter (zeroLocus_anti_mono le_sup_left)
+    (zeroLocus_anti_mono le_sup_right)
 ```
 :::
 
@@ -555,20 +604,29 @@ example (R : Type*) [CommRing R] (I : Ideal R) (h : I.IsPrime) : I.IsRadical :=
   h.isRadical
 ```
 
-A single point is cut out by a maximal ideal, and single points are irreducible; correspondingly, every maximal ideal is prime.
-Prove this.
+A single point is cut out by a maximal ideal, and single points are irreducible; correspondingly, every maximal ideal is prime, which is `Ideal.IsMaximal.isPrime`.
 
 ```lean
 example {R : Type*} [CommRing R] (I : Ideal R) (h : I.IsMaximal) :
-    I.IsPrime := by
+    I.IsPrime :=
+  h.isPrime
+```
+
+Chaining this with the section's first fact — a prime ideal is radical — shows that a single point is a bona fide variety.
+Show that a maximal ideal is radical, first extracting primality (the model above) and then applying `Ideal.IsPrime.isRadical` to it.
+
+```lean
+example {R : Type*} [CommRing R] (I : Ideal R) (h : I.IsMaximal) :
+    I.IsRadical := by
   sorry
 ```
 
 :::solution
 ```lean
 example {R : Type*} [CommRing R] (I : Ideal R) (h : I.IsMaximal) :
-    I.IsPrime :=
-  h.isPrime
+    I.IsRadical :=
+  -- Maximal ⟹ prime ⟹ radical.
+  h.isPrime.isRadical
 ```
 :::
 

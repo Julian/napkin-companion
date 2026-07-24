@@ -373,19 +373,30 @@ example (R : Type*) [CommRing R] (I : Ideal R) : I.radical = I ↔ I.IsRadical :
   Ideal.radical_eq_iff
 ```
 
-The reduced ideal $`(x, y)` is prime, and every prime ideal is radical.
-Show that a prime ideal is radical.
+The reduced ideal $`(x, y)` is prime, and every prime ideal is radical, which is `Ideal.IsPrime.isRadical`.
 
 ```lean
 example (R : Type*) [CommRing R] (I : Ideal R) (hI : I.IsPrime) :
-    I.IsRadical := by
+    I.IsRadical := hI.isRadical
+```
+
+Radicality is exactly what lets multiplicities collapse: it says a power lying in the ideal drags its base in too.
+Make that concrete for a square, over a prime ideal.
+Turn `I.IsRadical` into its pointwise form with `Ideal.isRadical_iff_pow_one_lt` (at exponent $`2`, whose `1 < 2` is `one_lt_two`), then feed it the hypothesis.
+
+```lean
+example (R : Type*) [CommRing R] (I : Ideal R) (hI : I.IsPrime)
+    (x : R) (hx : x ^ 2 ∈ I) : x ∈ I := by
   sorry
 ```
 
 :::solution
 ```lean
-example (R : Type*) [CommRing R] (I : Ideal R) (hI : I.IsPrime) :
-    I.IsRadical := hI.isRadical
+example (R : Type*) [CommRing R] (I : Ideal R) (hI : I.IsPrime)
+    (x : R) (hx : x ^ 2 ∈ I) : x ∈ I := by
+  -- Prime ⟹ radical, and radicality at exponent 2 is exactly this.
+  have hrad : I.IsRadical := hI.isRadical
+  exact (Ideal.isRadical_iff_pow_one_lt 2 one_lt_two).mp hrad x hx
 ```
 :::
 
@@ -432,18 +443,30 @@ example (F : Type*) [Field F] (p : F[X]) : hilbertPoly p 0 = 0 :=
   hilbertPoly_zero_right p
 ```
 
-The empty variety has the zero Hilbert polynomial; the degenerate input mirrors this.
-Show that the Hilbert polynomial attached to the zero series is zero in every degree.
+The empty variety has the zero Hilbert polynomial; the degenerate input mirrors this, `hilbertPoly_zero_left`.
 
 ```lean
-example (F : Type*) [Field F] (d : ℕ) : hilbertPoly (0 : F[X]) d = 0 := by
+example (F : Type*) [Field F] (d : ℕ) : hilbertPoly (0 : F[X]) d = 0 :=
+  hilbertPoly_zero_left d
+```
+
+The additivity $`h_{I \cap J} + h_{I + J} = h_I + h_J` of the earlier proposition reflects a structural fact: for a fixed degree $`d`, the assignment $`p \mapsto \chi_p(d)` is linear in the numerator series.
+Prove its two-term form, that it sends $`a \cdot p + q` to $`a \cdot \chi_p(d) + \chi_q(d)`, by rewriting with `hilbertPoly_add_left` and then `hilbertPoly_smul`.
+
+```lean
+example (F : Type*) [Field F] (p q : F[X]) (a : F) (d : ℕ) :
+    hilbertPoly (a • p + q) d
+      = a • hilbertPoly p d + hilbertPoly q d := by
   sorry
 ```
 
 :::solution
 ```lean
-example (F : Type*) [Field F] (d : ℕ) : hilbertPoly (0 : F[X]) d = 0 :=
-  hilbertPoly_zero_left d
+example (F : Type*) [Field F] (p q : F[X]) (a : F) (d : ℕ) :
+    hilbertPoly (a • p + q) d
+      = a • hilbertPoly p d + hilbertPoly q d := by
+  -- `hilbertPoly · d` is linear: split the sum, then pull out the scalar.
+  rw [hilbertPoly_add_left, hilbertPoly_smul]
 ```
 :::
 
@@ -502,19 +525,30 @@ example (B : BezoutData ℂ) : B.points.card ≤ bezoutNumber B.f B.g :=
   B.card_points_le
 ```
 
-A line is a degree-$`1` curve, so it meets a degree-$`d` curve in exactly $`d` points counted with multiplicity.
-Prove it from the bundled Bézout identity.
+A line is a degree-$`1` curve, so it meets a degree-$`d` curve in exactly $`d` points counted with multiplicity; the bundled identity records this as `line_meets`.
 
 ```lean
 example (B : BezoutData ℂ) (h : B.f.totalDegree = 1) :
-    ∑ p ∈ B.points, B.mult p = B.g.totalDegree := by
+    ∑ p ∈ B.points, B.mult p = B.g.totalDegree := B.line_meets h
+```
+
+Counting with multiplicity dominates counting without, so this pins the number of *distinct* points at no more than $`\deg g`.
+Prove that bound.
+Rewrite the cardinality as a sum of $`1`s (`Finset.card_eq_sum_ones`), replace $`\deg g` by the multiplicity sum just above, and compare termwise (`Finset.sum_le_sum`), using that every listed point has positive multiplicity (`mult_pos`).
+
+```lean
+example (B : BezoutData ℂ) (h : B.f.totalDegree = 1) :
+    B.points.card ≤ B.g.totalDegree := by
   sorry
 ```
 
 :::solution
 ```lean
 example (B : BezoutData ℂ) (h : B.f.totalDegree = 1) :
-    ∑ p ∈ B.points, B.mult p = B.g.totalDegree := B.line_meets h
+    B.points.card ≤ B.g.totalDegree := by
+  -- card = ∑ 1 ≤ ∑ mult = deg g, since each mult is ≥ 1.
+  rw [Finset.card_eq_sum_ones, ← B.line_meets h]
+  exact Finset.sum_le_sum fun p hp => B.mult_pos p hp
 ```
 :::
 
@@ -538,19 +572,30 @@ example (B : BezoutData ℂ) (hf : B.f.totalDegree = 1)
 ```
 :::
 
-The one-dimensional shadow that Mathlib can prove directly is the univariate case: a curve $`\mathbb{V}(f)` of degree $`k` meets a line in at most $`k` points, which is the statement that a nonzero polynomial of degree $`k` has at most $`k` roots.
-Show that the number of roots (with multiplicity) is bounded by the degree.
+The one-dimensional shadow that Mathlib can prove directly is the univariate case: a curve $`\mathbb{V}(f)` of degree $`k` meets a line in at most $`k` points, which is the statement that a nonzero polynomial of degree $`k` has at most $`k` roots, `card_roots'`.
 
 ```lean
 example (F : Type*) [Field F] (p : F[X]) :
-    Multiset.card p.roots ≤ p.natDegree := by
+    Multiset.card p.roots ≤ p.natDegree := p.card_roots'
+```
+
+Two curves meeting a line at once should meet it in at most the sum of the two degrees.
+Prove the univariate form for a product $`p \cdot q`.
+The roots of a product are the union of the roots of the factors (`roots_mul`, the worked model further above, needing $`p q \neq 0`); `Multiset.card_add` splits the count, and `card_roots'` bounds each half.
+
+```lean
+example (F : Type*) [Field F] (p q : F[X]) (hpq : p * q ≠ 0) :
+    Multiset.card (p * q).roots ≤ p.natDegree + q.natDegree := by
   sorry
 ```
 
 :::solution
 ```lean
-example (F : Type*) [Field F] (p : F[X]) :
-    Multiset.card p.roots ≤ p.natDegree := p.card_roots'
+example (F : Type*) [Field F] (p q : F[X]) (hpq : p * q ≠ 0) :
+    Multiset.card (p * q).roots ≤ p.natDegree + q.natDegree := by
+  -- Split the product's roots, then bound each factor by its degree.
+  rw [roots_mul hpq, Multiset.card_add]
+  exact Nat.add_le_add p.card_roots' q.card_roots'
 ```
 :::
 
@@ -564,17 +609,31 @@ example (F : Type*) [Field F] (p : F[X]) (Z : Finset F) (h : Z.val ⊆ p.roots) 
     Z.card ≤ p.natDegree := card_le_degree_of_subset_roots h
 ```
 
-Over $`\mathbb{C}`, which is algebraically closed, this bound is an equality: every nonzero polynomial splits, so it has exactly $`\deg p` roots counted with multiplicity.
-Show that the number of roots equals the degree.
+Over $`\mathbb{C}`, which is algebraically closed, this bound is an equality: every nonzero polynomial splits, so it has exactly $`\deg p` roots counted with multiplicity (`splits_iff_card_roots` fed `IsAlgClosed.splits`).
 
 ```lean
-example (p : ℂ[X]) : Multiset.card p.roots = p.natDegree := by
+example (p : ℂ[X]) : Multiset.card p.roots = p.natDegree :=
+  splits_iff_card_roots.mp (IsAlgClosed.splits p)
+```
+
+That equality has teeth: a nonconstant polynomial must then have an actual root, which is what algebraic closedness of $`\mathbb{C}` buys.
+Prove that a polynomial of degree at least $`1` has a root.
+From the equality the root multiset has positive cardinality, hence is nonempty (`Multiset.card_pos`, then `Multiset.exists_mem_of_ne_zero`); membership in `p.roots` unpacks to a root via `mem_roots'`.
+
+```lean
+example (p : ℂ[X]) (h : 1 ≤ p.natDegree) : ∃ z, IsRoot p z := by
   sorry
 ```
 
 :::solution
 ```lean
-example (p : ℂ[X]) : Multiset.card p.roots = p.natDegree :=
-  splits_iff_card_roots.mp (IsAlgClosed.splits p)
+example (p : ℂ[X]) (h : 1 ≤ p.natDegree) : ∃ z, IsRoot p z := by
+  -- deg = #roots ≥ 1, so the root multiset is nonempty; take a member.
+  have hcard : Multiset.card p.roots = p.natDegree :=
+    splits_iff_card_roots.mp (IsAlgClosed.splits p)
+  have hne : p.roots ≠ 0 := by
+    rw [← Multiset.card_pos, hcard]; omega
+  obtain ⟨z, hz⟩ := Multiset.exists_mem_of_ne_zero hne
+  exact ⟨z, (mem_roots'.mp hz).2⟩
 ```
 :::

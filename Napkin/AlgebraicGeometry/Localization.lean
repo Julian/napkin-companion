@@ -417,21 +417,34 @@ example (A : Type*) [CommRing A] [IsDomain A] :
 ```
 
 One of the end-of-chapter problems asks for necessary and sufficient conditions for the map $`A \to S^{-1} A` to be injective; the answer is that $`S` should contain no zero divisors.
-Prove the sufficient direction: if $`S` sits inside the non-zero-divisors, then $`A \to S^{-1} A` is injective.
+The sufficient direction — if $`S` sits inside the non-zero-divisors, then $`A \to S^{-1} A` is injective — is `IsLocalization.injective`.
 
 ```lean
 example (A : Type*) [CommRing A] (S : Submonoid A) (B : Type*) [CommRing B]
     [Algebra A B] [IsLocalization S B] (hS : S ≤ nonZeroDivisors A) :
-    Function.Injective (algebraMap A B) := by
+    Function.Injective (algebraMap A B) :=
+  IsLocalization.injective B hS
+```
+
+Put that injectivity to work: an injective ring map has trivial kernel.
+Show that when $`S` avoids the zero divisors, only $`0` maps to $`0` in the localization.
+Apply the injectivity above (`Function.Injective` reduces the goal $`a = 0` to $`\iota(a) = \iota(0)`), then close it by rewriting with the hypothesis and `map_zero`.
+
+```lean
+example (A : Type*) [CommRing A] (S : Submonoid A) (B : Type*) [CommRing B]
+    [Algebra A B] [IsLocalization S B] (hS : S ≤ nonZeroDivisors A)
+    (a : A) (h : algebraMap A B a = 0) : a = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
 example (A : Type*) [CommRing A] (S : Submonoid A) (B : Type*) [CommRing B]
-    [Algebra A B] [IsLocalization S B] (hS : S ≤ nonZeroDivisors A) :
-    Function.Injective (algebraMap A B) :=
-  IsLocalization.injective B hS
+    [Algebra A B] [IsLocalization S B] (hS : S ≤ nonZeroDivisors A)
+    (a : A) (h : algebraMap A B a = 0) : a = 0 := by
+  -- Injectivity reduces a = 0 to the images agreeing; h and map_zero finish.
+  apply IsLocalization.injective B hS
+  rw [h, map_zero]
 ```
 :::
 
@@ -446,20 +459,32 @@ example (A : Type*) [CommRing A] (f : A) :
     IsLocalization.Away f (Localization.Away f) := Localization.isLocalization
 ```
 
-The whole point of adding the denominator $`1/f` is that $`f` becomes invertible.
-Show that the image of $`f` in $`A[f^{-1}]` is a unit.
+The whole point of adding the denominator $`1/f` is that $`f` becomes invertible: its image in $`A[f^{-1}]` is a unit, which is `IsLocalization.map_units` applied to $`f` regarded as a power of itself.
 
 ```lean
 example (A : Type*) [CommRing A] (f : A) :
-    IsUnit (algebraMap A (Localization.Away f) f) := by
+    IsUnit (algebraMap A (Localization.Away f) f) :=
+  IsLocalization.map_units (Localization.Away f) ⟨f, Submonoid.mem_powers f⟩
+```
+
+Once $`f` is invertible, so is every power $`f^n`.
+Prove that the image of $`f^n` in $`A[f^{-1}]` is a unit.
+Push the ring map through the power with `map_pow` so the goal becomes $`\iota(f)^n`, then raise the unit above to the $`n`th power with `IsUnit.pow`.
+
+```lean
+example (A : Type*) [CommRing A] (f : A) (n : ℕ) :
+    IsUnit (algebraMap A (Localization.Away f) (f ^ n)) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (A : Type*) [CommRing A] (f : A) :
-    IsUnit (algebraMap A (Localization.Away f) f) :=
-  IsLocalization.map_units (Localization.Away f) ⟨f, Submonoid.mem_powers f⟩
+example (A : Type*) [CommRing A] (f : A) (n : ℕ) :
+    IsUnit (algebraMap A (Localization.Away f) (f ^ n)) := by
+  -- ι(fⁿ) = ι(f)ⁿ, and a power of a unit is a unit.
+  rw [map_pow]
+  exact (IsLocalization.map_units (Localization.Away f)
+    ⟨f, Submonoid.mem_powers f⟩).pow n
 ```
 :::
 
@@ -501,22 +526,34 @@ example (A : Type*) [CommRing A] (S : Submonoid A) (B : Type*) [CommRing B]
   IsLocalization.orderIsoOfPrime S B
 ```
 
-One direction of that correspondence is contraction along $`\iota \colon A \to S^{-1} A`.
-Show that the preimage of a prime ideal of the localization is a prime ideal of $`A`.
+One direction of that correspondence is contraction along $`\iota \colon A \to S^{-1} A`, which carries a prime ideal of the localization back to a prime ideal of $`A` — that is `Ideal.comap_isPrime`.
 
 ```lean
 example (A : Type*) [CommRing A] (S : Submonoid A) (B : Type*) [CommRing B]
     [Algebra A B] [IsLocalization S B] (q : Ideal B) [q.IsPrime] :
-    (q.comap (algebraMap A B)).IsPrime := by
+    (q.comap (algebraMap A B)).IsPrime :=
+  Ideal.comap_isPrime (algebraMap A B) q
+```
+
+The bijection is moreover *inclusion-preserving*, and contraction is where that comes from.
+Prove that it is monotone: a containment $`q_1 \subseteq q_2` of primes of the localization pulls back to $`\iota^{-1}(q_1) \subseteq \iota^{-1}(q_2)`.
+Take a point of the smaller contraction, unfold its membership with `Ideal.mem_comap` (which says $`x \in \iota^{-1}(q)` iff $`\iota(x) \in q`), push the image through the hypothesis $`q_1 \subseteq q_2`, and repackage with `Ideal.mem_comap` again.
+
+```lean
+example (A : Type*) [CommRing A] (S : Submonoid A) (B : Type*) [CommRing B]
+    [Algebra A B] [IsLocalization S B] (q₁ q₂ : Ideal B) (h : q₁ ≤ q₂) :
+    q₁.comap (algebraMap A B) ≤ q₂.comap (algebraMap A B) := by
   sorry
 ```
 
 :::solution
 ```lean
 example (A : Type*) [CommRing A] (S : Submonoid A) (B : Type*) [CommRing B]
-    [Algebra A B] [IsLocalization S B] (q : Ideal B) [q.IsPrime] :
-    (q.comap (algebraMap A B)).IsPrime :=
-  Ideal.comap_isPrime (algebraMap A B) q
+    [Algebra A B] [IsLocalization S B] (q₁ q₂ : Ideal B) (h : q₁ ≤ q₂) :
+    q₁.comap (algebraMap A B) ≤ q₂.comap (algebraMap A B) := by
+  -- Membership of a contraction is "the image lands in the ideal".
+  intro x hx
+  exact Ideal.mem_comap.mpr (h (Ideal.mem_comap.mp hx))
 ```
 :::
 
@@ -535,19 +572,31 @@ example (A : Type*) [CommRing A] (I : Ideal A) (J : Ideal A) : Ideal (A ⧸ I) :
   J.map (Ideal.Quotient.mk I)
 ```
 
-Contraction along the quotient map carries a prime ideal of $`A/I` to a prime ideal of $`A` (which necessarily contains $`I`).
-Show that the preimage of a prime ideal of $`A/I` is prime.
+Contraction along the quotient map carries a prime ideal of $`A/I` to a prime ideal of $`A`, which is again `Ideal.comap_isPrime`.
 
 ```lean
 example (A : Type*) [CommRing A] (I : Ideal A) (q : Ideal (A ⧸ I)) [q.IsPrime] :
-    (q.comap (Ideal.Quotient.mk I)).IsPrime := by
+    (q.comap (Ideal.Quotient.mk I)).IsPrime :=
+  Ideal.comap_isPrime (Ideal.Quotient.mk I) q
+```
+
+The proposition says the contracted ideal is not just prime but *contains $`I`* — that is what pins the bijection to primes above $`I`.
+Prove that containment for any ideal $`q` of $`A/I`: show $`I \subseteq \psi^{-1}(q)`.
+Take $`x \in I`; by `Ideal.mem_comap` the goal is $`\psi(x) \in q`, and since $`I` is exactly the kernel of $`\psi`, `Ideal.Quotient.eq_zero_iff_mem` rewrites $`\psi(x)` to $`0`, which lies in any ideal by `zero_mem`.
+
+```lean
+example (A : Type*) [CommRing A] (I : Ideal A) (q : Ideal (A ⧸ I)) :
+    I ≤ q.comap (Ideal.Quotient.mk I) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (A : Type*) [CommRing A] (I : Ideal A) (q : Ideal (A ⧸ I)) [q.IsPrime] :
-    (q.comap (Ideal.Quotient.mk I)).IsPrime :=
-  Ideal.comap_isPrime (Ideal.Quotient.mk I) q
+example (A : Type*) [CommRing A] (I : Ideal A) (q : Ideal (A ⧸ I)) :
+    I ≤ q.comap (Ideal.Quotient.mk I) := by
+  -- Elements of I map to 0 under the quotient, and 0 lies in every ideal.
+  intro x hx
+  rw [Ideal.mem_comap, Ideal.Quotient.eq_zero_iff_mem.mpr hx]
+  exact q.zero_mem
 ```
 :::
