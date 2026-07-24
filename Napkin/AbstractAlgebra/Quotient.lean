@@ -639,15 +639,27 @@ Passing to the quotient, $`x \sim_N y` becomes the equation $`\bar x = \bar y` i
 
 ```lean
 example (G : Type*) [Group G] (N : Subgroup G) [N.Normal] (a b : G) :
-    (a : G ⧸ N) = b ↔ a⁻¹ * b ∈ N := by
+    (a : G ⧸ N) = b ↔ a⁻¹ * b ∈ N :=
+  QuotientGroup.eq
+```
+
+Use that characterization to see *why* the quotient collapses $`N`: translating a representative by any element of $`N` gives the same coset.
+Prove that for $`n \in N`, the classes of $`a n` and $`a` agree in `G ⧸ N`.
+Rewrite the goal with `QuotientGroup.eq`; the resulting membership simplifies to $`n^{-1} \in N`, which `N` is closed under.
+
+```lean
+example (G : Type*) [Group G] (N : Subgroup G) [N.Normal] (a n : G)
+    (hn : n ∈ N) : ((a * n : G) : G ⧸ N) = a := by
   sorry
 ```
 
 :::solution
 ```lean
-example (G : Type*) [Group G] (N : Subgroup G) [N.Normal] (a b : G) :
-    (a : G ⧸ N) = b ↔ a⁻¹ * b ∈ N :=
-  QuotientGroup.eq
+example (G : Type*) [Group G] (N : Subgroup G) [N.Normal] (a n : G)
+    (hn : n ∈ N) : ((a * n : G) : G ⧸ N) = a := by
+  -- The classes agree iff (a*n)⁻¹ * a = n⁻¹ lies in N.
+  rw [QuotientGroup.eq]
+  simpa using N.inv_mem hn
 ```
 :::
 
@@ -660,20 +672,29 @@ recall Subgroup.card_subgroup_dvd_card {G : Type*} [Group G]
     (H : Subgroup G) : Nat.card H ∣ Nat.card G
 ```
 
-The chapter's closing question asks you to conclude $`x^{|G|} = 1` by taking $`H = \langle x \rangle`.
-Mathlib bundles the finished statement as `pow_card_eq_one`.
+The chapter's closing question asks you to conclude $`x^{|G|} = 1` by taking $`H = \langle x \rangle`; Mathlib bundles this as `pow_card_eq_one`.
 
 ```lean
 example (G : Type*) [Group G] [Fintype G] (x : G) :
-    x ^ Fintype.card G = 1 := by
+    x ^ Fintype.card G = 1 :=
+  pow_card_eq_one
+```
+
+Turn that into the sharper Lagrange corollary: the *order* of $`x` divides $`|G|`.
+The bridge is that any exponent killing $`x` is a multiple of its order — `orderOf_dvd_of_pow_eq_one` — fed the fact you just proved.
+
+```lean
+example (G : Type*) [Group G] [Fintype G] (x : G) :
+    orderOf x ∣ Fintype.card G := by
   sorry
 ```
 
 :::solution
 ```lean
 example (G : Type*) [Group G] [Fintype G] (x : G) :
-    x ^ Fintype.card G = 1 :=
-  pow_card_eq_one
+    orderOf x ∣ Fintype.card G :=
+  -- x^|G| = 1, and the order divides any such exponent.
+  orderOf_dvd_of_pow_eq_one pow_card_eq_one
 ```
 :::
 
@@ -731,18 +752,33 @@ noncomputable example {G H : Type*} [Group G] [Group H]
 ```
 
 The chapter notes that when $`\phi` is injective its image is an isomorphic copy of $`G`.
-The first step is that an injective homomorphism has trivial kernel.
+That an injective homomorphism has trivial kernel is one direction of the equivalence above:
 
 ```lean
 example (G H : Type*) [Group G] [Group H] (φ : G →* H)
-    (h : Function.Injective φ) : φ.ker = ⊥ := by
+    (h : Function.Injective φ) : φ.ker = ⊥ :=
+  (MonoidHom.ker_eq_bot_iff φ).mpr h
+```
+
+The more useful direction is the converse, and it is worth proving from the definition to see *why* it holds.
+Assume the kernel is trivial and prove $`\phi` injective.
+Given $`\phi x = \phi y`, the element $`x y^{-1}` lands in the kernel (compute $`\phi(x y^{-1}) = 1`); triviality forces $`x y^{-1} = 1`, i.e. $`x = y`.
+
+```lean
+example (G H : Type*) [Group G] [Group H] (φ : G →* H)
+    (h : φ.ker = ⊥) : Function.Injective φ := by
   sorry
 ```
 
 :::solution
 ```lean
 example (G H : Type*) [Group G] [Group H] (φ : G →* H)
-    (h : Function.Injective φ) : φ.ker = ⊥ :=
-  (MonoidHom.ker_eq_bot_iff φ).mpr h
+    (h : φ.ker = ⊥) : Function.Injective φ := by
+  intro x y hxy
+  -- x * y⁻¹ is in the kernel, which is trivial, so x = y.
+  have hmem : x * y⁻¹ ∈ φ.ker := by
+    rw [MonoidHom.mem_ker, map_mul, map_inv, hxy, mul_inv_cancel]
+  rw [h, Subgroup.mem_bot, mul_inv_eq_one] at hmem
+  exact hmem
 ```
 :::
