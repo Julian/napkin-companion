@@ -842,8 +842,16 @@ recall (G : Type*) [AddCommGroup G] : Module ℤ G
 recall (R : Type*) [CommRing R] : Module R R
 ```
 
-From these axioms one deduces the familiar sign rule.
-Show that negating the scalar negates the result: $`(-r) \cdot m = -(r \cdot m)`.
+From these axioms one deduces the familiar sign rule; Mathlib packages the finished statement as `neg_smul`.
+
+```lean
+example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    (r : R) (m : M) : (-r) • m = -(r • m) := neg_smul r m
+```
+
+But the whole point is that the sign rule *follows* from the module axioms, so derive it yourself without reaching for `neg_smul`.
+The idea: $`(-r) \cdot m` is an additive inverse of $`r \cdot m`.
+Show $`(-r) \cdot m + r \cdot m = 0` — that is `add_smul` run backwards, then `neg_add_cancel` and `zero_smul` — and conclude with `eq_neg_of_add_eq_zero_left`.
 
 ```lean
 example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
@@ -854,8 +862,11 @@ example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
 :::solution
 ```lean
 example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
-    (r : R) (m : M) : (-r) • m = -(r • m) :=
-  neg_smul r m
+    (r : R) (m : M) : (-r) • m = -(r • m) := by
+  -- (-r)•m is an additive inverse of r•m, read straight off the axioms.
+  have h : (-r) • m + r • m = 0 := by
+    rw [← add_smul, neg_add_cancel, zero_smul]
+  exact eq_neg_of_add_eq_zero_left h
 ```
 :::
 
@@ -875,13 +886,22 @@ recall (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
     (n : ℕ) : Module R (Fin n → M)
 ```
 
-The definition says scaling acts componentwise, $`r \cdot (m, n) = (r \cdot m, r \cdot n)`.
-Confirm this holds in Mathlib's product module.
+Scaling acts componentwise, $`r \cdot (m, n) = (r \cdot m, r \cdot n)` — true by definition:
 
 ```lean
 example (R M N : Type*) [CommRing R]
     [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-    (r : R) (m : M) (n : N) : r • ((m, n) : M × N) = (r • m, r • n) := by
+    (r : R) (m : M) (n : N) : r • ((m, n) : M × N) = (r • m, r • n) := rfl
+```
+
+What makes it a *direct sum* is that every element splits uniquely into a piece from each summand.
+Prove the existence half: any $`p : M \times N` is the sum of its two components, embedded, $`p = (p_1, 0) + (0, p_2)`.
+Compare the two coordinates separately — `Prod.ext` reduces the goal to one equation per component, each of which `simp` settles from the additive identities.
+
+```lean
+example (R M N : Type*) [CommRing R]
+    [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+    (p : M × N) : p = ((p.1, 0) + (0, p.2) : M × N) := by
   sorry
 ```
 
@@ -889,8 +909,9 @@ example (R M N : Type*) [CommRing R]
 ```lean
 example (R M N : Type*) [CommRing R]
     [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-    (r : R) (m : M) (n : N) : r • ((m, n) : M × N) = (r • m, r • n) :=
-  rfl
+    (p : M × N) : p = ((p.1, 0) + (0, p.2) : M × N) :=
+  -- Check each coordinate: p₁ = p₁ + 0 and p₂ = 0 + p₂.
+  Prod.ext (by simp) (by simp)
 ```
 :::
 
@@ -927,20 +948,32 @@ example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
   (Module.finrank_eq_card_basis b).symm
 ```
 
-A basis is linearly independent and spanning — that is exactly the exercise of the section.
-Extract the linear-independence half from a `Basis`.
+A basis is linearly independent and spanning; extracting the linear-independence half from a `Basis` is a one-liner:
 
 ```lean
 example (R M ι : Type*) [CommRing R] [AddCommGroup M] [Module R M]
-    (b : Basis ι R M) : LinearIndependent R b := by
+    (b : Basis ι R M) : LinearIndependent R b := b.linearIndependent
+```
+
+But what does linear independence actually *give* you?
+For two vectors it says: the only way a combination $`a v + b w` can vanish is with $`a = b = 0`.
+Prove that, unpacking the definition with `LinearIndependent.pair_iff` (which states exactly this equivalence) and feeding it your combination.
+
+```lean
+example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    (v w : M) (h : LinearIndependent R ![v, w]) (a b : R)
+    (hab : a • v + b • w = 0) : a = 0 ∧ b = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (R M ι : Type*) [CommRing R] [AddCommGroup M] [Module R M]
-    (b : Basis ι R M) : LinearIndependent R b :=
-  b.linearIndependent
+example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    (v w : M) (h : LinearIndependent R ![v, w]) (a b : R)
+    (hab : a • v + b • w = 0) : a = 0 ∧ b = 0 :=
+  -- `pair_iff` turns independence into "vanishing combination ⟹ zero
+  -- coefficients"; apply its forward direction to our combination.
+  (LinearIndependent.pair_iff.mp h) a b hab
 ```
 :::
 
@@ -1018,22 +1051,38 @@ example
   LinearMap.toMatrix_comp bV bW bU S T
 ```
 
-As the remark on the identity matrix explains, the identity map is encoded by the identity matrix in any basis.
-Prove it.
+As the remark on the identity matrix explains, the identity map is encoded by the identity matrix in any basis — that is `LinearMap.toMatrix_id`:
 
 ```lean
 example (k V ι : Type*) [Field k] [AddCommGroup V] [Module k V]
     [Fintype ι] [DecidableEq ι] (b : Basis ι k V) :
-    LinearMap.toMatrix b b LinearMap.id = 1 := by
+    LinearMap.toMatrix b b LinearMap.id = 1 := LinearMap.toMatrix_id b
+```
+
+The matrix depends on the chosen bases, but the assignment $`T \mapsto \operatorname{toMatrix}(T)` is itself *linear* — Mathlib bundles `LinearMap.toMatrix` as a `LinearEquiv`, not merely a bijection.
+Prove that it respects a linear combination: it takes $`a S + T` to $`a \cdot \operatorname{toMatrix}(S) + \operatorname{toMatrix}(T)`.
+This is the same two-step move you used for a linear map — `map_add` then `map_smul` — but now applied to `toMatrix` itself, exploiting that it *is* a linear map.
+
+```lean
+example (k V W : Type*) [Field k]
+    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
+    {ιV ιW : Type*} [Fintype ιV] [DecidableEq ιV] [Fintype ιW] [DecidableEq ιW]
+    (bV : Basis ιV k V) (bW : Basis ιW k W) (S T : V →ₗ[k] W) (a : k) :
+    LinearMap.toMatrix bV bW (a • S + T) =
+      a • LinearMap.toMatrix bV bW S + LinearMap.toMatrix bV bW T := by
   sorry
 ```
 
 :::solution
 ```lean
-example (k V ι : Type*) [Field k] [AddCommGroup V] [Module k V]
-    [Fintype ι] [DecidableEq ι] (b : Basis ι k V) :
-    LinearMap.toMatrix b b LinearMap.id = 1 :=
-  LinearMap.toMatrix_id b
+example (k V W : Type*) [Field k]
+    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
+    {ιV ιW : Type*} [Fintype ιV] [DecidableEq ιV] [Fintype ιW] [DecidableEq ιW]
+    (bV : Basis ιV k V) (bW : Basis ιW k W) (S T : V →ₗ[k] W) (a : k) :
+    LinearMap.toMatrix bV bW (a • S + T) =
+      a • LinearMap.toMatrix bV bW S + LinearMap.toMatrix bV bW T := by
+  -- `toMatrix` is a linear equivalence, so it commutes with + and •.
+  rw [map_add, map_smul]
 ```
 :::
 
@@ -1068,19 +1117,29 @@ example (k V W : Type*) [Field k]
   LinearMap.finrank_range_add_finrank_ker T
 ```
 
-The section asked why every subspace must contain $`0_V`.
-It is one of the closure conditions; confirm it.
+The section asked why every subspace must contain $`0_V`; it is one of the closure conditions, `N.zero_mem`:
 
 ```lean
 example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
-    (N : Submodule k V) : (0 : V) ∈ N := by
+    (N : Submodule k V) : (0 : V) ∈ N := N.zero_mem
+```
+
+Zero membership, closure under addition, and closure under scaling combine into the single slogan a subspace really stands for: *closed under linear combinations*.
+Prove it — given $`x, y \in N` and scalars $`a, b`, show $`a x + b y \in N` — by scaling each vector into `N` (`Submodule.smul_mem`) and adding the results (`Submodule.add_mem`).
+
+```lean
+example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    (N : Submodule k V) (x y : V) (hx : x ∈ N) (hy : y ∈ N) (a b : k) :
+    a • x + b • y ∈ N := by
   sorry
 ```
 
 :::solution
 ```lean
 example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
-    (N : Submodule k V) : (0 : V) ∈ N :=
-  N.zero_mem
+    (N : Submodule k V) (x y : V) (hx : x ∈ N) (hy : y ∈ N) (a b : k) :
+    a • x + b • y ∈ N :=
+  -- a•x and b•y each stay in N, and N is closed under addition.
+  N.add_mem (N.smul_mem a hx) (N.smul_mem b hy)
 ```
 :::
