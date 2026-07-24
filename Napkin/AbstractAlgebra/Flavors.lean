@@ -645,7 +645,15 @@ example (R : Type*) [CommRing R] (I : Ideal R) [I.IsPrime] :
 ```
 
 The chapter asks what you call a ring for which the zero ideal $`(0)` is prime — an integral domain.
-Prove the forward half of that answer with `Ideal.isPrime_bot`: in any integral domain, `⊥` is a prime ideal.
+In any integral domain, `⊥` is a prime ideal — Mathlib's `Ideal.isPrime_bot`:
+
+```lean
+example (R : Type*) [CommRing R] [IsDomain R] :
+    (⊥ : Ideal R).IsPrime := Ideal.isPrime_bot
+```
+
+This is worth unfolding, because it *is* the domain axiom in disguise.
+Prove it from the definition (`Ideal.isPrime_iff`): a prime ideal is proper (`⊥ ≠ ⊤`, since a domain is nontrivial) and satisfies "$`xy \in I \Rightarrow x \in I` or $`y \in I`" — which for $`I = \bot` reads $`xy = 0 \Rightarrow x = 0` or $`y = 0`, exactly `mul_eq_zero` (the no-zero-divisors law).
 
 ```lean
 example (R : Type*) [CommRing R] [IsDomain R] : (⊥ : Ideal R).IsPrime := by
@@ -654,8 +662,13 @@ example (R : Type*) [CommRing R] [IsDomain R] : (⊥ : Ideal R).IsPrime := by
 
 :::solution
 ```lean
-example (R : Type*) [CommRing R] [IsDomain R] :
-    (⊥ : Ideal R).IsPrime := Ideal.isPrime_bot
+example (R : Type*) [CommRing R] [IsDomain R] : (⊥ : Ideal R).IsPrime := by
+  rw [Ideal.isPrime_iff]
+  refine ⟨bot_ne_top, fun {x y} hxy => ?_⟩
+  -- Membership in ⊥ is being zero; then it is exactly `mul_eq_zero`.
+  rw [Ideal.mem_bot] at hxy ⊢
+  rw [Ideal.mem_bot]
+  exact mul_eq_zero.mp hxy
 ```
 :::
 
