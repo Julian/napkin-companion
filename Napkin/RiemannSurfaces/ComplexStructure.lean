@@ -277,6 +277,12 @@ example : IsManifold (𝓘(ℝ, ℝ)) ω ℝ := by
   sorry
 ```
 
+:::solution
+```lean
+example : IsManifold (𝓘(ℝ, ℝ)) ω ℝ := inferInstance
+```
+:::
+
 ## Riemann surfaces
 
 A Riemann surface is `IsManifold (𝓘(ℂ, ℂ)) ω X`, where `𝓘(ℂ, ℂ)` is the trivial model with corners on $`\mathbb{C}`, and the regularity order `ω` means "analytic".
@@ -299,6 +305,15 @@ example (X : Type*) [TopologicalSpace X] [ChartedSpace ℂ X]
   sorry
 ```
 
+:::solution
+```lean
+example (X : Type*) [TopologicalSpace X] [ChartedSpace ℂ X]
+    [IsManifold (𝓘(ℂ, ℂ)) ω X] :
+    atlas ℂ X ⊆ IsManifold.maximalAtlas (𝓘(ℂ, ℂ)) ω X :=
+  IsManifold.subset_maximalAtlas
+```
+:::
+
 ## Complex manifolds
 
 A complex $`n`-manifold is `IsManifold (𝓘(ℂ, (Fin n → ℂ))) ω M`, with model space $`E = \mathbb{C}^n` realized as `Fin n → ℂ`.
@@ -316,6 +331,12 @@ Confirm it; `inferInstance` closes it just as at general $`n`.
 example : IsManifold (𝓘(ℂ, (Fin 1 → ℂ))) ω (Fin 1 → ℂ) := by
   sorry
 ```
+
+:::solution
+```lean
+example : IsManifold (𝓘(ℂ, (Fin 1 → ℂ))) ω (Fin 1 → ℂ) := inferInstance
+```
+:::
 
 ## Examples of Riemann surfaces
 
@@ -356,6 +377,13 @@ example : AnalyticOnNhd ℂ sphereTransition {z : ℂ | z ≠ 0} := by
   sorry
 ```
 
+:::solution
+```lean
+example : AnalyticOnNhd ℂ sphereTransition {z : ℂ | z ≠ 0} :=
+  sphereTransition_analyticOnNhd
+```
+:::
+
 The two chart domains cover the sphere: the only point outside `sphereChart0Dom` is $`\infty`, which lies in `sphereChart1Dom`.
 Show that every point lies in one chart or the other, and that $`\infty` in particular lands in the second chart but not the first; the shim proves these as `sphere_charts_cover`, `infty_mem_sphereChart1Dom`, and `infty_notMem_sphereChart0Dom`.
 
@@ -368,6 +396,18 @@ example : (∞ : OnePoint ℂ) ∈ sphereChart1Dom ∧
     (∞ : OnePoint ℂ) ∉ sphereChart0Dom := by
   sorry
 ```
+
+:::solution
+```lean
+example (p : OnePoint ℂ) :
+    p ∈ sphereChart0Dom ∨ p ∈ sphereChart1Dom :=
+  sphere_charts_cover p
+
+example : (∞ : OnePoint ℂ) ∈ sphereChart1Dom ∧
+    (∞ : OnePoint ℂ) ∉ sphereChart0Dom :=
+  ⟨infty_mem_sphereChart1Dom, infty_notMem_sphereChart0Dom⟩
+```
+:::
 
 Bundling this data — a covering family of charts whose transitions are analytic on their overlaps — is the text's Definition of a complex atlas, recorded as `ComplexAtlas`.
 The sphere's two-chart atlas, indexed by `Bool`, is `riemannSphereAtlas`.
@@ -401,6 +441,19 @@ example {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
   sorry
 ```
 
+:::solution
+```lean
+example {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
+    {M : Type*} [TopologicalSpace M] [ChartedSpace ℂ M]
+    [IsManifold (𝓘(ℂ, ℂ)) 1 M] [CompactSpace M] [PreconnectedSpace M]
+    (f : M → F) (hf : MDifferentiable (𝓘(ℂ, ℂ)) (𝓘(ℂ, F)) f) (a b : M) :
+    f a = f b := by
+  obtain ⟨v, hv⟩ := hf.exists_eq_const_of_compactSpace
+  rw [hv]
+  rfl
+```
+:::
+
 ## Removable singularities
 
 The idea of "filling in the hole" — extending a function across a puncture — is Riemann's removable singularity theorem.
@@ -421,3 +474,12 @@ example {f : ℂ → ℂ} {s : Set ℂ} {c : ℂ} (hs : s ∈ 𝓝 c) :
       DifferentiableOn ℂ f s := by
   sorry
 ```
+
+:::solution
+```lean
+example {f : ℂ → ℂ} {s : Set ℂ} {c : ℂ} (hs : s ∈ 𝓝 c) :
+    DifferentiableOn ℂ f (s \ {c}) ∧ ContinuousAt f c ↔
+      DifferentiableOn ℂ f s :=
+  Complex.differentiableOn_compl_singleton_and_continuousAt_iff hs
+```
+:::

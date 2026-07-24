@@ -324,6 +324,13 @@ example (x : ℂ) : meromorphicOrderAt (0 : ℂ → ℂ) x = ⊤ := by
   sorry
 ```
 
+:::solution
+```lean
+example (x : ℂ) : meromorphicOrderAt (0 : ℂ → ℂ) x = ⊤ := by
+  simp
+```
+:::
+
 ## Divisors
 
 A divisor is a $`\mathbb{Z}`-valued function nonzero on a discrete set.
@@ -375,6 +382,14 @@ example (X : Type*) (p : X) :
   sorry
 ```
 
+:::solution
+```lean
+example (X : Type*) (p : X) :
+    (Divisor.single p (1 : ℤ)).support = {p} := by
+  simp [Divisor.single]
+```
+:::
+
 ## Degree of a divisor
 
 The degree $`\sum_{p} D(p)` adds up all the coefficients.
@@ -411,6 +426,16 @@ example :
   sorry
 ```
 
+:::solution
+```lean
+example :
+    Divisor.degree (Divisor.single 0 (-3) + Divisor.single 1 (-4)
+      : Divisor ℕ) = -7 := by
+  rw [Divisor.degree_add, Divisor.degree_single, Divisor.degree_single]
+  norm_num
+```
+:::
+
 Show that the degree flips sign along with the divisor.
 
 ```lean
@@ -418,6 +443,14 @@ example (X : Type*) (D : Divisor X) :
     Divisor.degree (-D) = - Divisor.degree D := by
   sorry
 ```
+
+:::solution
+```lean
+example (X : Type*) (D : Divisor X) :
+    Divisor.degree (-D) = - Divisor.degree D := by
+  rw [map_neg]
+```
+:::
 
 ## The principal divisor of a meromorphic function
 
@@ -491,6 +524,14 @@ example {X : Type*} (R : Divisor.RiemannRochData X) :
     (R.l 0 : ℤ) - R.l R.K = 1 - R.genus := by
   sorry
 ```
+
+:::solution
+```lean
+example {X : Type*} (R : Divisor.RiemannRochData X) :
+    (R.l 0 : ℤ) - R.l R.K = 1 - R.genus :=
+  R.l_zero_sub_l_K
+```
+:::
 
 Of this chapter's cast, then, the divisor of a meromorphic function
 (`MeromorphicOn.divisor`, on subsets of $`\mathbb{C}`) is the one piece

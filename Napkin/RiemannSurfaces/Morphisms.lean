@@ -289,6 +289,14 @@ example (f g : ℂ → ℂ) (p : ℂ) (hf : AnalyticAt ℂ f (g p))
   sorry
 ```
 
+:::solution
+```lean
+example (f g : ℂ → ℂ) (p : ℂ) (hf : AnalyticAt ℂ f (g p))
+    (hg : AnalyticAt ℂ g p) : AnalyticAt ℂ (f ∘ g) p :=
+  hf.comp hg
+```
+:::
+
 ## Functions to the Riemann sphere
 
 The "meromorphic" side is captured by `MeromorphicAt f x`: there exists a natural number $`n` such that $`(z - x)^n \cdot f(z)` is analytic at $`x`.
@@ -324,6 +332,14 @@ Show the same for a pole placed at an arbitrary point $`x`.
 example (x : ℂ) : MeromorphicAt (fun z : ℂ => (z - x)⁻¹) x := by
   sorry
 ```
+
+:::solution
+```lean
+example (x : ℂ) : MeromorphicAt (fun z : ℂ => (z - x)⁻¹) x := by
+  apply MeromorphicAt.inv
+  exact (analyticAt_id.sub analyticAt_const).meromorphicAt
+```
+:::
 
 ## Some other nice properties
 
@@ -361,6 +377,14 @@ example (f : ℂ → ℂ) (x : ℂ) (hf : AnalyticAt ℂ f x)
   sorry
 ```
 
+:::solution
+```lean
+example (f : ℂ → ℂ) (x : ℂ) (hf : AnalyticAt ℂ f x)
+    (h : f x ≠ 0) : analyticOrderAt f x = 0 :=
+  hf.analyticOrderAt_eq_zero.mpr h
+```
+:::
+
 The bare order `analyticOrderAt f x` measures how fast `f` *vanishes* at `x`, so it reads the multiplicity only when $`f(p) = 0`.
 The genuine local multiplicity $`\mathrm{mult}_p(f)` recenters on the value, taking the order of $`z \mapsto f(z) - f(p)`; this recentered packaging is `ramificationIndex f p`, recorded in `Napkin.Missing.RamifiedMap` since Mathlib has the order but not the "ramification index of a surface map" wrapper.
 
@@ -387,6 +411,13 @@ example : ramificationIndex (fun z : ℂ => z ^ 3) 0 = 3 := by
   sorry
 ```
 
+:::solution
+```lean
+example : ramificationIndex (fun z : ℂ => z ^ 3) 0 = 3 :=
+  ramificationIndex_centeredMonomial 3 (by norm_num)
+```
+:::
+
 ## The sum of the orders of a meromorphic function
 
 The global statement $`\sum_p \mathrm{ord}_p(f) = 0` on a compact Riemann surface is not in Mathlib, again because the compact surface is not an available object.
@@ -408,6 +439,15 @@ example (f : ℂ → ℂ) (x : ℂ) (hf : AnalyticAt ℂ f x)
     (h : f x ≠ 0) : meromorphicOrderAt f x = 0 := by
   sorry
 ```
+
+:::solution
+```lean
+example (f : ℂ → ℂ) (x : ℂ) (hf : AnalyticAt ℂ f x)
+    (h : f x ≠ 0) : meromorphicOrderAt f x = 0 := by
+  rw [hf.meromorphicOrderAt_eq, hf.analyticOrderAt_eq_zero.mpr h]
+  rfl
+```
+:::
 
 ## The Hurwitz formula
 
@@ -445,6 +485,15 @@ example {X : Type} (H : RiemannHurwitzData X)
   sorry
 ```
 
+:::solution
+```lean
+example {X : Type} (H : RiemannHurwitzData X)
+    (hpos : 0 ≤ H.totalRamification) (hd : 1 ≤ H.d)
+    (hY : 1 ≤ H.gY) : (H.gY : ℤ) ≤ H.gX :=
+  H.hurwitz_bound hpos hd hY
+```
+:::
+
 ## The identity theorem
 
 The one-chart counterpart is `AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq`: if two functions are analytic on a preconnected open set $`U` and agree on a neighborhood of some point $`x \in U`, they agree on all of $`U`.
@@ -465,3 +514,15 @@ example {f g : ℂ → ℂ} (hf : AnalyticOnNhd ℂ f Set.univ)
     (hfg : f =ᶠ[𝓝 z₀] g) : f = g := by
   sorry
 ```
+
+:::solution
+```lean
+example {f g : ℂ → ℂ} (hf : AnalyticOnNhd ℂ f Set.univ)
+    (hg : AnalyticOnNhd ℂ g Set.univ) {z₀ : ℂ}
+    (hfg : f =ᶠ[𝓝 z₀] g) : f = g := by
+  have h := hf.eqOn_of_preconnected_of_eventuallyEq hg
+    isPreconnected_univ (Set.mem_univ z₀) hfg
+  funext z
+  exact h (Set.mem_univ z)
+```
+:::

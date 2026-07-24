@@ -351,6 +351,14 @@ example (B : Type*) [TopologicalSpace B] (x : B) :
   sorry
 ```
 
+:::solution
+```lean
+example (B : Type*) [TopologicalSpace B] (x : B) :
+    (Bundle.zeroSection ℂ (Bundle.Trivial B ℂ) x).2 = 0 := by
+  rw [Bundle.zeroSection_snd]
+```
+:::
+
 A chart respects the projection: reading off the base coordinate of `e z` recovers `p z` on the chart's source.
 That equation is the accessor `Trivialization.coe_fst`, which consumes exactly the source-membership hypothesis `hz`.
 
@@ -360,6 +368,15 @@ example (B F Z : Type*) [TopologicalSpace B] [TopologicalSpace F]
     (hz : z ∈ e.source) : (e z).1 = p z := by
   sorry
 ```
+
+:::solution
+```lean
+example (B F Z : Type*) [TopologicalSpace B] [TopologicalSpace F]
+    [TopologicalSpace Z] (p : Z → B) (e : Bundle.Trivialization F p) (z : Z)
+    (hz : z ∈ e.source) : (e z).1 = p z :=
+  e.coe_fst hz
+```
+:::
 
 ## Visualizing a line bundle
 
@@ -411,6 +428,14 @@ example {I B : Type*} (C : LineBundleCocycle I B) (i : I) (b : B) :
   sorry
 ```
 
+:::solution
+```lean
+example {I B : Type*} (C : LineBundleCocycle I B) (i : I) (b : B) :
+    C.g i i b = 1 :=
+  mul_eq_left.mp (C.cocycle i i i b)
+```
+:::
+
 ## Morphisms between line bundles
 
 A morphism looks locally like $`(s, p) \mapsto (f(p) \cdot s, p)`.
@@ -446,6 +471,13 @@ The finisher is `isUnit_iff_ne_zero`.
 example (c : ℂ) : IsUnit c ↔ c ≠ 0 := by
   sorry
 ```
+
+:::solution
+```lean
+example (c : ℂ) : IsUnit c ↔ c ≠ 0 :=
+  isUnit_iff_ne_zero
+```
+:::
 
 ## Relation to invertible sheaves
 
@@ -488,6 +520,14 @@ example {I B : Type*} (C : LineBundleCocycle I B) (i j : I) (b : B) :
   sorry
 ```
 
+:::solution
+```lean
+example {I B : Type*} (C : LineBundleCocycle I B) (i j : I) (b : B) :
+    C.g i j b = (C.g j i b)⁻¹ :=
+  eq_inv_of_mul_eq_one_right (by rw [C.cocycle j i j b, C.g_self j b])
+```
+:::
+
 The algebraic Picard group, for its part, already sees "every line bundle is trivial" over the nicest bases: over $`\mathbb{Z}`, a unique-factorization domain, it collapses to a single element.
 The route is through the class group of the previous section.
 Since $`\mathbb{Z}` is a principal ideal domain, every ideal is principal, so its class group is trivial — one ideal class — and Mathlib records this as `Subsingleton (ClassGroup ℤ)`.
@@ -497,3 +537,10 @@ Transport that triviality across `ClassGroup.equivPic ℤ`, whose underlying equ
 example : Subsingleton (CommRing.Pic ℤ) := by
   sorry
 ```
+
+:::solution
+```lean
+example : Subsingleton (CommRing.Pic ℤ) :=
+  (ClassGroup.equivPic ℤ).toEquiv.symm.subsingleton
+```
+:::

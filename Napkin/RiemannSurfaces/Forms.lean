@@ -208,6 +208,15 @@ example (z : ℂ) :
     (Complex.ofRealCLM.comp Complex.reCLM) z = (z.re : ℂ) := by sorry
 ```
 
+:::solution
+```lean
+example (z : ℂ) : Complex.imCLM z = z.im := rfl
+
+example (z : ℂ) :
+    (Complex.ofRealCLM.comp Complex.reCLM) z = (z.re : ℂ) := rfl
+```
+:::
+
 ## Holomorphic forms
 
 The moral is precisely the statement that each value $`\omega_p` is not merely $`\mathbb{R}`-linear but $`\mathbb{C}`-linear.
@@ -236,6 +245,14 @@ Prove it.
 example (f : ℂ → ℂ) (x : ℂ) (hf : DifferentiableAt ℂ f x) :
     fderiv ℝ f x = (fderiv ℂ f x).restrictScalars ℝ := by sorry
 ```
+
+:::solution
+```lean
+example (f : ℂ → ℂ) (x : ℂ) (hf : DifferentiableAt ℂ f x) :
+    fderiv ℝ f x = (fderiv ℂ f x).restrictScalars ℝ :=
+  hf.fderiv_restrictScalars ℝ
+```
+:::
 
 ## The forms `dz` and `dz̄`
 
@@ -268,6 +285,18 @@ example : dzbar Complex.I = -Complex.I := by sorry
 example : dz Complex.I ≠ dzbar Complex.I := by sorry
 ```
 
+:::solution
+```lean
+example : dzbar Complex.I = -Complex.I := by
+  rw [dzbar_apply, Complex.conj_I]
+
+example : dz Complex.I ≠ dzbar Complex.I := by
+  rw [dz_apply, dzbar_apply, Complex.conj_I]
+  intro h
+  exact Complex.I_ne_zero (by linear_combination h / 2)
+```
+:::
+
 The moral $`\omega_p(\mathbf{e}_2) = \omega_p(\mathbf{e}_1) \cdot i` is exactly the condition that each value $`\omega_p` is $`\mathbb{C}`-linear, which `Type10` records as the value lying in the image of `restrictScalars ℝ`.
 The constant form $`dz` is of type $`(1, 0)`, witnessed by the identity $`\mathbb{C}`-linear map; conjugation is the obstruction, so $`d\overline{z}` is not.
 
@@ -292,6 +321,14 @@ Finally, unpack the definition: a type $`(1, 0)` form's value really is $`\mathb
 example (ω : OneForm) (h : Type10 ω) (p : ℂ) :
     ∃ T : ℂ →L[ℂ] ℂ, ∀ v, ω p v = T v := by sorry
 ```
+
+:::solution
+```lean
+example (ω : OneForm) (h : Type10 ω) (p : ℂ) :
+    ∃ T : ℂ →L[ℂ] ℂ, ∀ v, ω p v = T v :=
+  h.value_clinear p
+```
+:::
 
 ## 1-forms on a Riemann surface
 
