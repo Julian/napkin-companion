@@ -554,20 +554,29 @@ Existence is `IsArithFrobAt.exists_of_isInvariant`, and uniqueness comes in two 
 
 The root-of-unity computation in the Gaussian-integer example is `AlgHom.IsArithFrobAt.apply_of_pow_eq_one`: a Frobenius at $`Q` sends any $`m`-th root of unity $`\zeta` with $`q \nmid m` to exactly $`\zeta^q` — an honest equality, not just a congruence.
 
-That such a computation on generators suffices is the *freshman's dream*: in a commutative ring of prime characteristic $`p`, the $`p`-th power map is additive.
-Prove it from Mathlib's characteristic-$`p` API.
+That such a computation on generators suffices is the *freshman's dream*: in a commutative ring of prime characteristic $`p`, the $`p`-th power map is additive, which is `add_pow_char`.
 
 ```lean
 example (R : Type*) [CommRing R] (p : ℕ) [Fact p.Prime] [CharP R p]
-    (x y : R) : (x + y) ^ p = x ^ p + y ^ p := by
+    (x y : R) : (x + y) ^ p = x ^ p + y ^ p :=
+  add_pow_char x y p
+```
+
+Additivity is not confined to two terms; it propagates to any sum.
+Prove the three-term case by applying the freshman's dream twice: `add_pow_char` first rewrites $`(x+y+z)^p` as $`(x+y)^p + z^p`, and a second rewrite breaks up the remaining $`(x+y)^p`.
+
+```lean
+example (R : Type*) [CommRing R] (p : ℕ) [Fact p.Prime] [CharP R p]
+    (x y z : R) : (x + y + z) ^ p = x ^ p + y ^ p + z ^ p := by
   sorry
 ```
 
 :::solution
 ```lean
 example (R : Type*) [CommRing R] (p : ℕ) [Fact p.Prime] [CharP R p]
-    (x y : R) : (x + y) ^ p = x ^ p + y ^ p :=
-  add_pow_char x y p
+    (x y z : R) : (x + y + z) ^ p = x ^ p + y ^ p + z ^ p := by
+  -- Freshman's dream applied twice: split off z, then split x + y.
+  rw [add_pow_char, add_pow_char]
 ```
 :::
 
@@ -632,20 +641,31 @@ example {G : Type*} [Group G] [Fintype G] (D : ChebotarevData G)
   D.density_pos C hC
 ```
 
-The identity class is special: $`\operatorname{Frob}_\mathfrak{p} = \operatorname{id}` exactly when $`\mathfrak{p}` splits completely, and feeding Chebotarev the identity class gives the totally-split density $`1 / \left\lvert G \right\rvert`.
-Derive it from the `ChebotarevData`.
+The identity class is special: $`\operatorname{Frob}_\mathfrak{p} = \operatorname{id}` exactly when $`\mathfrak{p}` splits completely, and feeding Chebotarev the identity class gives the totally-split density $`1 / \left\lvert G \right\rvert`, recorded as `density_one`.
 
 ```lean
 example {G : Type*} [Group G] [Fintype G] (D : ChebotarevData G) :
-    D.density 1 = 1 / (Nat.card G : ℝ) := by
+    D.density 1 = 1 / (Nat.card G : ℝ) :=
+  D.density_one
+```
+
+Because $`\left\lvert G \right\rvert > 0`, that density is *strictly positive*: totally-split primes really do occur, and so occur infinitely often.
+Prove $`0 < D.\!\operatorname{density} 1` by rewriting through `density_one` and observing $`1 / \left\lvert G \right\rvert > 0` (`div_pos`, with `Nat.card_pos` supplying the positive denominator).
+
+```lean
+example {G : Type*} [Group G] [Fintype G] (D : ChebotarevData G) :
+    0 < D.density 1 := by
   sorry
 ```
 
 :::solution
 ```lean
 example {G : Type*} [Group G] [Fintype G] (D : ChebotarevData G) :
-    D.density 1 = 1 / (Nat.card G : ℝ) :=
-  D.density_one
+    0 < D.density 1 := by
+  -- density_one fixes the value at 1/|G|, positive since G is nonempty.
+  have : Nonempty G := ⟨1⟩
+  rw [D.density_one]
+  exact div_pos one_pos (by exact_mod_cast Nat.card_pos)
 ```
 :::
 
@@ -746,18 +766,29 @@ recall legendreSym.quadratic_reciprocity {p q : ℕ} [Fact p.Prime]
 (the natural-division exponent `p / 2 * (q / 2)` is $`\frac{p-1}{2} \cdot \frac{q-1}{2}` in disguise).
 Mathlib's proof is by Gauss sums, so the argument above — which runs entirely on Frobenius elements — is a genuinely different road to the same theorem.
 
-One ingredient the proof leans on is the value of $`\left( \frac{-1}{p} \right)`.
-Show that $`-1` is a quadratic residue mod $`p` exactly when $`p \not\equiv 3 \pmod 4`.
+One ingredient the proof leans on is the value of $`\left( \frac{-1}{p} \right)`: that $`-1` is a quadratic residue mod $`p` exactly when $`p \not\equiv 3 \pmod 4`, which is `ZMod.exists_sq_eq_neg_one_iff`.
 
 ```lean
-example (p : ℕ) [Fact p.Prime] : IsSquare (-1 : ZMod p) ↔ p % 4 ≠ 3 := by
+example (p : ℕ) [Fact p.Prime] : IsSquare (-1 : ZMod p) ↔ p % 4 ≠ 3 :=
+  ZMod.exists_sq_eq_neg_one_iff
+```
+
+Put the classification to work on a concrete prime.
+Since $`5 \equiv 1 \pmod 4`, the criterion predicts that $`-1` is a square mod $`5` (indeed $`2^2 = -1`).
+Prove it by supplying the `Fact` that $`5` is prime, rewriting through the classification, and discharging the residue arithmetic.
+
+```lean
+example : IsSquare (-1 : ZMod 5) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (p : ℕ) [Fact p.Prime] : IsSquare (-1 : ZMod p) ↔ p % 4 ≠ 3 :=
-  ZMod.exists_sq_eq_neg_one_iff
+example : IsSquare (-1 : ZMod 5) := by
+  -- Reduce to the residue condition 5 % 4 ≠ 3, then decide it.
+  haveI : Fact (Nat.Prime 5) := ⟨by decide⟩
+  rw [ZMod.exists_sq_eq_neg_one_iff]
+  decide
 ```
 :::
 
@@ -806,19 +837,29 @@ example {G : Type*} [Group G] [Fintype G] (p : ℕ) [Fact p.Prime]
 
 ## Problems
 
-The first problem's supplement — the value of $`\left( \frac 2p \right)` — is `ZMod.exists_sq_eq_two_iff`.
-Show that $`2` is a quadratic residue modulo an odd prime $`p` exactly when $`p \equiv \pm 1 \pmod 8`.
+The first problem's supplement — the value of $`\left( \frac 2p \right)` — is `ZMod.exists_sq_eq_two_iff`: that $`2` is a quadratic residue modulo an odd prime $`p` exactly when $`p \equiv \pm 1 \pmod 8`.
 
 ```lean
 example (p : ℕ) [Fact p.Prime] (hp : p ≠ 2) :
-    IsSquare (2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 7 := by
+    IsSquare (2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 7 :=
+  ZMod.exists_sq_eq_two_iff hp
+```
+
+Read the other way, the classification tells you when $`2` is a *non*-residue.
+Show that if $`p \equiv 3` or $`5 \pmod 8`, then $`2` is not a square mod $`p`: rewrite through the criterion and let `omega` see that neither residue is $`1` or $`7`.
+
+```lean
+example (p : ℕ) [Fact p.Prime] (hp : p ≠ 2)
+    (h : p % 8 = 3 ∨ p % 8 = 5) : ¬ IsSquare (2 : ZMod p) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (p : ℕ) [Fact p.Prime] (hp : p ≠ 2) :
-    IsSquare (2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 7 :=
-  ZMod.exists_sq_eq_two_iff hp
+example (p : ℕ) [Fact p.Prime] (hp : p ≠ 2)
+    (h : p % 8 = 3 ∨ p % 8 = 5) : ¬ IsSquare (2 : ZMod p) := by
+  -- The criterion turns non-residue into a purely arithmetic claim.
+  rw [ZMod.exists_sq_eq_two_iff hp]
+  omega
 ```
 :::

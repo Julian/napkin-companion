@@ -302,18 +302,29 @@ open Module Polynomial
 The base field $`\mathbb{F}_p` is `ZMod p`, whose field structure fires as soon as a `[Fact p.Prime]` hypothesis is around — the same convention we saw for the $`p`-adics.
 "Finite field" needs no bundled type: it is just a `Field F` together with `Finite F` (or `Fintype F` when we want to actually count).
 
-The base field really is a field with $`p` elements.
-Confirm that `ZMod p` has cardinality $`p`.
+The base field really is a field with $`p` elements: `ZMod.card` says so directly.
 
 ```lean
-example (p : ℕ) [Fact p.Prime] : Fintype.card (ZMod p) = p := by
+example (p : ℕ) [Fact p.Prime] : Fintype.card (ZMod p) = p :=
+  ZMod.card p
+```
+
+Put that count to work.
+A prime is at least $`2`, so the base field has more than one element — enough to know it is not the trivial one-element ring.
+Prove `Nontrivial (ZMod p)` by first upgrading `ZMod.card` and the primality hypothesis into `1 < Fintype.card (ZMod p)`, then reading off `Fintype.one_lt_card_iff_nontrivial`.
+
+```lean
+example (p : ℕ) [Fact p.Prime] : Nontrivial (ZMod p) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (p : ℕ) [Fact p.Prime] : Fintype.card (ZMod p) = p :=
-  ZMod.card p
+example (p : ℕ) [Fact p.Prime] : Nontrivial (ZMod p) := by
+  -- Two distinct elements exist because the cardinality p exceeds 1.
+  have h : 1 < Fintype.card (ZMod p) := by
+    rw [ZMod.card]; exact (Fact.out : p.Prime).one_lt
+  exact Fintype.one_lt_card_iff_nontrivial.mp h
 ```
 :::
 
@@ -332,19 +343,28 @@ recall FiniteField.card' (K : Type*) [Field K] [Fintype K] :
 (The embedded copy of $`\mathbb{F}_p` is the `Algebra (ZMod p) F` instance `ZMod.algebra`, available whenever `CharP F p` holds.)
 
 The freshman's dream is `add_pow_char`, and it holds in any commutative semiring of characteristic $`p`, not just fields.
-The exercise was to convince yourself this proof really goes through; prove it from `add_pow_char`.
 
 ```lean
 example (F : Type*) [CommRing F] (p : ℕ) [Fact p.Prime] [CharP F p]
     (a b : F) : (a + b) ^ p = a ^ p + b ^ p := by
+  rw [add_pow_char]
+```
+
+The dream is worth more once you iterate it.
+Convince yourself the proof really goes through by extending it to three summands: the outer sum $`(a+b)+c` splits first, then the inner $`a+b`, so *two* applications of `add_pow_char` — rewriting left to right — reach $`a^p + b^p + c^p`.
+
+```lean
+example (F : Type*) [CommRing F] (p : ℕ) [Fact p.Prime] [CharP F p]
+    (a b c : F) : (a + b + c) ^ p = a ^ p + b ^ p + c ^ p := by
   sorry
 ```
 
 :::solution
 ```lean
 example (F : Type*) [CommRing F] (p : ℕ) [Fact p.Prime] [CharP F p]
-    (a b : F) : (a + b) ^ p = a ^ p + b ^ p := by
-  rw [add_pow_char]
+    (a b c : F) : (a + b + c) ^ p = a ^ p + b ^ p + c ^ p := by
+  -- Peel the outer sum, then the inner one, with the same identity.
+  rw [add_pow_char, add_pow_char]
 ```
 :::
 
@@ -367,8 +387,16 @@ recall GaloisField.algEquivGaloisField (p : ℕ) [Fact p.Prime] (n : ℕ)
     K ≃ₐ[ZMod p] GaloisField p n
 ```
 
-The special case number theorists call Fermat's little theorem is `ZMod.pow_card`.
-Prove that every $`x : \mathbb{F}_p` satisfies $`x^p = x`.
+The special case number theorists call Fermat's little theorem is `ZMod.pow_card`: every $`x : \mathbb{F}_p` satisfies $`x^p = x`.
+
+```lean
+example (p : ℕ) [Fact p.Prime] (x : ZMod p) : x ^ p = x :=
+  ZMod.pow_card x
+```
+
+That statement is not magic — it is the proof from the text, which splits on whether $`x = 0`.
+Reconstruct it from the group-theoretic core `ZMod.pow_card_sub_one_eq_one` (the nonzero case, "$`x^{p-1}=1`").
+Case-split with `rcases eq_or_ne x 0`; the zero branch is `zero_pow` (a prime exponent is nonzero), and the nonzero branch factors $`x^p = x^{p-1} \cdot x` — that is `pow_succ` after rewriting $`p = (p-1)+1` with `Nat.sub_add_cancel`.
 
 ```lean
 example (p : ℕ) [Fact p.Prime] (x : ZMod p) : x ^ p = x := by
@@ -377,8 +405,15 @@ example (p : ℕ) [Fact p.Prime] (x : ZMod p) : x ^ p = x := by
 
 :::solution
 ```lean
-example (p : ℕ) [Fact p.Prime] (x : ZMod p) : x ^ p = x :=
-  ZMod.pow_card x
+example (p : ℕ) [Fact p.Prime] (x : ZMod p) : x ^ p = x := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · -- 0^p = 0 since a prime exponent is positive, hence nonzero.
+    exact zero_pow (Fact.out : p.Prime).pos.ne'
+  · -- Peel one factor and apply Lagrange's theorem to the rest.
+    have h1 : x ^ (p - 1) = 1 := ZMod.pow_card_sub_one_eq_one hx
+    calc x ^ p = x ^ (p - 1) * x := by
+            rw [← pow_succ, Nat.sub_add_cancel (Fact.out : p.Prime).pos]
+      _ = x := by rw [h1, one_mul]
 ```
 :::
 
@@ -388,22 +423,33 @@ As a ring homomorphism the Frobenius is `frobenius F p` (defined on any commutat
 
 The order computation in this proof is `FiniteField.orderOf_frobeniusAlgHom`: the Frobenius has order exactly $`[\mathbb{F}_{p^n} : \mathbb{F}_p]` in the Galois group, which by the counting theorem has that same order — so the group is cyclic with the Frobenius as a generator, exactly as claimed.
 
-The question "Why does it respect addition?" is answered by the Frobenius being a ring homomorphism.
-Show directly that $`\sigma_p` sends $`a + b` to $`\sigma_p(a) + \sigma_p(b)`.
+The question "Why does it respect addition?" is answered by the Frobenius being a ring homomorphism, so `map_add` sends $`a + b` to $`\sigma_p(a) + \sigma_p(b)`.
 
-```lean
-example (F : Type*) [CommRing F] (p : ℕ) [Fact p.Prime] [CharP F p]
-    (a b : F) :
-    frobenius F p (a + b) = frobenius F p a + frobenius F p b := by
-  sorry
-```
-
-:::solution
 ```lean
 example (F : Type*) [CommRing F] (p : ℕ) [Fact p.Prime] [CharP F p]
     (a b : F) :
     frobenius F p (a + b) = frobenius F p a + frobenius F p b :=
   map_add (frobenius F p) a b
+```
+
+Additivity is what powers the real work of this section: the injectivity argument in the text, $`x^p = y^p \iff (x-y)^p = 0 \iff x = y`.
+Reproduce it over a domain of characteristic $`p`.
+The freshman's dream in subtraction form is `sub_pow_char`, which turns the hypothesis into $`(x-y)^p = 0`; then `pow_eq_zero_iff` (a prime exponent is nonzero) collapses it to $`x - y = 0`, and `sub_eq_zero` finishes.
+
+```lean
+example (F : Type*) [CommRing F] [IsDomain F] (p : ℕ) [Fact p.Prime]
+    [CharP F p] (x y : F) (h : x ^ p = y ^ p) : x = y := by
+  sorry
+```
+
+:::solution
+```lean
+example (F : Type*) [CommRing F] [IsDomain F] (p : ℕ) [Fact p.Prime]
+    [CharP F p] (x y : F) (h : x ^ p = y ^ p) : x = y := by
+  -- (x - y)^p = x^p - y^p = 0, and a p-th power vanishes only at 0.
+  have hz : (x - y) ^ p = 0 := by rw [sub_pow_char, h, sub_self]
+  have : x - y = 0 := (pow_eq_zero_iff (Fact.out : p.Prime).pos.ne').mp hz
+  exact sub_eq_zero.mp this
 ```
 :::
 
@@ -412,18 +458,32 @@ example (F : Type*) [CommRing F] (p : ℕ) [Fact p.Prime] [CharP F p]
 The proposition is an instance: `IsCyclic Fˣ` is inferred for any finite field (indeed for the units of any finite division ring or any finite subgroup of the units of a domain, via `subgroup_units_cyclic`), so a generator is always available as `IsCyclic.exists_generator`.
 
 The counting question asked how many $`x` solve $`x^d = 1`.
-Prove the sharper statement `FiniteField.forall_pow_eq_one_iff`: every unit satisfies $`x^i = 1` exactly when $`\left\lvert F \right\rvert - 1` divides $`i`.
+The sharper statement `FiniteField.forall_pow_eq_one_iff` answers it: every unit satisfies $`x^i = 1` exactly when $`\left\lvert F \right\rvert - 1` divides $`i`.
 
 ```lean
 example (K : Type*) [Field K] [Fintype K] (i : ℕ) :
-    (∀ x : Kˣ, x ^ i = 1) ↔ Fintype.card K - 1 ∣ i := by
+    (∀ x : Kˣ, x ^ i = 1) ↔ Fintype.card K - 1 ∣ i :=
+  FiniteField.forall_pow_eq_one_iff (K := K) i
+```
+
+The proposition itself is the instance `IsCyclic Kˣ`, and cyclic means a single generator sweeps out the whole group.
+Make that concrete: produce a generator whose order is $`\left\lvert F \right\rvert - 1`, the full size of $`F^\times`.
+Pull a generator from `IsCyclic.exists_generator`, turn "generates" into an order equality with `orderOf_eq_card_of_forall_mem_zpowers`, and rewrite the unit count with `Fintype.card_units`.
+
+```lean
+example (K : Type*) [Field K] [Fintype K] :
+    ∃ g : Kˣ, orderOf g = Fintype.card K - 1 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (K : Type*) [Field K] [Fintype K] (i : ℕ) :
-    (∀ x : Kˣ, x ^ i = 1) ↔ Fintype.card K - 1 ∣ i :=
-  FiniteField.forall_pow_eq_one_iff (K := K) i
+example (K : Type*) [Field K] [Fintype K] :
+    ∃ g : Kˣ, orderOf g = Fintype.card K - 1 := by
+  classical
+  -- A generator has order |Kˣ| = |K| - 1.
+  obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := Kˣ)
+  exact ⟨g, by rw [orderOf_eq_card_of_forall_mem_zpowers hg,
+    Nat.card_eq_fintype_card, Fintype.card_units]⟩
 ```
 :::

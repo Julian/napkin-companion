@@ -228,19 +228,31 @@ recall NumberField.isUnit_iff_norm {K : Type*} [Field K] [NumberField K]
     IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1
 ```
 
-The question asked you to verify that powers of units are units.
-Show that if $`x` is a unit of $`\mathcal{O}_K`, then so is every power $`x^n`.
+The question asked you to verify that powers of units are units, which is a one-liner, `IsUnit.pow`:
 
 ```lean
 example {K : Type*} [Field K] [NumberField K] (x : 𝓞 K) (h : IsUnit x)
-    (n : ℕ) : IsUnit (x ^ n) := by
+    (n : ℕ) : IsUnit (x ^ n) := h.pow n
+```
+
+The question offered a second route through the characterization $`\operatorname{Norm}_{K/\mathbb{Q}}(\alpha) = \pm 1`, and it is worth crossing the two viewpoints.
+Derive the norm side from the unit side: show that if $`x` is a unit, then the norm of every power $`x^n` has absolute value $`1`.
+The norm is multiplicative, so `map_pow` turns the norm of a power into a power of the norm; `push_cast` moves the coercion inward, after which `abs_pow` and the hypothesis (via `isUnit_iff_norm`) collapse everything to $`1^n`.
+
+```lean
+example {K : Type*} [Field K] [NumberField K] (x : 𝓞 K) (h : IsUnit x)
+    (n : ℕ) : |(RingOfIntegers.norm ℚ (x ^ n) : ℚ)| = 1 := by
   sorry
 ```
 
 :::solution
 ```lean
 example {K : Type*} [Field K] [NumberField K] (x : 𝓞 K) (h : IsUnit x)
-    (n : ℕ) : IsUnit (x ^ n) := h.pow n
+    (n : ℕ) : |(RingOfIntegers.norm ℚ (x ^ n) : ℚ)| = 1 := by
+  -- norm is multiplicative: it turns a power into a power of the norm.
+  rw [map_pow]
+  push_cast
+  rw [abs_pow, isUnit_iff_norm.mp h, one_pow]
 ```
 :::
 
@@ -289,18 +301,29 @@ example {d : ℤ} (h₀ : 0 < d) (hd : ¬ IsSquare d) :
 ```
 
 The whole method rested on there being a _single_ fundamental solution to verify a candidate against.
-Show that a fundamental solution, if it exists, is unique.
+That a fundamental solution is unique is `Pell.IsFundamental.subsingleton`:
 
 ```lean
 example {d : ℤ} {a b : Pell.Solution₁ d} (ha : Pell.IsFundamental a)
-    (hb : Pell.IsFundamental b) : a = b := by
+    (hb : Pell.IsFundamental b) : a = b := ha.subsingleton hb
+```
+
+Existence and uniqueness together say that a positive nonsquare $`d` has a _unique_ fundamental solution.
+Assemble the two facts into one statement: `obtain` the witness from the existence lemma, then supply it along with a proof that any other fundamental solution equals it, feeding both to `subsingleton`.
+
+```lean
+example {d : ℤ} (h₀ : 0 < d) (hd : ¬ IsSquare d) :
+    ∃! a : Pell.Solution₁ d, Pell.IsFundamental a := by
   sorry
 ```
 
 :::solution
 ```lean
-example {d : ℤ} {a b : Pell.Solution₁ d} (ha : Pell.IsFundamental a)
-    (hb : Pell.IsFundamental b) : a = b := ha.subsingleton hb
+example {d : ℤ} (h₀ : 0 < d) (hd : ¬ IsSquare d) :
+    ∃! a : Pell.Solution₁ d, Pell.IsFundamental a := by
+  -- Existence supplies a witness; subsingleton forces any other to equal it.
+  obtain ⟨a, ha⟩ := Pell.IsFundamental.exists_of_not_isSquare h₀ hd
+  exact ⟨a, ha, fun b hb => hb.subsingleton ha⟩
 ```
 :::
 

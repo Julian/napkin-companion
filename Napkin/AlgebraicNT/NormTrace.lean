@@ -423,19 +423,32 @@ example (K : Type*) [Field K] [NumberField K] (r : ℚ) :
 ```
 
 The whole section has been building to the multiplicativity of the norm.
-Since `Algebra.norm ℚ` is bundled as a monoid homomorphism, prove $`\operatorname{N}(\alpha\beta) = \operatorname{N}(\alpha)\operatorname{N}(\beta)` by extracting what that bundling already gives you.
+Since `Algebra.norm ℚ` is bundled as a monoid homomorphism, multiplicativity — $`\operatorname{N}(\alpha\beta) = \operatorname{N}(\alpha)\operatorname{N}(\beta)` — is just what `map_mul` extracts from that bundling.
 
 ```lean
 example (K : Type*) [Field K] [NumberField K] (α β : K) :
-    Algebra.norm ℚ (α * β) = Algebra.norm ℚ α * Algebra.norm ℚ β := by
+    Algebra.norm ℚ (α * β) = Algebra.norm ℚ α * Algebra.norm ℚ β :=
+  map_mul (Algebra.norm ℚ) α β
+```
+
+Now put multiplicativity to work alongside the corrective factor.
+For a rational scalar $`r` and any $`\alpha`, the norm of $`r\alpha` picks up a factor of $`r^n`, where $`n = \deg K`.
+Split the product with `map_mul`, then rewrite the scalar's norm with `Algebra.norm_algebraMap`.
+
+```lean
+example (K : Type*) [Field K] [NumberField K] (r : ℚ) (α : K) :
+    Algebra.norm ℚ (algebraMap ℚ K r * α)
+      = r ^ Module.finrank ℚ K * Algebra.norm ℚ α := by
   sorry
 ```
 
 :::solution
 ```lean
-example (K : Type*) [Field K] [NumberField K] (α β : K) :
-    Algebra.norm ℚ (α * β) = Algebra.norm ℚ α * Algebra.norm ℚ β :=
-  map_mul (Algebra.norm ℚ) α β
+example (K : Type*) [Field K] [NumberField K] (r : ℚ) (α : K) :
+    Algebra.norm ℚ (algebraMap ℚ K r * α)
+      = r ^ Module.finrank ℚ K * Algebra.norm ℚ α := by
+  -- Split the product, then apply the corrective factor to the scalar.
+  rw [map_mul, Algebra.norm_algebraMap]
 ```
 :::
 
@@ -464,22 +477,35 @@ recall NumberField.RingOfIntegers.rank (K : Type*) [Field K]
     Module.finrank ℤ (NumberField.RingOfIntegers K) = Module.finrank ℚ K
 ```
 
-The first problem characterizes the units of $`\mathcal{O}_K` by their norm.
-Prove that $`x` is a unit exactly when its norm is $`\pm 1` (so that $`|\operatorname{N}(x)| = 1`), then compare with `NumberField.isUnit_iff_norm`.
+The first problem characterizes the units of $`\mathcal{O}_K` by their norm: $`x` is a unit exactly when $`|\operatorname{N}(x)| = 1`, which is `NumberField.isUnit_iff_norm`.
 
 ```lean
 example (K : Type*) [Field K] [NumberField K]
     (x : NumberField.RingOfIntegers K) :
-    IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1 := by
+    IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1 :=
+  NumberField.isUnit_iff_norm
+```
+
+Use that classification.
+A unit's norm is $`\pm 1`, so its square is $`1`.
+Extract $`|\operatorname{N}(x)| = 1` from the iff with `.mp`, then trade the absolute value for a square with `sq_abs`.
+
+```lean
+example (K : Type*) [Field K] [NumberField K]
+    (x : NumberField.RingOfIntegers K) (hx : IsUnit x) :
+    (RingOfIntegers.norm ℚ x : ℚ) ^ 2 = 1 := by
   sorry
 ```
 
 :::solution
 ```lean
 example (K : Type*) [Field K] [NumberField K]
-    (x : NumberField.RingOfIntegers K) :
-    IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1 :=
-  NumberField.isUnit_iff_norm
+    (x : NumberField.RingOfIntegers K) (hx : IsUnit x) :
+    (RingOfIntegers.norm ℚ x : ℚ) ^ 2 = 1 := by
+  -- The unit's norm has absolute value 1; squaring removes the |·|.
+  have h := NumberField.isUnit_iff_norm.mp hx
+  rw [← sq_abs, h]
+  norm_num
 ```
 :::
 
@@ -487,21 +513,31 @@ example (K : Type*) [Field K] [NumberField K]
 
 "Power basis" is a first-class notion: `PowerBasis ℤ (𝓞 K)` bundles a $`\theta` together with the proof that its powers form a basis, and much of the norm/trace/discriminant API is stated against an arbitrary `PowerBasis` for exactly this reason.
 
-A power basis records how many basis elements it has as its dimension.
-Show that this dimension is forced to be the rank of $`\mathcal{O}_K` as a $`\mathbb{Z}`-module.
+A power basis records how many basis elements it has as its dimension, and `pb.finrank` pins that dimension to the rank of $`\mathcal{O}_K` as a $`\mathbb{Z}`-module.
 
 ```lean
 example (K : Type*) [Field K] [NumberField K]
     (pb : PowerBasis ℤ (NumberField.RingOfIntegers K)) :
-    Module.finrank ℤ (NumberField.RingOfIntegers K) = pb.dim := by
+    Module.finrank ℤ (NumberField.RingOfIntegers K) = pb.dim :=
+  pb.finrank
+```
+
+Consequently the dimension cannot depend on which generator $`\theta` you picked.
+Given two power bases of $`\mathcal{O}_K`, prove they have the same dimension, by rewriting each back to that common rank with `pb.finrank`.
+
+```lean
+example (K : Type*) [Field K] [NumberField K]
+    (pb pb' : PowerBasis ℤ (NumberField.RingOfIntegers K)) :
+    pb.dim = pb'.dim := by
   sorry
 ```
 
 :::solution
 ```lean
 example (K : Type*) [Field K] [NumberField K]
-    (pb : PowerBasis ℤ (NumberField.RingOfIntegers K)) :
-    Module.finrank ℤ (NumberField.RingOfIntegers K) = pb.dim :=
-  pb.finrank
+    (pb pb' : PowerBasis ℤ (NumberField.RingOfIntegers K)) :
+    pb.dim = pb'.dim := by
+  -- Both dimensions equal the ℤ-rank of 𝓞 K, so they coincide.
+  rw [← pb.finrank, ← pb'.finrank]
 ```
 :::

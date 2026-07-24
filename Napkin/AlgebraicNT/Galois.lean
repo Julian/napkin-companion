@@ -591,19 +591,29 @@ noncomputable example (K : Type*) [Field K] [Algebra ℚ K] :
 ```
 
 The question above asked you to show such an embedding fixes every rational number.
-Once phrased as an algebra homomorphism over $`\mathbb{Q}`, this is exactly the statement that it commutes with the inclusion of the scalars.
+Once phrased as an algebra homomorphism over $`\mathbb{Q}`, this is exactly the statement that it commutes with the inclusion of the scalars, recorded as `AlgHom.commutes`.
 
 ```lean
 example (K : Type*) [Field K] [Algebra ℚ K] (φ : K →ₐ[ℚ] ℂ) (q : ℚ) :
-    φ (algebraMap ℚ K q) = algebraMap ℚ ℂ q := by
+    φ (algebraMap ℚ K q) = algebraMap ℚ ℂ q :=
+  φ.commutes q
+```
+
+A first payoff: because every embedding is pinned to the same values on $`\mathbb{Q}`, any two of them agree there.
+Prove that two embeddings $`\varphi, \psi \colon K \hookrightarrow \mathbb{C}` send each rational scalar to the same place, by rewriting both sides with the fact above.
+
+```lean
+example (K : Type*) [Field K] [Algebra ℚ K] (φ ψ : K →ₐ[ℚ] ℂ) (q : ℚ) :
+    φ (algebraMap ℚ K q) = ψ (algebraMap ℚ K q) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (K : Type*) [Field K] [Algebra ℚ K] (φ : K →ₐ[ℚ] ℂ) (q : ℚ) :
-    φ (algebraMap ℚ K q) = algebraMap ℚ ℂ q :=
-  φ.commutes q
+example (K : Type*) [Field K] [Algebra ℚ K] (φ ψ : K →ₐ[ℚ] ℂ) (q : ℚ) :
+    φ (algebraMap ℚ K q) = ψ (algebraMap ℚ K q) := by
+  -- Both embeddings commute with the scalars, landing on the same q.
+  rw [φ.commutes, ψ.commutes]
 ```
 :::
 
@@ -625,13 +635,23 @@ noncomputable example (F : Type*) [Field F] :
 ```
 
 The "basis bash" proving degrees are multiplicative is `Module.finrank_mul_finrank`, which holds for any scalar tower of rings acting on a module, with the tower condition recorded by the `IsScalarTower F K L` typeclass.
-Fill in the proof of the multiplicative degree theorem.
 
 ```lean
 example (F K L : Type*) [Field F] [Field K] [Field L]
     [Algebra F K] [Algebra K L] [Algebra F L] [IsScalarTower F K L]
     [FiniteDimensional F K] [FiniteDimensional K L] :
-    Module.finrank F K * Module.finrank K L = Module.finrank F L := by
+    Module.finrank F K * Module.finrank K L = Module.finrank F L :=
+  Module.finrank_mul_finrank F K L
+```
+
+One structural consequence of the tower law is that an intermediate degree divides the whole.
+Prove that $`[K:F]` divides $`[L:F]` by exhibiting the quotient: unfold the divisibility to its witness $`[L:K]` and discharge the equation with the multiplicative law above.
+
+```lean
+example (F K L : Type*) [Field F] [Field K] [Field L]
+    [Algebra F K] [Algebra K L] [Algebra F L] [IsScalarTower F K L]
+    [FiniteDimensional F K] [FiniteDimensional K L] :
+    Module.finrank F K ∣ Module.finrank F L := by
   sorry
 ```
 
@@ -640,8 +660,9 @@ example (F K L : Type*) [Field F] [Field K] [Field L]
 example (F K L : Type*) [Field F] [Field K] [Field L]
     [Algebra F K] [Algebra K L] [Algebra F L] [IsScalarTower F K L]
     [FiniteDimensional F K] [FiniteDimensional K L] :
-    Module.finrank F K * Module.finrank K L = Module.finrank F L :=
-  Module.finrank_mul_finrank F K L
+    Module.finrank F K ∣ Module.finrank F L :=
+  -- finrank F L = finrank F K * finrank K L exhibits the divisor.
+  ⟨Module.finrank K L, (Module.finrank_mul_finrank F K L).symm⟩
 ```
 :::
 
@@ -661,15 +682,26 @@ Specialized to a number field, this says the number of embeddings into $`\mathbb
 
 ```lean
 example (K : Type*) [Field K] [Algebra ℚ K] [FiniteDimensional ℚ K] :
-    Fintype.card (K →ₐ[ℚ] ℂ) = Module.finrank ℚ K := by
+    Fintype.card (K →ₐ[ℚ] ℂ) = Module.finrank ℚ K :=
+  AlgHom.card (F := ℚ) (E := K) ℂ
+```
+
+In particular a number field always has *at least one* embedding into $`\mathbb{C}`, because its degree is positive.
+Prove that the number of embeddings is nonzero: rewrite the count into the degree with the fact above, then close it with positivity of the degree (`Module.finrank_pos`).
+
+```lean
+example (K : Type*) [Field K] [Algebra ℚ K] [FiniteDimensional ℚ K] :
+    0 < Fintype.card (K →ₐ[ℚ] ℂ) := by
   sorry
 ```
 
 :::solution
 ```lean
 example (K : Type*) [Field K] [Algebra ℚ K] [FiniteDimensional ℚ K] :
-    Fintype.card (K →ₐ[ℚ] ℂ) = Module.finrank ℚ K :=
-  AlgHom.card (F := ℚ) (E := K) ℂ
+    0 < Fintype.card (K →ₐ[ℚ] ℂ) := by
+  -- Count = degree, and the degree of a nonzero extension is positive.
+  rw [AlgHom.card (F := ℚ) (E := K) ℂ]
+  exact Module.finrank_pos
 ```
 :::
 
@@ -688,14 +720,25 @@ example (F : Type*) [Field F] (f : Polynomial F) : Prop := f.Separable
 The exercise asked you to show that a nonzero characteristic is prime.
 
 ```lean
-example (F : Type*) [Field F] (p : ℕ) [CharP F p] (hp : p ≠ 0) : p.Prime := by
+example (F : Type*) [Field F] (p : ℕ) [CharP F p] (hp : p ≠ 0) : p.Prime :=
+  CharP.char_prime_of_ne_zero F hp
+```
+
+Primality bundles several facts; prove one of its clauses directly — that the characteristic is never $`1`.
+Suppose for contradiction that $`p = 1`; substitute it, so that `CharP.cast_eq_zero` forces $`1_F = 0`, which `simp` recognizes as absurd.
+
+```lean
+example (F : Type*) [Field F] (p : ℕ) [CharP F p] : p ≠ 1 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (F : Type*) [Field F] (p : ℕ) [CharP F p] (hp : p ≠ 0) : p.Prime :=
-  CharP.char_prime_of_ne_zero F hp
+example (F : Type*) [Field F] (p : ℕ) [CharP F p] : p ≠ 1 := by
+  -- If p = 1 then (1 : F) = 0, impossible in a field.
+  intro h
+  subst h
+  exact one_ne_zero (by exact_mod_cast CharP.cast_eq_zero F 1)
 ```
 :::
 
@@ -770,21 +813,36 @@ example (F K : Type*) [Field F] [Field K] [Algebra F K]
 ```
 
 That the two directions are mutually inverse is the crux of the correspondence.
-Show that starting from a subgroup $`H`, taking its fixed field, and then taking the fixing subgroup of that recovers $`H`.
+That starting from a subgroup $`H`, taking its fixed field, and then taking the fixing subgroup of that recovers $`H` is `IntermediateField.fixingSubgroup_fixedField`.
 
 ```lean
 example (F K : Type*) [Field F] [Field K] [Algebra F K] [FiniteDimensional F K]
     (H : Subgroup (K ≃ₐ[F] K)) :
-    IntermediateField.fixingSubgroup (IntermediateField.fixedField H) = H := by
+    IntermediateField.fixingSubgroup (IntermediateField.fixedField H) = H :=
+  IntermediateField.fixingSubgroup_fixedField H
+```
+
+Having a left inverse forces the fixed-field map to be *injective* — distinct subgroups have distinct fixed fields.
+Prove it: apply `fixingSubgroup` to both sides of the hypothesis (with `congrArg`), then collapse each side with the round-trip above.
+
+```lean
+example (F K : Type*) [Field F] [Field K] [Algebra F K] [FiniteDimensional F K]
+    (H₁ H₂ : Subgroup (K ≃ₐ[F] K))
+    (h : IntermediateField.fixedField H₁ = IntermediateField.fixedField H₂) :
+    H₁ = H₂ := by
   sorry
 ```
 
 :::solution
 ```lean
 example (F K : Type*) [Field F] [Field K] [Algebra F K] [FiniteDimensional F K]
-    (H : Subgroup (K ≃ₐ[F] K)) :
-    IntermediateField.fixingSubgroup (IntermediateField.fixedField H) = H :=
-  IntermediateField.fixingSubgroup_fixedField H
+    (H₁ H₂ : Subgroup (K ≃ₐ[F] K))
+    (h : IntermediateField.fixedField H₁ = IntermediateField.fixedField H₂) :
+    H₁ = H₂ := by
+  -- Apply fixingSubgroup to both sides; it inverts fixedField.
+  have := congrArg IntermediateField.fixingSubgroup h
+  rwa [IntermediateField.fixingSubgroup_fixedField,
+    IntermediateField.fixingSubgroup_fixedField] at this
 ```
 :::
 
