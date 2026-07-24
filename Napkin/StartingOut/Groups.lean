@@ -894,16 +894,26 @@ example (G : Type*) [Group G] : Subgroup G where
 
 In practice, you rarely write the closure proofs by hand: Mathlib provides `Subgroup.closure : Set G → Subgroup G` to wrap any subset into "the smallest subgroup containing it", and named subgroups like `Subgroup.zpowers x`, `Subgroup.center G`, and `Subgroup.normalizer H` give you the common ones already constructed.
 
-Your turn: the trivial subgroup $`\bot` really does contain nothing but the identity.
+The trivial subgroup $`\bot` really does contain nothing but the identity, which is exactly `Subgroup.mem_bot`:
 
 ```lean
 example (G : Type*) [Group G] (g : G) (h : g ∈ (⊥ : Subgroup G)) :
-    g = 1 := by sorry
+    g = 1 := by rwa [Subgroup.mem_bot] at h
+```
+
+The identity is special for a more basic reason, one that leans on the group *axioms* rather than a library lemma.
+Prove that the identity is the only *idempotent*: if $`g \star g = g`, then $`g = 1`.
+The trick is cancellation — rewrite $`g` as $`g \star 1`, so the hypothesis reads $`g \star g = g \star 1`, and cancel the leading $`g` on the left (`mul_left_cancel`).
+
+```lean
+example (G : Type*) [Group G] (g : G) (h : g * g = g) : g = 1 := by
+  sorry
 ```
 
 :::solution
 ```lean
-example (G : Type*) [Group G] (g : G) (h : g ∈ (⊥ : Subgroup G)) :
-    g = 1 := by rwa [Subgroup.mem_bot] at h
+example (G : Type*) [Group G] (g : G) (h : g * g = g) : g = 1 :=
+  -- g * g = g * 1, then cancel the left factor.
+  mul_left_cancel (show g * g = g * 1 by rw [mul_one]; exact h)
 ```
 :::
