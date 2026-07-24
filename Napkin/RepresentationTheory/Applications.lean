@@ -227,6 +227,14 @@ example (a b c : ℂ) (ha : IsIntegral ℤ a) (hb : IsIntegral ℤ b)
   sorry
 ```
 
+:::solution
+```lean
+example (a b c : ℂ) (ha : IsIntegral ℤ a) (hb : IsIntegral ℤ b)
+    (hc : IsIntegral ℤ c) : IsIntegral ℤ (a * b + c) :=
+  (ha.mul hb).add hc
+```
+:::
+
 The reason $`\frac{|G|}{\dim V}`, once shown to be an algebraic integer, must actually be an integer is that $`\overline{\mathbb{Z}} \cap \mathbb{Q} = \mathbb{Z}`.
 Using `IsIntegrallyClosed.isIntegral_iff`, show that a rational number which is integral over $`\mathbb{Z}` comes from an integer.
 
@@ -234,6 +242,14 @@ Using `IsIntegrallyClosed.isIntegral_iff`, show that a rational number which is 
 example (q : ℚ) (h : IsIntegral ℤ q) : ∃ n : ℤ, (n : ℚ) = q := by
   sorry
 ```
+
+:::solution
+```lean
+example (q : ℚ) (h : IsIntegral ℤ q) : ∃ n : ℤ, (n : ℚ) = q := by
+  obtain ⟨n, hn⟩ := IsIntegrallyClosed.isIntegral_iff.mp h
+  exact ⟨n, by simpa using hn⟩
+```
+:::
 
 ## Burnside's theorem
 
@@ -262,6 +278,14 @@ example (G : Type*) [Group G] [IsSimpleGroup G] (H : Subgroup G)
     (hH : H.Normal) : H = ⊥ ∨ H = ⊤ := by
   sorry
 ```
+
+:::solution
+```lean
+example (G : Type*) [Group G] [IsSimpleGroup G] (H : Subgroup G)
+    (hH : H.Normal) : H = ⊥ ∨ H = ⊤ :=
+  IsSimpleGroup.eq_bot_or_eq_top_of_normal H hH
+```
+:::
 
 ## Frobenius determinant
 
@@ -302,6 +326,14 @@ example {R : Type*} [CommRing R] {G : Type*} [Group G] [Fintype G]
   sorry
 ```
 
+:::solution
+```lean
+example {R : Type*} [CommRing R] {G : Type*} [Group G] [Fintype G]
+    [DecidableEq G] (x : G → R) (g : G) : groupMatrix x g g = x 1 :=
+  groupMatrix_diag x g
+```
+:::
+
 For the one-element group, the group determinant is the lone entry $`x_1`.
 Prove this from `Matrix.det_unique`.
 
@@ -310,6 +342,14 @@ example {R : Type*} [CommRing R] {G : Type*} [Group G] [Fintype G]
     [DecidableEq G] [Unique G] (x : G → R) : groupDeterminant x = x 1 := by
   sorry
 ```
+
+:::solution
+```lean
+example {R : Type*} [CommRing R] {G : Type*} [Group G] [Fintype G]
+    [DecidableEq G] [Unique G] (x : G → R) : groupDeterminant x = x 1 :=
+  groupDeterminant_unique x
+```
+:::
 
 What Mathlib does provide is the linear-algebra backbone of the proof.
 Determinants are multiplicative.
@@ -329,3 +369,12 @@ example {n o : Type*} [Fintype n] [DecidableEq n] [Fintype o] [DecidableEq o]
     (Matrix.blockDiagonal M).det = ∏ k, (M k).det := by
   sorry
 ```
+
+:::solution
+```lean
+example {n o : Type*} [Fintype n] [DecidableEq n] [Fintype o] [DecidableEq o]
+    {R : Type*} [CommRing R] (M : o → Matrix n n R) :
+    (Matrix.blockDiagonal M).det = ∏ k, (M k).det :=
+  Matrix.det_blockDiagonal M
+```
+:::

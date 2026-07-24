@@ -375,6 +375,15 @@ example :
   sorry
 ```
 
+:::solution
+```lean
+example :
+    MvPolynomial.eval ![1, 0]
+      (pderiv 0 (X 0 ^ 2 + X 1 ^ 2 - 1 : MvPolynomial (Fin 2) ℂ)) ≠ 0 := by
+  simp [pderiv_X]
+```
+:::
+
 ## The projective line ℂP¹
 
 The projectivization $`\mathbb{P}(V)` of a vector space $`V` over a field $`K` is `Projectivization K V`, the quotient of $`\{v \in V \mid v \neq 0\}` by scalar equivalence.
@@ -404,6 +413,14 @@ example (v w : Fin 2 → ℂ) (hv : v ≠ 0) (hw : w ≠ 0) (a : ℂ) (ha : a �
     Projectivization.mk ℂ v hv = Projectivization.mk ℂ w hw := by
   sorry
 ```
+
+:::solution
+```lean
+example (v w : Fin 2 → ℂ) (hv : v ≠ 0) (hw : w ≠ 0) (a : ℂ) (ha : a • w = v) :
+    Projectivization.mk ℂ v hv = Projectivization.mk ℂ w hw :=
+  (Projectivization.mk_eq_mk_iff' ℂ v w hv hw).mpr ⟨a, ha⟩
+```
+:::
 
 ## Projective plane curves
 
@@ -438,6 +455,15 @@ As a reader exercise, show that the single monomial $`x^2 y` is homogeneous of d
 example : (X 0 ^ 2 * X 1 : MvPolynomial (Fin 3) ℂ).IsHomogeneous 3 := by
   sorry
 ```
+
+:::solution
+```lean
+example : (X 0 ^ 2 * X 1 : MvPolynomial (Fin 3) ℂ).IsHomogeneous 3 := by
+  have hX : ∀ i : Fin 3, (X i : MvPolynomial (Fin 3) ℂ).IsHomogeneous 1 :=
+    fun i => isHomogeneous_X ℂ i
+  simpa using ((hX 0).pow 2).mul (hX 1)
+```
+:::
 
 ## Nodes of a plane curve
 
@@ -496,6 +522,18 @@ example : IsNode (X 0 * X 1 : MvPolynomial (Fin 2) ℚ) ![0, 0] := by
   sorry
 ```
 
+:::solution
+```lean
+example : IsNode (X 0 * X 1 : MvPolynomial (Fin 2) ℚ) ![0, 0] := by
+  refine ⟨⟨?_, ?_, ?_⟩, ?_⟩
+  · simp
+  · simp [pderiv_X]
+  · simp [pderiv_X]
+  · rw [hessianDet_eq]
+    simp [pderiv_X]
+```
+:::
+
 By contrast, the point $`(1, 0)` on the circle is a smooth point: its partial $`\partial f / \partial x = 2x` is nonzero there, so it is not singular.
 Smoothness is the *negation* of singularity, so the proof runs the other way: `intro h` assumes the point were singular, and the $`\partial f / \partial x`-vanishing component `h.2.1` then claims $`2 = 0`, so `simpa [pderiv_X] using h.2.1` computes that and derives the contradiction.
 
@@ -504,6 +542,15 @@ example :
     IsSmoothPoint (X 0 ^ 2 + X 1 ^ 2 - 1 : MvPolynomial (Fin 2) ℚ) ![1, 0] := by
   sorry
 ```
+
+:::solution
+```lean
+example :
+    IsSmoothPoint (X 0 ^ 2 + X 1 ^ 2 - 1 : MvPolynomial (Fin 2) ℚ) ![1, 0] := by
+  intro h
+  simpa [pderiv_X] using h.2.1
+```
+:::
 
 As a final exercise, show the origin is a singular point of the cuspidal cubic $`y^2 - x^3`.
 Its partials $`-3x^2`, $`2y` both vanish at the origin, so this is exactly the singular-point half of the node recipe: `refine ⟨?_, ?_, ?_⟩ <;> simp [pderiv_X]`.
@@ -514,5 +561,13 @@ example :
     IsSingularPoint (X 1 ^ 2 - X 0 ^ 3 : MvPolynomial (Fin 2) ℚ) ![0, 0] := by
   sorry
 ```
+
+:::solution
+```lean
+example :
+    IsSingularPoint (X 1 ^ 2 - X 0 ^ 3 : MvPolynomial (Fin 2) ℚ) ![0, 0] := by
+  refine ⟨?_, ?_, ?_⟩ <;> simp [pderiv_X]
+```
+:::
 
 There is a general theory of *resolving* such singularities to recover a nonsingular Riemann surface; that construction has no counterpart in the library and stays prose.

@@ -319,6 +319,13 @@ example {k G : Type*} [Field k] [Monoid G] (V W : FDRep k G) (i : V ≅ W) :
   sorry
 ```
 
+:::solution
+```lean
+example {k G : Type*} [Field k] [Monoid G] (V W : FDRep k G) (i : V ≅ W) :
+    V.character = W.character := FDRep.char_iso i
+```
+:::
+
 ## The dual space modulo the commutator
 
 The commutation identity $`\chi_V(hg) = \chi_V(gh)` is `FDRep.char_mul_comm`, and its consequence that the character is constant on conjugacy classes, $`\chi_V(hgh^{-1}) = \chi_V(g)`, is `FDRep.char_conj`.
@@ -340,6 +347,15 @@ example {k G : Type*} [Field k] [Group G] (V : FDRep k G) (g h : G)
     (hc : IsConj g h) : V.character g = V.character h := by
   sorry
 ```
+
+:::solution
+```lean
+example {k G : Type*} [Field k] [Group G] (V : FDRep k G) (g h : G)
+    (hc : IsConj g h) : V.character g = V.character h := by
+  obtain ⟨c, rfl⟩ := isConj_iff.mp hc
+  exact (FDRep.char_conj V g c).symm
+```
+:::
 
 ## Orthogonality of characters
 
@@ -382,3 +398,13 @@ example {k G : Type*} [Field k] [IsAlgClosed k] [Group G] [Fintype G]
       (1 : k) := by
   sorry
 ```
+
+:::solution
+```lean
+example {k G : Type*} [Field k] [IsAlgClosed k] [Group G] [Fintype G]
+    [Invertible (Fintype.card G : k)] (V : FDRep k G) [Simple V] :
+    ⅟(Fintype.card G : k) • ∑ g : G, V.character g * V.character g⁻¹ =
+      (1 : k) := by
+  rw [FDRep.char_orthonormal V V, if_pos ⟨Iso.refl V⟩]
+```
+:::

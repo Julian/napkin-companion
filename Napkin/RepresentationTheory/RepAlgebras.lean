@@ -505,6 +505,13 @@ noncomputable example (k G : Type*) [CommRing k] [CommGroup G] :
   sorry
 ```
 
+:::solution
+```lean
+noncomputable example (k G : Type*) [CommRing k] [CommGroup G] :
+    CommRing (MonoidAlgebra k G) := inferInstance
+```
+:::
+
 ## Representations
 
 A representation is just a module over $`A` whose $`k`-scalar action agrees with the one inherited through $`A`.
@@ -533,6 +540,13 @@ example (A V : Type*) [Ring A] [AddCommGroup V] [Module A V] (v : V) :
     (1 : A) • v = v := by
   sorry
 ```
+
+:::solution
+```lean
+example (A V : Type*) [Ring A] [AddCommGroup V] [Module A V] (v : V) :
+    (1 : A) • v = v := one_smul A v
+```
+:::
 
 ## Irreducible and indecomposable representations
 
@@ -568,6 +582,35 @@ example (k : Type*) [Field k] (d : ℕ) [NeZero d] :
     IsSimpleModule (Matrix (Fin d) (Fin d) k) (Fin d → k) := by
   sorry
 ```
+
+:::solution
+```lean
+example (k : Type*) [Field k] (d : ℕ) [NeZero d] :
+    IsSimpleModule (Matrix (Fin d) (Fin d) k) (Fin d → k) := by
+  haveI : Nonempty (Fin d) := ⟨0⟩
+  rw [isSimpleModule_iff]
+  refine ⟨fun p => ?_⟩
+  rcases eq_or_ne p ⊥ with hp | hp
+  · exact Or.inl hp
+  refine Or.inr (eq_top_iff.2 (fun w _ => ?_))
+  obtain ⟨v, hv, hv0⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hp
+  obtain ⟨j, hj⟩ : ∃ j, v j ≠ 0 := by
+    by_contra h
+    push_neg at h
+    exact hv0 (funext h)
+  have hmem : ∀ i, Pi.single i (w i) ∈ p := by
+    intro i
+    have hi := p.smul_mem (Matrix.single i j (w i * (v j)⁻¹)) hv
+    rw [Matrix.smul_eq_mulVec, Matrix.single_mulVec_eq,
+      mul_assoc, inv_mul_cancel₀ hj, mul_one, ← Pi.single_smul',
+      smul_eq_mul, mul_one] at hi
+    exact hi
+  have hsum : ∑ i, Pi.single i (w i) = w := by
+    ext i; simp
+  rw [← hsum]
+  exact Submodule.sum_mem _ (fun i _ => hmem i)
+```
+:::
 
 Dually, the matrix algebra has no nontrivial two-sided ideals, which Mathlib derives from the Artin--Wedderburn theory as `IsSimpleRing`.
 
@@ -613,5 +656,14 @@ example (A V W : Type*) [Ring A] [AddCommGroup V] [Module A V]
     (T : V →ₗ[A] W) (hT : T ≠ 0) : Function.Injective T := by
   sorry
 ```
+
+:::solution
+```lean
+example (A V W : Type*) [Ring A] [AddCommGroup V] [Module A V]
+    [AddCommGroup W] [Module A W] [IsSimpleModule A V]
+    (T : V →ₗ[A] W) (hT : T ≠ 0) : Function.Injective T :=
+  LinearMap.injective_of_ne_zero hT
+```
+:::
 
 The algebraically-closed form of Schur's lemma is `IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed`: every $`A`-endomorphism of a finite-dimensional simple $`A`-module is in the image of $`k \to \operatorname{End}_A(V)`, i.e. is scalar multiplication.

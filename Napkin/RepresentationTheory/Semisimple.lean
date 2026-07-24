@@ -362,6 +362,16 @@ example {R M N : Type*} [Ring R]
   sorry
 ```
 
+:::solution
+```lean
+example {R M N : Type*} [Ring R]
+    [AddCommGroup M] [Module R M] [IsSimpleModule R M]
+    [AddCommGroup N] [Module R N] [IsSimpleModule R N]
+    (f : M →ₗ[R] N) (hf : f ≠ 0) : Function.Bijective f :=
+  (LinearMap.bijective_or_eq_zero f).resolve_right hf
+```
+:::
+
 ## Semisimple algebras
 
 The equivalence of the first two conditions is the Artin--Wedderburn theorem, recorded as `isSemisimpleRing_iff_pi_matrix_divisionRing`: a ring is semisimple exactly when it is a finite product of matrix rings over division rings.
@@ -385,6 +395,13 @@ example (k : Type*) [Field k] (n : ℕ) :
   sorry
 ```
 
+:::solution
+```lean
+example (k : Type*) [Field k] (n : ℕ) :
+    IsSemisimpleRing (Matrix (Fin n) (Fin n) k) := inferInstance
+```
+:::
+
 ## Maschke's theorem
 
 `Submodule.exists_isCompl` is Maschke's theorem: any $`k[G]`-submodule of a representation has a $`k[G]`-invariant complement, provided $`|G|` is invertible in $`k`.
@@ -406,3 +423,14 @@ example {k G V : Type*} [Field k] [Group G] [Finite G] [NeZero (Nat.card G : k)]
     ∃ q : Submodule (MonoidAlgebra k G) V, IsCompl p q := by
   sorry
 ```
+
+:::solution
+```lean
+example {k G V : Type*} [Field k] [Group G] [Finite G]
+    [NeZero (Nat.card G : k)]
+    [AddCommGroup V] [Module (MonoidAlgebra k G) V]
+    (p : Submodule (MonoidAlgebra k G) V) :
+    ∃ q : Submodule (MonoidAlgebra k G) V, IsCompl p q :=
+  ComplementedLattice.exists_isCompl p
+```
+:::
