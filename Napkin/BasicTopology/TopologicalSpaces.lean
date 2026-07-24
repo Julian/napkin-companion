@@ -455,18 +455,29 @@ example (X : Type*) [TopologicalSpace X] (U : Set X) : Prop :=
   IsOpen U
 ```
 
-The discrete space, in which every set is open, is `DiscreteTopology X`.
-Its defining property `isOpen_discrete` says exactly that.
+The discrete space, in which every set is open, is `DiscreteTopology X`; its defining property is `isOpen_discrete`.
 
 ```lean
 example (X : Type*) [TopologicalSpace X] [DiscreteTopology X] (S : Set X) :
-    IsOpen S := by sorry
+    IsOpen S := isOpen_discrete S
+```
+
+Here is what that buys you.
+Show that *every* map out of a discrete space is continuous.
+Continuity means "the pre-image of every open set is open" (`continuous_def`); feed that any open `U`, and the pre-image is open for free because *everything* is open in a discrete space.
+
+```lean
+example (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
+    [DiscreteTopology X] (f : X → Y) : Continuous f := by
+  sorry
 ```
 
 :::solution
 ```lean
-example (X : Type*) [TopologicalSpace X] [DiscreteTopology X] (S : Set X) :
-    IsOpen S := isOpen_discrete S
+example (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
+    [DiscreteTopology X] (f : X → Y) : Continuous f :=
+  -- Check the definition: every pre-image is open, since every set is.
+  continuous_def.mpr fun _ _ => isOpen_discrete _
 ```
 :::
 
@@ -482,19 +493,29 @@ example (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
 ```
 
 A homeomorphism is `X ≃ₜ Y`, a bijection bundled with continuity in both directions; the two halves are `.continuous` and `.symm.continuous`.
-Try recovering both from the bundled object.
 
 ```lean
 example (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
-    (h : X ≃ₜ Y) : Continuous h ∧ Continuous h.symm := by
+    (h : X ≃ₜ Y) : Continuous h ∧ Continuous h.symm :=
+  ⟨h.continuous, h.symm.continuous⟩
+```
+
+The reason homeomorphisms matter is that they transport *topological* properties across.
+Prove one instance: a homeomorphism sends compact sets to compact sets.
+There is no bespoke lemma — combine the general fact that a continuous image of a compact set is compact (`IsCompact.image`) with the forward continuity you just extracted.
+
+```lean
+example (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
+    (h : X ≃ₜ Y) (s : Set X) (hs : IsCompact s) : IsCompact (h '' s) := by
   sorry
 ```
 
 :::solution
 ```lean
 example (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
-    (h : X ≃ₜ Y) : Continuous h ∧ Continuous h.symm :=
-  ⟨h.continuous, h.symm.continuous⟩
+    (h : X ≃ₜ Y) (s : Set X) (hs : IsCompact s) : IsCompact (h '' s) :=
+  -- Continuous image of a compact set, with h as the continuous map.
+  hs.image h.continuous
 ```
 :::
 
@@ -508,17 +529,29 @@ example (X : Type*) [TopologicalSpace X] (S : Set X) :
 ```
 
 The QUESTION about translating the axioms to closed sets — arbitrary intersections stay closed, finite unions stay closed — is `isClosed_iInter` and `IsClosed.union`.
-Prove the two-set union case.
+The two-set union has a ready-made lemma:
 
 ```lean
 example (X : Type*) [TopologicalSpace X] (S T : Set X)
-    (hS : IsClosed S) (hT : IsClosed T) : IsClosed (S ∪ T) := by sorry
+    (hS : IsClosed S) (hT : IsClosed T) : IsClosed (S ∪ T) := hS.union hT
+```
+
+But the point of the section is that "closed" is just "open complement", so prove it that way — the translation the QUESTION is really about.
+Rewrite the goal through `isOpen_compl_iff`, push the complement across the union with De Morgan (`Set.compl_union`), and you are left with an *intersection of two open sets* — each complement is open because `S` and `T` are closed.
+
+```lean
+example (X : Type*) [TopologicalSpace X] (S T : Set X)
+    (hS : IsClosed S) (hT : IsClosed T) : IsClosed (S ∪ T) := by
+  sorry
 ```
 
 :::solution
 ```lean
 example (X : Type*) [TopologicalSpace X] (S T : Set X)
-    (hS : IsClosed S) (hT : IsClosed T) : IsClosed (S ∪ T) := hS.union hT
+    (hS : IsClosed S) (hT : IsClosed T) : IsClosed (S ∪ T) := by
+  -- Closed = open complement; (S ∪ T)ᶜ = Sᶜ ∩ Tᶜ is an intersection of opens.
+  rw [← isOpen_compl_iff, Set.compl_union]
+  exact hS.isOpen_compl.inter hT.isOpen_compl
 ```
 :::
 
@@ -564,13 +597,25 @@ The PROBLEM "Hausdorff implies $`T_1`" — that every singleton `{p}` is closed 
 
 ```lean
 example (X : Type*) [TopologicalSpace X] [T2Space X] (p : X) :
-    IsClosed {p} := by sorry
+    IsClosed {p} := isClosed_singleton
+```
+
+Build on that: prove a *two-point* set `{p, q}` is closed.
+The move is to see `{p, q}` as a union of two singletons — `Set.insert_eq` rewrites `{p, q}` to `{p} ∪ {q}` — and then combine "each singleton is closed" with "a union of two closed sets is closed" (`IsClosed.union`), reusing both facts from above.
+
+```lean
+example (X : Type*) [TopologicalSpace X] [T2Space X] (p q : X) :
+    IsClosed ({p, q} : Set X) := by
+  sorry
 ```
 
 :::solution
 ```lean
-example (X : Type*) [TopologicalSpace X] [T2Space X] (p : X) :
-    IsClosed {p} := isClosed_singleton
+example (X : Type*) [TopologicalSpace X] [T2Space X] (p q : X) :
+    IsClosed ({p, q} : Set X) := by
+  -- {p, q} = {p} ∪ {q}, a union of two closed singletons.
+  rw [Set.insert_eq]
+  exact isClosed_singleton.union isClosed_singleton
 ```
 :::
 
