@@ -300,19 +300,30 @@ example (G X : Type*) [Group G] [MulAction G X] : G →* Equiv.Perm X :=
   MulAction.toPermHom G X
 ```
 
-A concrete symptom of that fact: each $`g` acts as a *bijection*, with inverse the action of $`g^{-1}`.
-Show that applying $`g` then $`g^{-1}` gets you back where you started.
+A concrete symptom of that fact: applying $`g` then $`g^{-1}` gets you back where you started, which Mathlib records as `inv_smul_smul`.
 
 ```lean
 example (G X : Type*) [Group G] [MulAction G X] (g : G) (x : X) :
-    g⁻¹ • g • x = x := by
+    g⁻¹ • g • x = x := inv_smul_smul g x
+```
+
+That is precisely what makes each $`g` act as a *bijection* — in particular *injectively*.
+Prove it: if $`g \cdot x = g \cdot y`, then $`x = y`.
+Apply the action of $`g^{-1}` to both sides of the hypothesis (`congrArg`), then the round-trip above (as a `simp` lemma) collapses both sides.
+
+```lean
+example (G X : Type*) [Group G] [MulAction G X] (g : G) (x y : X)
+    (h : g • x = g • y) : x = y := by
   sorry
 ```
 
 :::solution
 ```lean
-example (G X : Type*) [Group G] [MulAction G X] (g : G) (x : X) :
-    g⁻¹ • g • x = x := inv_smul_smul g x
+example (G X : Type*) [Group G] [MulAction G X] (g : G) (x y : X)
+    (h : g • x = g • y) : x = y := by
+  -- Hit both sides with g⁻¹; the round-trip cancels each g.
+  have := congrArg (fun z => g⁻¹ • z) h
+  simpa [inv_smul_smul] using this
 ```
 :::
 
@@ -327,35 +338,57 @@ example (G X : Type*) [Group G] [MulAction G X] (x : X) :
     Set X := MulAction.orbit G x
 ```
 
-The chapter asks why $`\operatorname{Stab}_G(x)` is a subgroup; Mathlib has already bundled it as one, with membership given by `MulAction.mem_stabilizer_iff`.
-Prove that unfolding: $`g` stabilizes $`x` exactly when $`g \cdot x = x`.
+The chapter asks why $`\operatorname{Stab}_G(x)` is a subgroup; Mathlib has already bundled it as one, with membership `MulAction.mem_stabilizer_iff` unfolding "$`g` stabilizes $`x`" to $`g \cdot x = x`.
 
-```lean
-example (G X : Type*) [Group G] [MulAction G X] (g : G) (x : X) :
-    g ∈ MulAction.stabilizer G x ↔ g • x = x := by
-  sorry
-```
-
-:::solution
 ```lean
 example (G X : Type*) [Group G] [MulAction G X] (g : G) (x : X) :
     g ∈ MulAction.stabilizer G x ↔ g • x = x :=
   MulAction.mem_stabilizer_iff
 ```
-:::
 
-The relation $`\sim` is an equivalence relation; its reflexivity is that every point lies in its own orbit.
+Rather than take Mathlib's word that it is a subgroup, prove one of the closure conditions yourself.
+Show that if both $`g` and $`h` fix $`x`, then so does their product $`g h`.
+Expand $`(g h) \cdot x` with `mul_smul` into $`g \cdot (h \cdot x)`, then rewrite inward using each hypothesis in turn.
 
 ```lean
-example (G X : Type*) [Group G] [MulAction G X] (x : X) :
-    x ∈ MulAction.orbit G x := by
+example (G X : Type*) [Group G] [MulAction G X] (x : X) (g h : G)
+    (hg : g • x = x) (hh : h • x = x) : (g * h) • x = x := by
   sorry
 ```
 
 :::solution
 ```lean
+example (G X : Type*) [Group G] [MulAction G X] (x : X) (g h : G)
+    (hg : g • x = x) (hh : h • x = x) : (g * h) • x = x := by
+  -- (g*h)•x = g•(h•x) = g•x = x.
+  rw [mul_smul, hh, hg]
+```
+:::
+
+The relation $`\sim` is an equivalence relation; its reflexivity is that every point lies in its own orbit, `MulAction.mem_orbit_self`.
+
+```lean
 example (G X : Type*) [Group G] [MulAction G X] (x : X) :
     x ∈ MulAction.orbit G x := MulAction.mem_orbit_self x
+```
+
+Prove the next clause of "equivalence relation" — *symmetry*.
+If $`y` is in the orbit of $`x`, then $`x` is in the orbit of $`y`.
+Membership $`y \in \operatorname{orbit}(x)` means some $`g` sends $`x` to $`y`; `obtain ⟨g, rfl⟩` names it and replaces $`y` by $`g \cdot x`, after which $`g^{-1}` sends $`y` back to $`x`.
+
+```lean
+example (G X : Type*) [Group G] [MulAction G X] (x y : X)
+    (h : y ∈ MulAction.orbit G x) : x ∈ MulAction.orbit G y := by
+  sorry
+```
+
+:::solution
+```lean
+example (G X : Type*) [Group G] [MulAction G X] (x y : X)
+    (h : y ∈ MulAction.orbit G x) : x ∈ MulAction.orbit G y := by
+  -- y = g • x, so g⁻¹ • y = x witnesses x ∈ orbit y.
+  obtain ⟨g, rfl⟩ := h
+  exact ⟨g⁻¹, inv_smul_smul g x⟩
 ```
 :::
 
@@ -381,19 +414,29 @@ example (G X : Type*) [Group G] [MulAction G X] [Fintype G]
   MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group G X
 ```
 
-The set $`\operatorname{FixPt} g` is exactly the points fixed by $`g`.
-Show that membership in `fixedBy X g` unfolds to $`g \cdot x = x`.
+The set $`\operatorname{FixPt} g` is exactly the points fixed by $`g`; membership `MulAction.mem_fixedBy` unfolds to $`g \cdot x = x`.
 
 ```lean
 example (G X : Type*) [Group G] [MulAction G X] (g : G) (x : X) :
-    x ∈ MulAction.fixedBy X g ↔ g • x = x := by
+    x ∈ MulAction.fixedBy X g ↔ g • x = x := MulAction.mem_fixedBy
+```
+
+Notice that $`g \cdot x = x` is *also* what puts $`g` into $`\operatorname{Stab}_G(x)`.
+So the two viewpoints — "$`x` is fixed by $`g`" and "$`g` stabilizes $`x`" — are the same condition read from opposite sides.
+Prove they coincide, by unfolding each membership to that common equation.
+
+```lean
+example (G X : Type*) [Group G] [MulAction G X] (g : G) (x : X) :
+    x ∈ MulAction.fixedBy X g ↔ g ∈ MulAction.stabilizer G x := by
   sorry
 ```
 
 :::solution
 ```lean
 example (G X : Type*) [Group G] [MulAction G X] (g : G) (x : X) :
-    x ∈ MulAction.fixedBy X g ↔ g • x = x := MulAction.mem_fixedBy
+    x ∈ MulAction.fixedBy X g ↔ g ∈ MulAction.stabilizer G x := by
+  -- Both sides are the single equation g • x = x.
+  rw [MulAction.mem_fixedBy, MulAction.mem_stabilizer_iff]
 ```
 :::
 
@@ -432,16 +475,28 @@ example (G : Type*) [Group G] (g h : G) :
 ```
 :::
 
-Finally, conjugacy is trivial in an abelian group: conjugation does nothing at all.
+In an abelian group conjugacy is trivial: conjugation does nothing at all, `mul_inv_cancel_comm`.
 
 ```lean
-example (G : Type*) [CommGroup G] (g h : G) : g * h * g⁻¹ = h := by
+example (G : Type*) [CommGroup G] (g h : G) : g * h * g⁻¹ = h :=
+  mul_inv_cancel_comm g h
+```
+
+In a *general* group conjugation is far from trivial, but it is still a structural map: conjugating by a fixed $`g` is a homomorphism, meaning it distributes over products.
+Prove $`g(ab)g^{-1} = (g a g^{-1})(g b g^{-1})`.
+This is a pure identity in the group axioms — the `group` tactic, which normalizes both sides, discharges it (notice the middle $`g^{-1} g` cancels).
+
+```lean
+example (G : Type*) [Group G] (g a b : G) :
+    g * (a * b) * g⁻¹ = (g * a * g⁻¹) * (g * b * g⁻¹) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (G : Type*) [CommGroup G] (g h : G) : g * h * g⁻¹ = h :=
-  mul_inv_cancel_comm g h
+example (G : Type*) [Group G] (g a b : G) :
+    g * (a * b) * g⁻¹ = (g * a * g⁻¹) * (g * b * g⁻¹) := by
+  -- The inner g⁻¹ * g cancels; `group` normalizes both sides to agree.
+  group
 ```
 :::
