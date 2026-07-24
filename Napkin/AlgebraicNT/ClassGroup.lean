@@ -882,18 +882,27 @@ recall NumberField.discr (K : Type*) [Field K] [NumberField K] : ℤ :=
 
 The general-purpose `Algebra.discr A b` takes any family `b` and is defined through the trace form (the "next chapter" definition!), so integrality comes for free; the basis-independence we skipped is `NumberField.discr_eq_discr`, and nonvanishing is `NumberField.discr_ne_zero`.
 
-The smallest number field is $`\mathbb{Q}` itself, whose ring of integers is $`\mathbb{Z}` with the one-element basis $`\{1\}`.
-Confirm that its discriminant is $`1`.
+The smallest number field is $`\mathbb{Q}` itself, whose ring of integers is $`\mathbb{Z}` with the one-element basis $`\{1\}`, and its discriminant works out to $`1`.
 
 ```lean
-example : NumberField.discr ℚ = 1 := by
+example : NumberField.discr ℚ = 1 :=
+  NumberField.discr_rat
+```
+
+The general nonvanishing lemma `NumberField.discr_ne_zero` only promises $`\Delta_K \neq 0`, but the computed value for $`\mathbb{Q}` says strictly more: its discriminant is *positive*.
+Rewrite the goal with the value above, then close the numeric inequality by arithmetic.
+
+```lean
+example : 0 < NumberField.discr ℚ := by
   sorry
 ```
 
 :::solution
 ```lean
-example : NumberField.discr ℚ = 1 :=
-  NumberField.discr_rat
+example : 0 < NumberField.discr ℚ := by
+  -- Replace the discriminant by its value 1; the goal becomes 0 < 1.
+  rw [NumberField.discr_rat]
+  norm_num
 ```
 :::
 
@@ -908,22 +917,31 @@ recall NumberField.mixedEmbedding (K : Type*) [Field K] :
     K →+* NumberField.mixedEmbedding.mixedSpace K
 ```
 
-Every signature satisfies $`r_1 + 2r_2 = n`.
-Prove this counting relation between the real places, complex places, and the degree.
+Every signature satisfies $`r_1 + 2r_2 = n`, the counting relation `InfinitePlace.card_add_two_mul_card_eq_rank`.
 
 ```lean
 example (K : Type*) [Field K] [NumberField K] :
     InfinitePlace.nrRealPlaces K + 2 * InfinitePlace.nrComplexPlaces K
-      = Module.finrank ℚ K := by
+      = Module.finrank ℚ K :=
+  InfinitePlace.card_add_two_mul_card_eq_rank K
+```
+
+Read one consequence off that identity: since $`2r_2 \ge 0`, there can be at most $`n` real places.
+Prove $`r_1 \le n` by pulling the counting relation into context with `have`, then handing the linear arithmetic to `omega`.
+
+```lean
+example (K : Type*) [Field K] [NumberField K] :
+    InfinitePlace.nrRealPlaces K ≤ Module.finrank ℚ K := by
   sorry
 ```
 
 :::solution
 ```lean
 example (K : Type*) [Field K] [NumberField K] :
-    InfinitePlace.nrRealPlaces K + 2 * InfinitePlace.nrComplexPlaces K
-      = Module.finrank ℚ K :=
-  InfinitePlace.card_add_two_mul_card_eq_rank K
+    InfinitePlace.nrRealPlaces K ≤ Module.finrank ℚ K := by
+  -- r₁ ≤ r₁ + 2r₂ = n, so omega finishes once the identity is present.
+  have h := InfinitePlace.card_add_two_mul_card_eq_rank K
+  omega
 ```
 :::
 
@@ -973,13 +991,23 @@ example {E : Type*} [AddCommGroup E] [Module ℝ E] (s : Set E)
 
 This whole section is formalized: `NumberField.mixedEmbedding.minkowskiBound K I` is (up to packaging) the right-hand side for the fractional ideal `I`, the trap box is the "convex body" `convexBodyLT`, and `NumberField.mixedEmbedding.exists_ne_zero_mem_ideal_lt` produces the nonzero $`\alpha \in \mathfrak{a}` with all its embeddings small, exactly by feeding the box to the Minkowski theorem above.
 
-For the mousetrap to catch anything, the bound had better be strictly positive.
-Show that the Minkowski bound of any fractional ideal is positive.
+For the mousetrap to catch anything, the bound had better be strictly positive, which is `NumberField.mixedEmbedding.minkowskiBound_pos`.
 
 ```lean
 example (K : Type*) [Field K] [NumberField K]
     (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
-    0 < NumberField.mixedEmbedding.minkowskiBound K I := by
+    0 < NumberField.mixedEmbedding.minkowskiBound K I :=
+  NumberField.mixedEmbedding.minkowskiBound_pos K I
+```
+
+Feeding the trap box to Minkowski's theorem needs more than positivity: the bound must also be *finite*, which is `NumberField.mixedEmbedding.minkowskiBound_lt_top`.
+Package both halves into the statement that the bound is neither $`0` nor $`\infty`, converting each strict inequality into an inequation with `.ne'` and `.ne`.
+
+```lean
+example (K : Type*) [Field K] [NumberField K]
+    (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
+    NumberField.mixedEmbedding.minkowskiBound K I ≠ 0 ∧
+      NumberField.mixedEmbedding.minkowskiBound K I ≠ ⊤ := by
   sorry
 ```
 
@@ -987,8 +1015,12 @@ example (K : Type*) [Field K] [NumberField K]
 ```lean
 example (K : Type*) [Field K] [NumberField K]
     (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
-    0 < NumberField.mixedEmbedding.minkowskiBound K I :=
-  NumberField.mixedEmbedding.minkowskiBound_pos K I
+    NumberField.mixedEmbedding.minkowskiBound K I ≠ 0 ∧
+      NumberField.mixedEmbedding.minkowskiBound K I ≠ ⊤ := by
+  -- Positive ⟹ ≠ 0; finite (minkowskiBound_lt_top) ⟹ ≠ ⊤.
+  refine ⟨?_, ?_⟩
+  · exact (NumberField.mixedEmbedding.minkowskiBound_pos K I).ne'
+  · exact (NumberField.mixedEmbedding.minkowskiBound_lt_top K I).ne
 ```
 :::
 
@@ -1003,20 +1035,35 @@ recall (K : Type*) [Field K] [NumberField K] :
 
 (Mathlib's proof of the instance runs through the general `ClassGroup.fintypeOfAdmissibleOfFinite`, an axiomatization of the finiteness argument that also covers function fields.)
 
-Because the class group is a finite group, it has at least one element, so its cardinality is nonzero.
-Show that the class number is positive.
+Because the class group is a finite group, it has at least one element, so its cardinality is nonzero; that is `NumberField.classNumber_pos`.
 
 ```lean
 example (K : Type*) [Field K] [NumberField K] :
-    0 < NumberField.classNumber K := by
+    0 < NumberField.classNumber K :=
+  NumberField.classNumber_pos K
+```
+
+Push this to the case the chapter cares about: when the class group is *trivial* — a subsingleton — the class number is exactly $`1`.
+Combine the positivity above with the fact that a subsingleton has at most one element (`Fintype.card_le_one_iff_subsingleton`), unfolding the class number to a `Fintype.card` with `show`, then let `omega` pin the value.
+
+```lean
+example (K : Type*) [Field K] [NumberField K]
+    [Subsingleton (ClassGroup (𝓞 K))] :
+    NumberField.classNumber K = 1 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (K : Type*) [Field K] [NumberField K] :
-    0 < NumberField.classNumber K :=
-  NumberField.classNumber_pos K
+example (K : Type*) [Field K] [NumberField K]
+    [Subsingleton (ClassGroup (𝓞 K))] :
+    NumberField.classNumber K = 1 := by
+  -- 0 < classNumber, and a subsingleton forces classNumber ≤ 1.
+  have hpos : 0 < NumberField.classNumber K := NumberField.classNumber_pos K
+  have hle : NumberField.classNumber K ≤ 1 := by
+    show Fintype.card (ClassGroup (𝓞 K)) ≤ 1
+    exact Fintype.card_le_one_iff_subsingleton.mpr ‹_›
+  omega
 ```
 :::
 
@@ -1035,19 +1082,30 @@ The lemma that ideals divide their norms is `Ideal.absNorm_mem` plus `Ideal.dvd_
 Since $`\mathbb{Z}[i]` is a Euclidean domain it sidesteps Minkowski entirely — `GaussianInt` carries a `EuclideanDomain` instance, and Euclidean domains are PIDs, so the class-group machinery never gets involved.
 The Minkowski-bound style of computation above — bounding `classNumber` by inspecting ideals of small norm — has no automated Mathlib counterpart yet, though all the ingredients (`minkowskiBound`, `Ideal.absNorm`, the factoring algorithm) are individually available.
 
-Prove the first half of the divides-its-norm lemma: the norm of an ideal, viewed as an element of the ring, lands inside the ideal.
+The membership half — the norm of an ideal, viewed as an element of the ring, lands inside the ideal — is `Ideal.absNorm_mem`.
 
 ```lean
 example (K : Type*) [Field K] [NumberField K] (I : Ideal (𝓞 K)) :
-    (Ideal.absNorm I : 𝓞 K) ∈ I := by
+    (Ideal.absNorm I : 𝓞 K) ∈ I :=
+  Ideal.absNorm_mem I
+```
+
+That membership is exactly what powers the lemma above that an ideal *divides its norm*.
+Assemble it: divisibility of ideals is reverse containment (`Ideal.dvd_iff_le`), a singleton span sits inside `I` precisely when its generator is a member (`Ideal.span_singleton_le_iff_mem`), and that member is the norm by the fact above.
+
+```lean
+example (K : Type*) [Field K] [NumberField K] (I : Ideal (𝓞 K)) :
+    I ∣ Ideal.span {(Ideal.absNorm I : 𝓞 K)} := by
   sorry
 ```
 
 :::solution
 ```lean
 example (K : Type*) [Field K] [NumberField K] (I : Ideal (𝓞 K)) :
-    (Ideal.absNorm I : 𝓞 K) ∈ I :=
-  Ideal.absNorm_mem I
+    I ∣ Ideal.span {(Ideal.absNorm I : 𝓞 K)} := by
+  -- I ∣ J ↔ J ≤ I, and span {n} ≤ I ↔ n ∈ I, which is absNorm_mem.
+  rw [Ideal.dvd_iff_le, Ideal.span_singleton_le_iff_mem]
+  exact Ideal.absNorm_mem I
 ```
 :::
 

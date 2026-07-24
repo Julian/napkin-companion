@@ -86,17 +86,26 @@ recall Algebra.discr_def (A : Type*) {B : Type*} {ι : Type*}
     Algebra.discr A b = (Algebra.traceMatrix A b).det
 ```
 
-Since $`\mathbb{Q}` has $`\mathbb{Z}` as its ring of integers, its discriminant is the determinant of a $`1 \times 1` trace matrix.
-Show that the absolute discriminant of $`\mathbb{Q}` is $`1`.
+Since $`\mathbb{Q}` has $`\mathbb{Z}` as its ring of integers, its discriminant is the determinant of a $`1 \times 1` trace matrix, and it works out to $`1` — the named computation `NumberField.discr_rat`.
 
 ```lean
-example : NumberField.discr ℚ = 1 := by
+example : NumberField.discr ℚ = 1 := NumberField.discr_rat
+```
+
+That value already says something structural: the discriminant of $`\mathbb{Q}` is a *unit* of $`\mathbb{Z}`.
+Deduce it from the computation above — substitute the value with `discr_rat`, after which $`1` is a unit (`isUnit_one`).
+
+```lean
+example : IsUnit (NumberField.discr ℚ) := by
   sorry
 ```
 
 :::solution
 ```lean
-example : NumberField.discr ℚ = 1 := NumberField.discr_rat
+example : IsUnit (NumberField.discr ℚ) := by
+  -- Rewrite the discriminant to 1; then it is a unit because 1 is.
+  rw [NumberField.discr_rat]
+  exact isUnit_one
 ```
 :::
 
@@ -113,23 +122,34 @@ recall Algebra.discr_powerBasis_eq_prod (K : Type*) {L : Type*} (E : Type*)
       ∏ i : Fin pb.dim, ∏ j ∈ Finset.Ioi i, (e j pb.gen - e i pb.gen) ^ 2
 ```
 
-The squared differences never all cancel: over a finite separable field extension, the discriminant of _any_ basis is nonzero.
-This is the fact that makes the discriminant a meaningful invariant.
-Show it with `Algebra.discr_not_zero_of_basis`.
+The squared differences never all cancel: over a finite separable field extension, the discriminant of _any_ basis is nonzero, which is `Algebra.discr_not_zero_of_basis`.
 
-```lean
-example (K L : Type*) [Field K] [Field L] [Algebra K L] [Module.Finite K L]
-    [Algebra.IsSeparable K L] {ι : Type*} [Fintype ι] [DecidableEq ι]
-    (b : Module.Basis ι K L) : Algebra.discr K b ≠ 0 := by
-  sorry
-```
-
-:::solution
 ```lean
 example (K L : Type*) [Field K] [Field L] [Algebra K L] [Module.Finite K L]
     [Algebra.IsSeparable K L] {ι : Type*} [Fintype ι] [DecidableEq ι]
     (b : Module.Basis ι K L) : Algebra.discr K b ≠ 0 :=
   Algebra.discr_not_zero_of_basis K b
+```
+
+This is the fact that makes the discriminant a meaningful invariant: a nonzero discriminant *forces* the family to be linearly independent.
+Mathlib records only the contrapositive, `Algebra.discr_zero_of_not_linearIndependent` — a dependent family has discriminant $`0`.
+Prove the version you want from it: assume the family is dependent (`by_contra`), and feed that to the named lemma to contradict the hypothesis `h`.
+
+```lean
+example (R B : Type*) [CommRing R] [IsDomain R] [CommRing B] [Algebra R B]
+    {ι : Type*} [Fintype ι] [DecidableEq ι] (b : ι → B)
+    (h : Algebra.discr R b ≠ 0) : LinearIndependent R b := by
+  sorry
+```
+
+:::solution
+```lean
+example (R B : Type*) [CommRing R] [IsDomain R] [CommRing B] [Algebra R B]
+    {ι : Type*} [Fintype ι] [DecidableEq ι] (b : ι → B)
+    (h : Algebra.discr R b ≠ 0) : LinearIndependent R b := by
+  -- Contrapositive: a dependent family would have discriminant 0.
+  by_contra hlin
+  exact h (Algebra.discr_zero_of_not_linearIndependent (A := R) hlin)
 ```
 :::
 

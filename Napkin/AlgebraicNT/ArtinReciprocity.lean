@@ -667,22 +667,34 @@ example (K : Type*) [Field K] [NumberField K] :
   NumberField.InfinitePlace.card_add_two_mul_card_eq_rank K
 ```
 
-The chapter split the infinite primes cleanly into the real ones and the complex ones, with nothing left over.
-Show that every infinite place really is one or the other; this is `NumberField.InfinitePlace.isReal_or_isComplex`, available as `w.isReal_or_isComplex`.
+The chapter split the infinite primes cleanly into the real ones and the complex ones, with nothing left over: every infinite place really is one or the other, which is `NumberField.InfinitePlace.isReal_or_isComplex`, available as `w.isReal_or_isComplex`.
 
 ```lean
 example (K : Type*) [Field K] [NumberField K]
     (w : NumberField.InfinitePlace K) :
-    w.IsReal ∨ w.IsComplex := by
+    w.IsReal ∨ w.IsComplex :=
+  w.isReal_or_isComplex
+```
+
+Put the dichotomy to work: a place that is *not* real must be complex.
+Case-split on `w.isReal_or_isComplex` with `rcases`; the real branch contradicts the hypothesis (discharge it with `absurd`), leaving the complex one.
+
+```lean
+example (K : Type*) [Field K] [NumberField K]
+    (w : NumberField.InfinitePlace K) (h : ¬ w.IsReal) :
+    w.IsComplex := by
   sorry
 ```
 
 :::solution
 ```lean
 example (K : Type*) [Field K] [NumberField K]
-    (w : NumberField.InfinitePlace K) :
-    w.IsReal ∨ w.IsComplex :=
-  w.isReal_or_isComplex
+    (w : NumberField.InfinitePlace K) (h : ¬ w.IsReal) :
+    w.IsComplex := by
+  -- The dichotomy leaves only the complex branch once "real" is ruled out.
+  rcases w.isReal_or_isComplex with hr | hc
+  · exact absurd hr h
+  · exact hc
 ```
 :::
 
@@ -703,18 +715,29 @@ noncomputable example (K : Type*) [Field K] [NumberField K] :
 ```
 
 The class group of $`\mathbb Z`, whose fractional ideals are all principal, is trivial — the base case $`C_{\mathbb Q}(1)` of the section's first example.
-Confirm it has a single element.
-The class number of any principal ideal ring is $`1`, and $`\mathbb Z` is one, so the finisher is `card_classGroup_eq_one`.
+The class number of any principal ideal ring is $`1`, and $`\mathbb Z` is one, so it has a single element by `card_classGroup_eq_one`.
 
 ```lean
-example : Fintype.card (ClassGroup ℤ) = 1 := by
+example : Fintype.card (ClassGroup ℤ) = 1 :=
+  card_classGroup_eq_one
+```
+
+"A single element" is really the statement that the group is trivial: every ideal class is the identity.
+Prove that any `x : ClassGroup ℤ` equals `1`.
+A cardinality of one forces the type to be a subsingleton (`Fintype.card_le_one_iff_subsingleton`, fed `card_classGroup_eq_one.le`), and in a subsingleton any two elements coincide (`Subsingleton.elim`).
+
+```lean
+example (x : ClassGroup ℤ) : x = 1 := by
   sorry
 ```
 
 :::solution
 ```lean
-example : Fintype.card (ClassGroup ℤ) = 1 :=
-  card_classGroup_eq_one
+example (x : ClassGroup ℤ) : x = 1 := by
+  -- A one-element group is a subsingleton, so every element is the identity.
+  have : Subsingleton (ClassGroup ℤ) :=
+    Fintype.card_le_one_iff_subsingleton.mp card_classGroup_eq_one.le
+  exact Subsingleton.elim x 1
 ```
 :::
 
@@ -878,19 +901,27 @@ example (p q : ℕ) [Fact p.Prime] [Fact q.Prime]
 ```
 
 When $`p \equiv 1 \pmod 4` the sign on the right disappears and the symbol becomes symmetric: $`\left( \frac qp \right) = \left( \frac pq \right)`.
-Derive this special case; Mathlib bundles it as `legendreSym.quadratic_reciprocity_one_mod_four`.
+Rather than cite the bundled `legendreSym.quadratic_reciprocity_one_mod_four`, derive it from the general law above, for distinct $`p \ne q`.
+Feed `legendreSym.quadratic_reciprocity` your hypotheses; then $`p \equiv 1 \pmod 4` makes $`p/2` even (`Nat.even_iff`, from an `omega` fact), so `Even.neg_one_pow` collapses the sign to $`1`, and a product of two integers equal to $`1` forces them equal (`Int.eq_of_mul_eq_one`).
 
 ```lean
-example (p q : ℕ) [Fact p.Prime] [Fact q.Prime] (hp : p % 4 = 1) (hq : q ≠ 2) :
+example (p q : ℕ) [Fact p.Prime] [Fact q.Prime]
+    (hp : p % 4 = 1) (hq : q ≠ 2) (hpq : p ≠ q) :
     legendreSym q p = legendreSym p q := by
   sorry
 ```
 
 :::solution
 ```lean
-example (p q : ℕ) [Fact p.Prime] [Fact q.Prime] (hp : p % 4 = 1) (hq : q ≠ 2) :
-    legendreSym q p = legendreSym p q :=
-  legendreSym.quadratic_reciprocity_one_mod_four hp hq
+example (p q : ℕ) [Fact p.Prime] [Fact q.Prime]
+    (hp : p % 4 = 1) (hq : q ≠ 2) (hpq : p ≠ q) :
+    legendreSym q p = legendreSym p q := by
+  -- p ≡ 1 (mod 4) makes the exponent even, so the sign is 1 and the two
+  -- symbols multiply to 1 — hence they are equal.
+  have key := legendreSym.quadratic_reciprocity (by omega) hq hpq
+  have hpe : Even (p / 2) := Nat.even_iff.mpr (by omega)
+  rw [(hpe.mul_right (q / 2)).neg_one_pow] at key
+  exact Int.eq_of_mul_eq_one key
 ```
 :::
 

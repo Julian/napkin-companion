@@ -574,20 +574,35 @@ Both operations already exist on `Ideal R`: the sum is the lattice join (`Ideal.
 Principal-times-principal is `Ideal.span_singleton_mul_span_singleton`.
 
 For instance, the observation that $`(3) \cdot (5) = (15)` in $`\mathbb{Z}` is exactly principal-times-principal in action.
-Prove it.
 
-```lean
-example :
-    Ideal.span {(3 : ℤ)} * Ideal.span {(5 : ℤ)} = Ideal.span {(15 : ℤ)} := by
-  sorry
-```
-
-:::solution
 ```lean
 example :
     Ideal.span {(3 : ℤ)} * Ideal.span {(5 : ℤ)} = Ideal.span {(15 : ℤ)} := by
   rw [Ideal.span_singleton_mul_span_singleton]
   norm_num
+```
+
+Addition is the other half of the story: it is the join, and it behaves like a $`\gcd`.
+Since $`\gcd(2, 3) = 1`, the sum $`(2) + (3)` should be all of $`\mathbb{Z}`.
+Prove it by exhibiting $`1`: rewrite the goal to $`1 \in (2) + (3)` (`Ideal.eq_top_iff_one`), pass to the join (`Ideal.add_eq_sup`), and note $`1 = 3 - 2` is a difference of two generators (`Ideal.mem_sup_left`, `Ideal.mem_sup_right`, `Ideal.mem_span_singleton_self`, `sub_mem`).
+
+```lean
+example : Ideal.span {(2 : ℤ)} + Ideal.span {(3 : ℤ)} = ⊤ := by
+  sorry
+```
+
+:::solution
+```lean
+example : Ideal.span {(2 : ℤ)} + Ideal.span {(3 : ℤ)} = ⊤ := by
+  -- gcd(2,3)=1, so 1 = 3 - 2 lies in the sum, forcing it to be ⊤.
+  rw [Ideal.eq_top_iff_one, Ideal.add_eq_sup]
+  have h2 : (2 : ℤ) ∈ Ideal.span {(2 : ℤ)} ⊔ Ideal.span {(3 : ℤ)} :=
+    Ideal.mem_sup_left (Ideal.mem_span_singleton_self 2)
+  have h3 : (3 : ℤ) ∈ Ideal.span {(2 : ℤ)} ⊔ Ideal.span {(3 : ℤ)} :=
+    Ideal.mem_sup_right (Ideal.mem_span_singleton_self 3)
+  have h1 : (1 : ℤ) = 3 - 2 := by norm_num
+  rw [h1]
+  exact sub_mem h3 h2
 ```
 :::
 
@@ -602,21 +617,34 @@ recall Ideal.dvd_iff_le {A : Type*} [CommRing A] [IsDedekindDomain A]
 (In an arbitrary commutative ring only the forward direction `Ideal.le_of_dvd` survives; the reverse is one of the many superpowers Dedekind domains are about to grant us.
 Note also that `≤` on ideals is inclusion, so the reversal of inclusions is right there in the statement.)
 
-The exercise is exactly the compatibility between `Ideal.IsPrime` and the general algebra predicate `Prime` (in the divisibility sense of the flavors-of-rings chapter), recorded as `Ideal.prime_iff_isPrime`.
+The compatibility between `Ideal.IsPrime` and the general algebra predicate `Prime` (in the divisibility sense of the flavors-of-rings chapter) is recorded as `Ideal.prime_iff_isPrime`: a nonzero ideal of a Dedekind domain is `Prime` exactly when it is `IsPrime`.
 As mentioned in the rings chapter, this also lets us ignore multiplication by units: $`(-3) = (3)`.
-Show that a nonzero ideal of a Dedekind domain is `Prime` exactly when it is `IsPrime`.
 
 ```lean
 example (A : Type*) [CommRing A] [IsDedekindDomain A] {p : Ideal A}
-    (hp : p ≠ ⊥) : Prime p ↔ p.IsPrime := by
+    (hp : p ≠ ⊥) : Prime p ↔ p.IsPrime :=
+  Ideal.prime_iff_isPrime hp
+```
+
+That equivalence is what makes the section's exercise — "$`\mathfrak{p}` is prime iff whenever $`\mathfrak{p} \mid \mathfrak{a}\mathfrak{b}` it divides one of $`\mathfrak{a}`, $`\mathfrak{b}`" — fall out.
+Given a nonzero `IsPrime` ideal dividing a product, deduce it divides a factor: convert to the divisibility-sense `Prime` (the `.mpr` of the equivalence above), whose defining property is exactly `Prime.dvd_or_dvd`.
+
+```lean
+example (A : Type*) [CommRing A] [IsDedekindDomain A] {p a b : Ideal A}
+    (hp : p ≠ ⊥) (hpp : p.IsPrime) (h : p ∣ a * b) :
+    p ∣ a ∨ p ∣ b := by
   sorry
 ```
 
 :::solution
 ```lean
-example (A : Type*) [CommRing A] [IsDedekindDomain A] {p : Ideal A}
-    (hp : p ≠ ⊥) : Prime p ↔ p.IsPrime :=
-  Ideal.prime_iff_isPrime hp
+example (A : Type*) [CommRing A] [IsDedekindDomain A] {p a b : Ideal A}
+    (hp : p ≠ ⊥) (hpp : p.IsPrime) (h : p ∣ a * b) :
+    p ∣ a ∨ p ∣ b := by
+  -- Repackage `IsPrime` as the divisibility-sense `Prime`, whose defining
+  -- property is exactly "divides a product ⟹ divides a factor".
+  have : Prime p := (Ideal.prime_iff_isPrime hp).mpr hpp
+  exact this.dvd_or_dvd h
 ```
 :::
 
@@ -663,20 +691,30 @@ recall (A : Type*) [CommRing A] [IsDedekindDomain A] :
 ```
 
 So everything proved about UFDs — existence and essential uniqueness of factorizations into `Prime` elements, `∣`-comparison by exponents — specializes to ideals for free, with "unit" degenerating to the single ideal $`(1)`.
-For example, one hallmark of the unique-factorization setting is that being irreducible and being prime coincide.
-Show that this holds for ideals of a Dedekind domain.
+For example, one hallmark of the unique-factorization setting is that being irreducible and being prime coincide, `UniqueFactorizationMonoid.irreducible_iff_prime`.
 
 ```lean
 example (A : Type*) [CommRing A] [IsDedekindDomain A] {I : Ideal A} :
-    Irreducible I ↔ Prime I := by
+    Irreducible I ↔ Prime I :=
+  UniqueFactorizationMonoid.irreducible_iff_prime
+```
+
+Chaining this with the earlier `Ideal.prime_iff_isPrime` closes a small loop: an irreducible ideal is automatically `IsPrime`.
+Prove it by walking the two equivalences in turn — `irreducible_iff_prime` gives a divisibility-sense `Prime`, which is nonzero (`Prime.ne_zero`), and `prime_iff_isPrime` then converts it to `IsPrime`.
+
+```lean
+example (A : Type*) [CommRing A] [IsDedekindDomain A] {I : Ideal A}
+    (h : Irreducible I) : I.IsPrime := by
   sorry
 ```
 
 :::solution
 ```lean
-example (A : Type*) [CommRing A] [IsDedekindDomain A] {I : Ideal A} :
-    Irreducible I ↔ Prime I :=
-  UniqueFactorizationMonoid.irreducible_iff_prime
+example (A : Type*) [CommRing A] [IsDedekindDomain A] {I : Ideal A}
+    (h : Irreducible I) : I.IsPrime := by
+  -- irreducible ⟹ prime ⟹ (being nonzero) IsPrime.
+  have hp : Prime I := UniqueFactorizationMonoid.irreducible_iff_prime.mp h
+  exact (Ideal.prime_iff_isPrime hp.ne_zero).mp hp
 ```
 :::
 
@@ -710,13 +748,24 @@ example :
 The type is `FractionalIdeal A⁰ K` — the `A⁰` records that denominators are taken from the nonzero elements of `A` (the "non-zero-divisors") — defined for any domain, with the equivalent finitely-generated-submodule description from the problems as the actual underlying definition.
 The theorem is then the instance `FractionalIdeal.semifield`, available exactly when `A` is a Dedekind domain: nonzero fractional ideals are invertible, so `J⁻¹` and division notation just work, and $`J_K` is the unit group `(FractionalIdeal A⁰ K)ˣ`.
 
-The heart of the group structure is that every nonzero fractional ideal has an inverse.
-Show that $`J \cdot J^{-1} = (1)` for any nonzero fractional ideal $`J`.
+The heart of the group structure is that every nonzero fractional ideal has an inverse, so $`J \cdot J^{-1} = (1)`, which is `mul_inv_cancel₀`.
 
 ```lean
 example (A : Type*) [CommRing A] [IsDedekindDomain A]
     (K : Type*) [Field K] [Algebra A K] [IsFractionRing A K]
-    (J : FractionalIdeal A⁰ K) (hJ : J ≠ 0) : J * J⁻¹ = 1 := by
+    (J : FractionalIdeal A⁰ K) (hJ : J ≠ 0) : J * J⁻¹ = 1 :=
+  mul_inv_cancel₀ hJ
+```
+
+Having inverses is exactly what lets you cancel a common nonzero factor.
+Prove the left-cancellation law: if $`J X = J Y` with $`J \neq 0`, then $`X = Y`.
+Multiply the hypothesis on the left by $`J^{-1}`, reassociate, and collapse $`J^{-1} J` to $`1` with `inv_mul_cancel₀`.
+
+```lean
+example (A : Type*) [CommRing A] [IsDedekindDomain A]
+    (K : Type*) [Field K] [Algebra A K] [IsFractionRing A K]
+    (J X Y : FractionalIdeal A⁰ K) (hJ : J ≠ 0)
+    (h : J * X = J * Y) : X = Y := by
   sorry
 ```
 
@@ -724,8 +773,11 @@ example (A : Type*) [CommRing A] [IsDedekindDomain A]
 ```lean
 example (A : Type*) [CommRing A] [IsDedekindDomain A]
     (K : Type*) [Field K] [Algebra A K] [IsFractionRing A K]
-    (J : FractionalIdeal A⁰ K) (hJ : J ≠ 0) : J * J⁻¹ = 1 :=
-  mul_inv_cancel₀ hJ
+    (J X Y : FractionalIdeal A⁰ K) (hJ : J ≠ 0)
+    (h : J * X = J * Y) : X = Y := by
+  -- Left-multiply by J⁻¹; the J⁻¹ * J in front of each side becomes 1.
+  have hne : J⁻¹ * (J * X) = J⁻¹ * (J * Y) := by rw [h]
+  rwa [← mul_assoc, ← mul_assoc, inv_mul_cancel₀ hJ, one_mul, one_mul] at hne
 ```
 :::
 
@@ -742,19 +794,30 @@ recall Ideal.absNorm {S : Type*} [CommRing S] [IsDedekindDomain S]
 Property (c) is `Ideal.absNorm_span_singleton`, connecting the two norms of this chapter and the last: $`\operatorname{N}((a))` equals the absolute value of `Algebra.norm ℤ a`.
 
 The question asked which ideals have ideal norm one.
-The norm measures the size of the quotient, so norm one means the quotient is trivial — that is, the whole ring $`(1) = \top`.
-Prove this characterization.
+The norm measures the size of the quotient, so norm one means the quotient is trivial — that is, the whole ring $`(1) = \top`, which is `Ideal.absNorm_eq_one_iff`.
 
 ```lean
 example (S : Type*) [CommRing S] [IsDedekindDomain S] [Module.Free ℤ S]
-    {I : Ideal S} : Ideal.absNorm I = 1 ↔ I = ⊤ := by
+    {I : Ideal S} : Ideal.absNorm I = 1 ↔ I = ⊤ :=
+  Ideal.absNorm_eq_one_iff
+```
+
+Combine that with multiplicativity to see how norm one propagates through a product.
+Show that if $`\operatorname{N}(\mathfrak{a}\mathfrak{b}) = 1` then $`\mathfrak{a} = \top`: push the norm through the product (`map_mul`), so $`\operatorname{N}(\mathfrak{a})` divides $`1` in $`\mathbb{N}` (`Nat.dvd_one`), hence is $`1`, and feed that back through the characterization above.
+
+```lean
+example (S : Type*) [CommRing S] [IsDedekindDomain S] [Module.Free ℤ S]
+    {I J : Ideal S} (h : Ideal.absNorm (I * J) = 1) : I = ⊤ := by
   sorry
 ```
 
 :::solution
 ```lean
 example (S : Type*) [CommRing S] [IsDedekindDomain S] [Module.Free ℤ S]
-    {I : Ideal S} : Ideal.absNorm I = 1 ↔ I = ⊤ :=
-  Ideal.absNorm_eq_one_iff
+    {I J : Ideal S} (h : Ideal.absNorm (I * J) = 1) : I = ⊤ := by
+  -- Multiplicativity makes absNorm I a divisor of 1, so it equals 1.
+  rw [map_mul] at h
+  rw [← Ideal.absNorm_eq_one_iff]
+  exact Nat.dvd_one.mp ⟨Ideal.absNorm J, h.symm⟩
 ```
 :::
