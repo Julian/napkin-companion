@@ -357,19 +357,29 @@ example (Ω : Type*) [TopologicalSpace Ω] : MeasurableSpace Ω := borel Ω
 ```
 
 The question asked you to show the closed sets, and the interval $`[0, 1)`, are Borel.
-Because a Borel space measures its open sets, it measures their complements too; show that every closed set of a `[BorelSpace Ω]` is measurable.
+Because a Borel space measures its open sets, it measures their complements too, so every closed set of a `[BorelSpace Ω]` is measurable — the one-liner `IsClosed.measurableSet`.
 
 ```lean
 example {Ω : Type*} [TopologicalSpace Ω] [MeasurableSpace Ω] [BorelSpace Ω]
-    (s : Set Ω) (hs : IsClosed s) : MeasurableSet s := by
+    (s : Set Ω) (hs : IsClosed s) : MeasurableSet s :=
+  hs.measurableSet
+```
+
+Now handle the other half of the question, the interval $`[0, 1)` in $`\mathbb{R}`.
+No single interval lemma is allowed here; instead *build it from pieces you already understand*.
+Write $`[0, 1) = [0, \infty) \cap (-\infty, 1)` (the rewrite `Set.Ici_inter_Iio`, run backwards): the first factor is closed (`isClosed_Ici`) hence measurable, the second is open (`isOpen_Iio`) hence measurable, and a measurable set meets a measurable set measurably (`MeasurableSet.inter`).
+
+```lean
+example : MeasurableSet (Set.Ico (0 : ℝ) 1) := by
   sorry
 ```
 
 :::solution
 ```lean
-example {Ω : Type*} [TopologicalSpace Ω] [MeasurableSpace Ω] [BorelSpace Ω]
-    (s : Set Ω) (hs : IsClosed s) : MeasurableSet s :=
-  hs.measurableSet
+example : MeasurableSet (Set.Ico (0 : ℝ) 1) := by
+  -- [0,1) = [0,∞) ∩ (-∞,1): a closed set meets an open set.
+  rw [← Set.Ici_inter_Iio]
+  exact isClosed_Ici.measurableSet.inter isOpen_Iio.measurableSet
 ```
 :::
 
@@ -436,7 +446,17 @@ example {X Y : Type*} [TopologicalSpace X] [MeasurableSpace X]
   hf.measurable
 ```
 
-Measurability is preserved under composition, exactly as continuity is; prove that the composite of two measurable functions is measurable.
+Measurability is preserved under composition, exactly as continuity is, and Mathlib bottles the fact as `Measurable.comp`.
+
+```lean
+example {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β]
+    [MeasurableSpace γ] {f : α → β} {g : β → γ}
+    (hf : Measurable f) (hg : Measurable g) : Measurable (g ∘ f) :=
+  hg.comp hf
+```
+
+But the whole reason composition works is that preimages compose, so derive it yourself without reaching for `Measurable.comp`.
+Unfold the goal to the preimage condition with `intro s hs`; rewrite the preimage of the composite as the nested preimage `f⁻¹'(g⁻¹' s)` using `Set.preimage_comp`; then peel the layers, applying `hg` to `hs` and `hf` to the result (recall that a proof of `Measurable f` is exactly a function taking a measurable set to the measurability of its preimage).
 
 ```lean
 example {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β]
@@ -449,8 +469,11 @@ example {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β]
 ```lean
 example {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β]
     [MeasurableSpace γ] {f : α → β} {g : β → γ}
-    (hf : Measurable f) (hg : Measurable g) : Measurable (g ∘ f) :=
-  hg.comp hf
+    (hf : Measurable f) (hg : Measurable g) : Measurable (g ∘ f) := by
+  -- (g∘f)⁻¹'s = f⁻¹'(g⁻¹'s); pull s back through g, then through f.
+  intro s hs
+  rw [Set.preimage_comp]
+  exact hf (hg hs)
 ```
 :::
 
@@ -464,19 +487,32 @@ example {Ω : Type*} [MeasurableSpace Ω] (μ : MeasureTheory.Measure Ω)
     (P : Ω → Prop) : Prop := ∀ᵐ ω ∂μ, P ω
 ```
 
-A property that holds at every single point certainly holds almost everywhere; prove this degenerate case.
+A property that holds at every single point certainly holds almost everywhere, the one-liner `ae_of_all`.
 
 ```lean
 example {Ω : Type*} [MeasurableSpace Ω] (μ : MeasureTheory.Measure Ω)
-    (P : Ω → Prop) (h : ∀ ω, P ω) : ∀ᵐ ω ∂μ, P ω := by
+    (P : Ω → Prop) (h : ∀ ω, P ω) : ∀ᵐ ω ∂μ, P ω :=
+  ae_of_all μ h
+```
+
+The payoff of packaging "almost everywhere" as a filter is that it inherits the filter combinators for free: two almost-everywhere facts can be conjoined, because a union of two null sets is again null.
+Assemble that here.
+Given that $`P` holds *everywhere* and $`Q` holds only *almost* everywhere, show $`P \land Q` holds almost everywhere: promote $`P` to an almost-everywhere statement with `ae_of_all` (the fact above), then conjoin it with the hypothesis on $`Q` using `Filter.Eventually.and`.
+
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] (μ : MeasureTheory.Measure Ω)
+    (P Q : Ω → Prop) (hP : ∀ ω, P ω) (hQ : ∀ᵐ ω ∂μ, Q ω) :
+    ∀ᵐ ω ∂μ, P ω ∧ Q ω := by
   sorry
 ```
 
 :::solution
 ```lean
 example {Ω : Type*} [MeasurableSpace Ω] (μ : MeasureTheory.Measure Ω)
-    (P : Ω → Prop) (h : ∀ ω, P ω) : ∀ᵐ ω ∂μ, P ω :=
-  ae_of_all μ h
+    (P Q : Ω → Prop) (hP : ∀ ω, P ω) (hQ : ∀ᵐ ω ∂μ, Q ω) :
+    ∀ᵐ ω ∂μ, P ω ∧ Q ω :=
+  -- Lift P to the a.e. filter, then use that the filter is closed under ∧.
+  (ae_of_all μ hP).and hQ
 ```
 :::
 

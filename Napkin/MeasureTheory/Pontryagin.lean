@@ -235,21 +235,37 @@ noncomputable example {G : Type*} [Group G] [TopologicalSpace G]
 ```
 
 The theorem's four properties unpack into `MeasureTheory.map_mul_left_eq_self` for translation invariance, `IsCompact.measure_lt_top` for compact-set finiteness, and the outer/inner regularity classes for the last two; uniqueness up to scaling is `MeasureTheory.Measure.haarMeasure_unique`.
-As a first exercise, show that the defining translation invariance $`\mu(gS) = \mu(S)` really holds: pushing a left-invariant measure forward along left multiplication by $`g` recovers $`\mu`.
+The defining translation invariance is that pushing a left-invariant measure forward along left multiplication by $`g` recovers $`\mu`, which is `MeasureTheory.map_mul_left_eq_self`.
 
-```lean
-example {G : Type*} [Group G] [MeasurableSpace G]
-    (μ : MeasureTheory.Measure G) [μ.IsMulLeftInvariant]
-    (g : G) : μ.map (g * ·) = μ := by
-  sorry
-```
-
-:::solution
 ```lean
 example {G : Type*} [Group G] [MeasurableSpace G]
     (μ : MeasureTheory.Measure G) [μ.IsMulLeftInvariant]
     (g : G) : μ.map (g * ·) = μ :=
   MeasureTheory.map_mul_left_eq_self μ g
+```
+
+Read at the level of individual sets, that pushforward identity says $`\mu(gS) = \mu(S)`: the measure of a set is unchanged when the set is pulled back along left multiplication.
+Derive this pointwise form from the pushforward one.
+Rewrite the right-hand $`\mu` as the pushforward `μ.map (g * ·)` — the worked model, run backwards, under `conv_rhs` — and then unfold that pushforward with `MeasureTheory.Measure.map_apply`, whose two side conditions (measurability of `(g * ·)` and of `s`) are closed by `fun_prop` and the hypothesis.
+
+```lean
+example {G : Type*} [Group G] [MeasurableSpace G] [MeasurableMul G]
+    (μ : MeasureTheory.Measure G) [μ.IsMulLeftInvariant]
+    (g : G) (s : Set G) (hs : MeasurableSet s) :
+    μ ((g * ·) ⁻¹' s) = μ s := by
+  sorry
+```
+
+:::solution
+```lean
+example {G : Type*} [Group G] [MeasurableSpace G] [MeasurableMul G]
+    (μ : MeasureTheory.Measure G) [μ.IsMulLeftInvariant]
+    (g : G) (s : Set G) (hs : MeasurableSet s) :
+    μ ((g * ·) ⁻¹' s) = μ s := by
+  -- Rewrite the RHS as a pushforward; `map_apply` unfolds it back into
+  -- the preimage measure already on the left.
+  conv_rhs => rw [← MeasureTheory.map_mul_left_eq_self μ g]
+  rw [MeasureTheory.Measure.map_apply (by fun_prop) hs]
 ```
 :::
 
@@ -296,20 +312,34 @@ example {α E : Type*} [MeasurableSpace α] {μ : MeasureTheory.Measure α}
 
 For the circle $`\mathbb{T}` the characters really do form an orthonormal family.
 The family is `fourierLp`, the Fourier monomials $`x \mapsto \exp(2\pi i n x / T)` (indexed by $`n \in \mathbb{Z}`) viewed as elements of $`L^2`, and their orthonormality is packaged as the single lemma `orthonormal_fourier`.
-An `Orthonormal` family is by definition a conjunction — every vector has unit norm, and distinct vectors are orthogonal — so its second component `orthonormal_fourier.2` extracts the orthogonality.
-Use it to show that two monomials with distinct frequencies are orthogonal.
+An `Orthonormal` family is by definition a conjunction — every vector has unit norm, and distinct vectors are orthogonal — so its second component `orthonormal_fourier.2` sends a proof that two frequencies differ to the orthogonality of the corresponding monomials.
 
 ```lean
 example {T : ℝ} [Fact (0 < T)] {m n : ℤ} (h : m ≠ n) :
-    inner ℂ (fourierLp (T := T) 2 m) (fourierLp (T := T) 2 n) = 0 := by
+    inner ℂ (fourierLp (T := T) 2 m) (fourierLp (T := T) 2 n) = 0 :=
+  orthonormal_fourier.2 h
+```
+
+Orthogonality is exactly what makes cross terms drop out of an inner product.
+Show that adding an orthogonal monomial to $`e_m` does not change its inner product with $`e_m`, i.e. $`\langle e_m, e_m + e_n\rangle = \langle e_m, e_m\rangle`.
+Distribute over the sum with `inner_add_right`, cancel the cross term $`\langle e_m, e_n\rangle` using the orthogonality above, and clear the leftover zero with `add_zero`.
+
+```lean
+example {T : ℝ} [Fact (0 < T)] {m n : ℤ} (h : m ≠ n) :
+    inner ℂ (fourierLp (T := T) 2 m)
+        (fourierLp (T := T) 2 m + fourierLp (T := T) 2 n)
+      = inner ℂ (fourierLp (T := T) 2 m) (fourierLp (T := T) 2 m) := by
   sorry
 ```
 
 :::solution
 ```lean
 example {T : ℝ} [Fact (0 < T)] {m n : ℤ} (h : m ≠ n) :
-    inner ℂ (fourierLp (T := T) 2 m) (fourierLp (T := T) 2 n) = 0 :=
-  orthonormal_fourier.2 h
+    inner ℂ (fourierLp (T := T) 2 m)
+        (fourierLp (T := T) 2 m + fourierLp (T := T) 2 n)
+      = inner ℂ (fourierLp (T := T) 2 m) (fourierLp (T := T) 2 m) := by
+  -- Additivity on the right peels off ⟪eₘ, eₙ⟫, which vanishes.
+  rw [inner_add_right, orthonormal_fourier.2 h, add_zero]
 ```
 :::
 
@@ -329,8 +359,7 @@ noncomputable example {V W E : Type*} [NormedAddCommGroup V]
 Under the `FourierTransform` scope, `𝓕 f` denotes the Fourier transform of $`f` and `𝓕⁻ f` its inverse transform.
 Inversion is the statement that these two operations really are mutually inverse: transforming to the frequency side and back reconstructs the original function, losing no information.
 It holds on a finite-dimensional real inner product space such as $`\mathbb{R}`, as `MeasureTheory.Integrable.fourierInv_fourier_eq` (pointwise) and `Continuous.fourierInv_fourier_eq` (everywhere); the general-LCA statement is not yet in Mathlib.
-Prove the everywhere version below.
-The finisher is `Continuous.fourierInv_fourier_eq`, which consumes exactly the three hypotheses already in scope — continuity, integrability of $`f`, and integrability of its transform — so the first move is to hand it `h`, `hf`, and `h'f` (dot notation `h.fourierInv_fourier_eq …` reads cleanly).
+The everywhere version consumes exactly the three hypotheses already in scope — continuity, integrability of $`f`, and integrability of its transform (dot notation `h.fourierInv_fourier_eq hf h'f` reads cleanly).
 
 ```lean
 open scoped FourierTransform in
@@ -338,7 +367,23 @@ example {V E : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
     [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
     [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
     (f : V → E) (h : Continuous f) (hf : MeasureTheory.Integrable f)
-    (h'f : MeasureTheory.Integrable (𝓕 f)) : 𝓕⁻ (𝓕 f) = f := by
+    (h'f : MeasureTheory.Integrable (𝓕 f)) : 𝓕⁻ (𝓕 f) = f :=
+  h.fourierInv_fourier_eq hf h'f
+```
+
+Because inversion rebuilds $`f` from its transform $`\widehat{f}`, no information is lost — so the Fourier transform is injective.
+Prove that: two suitably nice functions with the same transform must be equal.
+Rewrite each side back through inversion (the worked model, run backwards, once for $`f` and once for $`g`); the integrability of $`\widehat{g}` is just that of $`\widehat{f}` carried across the hypothesis `h` (`h ▸ hf2`), and the two reconstructions coincide because $`\widehat{f} = \widehat{g}`.
+
+```lean
+open scoped FourierTransform in
+example {V E : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+    [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
+    [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
+    (f g : V → E) (hf : Continuous f) (hg : Continuous g)
+    (hf1 : MeasureTheory.Integrable f) (hg1 : MeasureTheory.Integrable g)
+    (hf2 : MeasureTheory.Integrable (𝓕 f)) (h : 𝓕 f = 𝓕 g) :
+    f = g := by
   sorry
 ```
 
@@ -348,9 +393,15 @@ open scoped FourierTransform in
 example {V E : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
     [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
     [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
-    (f : V → E) (h : Continuous f) (hf : MeasureTheory.Integrable f)
-    (h'f : MeasureTheory.Integrable (𝓕 f)) : 𝓕⁻ (𝓕 f) = f :=
-  h.fourierInv_fourier_eq hf h'f
+    (f g : V → E) (hf : Continuous f) (hg : Continuous g)
+    (hf1 : MeasureTheory.Integrable f) (hg1 : MeasureTheory.Integrable g)
+    (hf2 : MeasureTheory.Integrable (𝓕 f)) (h : 𝓕 f = 𝓕 g) :
+    f = g := by
+  -- Inversion recovers each function from its transform; the transforms
+  -- agree, so the functions do too.
+  have hg2 : MeasureTheory.Integrable (𝓕 g) := h ▸ hf2
+  rw [← hf.fourierInv_fourier_eq hf1 hf2,
+      ← hg.fourierInv_fourier_eq hg1 hg2, h]
 ```
 :::
 

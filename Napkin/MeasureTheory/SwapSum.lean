@@ -318,22 +318,37 @@ example {α : Type*} [MeasurableSpace α] (f : ℕ → α → ℝ)
   Measurable.liminf hf
 ```
 
-The proposition also covers the $`\limsup`.
-Prove that the pointwise $`\limsup` of a sequence of measurable functions is measurable.
+The proposition also covers the $`\limsup`, which is the exact dual `Measurable.limsup`.
 
-```lean
-example {α : Type*} [MeasurableSpace α] (f : ℕ → α → ℝ)
-    (hf : ∀ n, Measurable (f n)) :
-    Measurable (fun x => Filter.limsup (fun n => f n x) Filter.atTop) := by
-  sorry
-```
-
-:::solution
 ```lean
 example {α : Type*} [MeasurableSpace α] (f : ℕ → α → ℝ)
     (hf : ∀ n, Measurable (f n)) :
     Measurable (fun x => Filter.limsup (fun n => f n x) Filter.atTop) :=
   Measurable.limsup hf
+```
+
+These two facts together settle the earlier claim that a pointwise *limit* of measurable functions is again measurable: a convergent sequence has its limit equal to its own $`\liminf` (`Filter.Tendsto.liminf_eq`), so measurability transfers along that equation.
+Prove that if $`f_n \to g` pointwise then $`g` is measurable — rewrite $`g` as the pointwise $`\liminf` (`funext` together with `Filter.Tendsto.liminf_eq`), then close with `Measurable.liminf`.
+
+```lean
+example {α : Type*} [MeasurableSpace α] (f : ℕ → α → ℝ) (g : α → ℝ)
+    (hf : ∀ n, Measurable (f n))
+    (h : ∀ x, Filter.Tendsto (fun n => f n x) Filter.atTop (nhds (g x))) :
+    Measurable g := by
+  sorry
+```
+
+:::solution
+```lean
+example {α : Type*} [MeasurableSpace α] (f : ℕ → α → ℝ) (g : α → ℝ)
+    (hf : ∀ n, Measurable (f n))
+    (h : ∀ x, Filter.Tendsto (fun n => f n x) Filter.atTop (nhds (g x))) :
+    Measurable g := by
+  -- A pointwise limit equals the pointwise liminf, which is measurable.
+  have hg : g = fun x => Filter.liminf (fun n => f n x) Filter.atTop :=
+    funext fun x => (h x).liminf_eq.symm
+  rw [hg]
+  exact Measurable.liminf hf
 ```
 :::
 
@@ -432,8 +447,20 @@ example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
   MeasureTheory.lintegral_prod f hf.aemeasurable
 ```
 
-Tonelli lets you swap the order of a nonnegative iterated integral freely.
-Prove that the two iterated integral orders agree for a measurable nonnegative integrand.
+Tonelli lets you swap the order of a nonnegative iterated integral freely; the packaged swap is `MeasureTheory.lintegral_lintegral_swap`.
+
+```lean
+example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
+    {μ : MeasureTheory.Measure α} {ν : MeasureTheory.Measure β}
+    [MeasureTheory.SFinite μ] [MeasureTheory.SFinite ν]
+    (f : α → β → ENNReal) (hf : Measurable (Function.uncurry f)) :
+    ∫⁻ x, ∫⁻ y, f x y ∂ν ∂μ = ∫⁻ y, ∫⁻ x, f x y ∂μ ∂ν :=
+  MeasureTheory.lintegral_lintegral_swap hf.aemeasurable
+```
+
+But the swap is not magic: it routes through the single joint integral over the product measure.
+Prove the two iterated orders agree by assembling that route yourself, without reaching for the packaged swap lemma.
+`MeasureTheory.lintegral_lintegral` rewrites the first order as the joint integral $`\int f \; d(\mu \times \nu)`, and `MeasureTheory.lintegral_prod_symm` re-expresses that same joint integral as the *reversed* iterated order.
 
 ```lean
 example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
@@ -451,6 +478,8 @@ example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
     [MeasureTheory.SFinite μ] [MeasureTheory.SFinite ν]
     (f : α → β → ENNReal) (hf : Measurable (Function.uncurry f)) :
     ∫⁻ x, ∫⁻ y, f x y ∂ν ∂μ = ∫⁻ y, ∫⁻ x, f x y ∂μ ∂ν :=
-  MeasureTheory.lintegral_lintegral_swap hf.aemeasurable
+  -- Route both orders through the joint integral over μ.prod ν.
+  (MeasureTheory.lintegral_lintegral hf.aemeasurable).trans
+    (MeasureTheory.lintegral_prod_symm _ hf.aemeasurable)
 ```
 :::

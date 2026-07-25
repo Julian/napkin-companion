@@ -402,9 +402,16 @@ example {Ω : Type*} (𝒜 : Set (Set Ω)) : Prop := IsSetAlgebra 𝒜
 ```
 
 The definition asks only for closure under complement and finite union, but this already forces closure under intersection, since $`s \cap t = (s^c \cup t^c)^c`.
-Prove that an algebra is closed under (binary) intersection.
-The two fields of `IsSetAlgebra` you need are `h.compl_mem` and `h.union_mem`; rewriting the goal with `← compl_compl (s ∩ t)` then `Set.compl_inter` turns it into exactly the shape they close.
-(Mathlib bundles this derivation as `IsSetAlgebra.inter_mem`, so `h.inter_mem hs ht` also finishes in one line.)
+Mathlib bundles this derivation as `IsSetAlgebra.inter_mem`, so citing it closes the goal in one line.
+
+```lean
+example {Ω : Type*} (𝒜 : Set (Set Ω)) (h : IsSetAlgebra 𝒜)
+    (s t : Set Ω) (hs : s ∈ 𝒜) (ht : t ∈ 𝒜) : s ∩ t ∈ 𝒜 :=
+  h.inter_mem hs ht
+```
+
+But the whole point is that intersection closure *follows* from the two axioms, so derive it yourself without reaching for `inter_mem`.
+The only fields you have are `h.compl_mem` and `h.union_mem`; rewrite the goal with `← compl_compl (s ∩ t)` then `Set.compl_inter` to turn it into `(sᶜ ∪ tᶜ)ᶜ ∈ 𝒜`, which is exactly the shape those two fields close.
 
 ```lean
 example {Ω : Type*} (𝒜 : Set (Set Ω)) (h : IsSetAlgebra 𝒜)
@@ -415,8 +422,10 @@ example {Ω : Type*} (𝒜 : Set (Set Ω)) (h : IsSetAlgebra 𝒜)
 :::solution
 ```lean
 example {Ω : Type*} (𝒜 : Set (Set Ω)) (h : IsSetAlgebra 𝒜)
-    (s t : Set Ω) (hs : s ∈ 𝒜) (ht : t ∈ 𝒜) : s ∩ t ∈ 𝒜 :=
-  h.inter_mem hs ht
+    (s t : Set Ω) (hs : s ∈ 𝒜) (ht : t ∈ 𝒜) : s ∩ t ∈ 𝒜 := by
+  -- Rewrite s ∩ t as (sᶜ ∪ tᶜ)ᶜ, then close with compl and union.
+  rw [← compl_compl (s ∩ t), Set.compl_inter]
+  exact h.compl_mem (h.union_mem (h.compl_mem hs) (h.compl_mem ht))
 ```
 :::
 
@@ -436,15 +445,26 @@ This axiom is carried as the field `OuterMeasure.mono`, so `μ.mono h` is the wh
 
 ```lean
 example {Ω : Type*} (μ : OuterMeasure Ω) (s t : Set Ω) (h : s ⊆ t) :
-    μ s ≤ μ t := by
+    μ s ≤ μ t :=
+  μ.mono h
+```
+
+Monotonicity is the workhorse for bounding an outer measure: you cheaply bound $`\mu^*` on a set by exhibiting a containment.
+Show that an intersection is measured no larger than either of its parts, $`\mu^*(s \cap t) \le \mu^*(s)` and $`\mu^*(s \cap t) \le \mu^*(t)`.
+Each conjunct is `μ.mono` applied to one of `Set.inter_subset_left` / `Set.inter_subset_right`; pair them with `⟨_, _⟩`.
+
+```lean
+example {Ω : Type*} (μ : OuterMeasure Ω) (s t : Set Ω) :
+    μ (s ∩ t) ≤ μ s ∧ μ (s ∩ t) ≤ μ t := by
   sorry
 ```
 
 :::solution
 ```lean
-example {Ω : Type*} (μ : OuterMeasure Ω) (s t : Set Ω) (h : s ⊆ t) :
-    μ s ≤ μ t :=
-  μ.mono h
+example {Ω : Type*} (μ : OuterMeasure Ω) (s t : Set Ω) :
+    μ (s ∩ t) ≤ μ s ∧ μ (s ∩ t) ≤ μ t :=
+  -- Feed each of s ∩ t ⊆ s and s ∩ t ⊆ t to monotonicity.
+  ⟨μ.mono Set.inter_subset_left, μ.mono Set.inter_subset_right⟩
 ```
 :::
 
@@ -469,20 +489,33 @@ example {Ω : Type*} (μ : OuterMeasure Ω) (s t : Set Ω)
 ```
 
 Since the Carathéodory-measurable sets form a $`\sigma`-algebra, they are closed under complement.
-Prove that if $`A`$ is $`\mu^*`$-measurable, then so is its complement.
 The complement of a set uses the same test sets with the two pieces swapped, and Mathlib packages exactly this as `OuterMeasure.isCaratheodory_compl`, so `μ.isCaratheodory_compl h` finishes.
 
 ```lean
 example {Ω : Type*} (μ : OuterMeasure Ω) (s : Set Ω)
-    (h : μ.IsCaratheodory s) : μ.IsCaratheodory sᶜ := by
+    (h : μ.IsCaratheodory s) : μ.IsCaratheodory sᶜ :=
+  μ.isCaratheodory_compl h
+```
+
+A $`\sigma`-algebra is also closed under set difference, and you can build that from the pieces you already have.
+Show that if $`s` and $`t` are both $`\mu^*`-measurable, then so is $`s \setminus t`.
+Rewrite with `Set.diff_eq` to expose $`s \setminus t = s \cap t^c`, then combine `OuterMeasure.isCaratheodory_inter` with the complement fact above (applied to $`t`).
+
+```lean
+example {Ω : Type*} (μ : OuterMeasure Ω) (s t : Set Ω)
+    (hs : μ.IsCaratheodory s) (ht : μ.IsCaratheodory t) :
+    μ.IsCaratheodory (s \ t) := by
   sorry
 ```
 
 :::solution
 ```lean
-example {Ω : Type*} (μ : OuterMeasure Ω) (s : Set Ω)
-    (h : μ.IsCaratheodory s) : μ.IsCaratheodory sᶜ :=
-  μ.isCaratheodory_compl h
+example {Ω : Type*} (μ : OuterMeasure Ω) (s t : Set Ω)
+    (hs : μ.IsCaratheodory s) (ht : μ.IsCaratheodory t) :
+    μ.IsCaratheodory (s \ t) := by
+  -- s \ t = s ∩ tᶜ; intersect s with the (measurable) complement of t.
+  rw [Set.diff_eq]
+  exact μ.isCaratheodory_inter hs (μ.isCaratheodory_compl ht)
 ```
 :::
 
@@ -501,18 +534,27 @@ example : volume (Set.Icc (0 : ℝ) 1) = 1 := by
 The resulting measure is `Measure.IsComplete` and agrees with `μ` on the original $`\sigma`-algebra.
 
 A single point ought to be negligible.
-Show that a singleton in $`\mathbb{R}`$ has Lebesgue measure zero, so it is a null set.
-The named lemma is `Real.volume_singleton`; it is also a `simp` lemma, so a bare `simp` closes the goal.
+The named lemma is `Real.volume_singleton`, which records that a singleton in $`\mathbb{R}` is a null set; it is also a `simp` lemma, so a bare `simp` closes it too.
 
 ```lean
-example (a : ℝ) : volume ({a} : Set ℝ) = 0 := by
+example (a : ℝ) : volume ({a} : Set ℝ) = 0 := Real.volume_singleton
+```
+
+If one point is null, so is any finite handful of them, because a union of null sets stays null.
+Show that a two-point set $`\{a, b\} \subseteq \mathbb{R}` has measure zero.
+Rewrite $`\{a, b\}` as $`\{a\} \cup \{b\}` with `Set.insert_eq`, then close with `measure_union_null` fed two copies of `Real.volume_singleton`.
+
+```lean
+example (a b : ℝ) : volume ({a, b} : Set ℝ) = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (a : ℝ) : volume ({a} : Set ℝ) = 0 := by
-  simp
+example (a b : ℝ) : volume ({a, b} : Set ℝ) = 0 := by
+  -- {a, b} = {a} ∪ {b}; a union of two null sets is null.
+  rw [Set.insert_eq]
+  exact measure_union_null Real.volume_singleton Real.volume_singleton
 ```
 :::
 

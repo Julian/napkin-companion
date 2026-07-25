@@ -323,21 +323,34 @@ example {α : Type*} [MeasurableSpace α] (μ : Measure α) (f : α → ℝ) :
 The product measure on $`\Omega \times \mathbb{R}` is `MeasureTheory.Measure.prod μ ν`, and the "volume under the graph" identity is `volume_regionBetween_eq_lintegral` (the region $`R(f)` being `regionBetween 0 f` in Mathlib).
 
 The pre-measure that started this construction was pinned down by $`|X \times Y| = |X| \cdot |Y|`.
-Check that the finished product measure still satisfies this on measurable rectangles.
+The finished product measure still satisfies this on measurable rectangles, `Measure.prod_prod`.
 
 ```lean
 example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
     (μ : Measure α) (ν : Measure β) [SFinite ν] (s : Set α) (t : Set β) :
-    μ.prod ν (s ×ˢ t) = μ s * ν t := by
+    μ.prod ν (s ×ˢ t) = μ s * ν t :=
+  Measure.prod_prod s t
+```
+
+Push that rectangle formula one step further to see the product measure is *symmetric*: swapping the two factors merely swaps the sides of the rectangle.
+Apply `Measure.prod_prod` on each side to reduce both to a product of the same two measures, then close the gap with `mul_comm` (this now needs *both* factors to be `SFinite`).
+
+```lean
+example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
+    (μ : Measure α) (ν : Measure β) [SFinite μ] [SFinite ν]
+    (s : Set α) (t : Set β) :
+    μ.prod ν (s ×ˢ t) = ν.prod μ (t ×ˢ s) := by
   sorry
 ```
 
 :::solution
 ```lean
 example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
-    (μ : Measure α) (ν : Measure β) [SFinite ν] (s : Set α) (t : Set β) :
-    μ.prod ν (s ×ˢ t) = μ s * ν t :=
-  Measure.prod_prod s t
+    (μ : Measure α) (ν : Measure β) [SFinite μ] [SFinite ν]
+    (s : Set α) (t : Set β) :
+    μ.prod ν (s ×ˢ t) = ν.prod μ (t ×ˢ s) := by
+  -- Both rectangles unfold to a product of μ s and ν t; commute.
+  rw [Measure.prod_prod, Measure.prod_prod, mul_comm]
 ```
 :::
 
@@ -347,18 +360,31 @@ example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
 
 For improper integrals of nonnegative functions, `MeasureTheory.intervalIntegral_tendsto_integral_Ioi` and friends give the limit-of-truncated-integral characterization for various flavors of half-line and full-line.
 
-The worked example evaluated $`\int_{[1, 4]} x^2 \; d\mu = 21` by falling back on the Fundamental Theorem of Calculus.
-Reproduce that computation on the interval integral.
+The worked example evaluated $`\int_{[1, 4]} x^2 \; d\mu = 21` by falling back on the Fundamental Theorem of Calculus, here `integral_pow`.
 
 ```lean
 example : ∫ x in (1 : ℝ)..4, x ^ 2 = 21 := by
+  rw [integral_pow]; norm_num
+```
+
+That single interval hides a structural fact: an integral splits over adjacent subintervals.
+Prove that integrating $`x^2` over $`[1, 2]` and then $`[2, 4]` recovers the integral over $`[1, 4]`, using `intervalIntegral.integral_add_adjacent_intervals`.
+It demands an integrability witness on each piece, and continuity supplies them — `Continuous.intervalIntegrable` turns the continuity of $`x \mapsto x^2` (`continuous_pow`) into interval-integrability on any bounds.
+
+```lean
+example : (∫ x in (1 : ℝ)..2, x ^ 2) + (∫ x in (2 : ℝ)..4, x ^ 2)
+    = ∫ x in (1 : ℝ)..4, x ^ 2 := by
   sorry
 ```
 
 :::solution
 ```lean
-example : ∫ x in (1 : ℝ)..4, x ^ 2 = 21 := by
-  rw [integral_pow]; norm_num
+example : (∫ x in (1 : ℝ)..2, x ^ 2) + (∫ x in (2 : ℝ)..4, x ^ 2)
+    = ∫ x in (1 : ℝ)..4, x ^ 2 :=
+  -- Both pieces are continuous, hence integrable; the integrals concatenate.
+  intervalIntegral.integral_add_adjacent_intervals
+    ((continuous_pow 2).intervalIntegrable 1 2)
+    ((continuous_pow 2).intervalIntegrable 2 4)
 ```
 :::
 
