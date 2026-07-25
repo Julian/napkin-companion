@@ -357,24 +357,39 @@ open scoped ProbabilityTheory ENNReal
 Almost sure convergence needs no new machinery to state: it is the almost-everywhere filter applied to ordinary convergence, spelled `∀ᵐ ω ∂μ, Filter.Tendsto (fun n => X n ω) Filter.atTop (nhds (X ω))`.
 This is exactly the shape in which the strong law below is stated.
 
-The first implication of the hierarchy — almost sure convergence implies convergence in probability, for a.e.-measurable functions into a finite measure space — is `MeasureTheory.tendstoInMeasure_of_tendsto_ae`.
-Prove it by supplying that lemma.
+The first implication of the hierarchy — almost sure convergence implies convergence in probability, for a.e.-measurable functions into a finite measure space — is `MeasureTheory.tendstoInMeasure_of_tendsto_ae`, applied directly:
 
-```lean
-example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
-    {X : ℕ → Ω → ℝ} {Y : Ω → ℝ} (hX : ∀ n, AEStronglyMeasurable (X n) μ)
-    (h : ∀ᵐ ω ∂μ, Tendsto (fun n => X n ω) atTop (nhds (Y ω))) :
-    TendstoInMeasure μ X atTop Y := by
-  sorry
-```
-
-:::solution
 ```lean
 example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
     {X : ℕ → Ω → ℝ} {Y : Ω → ℝ} (hX : ∀ n, AEStronglyMeasurable (X n) μ)
     (h : ∀ᵐ ω ∂μ, Tendsto (fun n => X n ω) atTop (nhds (Y ω))) :
     TendstoInMeasure μ X atTop Y :=
   tendstoInMeasure_of_tendsto_ae hX h
+```
+
+Almost sure convergence is just the almost-everywhere filter wrapped around ordinary convergence, so the pointwise limit laws lift to it verbatim.
+Show that it is closed under sums: if $`X_n \to A` and $`Y_n \to B` almost surely, then $`X_n + Y_n \to A + B` almost surely.
+Land in the worlds where *both* hypotheses hold at once with `filter_upwards`, and there the goal is the ordinary `Tendsto.add`.
+
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    {X Y : ℕ → Ω → ℝ} {A B : Ω → ℝ}
+    (hX : ∀ᵐ ω ∂μ, Tendsto (fun n => X n ω) atTop (nhds (A ω)))
+    (hY : ∀ᵐ ω ∂μ, Tendsto (fun n => Y n ω) atTop (nhds (B ω))) :
+    ∀ᵐ ω ∂μ, Tendsto (fun n => X n ω + Y n ω) atTop (nhds (A ω + B ω)) := by
+  sorry
+```
+
+:::solution
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    {X Y : ℕ → Ω → ℝ} {A B : Ω → ℝ}
+    (hX : ∀ᵐ ω ∂μ, Tendsto (fun n => X n ω) atTop (nhds (A ω)))
+    (hY : ∀ᵐ ω ∂μ, Tendsto (fun n => Y n ω) atTop (nhds (B ω))) :
+    ∀ᵐ ω ∂μ, Tendsto (fun n => X n ω + Y n ω) atTop (nhds (A ω + B ω)) := by
+  -- Restrict to the worlds where both converge; then add the limits.
+  filter_upwards [hX, hY] with ω hx hy
+  exact hx.add hy
 ```
 :::
 
@@ -390,24 +405,39 @@ recall MeasureTheory.TendstoInMeasure {α ι E : Type*} [EDist E]
     Filter.Tendsto (fun i => μ { x | ε ≤ edist (f i x) (g x) }) l (nhds 0)
 ```
 
-The other direction is `MeasureTheory.TendstoInMeasure.exists_seq_tendsto_ae`: convergence in probability gives a *subsequence* converging almost surely.
-This is the formal counterpart of the skeleton-archer question above.
+The other direction is `MeasureTheory.TendstoInMeasure.exists_seq_tendsto_ae`: convergence in probability gives a *subsequence* converging almost surely, the formal counterpart of the skeleton-archer question above.
 
-```lean
-example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
-    {X : ℕ → Ω → ℝ} {Y : Ω → ℝ} (h : TendstoInMeasure μ X atTop Y) :
-    ∃ ns : ℕ → ℕ, StrictMono ns ∧
-      ∀ᵐ ω ∂μ, Tendsto (fun i => X (ns i) ω) atTop (nhds (Y ω)) := by
-  sorry
-```
-
-:::solution
 ```lean
 example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
     {X : ℕ → Ω → ℝ} {Y : Ω → ℝ} (h : TendstoInMeasure μ X atTop Y) :
     ∃ ns : ℕ → ℕ, StrictMono ns ∧
       ∀ᵐ ω ∂μ, Tendsto (fun i => X (ns i) ω) atTop (nhds (Y ω)) :=
   h.exists_seq_tendsto_ae
+```
+
+To see the definition from the inside, prove the simplest instance straight from it: a sequence that never leaves its limit — the constant $`X_n = Y` — converges in probability to $`Y`.
+After `intro ε hε`, the anomaly set $`\{\omega \mid \varepsilon \le \operatorname{edist}(Y\,\omega,\, Y\,\omega)\}` is empty, since `edist_self` collapses the distance to $`0` and $`\varepsilon \le 0` is impossible; so each of its measures is $`0` and the constant-$`0` sequence tends to $`0` by `tendsto_const_nhds`.
+
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} {Y : Ω → ℝ} :
+    TendstoInMeasure μ (fun _ : ℕ => Y) atTop Y := by
+  sorry
+```
+
+:::solution
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} {Y : Ω → ℝ} :
+    TendstoInMeasure μ (fun _ : ℕ => Y) atTop Y := by
+  -- Unfold the definition; each anomaly set is empty as edist Y Y = 0.
+  intro ε hε
+  have hz : ∀ i : ℕ,
+      μ {ω : Ω | ε ≤ edist ((fun _ : ℕ => Y) i ω) (Y ω)} = 0 := by
+    intro i
+    rw [show {ω : Ω | ε ≤ edist ((fun _ : ℕ => Y) i ω) (Y ω)} = ∅ from ?_,
+      measure_empty]
+    ext ω
+    simp [edist_self, le_zero_iff, hε.ne']
+  exact (tendsto_congr hz).mpr tendsto_const_nhds
 ```
 :::
 
@@ -416,12 +446,23 @@ example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
 Convergence in law is `MeasureTheory.TendstoInDistribution X l Z μ`; rather than CDFs, it is defined by weak convergence of the pushforward laws inside the type `ProbabilityMeasure ℝ` (or any topological space of values), and the definition allows each `X n` to live on its own probability space, matching the definition above.
 The second implication of the hierarchy is `MeasureTheory.TendstoInMeasure.tendstoInDistribution`, and Mathlib also carries the classical partial converse ingredients, such as Slutsky's theorem (`TendstoInDistribution.prodMk_of_tendstoInMeasure_const`).
 
-Show that convergence in probability implies convergence in law for a.e.-measurable random variables on a probability space.
+Convergence in probability implies convergence in law for a.e.-measurable random variables on a probability space, by feeding the measurability hypothesis straight in:
 
 ```lean
 example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasure μ]
     {X : ℕ → Ω → ℝ} {Y : Ω → ℝ} (h : TendstoInMeasure μ X atTop Y)
     (hX : ∀ i, AEMeasurable (X i) μ) :
+    TendstoInDistribution X atTop Y (fun _ => μ) μ :=
+  h.tendstoInDistribution hX
+```
+
+Chaining both implications gives the full hierarchy at a stroke: almost sure convergence implies convergence in law.
+Route the almost-everywhere hypothesis through `tendstoInMeasure_of_tendsto_ae` to reach convergence in measure first — a probability measure is finite, so that side condition is automatic — and then apply `.tendstoInDistribution`, whose a.e.-measurability input is `AEStronglyMeasurable.aemeasurable`.
+
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasure μ]
+    {X : ℕ → Ω → ℝ} {Y : Ω → ℝ} (hX : ∀ n, AEStronglyMeasurable (X n) μ)
+    (h : ∀ᵐ ω ∂μ, Tendsto (fun n => X n ω) atTop (nhds (Y ω))) :
     TendstoInDistribution X atTop Y (fun _ => μ) μ := by
   sorry
 ```
@@ -429,10 +470,13 @@ example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasur
 :::solution
 ```lean
 example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasure μ]
-    {X : ℕ → Ω → ℝ} {Y : Ω → ℝ} (h : TendstoInMeasure μ X atTop Y)
-    (hX : ∀ i, AEMeasurable (X i) μ) :
-    TendstoInDistribution X atTop Y (fun _ => μ) μ :=
-  h.tendstoInDistribution hX
+    {X : ℕ → Ω → ℝ} {Y : Ω → ℝ} (hX : ∀ n, AEStronglyMeasurable (X n) μ)
+    (h : ∀ᵐ ω ∂μ, Tendsto (fun n => X n ω) atTop (nhds (Y ω))) :
+    TendstoInDistribution X atTop Y (fun _ => μ) μ := by
+  -- a.s. ⟹ in measure ⟹ in law.
+  have hm : TendstoInMeasure μ X atTop Y :=
+    tendstoInMeasure_of_tendsto_ae hX h
+  exact hm.tendstoInDistribution (fun i => (hX i).aemeasurable)
 ```
 :::
 
@@ -557,15 +601,29 @@ The final Cesàro step — if $`u_n \to l` then the averages $`\frac{1}{n} \sum_
 example {u : ℕ → ℝ} {l : ℝ} (h : Tendsto u atTop (nhds l)) :
     Tendsto (fun n : ℕ => (n⁻¹ : ℝ) * ∑ i ∈ Finset.range n, u i)
       atTop (nhds l) := by
+  simpa [smul_eq_mul] using h.cesaro
+```
+
+This is the engine behind the proposition relating $`T_n` to $`M_n`: since $`M_n = T_n - \frac{T_0 + \dots + T_{n-1}}{n}`, once $`T_n` converges its Cesàro mean converges to the same value and the difference vanishes.
+Prove that proposition: if $`T_n \to L`, then $`T_n - \frac{1}{n}\sum_{i < n} T_i \to 0`.
+Build the Cesàro limit exactly as above, then subtract the two convergent sequences with `Tendsto.sub`, whose limit $`L - L` simplifies to $`0`.
+
+```lean
+example {T : ℕ → ℝ} {L : ℝ} (h : Tendsto T atTop (nhds L)) :
+    Tendsto (fun n : ℕ => T n - (n⁻¹ : ℝ) * ∑ i ∈ Finset.range n, T i)
+      atTop (nhds 0) := by
   sorry
 ```
 
 :::solution
 ```lean
-example {u : ℕ → ℝ} {l : ℝ} (h : Tendsto u atTop (nhds l)) :
-    Tendsto (fun n : ℕ => (n⁻¹ : ℝ) * ∑ i ∈ Finset.range n, u i)
-      atTop (nhds l) := by
-  simpa [smul_eq_mul] using h.cesaro
+example {T : ℕ → ℝ} {L : ℝ} (h : Tendsto T atTop (nhds L)) :
+    Tendsto (fun n : ℕ => T n - (n⁻¹ : ℝ) * ∑ i ∈ Finset.range n, T i)
+      atTop (nhds 0) := by
+  -- T n → L and its Cesàro mean → L, so the difference → L - L = 0.
+  have hces : Tendsto (fun n : ℕ => (n⁻¹ : ℝ) * ∑ i ∈ Finset.range n, T i)
+      atTop (nhds L) := by simpa [smul_eq_mul] using h.cesaro
+  simpa using h.sub hces
 ```
 :::
 

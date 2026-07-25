@@ -315,15 +315,30 @@ Since a lone Sylow subgroup has nowhere else to be conjugated, it is normal, and
 
 ```lean
 example (G : Type*) [Group G] (p : ℕ) [Subsingleton (Sylow p G)]
-    (P : Sylow p G) : (P : Subgroup G).Normal := by
+    (P : Sylow p G) : (P : Subgroup G).Normal :=
+  Sylow.normal_of_subsingleton P
+```
+
+Normality is not just a label — it is the concrete closure condition that $`P` swallows every conjugate of its own elements.
+Extract that condition: with a unique Sylow subgroup in hand, show that for any $`x \in P` and any $`g`, the conjugate $`g x g^{-1}` again lies in $`P`.
+First get normality from `Sylow.normal_of_subsingleton`, then feed $`x`, its membership, and $`g` to the `.conj_mem` field that *is* the definition of `Normal`.
+
+```lean
+example (G : Type*) [Group G] (p : ℕ) [Subsingleton (Sylow p G)]
+    (P : Sylow p G) (x : G) (hx : x ∈ (P : Subgroup G)) (g : G) :
+    g * x * g⁻¹ ∈ (P : Subgroup G) := by
   sorry
 ```
 
 :::solution
 ```lean
 example (G : Type*) [Group G] (p : ℕ) [Subsingleton (Sylow p G)]
-    (P : Sylow p G) : (P : Subgroup G).Normal :=
-  Sylow.normal_of_subsingleton P
+    (P : Sylow p G) (x : G) (hx : x ∈ (P : Subgroup G)) (g : G) :
+    g * x * g⁻¹ ∈ (P : Subgroup G) := by
+  -- A unique Sylow subgroup is normal, and normality *is* closure
+  -- under conjugation, read off via `.conj_mem`.
+  have hP := Sylow.normal_of_subsingleton P
+  exact hP.conj_mem x hx g
 ```
 :::
 
@@ -345,19 +360,31 @@ recall Sylow.equiv {p : ℕ} {G : Type*} [Group G] [Fact p.Prime]
     [Finite (Sylow p G)] (P Q : Sylow p G) : P ≃* Q
 ```
 
-Apply it to `P` and `Q`, then wrap the result in an anonymous constructor to hand back the `Nonempty` witness.
+Applying it to `P` and `Q` and wrapping the result in an anonymous constructor hands back a `Nonempty` witness:
 
 ```lean
 example (G : Type*) [Group G] (p : ℕ) [Fact p.Prime] [Finite (Sylow p G)]
-    (P Q : Sylow p G) : Nonempty (P ≃* Q) := by
+    (P Q : Sylow p G) : Nonempty (P ≃* Q) :=
+  ⟨Sylow.equiv P Q⟩
+```
+
+The point of an isomorphism is that it transports invariants, and the most basic one is size.
+Use `Sylow.equiv` to prove that any two Sylow $`p`-subgroups have the same number of elements.
+Forget the multiplicative structure with `.toEquiv` to get a plain bijection, then turn that bijection into an equality of cardinalities with `Nat.card_congr`.
+
+```lean
+example (G : Type*) [Group G] (p : ℕ) [Fact p.Prime] [Finite (Sylow p G)]
+    (P Q : Sylow p G) : Nat.card P = Nat.card Q := by
   sorry
 ```
 
 :::solution
 ```lean
 example (G : Type*) [Group G] (p : ℕ) [Fact p.Prime] [Finite (Sylow p G)]
-    (P Q : Sylow p G) : Nonempty (P ≃* Q) :=
-  ⟨Sylow.equiv P Q⟩
+    (P Q : Sylow p G) : Nat.card P = Nat.card Q :=
+  -- The conjugating isomorphism is in particular a bijection of the
+  -- underlying sets, so it equates their cardinalities.
+  Nat.card_congr (Sylow.equiv P Q).toEquiv
 ```
 :::
 
@@ -399,14 +426,32 @@ Mathlib proves it as `exists_prime_orderOf_dvd_card`, which takes the prime and 
 
 ```lean
 example (G : Type*) [Group G] [Fintype G] (p : ℕ) [Fact p.Prime]
-    (h : p ∣ Fintype.card G) : ∃ g : G, orderOf g = p := by
+    (h : p ∣ Fintype.card G) : ∃ g : G, orderOf g = p :=
+  exists_prime_orderOf_dvd_card p h
+```
+
+What Cauchy really buys you is a *nontrivial* element killed by $`p`.
+Extract it: produce a $`g \neq 1` with $`g^p = 1`.
+Name Cauchy's element with `obtain`, then split the goal — it cannot be the identity (else its order would be $`1`, not the prime $`p`), and raising it to $`p =` `orderOf g` gives `1` by `pow_orderOf_eq_one`.
+
+```lean
+example (G : Type*) [Group G] [Fintype G] (p : ℕ) [hp : Fact p.Prime]
+    (h : p ∣ Fintype.card G) : ∃ g : G, g ≠ 1 ∧ g ^ p = 1 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (G : Type*) [Group G] [Fintype G] (p : ℕ) [Fact p.Prime]
-    (h : p ∣ Fintype.card G) : ∃ g : G, orderOf g = p :=
-  exists_prime_orderOf_dvd_card p h
+example (G : Type*) [Group G] [Fintype G] (p : ℕ) [hp : Fact p.Prime]
+    (h : p ∣ Fintype.card G) : ∃ g : G, g ≠ 1 ∧ g ^ p = 1 := by
+  obtain ⟨g, hg⟩ := exists_prime_orderOf_dvd_card p h
+  refine ⟨g, ?_, ?_⟩
+  · -- If g were the identity its order would be 1, not the prime p.
+    rintro rfl
+    rw [orderOf_one] at hg
+    exact hp.out.ne_one hg.symm
+  · -- p is the order of g, and g raised to its own order is 1.
+    rw [← hg]
+    exact pow_orderOf_eq_one g
 ```
 :::

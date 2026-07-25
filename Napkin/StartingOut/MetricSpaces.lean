@@ -594,18 +594,30 @@ example (M : Type*) [MetricSpace M] (l : M) :
   tendsto_const_nhds
 ```
 
-Your turn: the prototype of the chapter, the sequence $`\frac 1n`, converges to $`0` in $`\mathbb{R}`.
-Mathlib packages this fact under the name `tendsto_one_div_atTop_nhds_zero_nat`.
+The prototype of the chapter, the sequence $`\frac 1n`, converges to $`0` in $`\mathbb{R}`; Mathlib packages this under `tendsto_one_div_atTop_nhds_zero_nat`.
 
 ```lean
-example : Filter.Tendsto (fun n : ℕ => 1 / (n : ℝ)) Filter.atTop (𝓝 0) := by
+example : Filter.Tendsto (fun n : ℕ => 1 / (n : ℝ)) Filter.atTop (𝓝 0) :=
+  tendsto_one_div_atTop_nhds_zero_nat
+```
+
+Your turn: shift the prototype.
+Show that $`c + \frac 1n` converges to $`c` by adding the two limits above — combine the constant sequence `tendsto_const_nhds` with the prototype via `Filter.Tendsto.add`, then simplify $`c + 0` down to $`c`.
+
+```lean
+example (c : ℝ) :
+    Filter.Tendsto (fun n : ℕ => c + 1 / (n : ℝ)) Filter.atTop (𝓝 c) := by
   sorry
 ```
 
 :::solution
 ```lean
-example : Filter.Tendsto (fun n : ℕ => 1 / (n : ℝ)) Filter.atTop (𝓝 0) :=
-  tendsto_one_div_atTop_nhds_zero_nat
+example (c : ℝ) :
+    Filter.Tendsto (fun n : ℕ => c + 1 / (n : ℝ)) Filter.atTop (𝓝 c) := by
+  -- Add the constant limit c and the prototype limit 0; c + 0 = c.
+  have h : Filter.Tendsto (fun n : ℕ => 1 / (n : ℝ)) Filter.atTop (𝓝 0) :=
+    tendsto_one_div_atTop_nhds_zero_nat
+  simpa using tendsto_const_nhds.add h
 ```
 :::
 
@@ -719,19 +731,8 @@ recall continuous_mul {M : Type*} [TopologicalSpace M] [Mul M]
     [ContinuousMul M] : Continuous fun p : M × M => p.1 * p.2
 ```
 
-Your turn: prove the `PROPOSITION` that convergence in the product metric is componentwise.
-The lemma `Prod.tendsto_iff` does the work — this exercise is about matching the chapter's statement to the library's.
+The `PROPOSITION` that convergence in the product metric is componentwise is `Prod.tendsto_iff`: the pair converges iff both coordinates do.
 
-```lean
-example {M N : Type*} [MetricSpace M] [MetricSpace N]
-    (x : ℕ → M) (y : ℕ → N) (a : M) (b : N) :
-    Filter.Tendsto (fun n => (x n, y n)) Filter.atTop (𝓝 (a, b)) ↔
-      Filter.Tendsto x Filter.atTop (𝓝 a) ∧
-        Filter.Tendsto y Filter.atTop (𝓝 b) := by
-  sorry
-```
-
-:::solution
 ```lean
 example {M N : Type*} [MetricSpace M] [MetricSpace N]
     (x : ℕ → M) (y : ℕ → N) (a : M) (b : N) :
@@ -740,19 +741,46 @@ example {M N : Type*} [MetricSpace M] [MetricSpace N]
         Filter.Tendsto y Filter.atTop (𝓝 b) :=
   Prod.tendsto_iff (fun n => (x n, y n)) (a, b)
 ```
-:::
 
-And one more, restating the first end-of-chapter problem: subtraction on $`\mathbb{R}` is continuous.
-(The library name is `continuous_sub`.)
+Your turn: put the componentwise criterion to work on the diagonal.
+If $`x_n \to a` in $`M`, show that the paired sequence $`(x_n, x_n) \to (a, a)` in $`M \times M`, by feeding the single hypothesis into *both* coordinates of `Prod.tendsto_iff` through its `.mpr` direction.
 
 ```lean
-example : Continuous fun p : ℝ × ℝ => p.1 - p.2 := by
+example {M : Type*} [MetricSpace M] (x : ℕ → M) (a : M)
+    (h : Filter.Tendsto x Filter.atTop (𝓝 a)) :
+    Filter.Tendsto (fun n => (x n, x n)) Filter.atTop (𝓝 (a, a)) := by
   sorry
 ```
 
 :::solution
 ```lean
+example {M : Type*} [MetricSpace M] (x : ℕ → M) (a : M)
+    (h : Filter.Tendsto x Filter.atTop (𝓝 a)) :
+    Filter.Tendsto (fun n => (x n, x n)) Filter.atTop (𝓝 (a, a)) :=
+  -- Both coordinates are x, so mpr wants the same limit twice.
+  (Prod.tendsto_iff (fun n => (x n, x n)) (a, a)).mpr ⟨h, h⟩
+```
+:::
+
+And one more, restating the first end-of-chapter problem: subtraction on $`\mathbb{R}` is continuous, the library name being `continuous_sub`.
+
+```lean
 example : Continuous fun p : ℝ × ℝ => p.1 - p.2 := continuous_sub
+```
+
+Your turn: the upshot of the section is that arithmetic *built out of* continuous pieces stays continuous.
+Show the single-variable map $`x \mapsto x - c` is continuous by subtracting two continuous maps — the identity `continuous_id` and the constant `continuous_const`, combined through `Continuous.sub`.
+
+```lean
+example (c : ℝ) : Continuous fun x : ℝ => x - c := by
+  sorry
+```
+
+:::solution
+```lean
+example (c : ℝ) : Continuous fun x : ℝ => x - c :=
+  -- x ↦ x and x ↦ c are continuous; their difference is too.
+  continuous_id.sub continuous_const
 ```
 :::
 
@@ -787,26 +815,43 @@ example {M : Type*} [MetricSpace M] (p : M) (r : ℝ) :
     IsOpen (Metric.ball p r) := Metric.isOpen_ball
 ```
 
-Your turn: prove the two closure properties from the `PROPOSITION` — that a finite intersection of open sets is open, and that an arbitrary union of open sets is open.
-(Look for `IsOpen.inter` and `isOpen_iUnion`.)
+The two closure properties from the `PROPOSITION` are `IsOpen.inter` (a finite intersection stays open) and `isOpen_iUnion` (an arbitrary union stays open).
 
-```lean
-example {M : Type*} [MetricSpace M] (s t : Set M)
-    (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ∩ t) := by
-  sorry
-
-example {M : Type*} [MetricSpace M] (U : ℕ → Set M)
-    (h : ∀ i, IsOpen (U i)) : IsOpen (⋃ i, U i) := by
-  sorry
-```
-
-:::solution
 ```lean
 example {M : Type*} [MetricSpace M] (s t : Set M)
     (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ∩ t) := hs.inter ht
 
 example {M : Type*} [MetricSpace M] (U : ℕ → Set M)
     (h : ∀ i, IsOpen (U i)) : IsOpen (⋃ i, U i) := isOpen_iUnion h
+```
+
+Your turn: chain these with the fact that each $`r`-neighborhood is open.
+First, a union of open balls is open — hand `isOpen_iUnion` the ball-openness `Metric.isOpen_ball` at each index.
+Second, intersect an open set with such a union, combining `IsOpen.inter` and `isOpen_iUnion`.
+
+```lean
+example {M : Type*} [MetricSpace M] (c : ℕ → M) (r : ℕ → ℝ) :
+    IsOpen (⋃ i, Metric.ball (c i) (r i)) := by
+  sorry
+
+example {M : Type*} [MetricSpace M] (s : Set M) (U : ℕ → Set M)
+    (hs : IsOpen s) (h : ∀ i, IsOpen (U i)) :
+    IsOpen (s ∩ ⋃ i, U i) := by
+  sorry
+```
+
+:::solution
+```lean
+example {M : Type*} [MetricSpace M] (c : ℕ → M) (r : ℕ → ℝ) :
+    IsOpen (⋃ i, Metric.ball (c i) (r i)) :=
+  -- Every ball is open, so their union is open.
+  isOpen_iUnion fun _ => Metric.isOpen_ball
+
+example {M : Type*} [MetricSpace M] (s : Set M) (U : ℕ → Set M)
+    (hs : IsOpen s) (h : ∀ i, IsOpen (U i)) :
+    IsOpen (s ∩ ⋃ i, U i) :=
+  -- A union of opens is open, and intersecting with the open s stays open.
+  hs.inter (isOpen_iUnion h)
 ```
 :::
 
@@ -836,18 +881,28 @@ example (M : Type*) [MetricSpace M] (S : Set M) :
     IsOpen Sᶜ ↔ IsClosed S := isOpen_compl_iff
 ```
 
-Your turn: the closure of any set is closed — this is the content of the `EXERCISE` that $`\lim S` is always closed, even when $`S` isn't.
-(The one-liner is `isClosed_closure`.)
+The closure of any set is closed — the content of the `EXERCISE` that $`\lim S` is always closed, even when $`S` isn't; the one-liner is `isClosed_closure`.
 
 ```lean
 example {M : Type*} [MetricSpace M] (S : Set M) :
-    IsClosed (closure S) := by
+    IsClosed (closure S) := isClosed_closure
+```
+
+Your turn: closing an already-closed set changes nothing.
+Show that if $`S` is closed then $`\overline S = S`, by proving both inclusions: `subset_closure` gives $`S \subseteq \overline S`, and a closed set contains its own closure through `IsClosed.closure_subset`.
+Glue them with `Set.Subset.antisymm`.
+
+```lean
+example {M : Type*} [MetricSpace M] (S : Set M) (h : IsClosed S) :
+    closure S = S := by
   sorry
 ```
 
 :::solution
 ```lean
-example {M : Type*} [MetricSpace M] (S : Set M) :
-    IsClosed (closure S) := isClosed_closure
+example {M : Type*} [MetricSpace M] (S : Set M) (h : IsClosed S) :
+    closure S = S :=
+  -- Antisymmetry: closure ⊆ S since S is closed, and S ⊆ closure always.
+  Set.Subset.antisymm h.closure_subset subset_closure
 ```
 :::

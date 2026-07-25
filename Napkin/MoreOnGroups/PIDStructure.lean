@@ -511,29 +511,35 @@ example (m n : ℕ) (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m × ZMod n :=
   ZMod.chineseRemainder h
 ```
 
-`IsNoetherian R M` is the Mathlib predicate for a Noetherian module; `isNoetherian_def` is the equivalence to the "every submodule is finitely generated" condition, and `isNoetherian_iff_fg_wellFounded` is the equivalence to the ascending chain condition.
+`IsNoetherian R M` is the Mathlib predicate for a Noetherian module; `isNoetherian_def` is the equivalence to the "every submodule is finitely generated" condition, and `isNoetherian_iff'` is the equivalence to the ascending chain condition, phrased as well-foundedness of `>` on the submodules.
 
 ```lean
 example (R : Type*) [Semiring R] (M : Type*) [AddCommMonoid M] [Module R M] :
     IsNoetherian R M ↔ ∀ s : Submodule R M, s.FG :=
   isNoetherian_def
+
+example (R : Type*) [Semiring R] (M : Type*) [AddCommMonoid M] [Module R M] :
+    IsNoetherian R M ↔ WellFoundedGT (Submodule R M) :=
+  isNoetherian_iff'
 ```
 
 The chapter asked you to check that the two conditions defining a Noetherian module agree.
-Alongside `isNoetherian_def` above, show that `IsNoetherian` is equivalent to the ascending chain condition, phrased as well-foundedness of `>` on the submodules.
-This is `isNoetherian_iff'`, which states exactly this equivalence; the proof is that one name.
+Both characterizations above pass through `IsNoetherian`, so chaining them relates the two conditions directly, without naming Noetherian-ness in between.
+Prove that if every submodule of `M` is finitely generated, then the submodules satisfy the ascending chain condition.
+Repackage the finite-generation hypothesis back into `IsNoetherian` with `isNoetherian_def.mpr`, then read off well-foundedness with `isNoetherian_iff'.mp`.
 
 ```lean
-example (R : Type*) [Semiring R] (M : Type*) [AddCommMonoid M] [Module R M] :
-    IsNoetherian R M ↔ WellFoundedGT (Submodule R M) := by
+example (R : Type*) [Semiring R] (M : Type*) [AddCommMonoid M] [Module R M]
+    (h : ∀ s : Submodule R M, s.FG) : WellFoundedGT (Submodule R M) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (R : Type*) [Semiring R] (M : Type*) [AddCommMonoid M] [Module R M] :
-    IsNoetherian R M ↔ WellFoundedGT (Submodule R M) :=
-  isNoetherian_iff'
+example (R : Type*) [Semiring R] (M : Type*) [AddCommMonoid M] [Module R M]
+    (h : ∀ s : Submodule R M, s.FG) : WellFoundedGT (Submodule R M) :=
+  -- Route the FG condition through `IsNoetherian`; then it is the ACC.
+  isNoetherian_iff'.mp (isNoetherian_def.mpr h)
 ```
 :::
 
