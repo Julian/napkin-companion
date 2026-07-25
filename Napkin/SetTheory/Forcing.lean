@@ -532,21 +532,35 @@ example (P : Type*) [Preorder P] (p : P) {ι : Type*} [Encodable ι]
 ```
 
 A `Forcing.IsGeneric 𝒟 G` filter meets every dense set in the family $`𝒟`; taking $`𝒟` to be the dense sets that belong to $`M` recovers "$`M`-generic".
-That meeting is the whole content of genericity — extract it.
+That meeting is the whole content of genericity, packaged as `IsGeneric.meets`.
 
 ```lean
 example (P : Type*) [Preorder P] {𝒟 : Set (Set P)} {G D : Set P}
     (h : Forcing.IsGeneric 𝒟 G) (hD : D ∈ 𝒟) (hd : Forcing.Dense D) :
-    (G ∩ D).Nonempty := by
+    (G ∩ D).Nonempty :=
+  h.meets hD hd
+```
+
+Genericity has two independent parts — being a filter, and meeting every dense set of the family — so it can only improve as the family shrinks: a filter generic for $`𝒟` stays generic for any subfamily $`ℰ \subseteq 𝒟`.
+Prove it.
+Split the goal with `refine ⟨h.isFilter, ?_⟩` to reuse the filter half untouched, then route each dense set of $`ℰ` into $`𝒟` through the inclusion before `IsGeneric.meets` closes it.
+
+```lean
+example (P : Type*) [Preorder P] {𝒟 ℰ : Set (Set P)} {G : Set P}
+    (h : Forcing.IsGeneric 𝒟 G) (hsub : ℰ ⊆ 𝒟) :
+    Forcing.IsGeneric ℰ G := by
   sorry
 ```
 
 :::solution
 ```lean
-example (P : Type*) [Preorder P] {𝒟 : Set (Set P)} {G D : Set P}
-    (h : Forcing.IsGeneric 𝒟 G) (hD : D ∈ 𝒟) (hd : Forcing.Dense D) :
-    (G ∩ D).Nonempty :=
-  h.2 D hD hd
+example (P : Type*) [Preorder P] {𝒟 ℰ : Set (Set P)} {G : Set P}
+    (h : Forcing.IsGeneric 𝒟 G) (hsub : ℰ ⊆ 𝒟) :
+    Forcing.IsGeneric ℰ G := by
+  -- Keep the filter half; send each dense set of ℰ into 𝒟 via hsub.
+  refine ⟨h.isFilter, ?_⟩
+  intro D hD hd
+  exact h.meets (hsub hD) hd
 ```
 :::
 
@@ -561,19 +575,30 @@ Mathlib packages "the order $`<` is well-founded" as `WellFoundedLT`, and $`\mat
 example : WellFoundedLT ℕ := inferInstance
 ```
 
-Rank induction is available precisely because every element is _accessible_ under such an order.
-Prove that in any `WellFoundedLT` order each element is `Acc`essible.
+Rank induction is available precisely because every element is _accessible_ under such an order, and `WellFoundedLT.apply` hands you that `Acc`essibility proof for any element.
 
 ```lean
 example (α : Type*) [Preorder α] [WellFoundedLT α] (a : α) :
-    Acc (· < ·) a := by
+    Acc (· < ·) a :=
+  WellFoundedLT.apply a
+```
+
+Accessibility is not merely a certificate; it _is_ the induction principle.
+Derive rank induction itself: to prove a predicate `C` holds everywhere, it is enough to prove `C x` from the assumption that `C y` holds for every `y < x`.
+Recurse on the accessibility proof of `a` with `induction … with | intro x _ IH`; the `intro` case hands you exactly the "for every smaller `y`" hypothesis the step consumes.
+
+```lean
+example (α : Type*) [Preorder α] [WellFoundedLT α] {C : α → Prop}
+    (ih : ∀ x, (∀ y, y < x → C y) → C x) (a : α) : C a := by
   sorry
 ```
 
 :::solution
 ```lean
-example (α : Type*) [Preorder α] [WellFoundedLT α] (a : α) :
-    Acc (· < ·) a :=
-  WellFoundedLT.apply a
+example (α : Type*) [Preorder α] [WellFoundedLT α] {C : α → Prop}
+    (ih : ∀ x, (∀ y, y < x → C y) → C x) (a : α) : C a := by
+  -- Rank induction *is* recursion on the accessibility proof of `a`.
+  induction WellFoundedLT.apply a with
+  | intro x _ IH => exact ih x IH
 ```
 :::

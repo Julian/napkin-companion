@@ -346,18 +346,27 @@ example {X : Type*} (ι : Set X → X) : ¬ Function.Injective ι :=
   Function.cantor_injective ι
 ```
 
-The proof above first passed through the surjective form: there is no surjection $`X \twoheadrightarrow \mathcal{P}(X)`.
-Prove this using `Function.cantor_surjective`.
+Underneath, the argument runs through the surjective form: there is no surjection $`X \twoheadrightarrow \mathcal{P}(X)`, which is `Function.cantor_surjective`.
 
 ```lean
-example {X : Type*} (f : X → Set X) : ¬ Function.Surjective f := by
+example {X : Type*} (f : X → Set X) : ¬ Function.Surjective f :=
+  Function.cantor_surjective f
+```
+
+Now reconstruct the injective statement from the surjective one, following the proof's "just invert $`\iota`" step.
+A left inverse of an injection is a surjection (`Function.invFun_surjective`), so `Function.invFun ι` surjects $`X` onto $`\mathcal{P}(X)` — which `Function.cantor_surjective` forbids.
+
+```lean
+example {X : Type*} (ι : Set X → X) : ¬ Function.Injective ι := by
   sorry
 ```
 
 :::solution
 ```lean
-example {X : Type*} (f : X → Set X) : ¬ Function.Surjective f :=
-  Function.cantor_surjective f
+example {X : Type*} (ι : Set X → X) : ¬ Function.Injective ι := by
+  intro h
+  -- Invert ι to a surjection X ↠ 𝒫(X), which cantor_surjective rules out.
+  exact Function.cantor_surjective _ (Function.invFun_surjective h)
 ```
 :::
 
@@ -371,17 +380,27 @@ example (x y : ZFSet) : Prop := x ∈ y
 ```
 
 Extensionality is the theorem `ZFSet.ext`: two sets with the same elements are equal.
-Prove it from the hypothesis that $`x` and $`y` have exactly the same members.
 
 ```lean
-example (x y : ZFSet) (h : ∀ z : ZFSet, z ∈ x ↔ z ∈ y) : x = y := by
+example (x y : ZFSet) (h : ∀ z : ZFSet, z ∈ x ↔ z ∈ y) : x = y :=
+  ZFSet.ext h
+```
+
+Put extensionality to work on a concrete equality: the pair $`\{x, x\}` collapses to the singleton $`\{x\}`.
+Apply `ZFSet.ext`, then reduce each side with its membership lemma — `ZFSet.mem_pair` turns $`z \in \{x, x\}` into $`z = x \lor z = x`, `ZFSet.mem_singleton` turns $`z \in \{x\}` into $`z = x`, and `or_self` closes the gap between them.
+
+```lean
+example (x : ZFSet) : ({x, x} : ZFSet) = {x} := by
   sorry
 ```
 
 :::solution
 ```lean
-example (x y : ZFSet) (h : ∀ z : ZFSet, z ∈ x ↔ z ∈ y) : x = y :=
-  ZFSet.ext h
+example (x : ZFSet) : ({x, x} : ZFSet) = {x} := by
+  -- Two sets are equal once their members match, element by element.
+  apply ZFSet.ext
+  intro z
+  rw [ZFSet.mem_pair, ZFSet.mem_singleton, or_self]
 ```
 :::
 
@@ -407,18 +426,29 @@ example (p : ZFSet → Prop) (x y : ZFSet) :
     y ∈ ZFSet.sep p x ↔ y ∈ x ∧ p y := ZFSet.mem_sep
 ```
 
-Foundation is not a construction but a theorem about the type, and it delivers the promised consequence that no set contains itself.
-Prove it using `ZFSet.mem_irrefl`.
+Foundation is not a construction but a theorem about the type, and it delivers the promised consequence that no set contains itself, `ZFSet.mem_irrefl`.
 
 ```lean
-example (x : ZFSet) : x ∉ x := by
+example (x : ZFSet) : x ∉ x :=
+  ZFSet.mem_irrefl x
+```
+
+Foundation forbids more than a set literally being its own element: it also rules out a set equal to its own singleton.
+Suppose $`x = \{x\}`.
+Then $`x \in \{x\}` (by `ZFSet.mem_singleton`), and rewriting $`\{x\}` back to $`x` puts $`x \in x`, which `ZFSet.mem_irrefl` refutes.
+
+```lean
+example (x : ZFSet) (h : x = {x}) : False := by
   sorry
 ```
 
 :::solution
 ```lean
-example (x : ZFSet) : x ∉ x :=
-  ZFSet.mem_irrefl x
+example (x : ZFSet) (h : x = {x}) : False := by
+  -- x = {x} makes x a member of itself, which foundation forbids.
+  have hx : x ∈ ({x} : ZFSet) := ZFSet.mem_singleton.mpr rfl
+  rw [← h] at hx
+  exact ZFSet.mem_irrefl x hx
 ```
 :::
 
@@ -431,20 +461,28 @@ example (x y : ZFSet) : ZFSet := ZFSet.pair x y
 example : ∅ ∈ ZFSet.omega := ZFSet.omega_zero
 ```
 
-The point of the encoding is that $`(x, y) = (a, b)` exactly when $`x = a` and $`y = b`.
-Prove this using `ZFSet.pair_inj`.
+The point of the encoding is that $`(x, y) = (a, b)` exactly when $`x = a` and $`y = b`, which is `ZFSet.pair_inj`.
 
 ```lean
 example (x y a b : ZFSet) :
-    ZFSet.pair x y = ZFSet.pair a b ↔ x = a ∧ y = b := by
+    ZFSet.pair x y = ZFSet.pair a b ↔ x = a ∧ y = b :=
+  ZFSet.pair_inj
+```
+
+A consequence worth extracting: a pair equals its own reversal only when both slots already agree.
+Rewrite with `ZFSet.pair_inj` to turn the goal into $`(x = y \land y = x) \iff x = y`, then supply each direction — forward is the first component, backward pairs $`x = y` with its `symm`.
+
+```lean
+example (x y : ZFSet) : ZFSet.pair x y = ZFSet.pair y x ↔ x = y := by
   sorry
 ```
 
 :::solution
 ```lean
-example (x y a b : ZFSet) :
-    ZFSet.pair x y = ZFSet.pair a b ↔ x = a ∧ y = b :=
-  ZFSet.pair_inj
+example (x y : ZFSet) : ZFSet.pair x y = ZFSet.pair y x ↔ x = y := by
+  -- pair_inj reduces equality of pairs to equality of both slots.
+  rw [ZFSet.pair_inj]
+  exact ⟨fun h => h.1, fun h => ⟨h, h.symm⟩⟩
 ```
 :::
 
@@ -458,18 +496,29 @@ example (α : Type*) : IsWellOrder α WellOrderingRel :=
   WellOrderingRel.isWellOrder
 ```
 
-A well-ordering has no infinite descending chains, i.e. it is well-founded.
-Extract this `WellFounded` proof from the `IsWellOrder` instance.
+A well-ordering has no infinite descending chains, i.e. it is well-founded; the `WellFounded` proof is `WellOrderingRel.isWellOrder.wf`.
 
 ```lean
-example (α : Type*) : WellFounded (WellOrderingRel : α → α → Prop) := by
+example (α : Type*) : WellFounded (WellOrderingRel : α → α → Prop) :=
+  WellOrderingRel.isWellOrder.wf
+```
+
+Well-foundedness is exactly what lets us "pick minimal elements", the property that makes well-orders useful.
+Deduce it: every nonempty subset $`s` has an element $`m` with nothing in $`s` strictly below it.
+The `WellFounded` proof above carries the method `WellFounded.has_min`, which takes the set and a proof it is nonempty and hands back such a minimal $`m`.
+
+```lean
+example (α : Type*) (s : Set α) (hs : s.Nonempty) :
+    ∃ m ∈ s, ∀ y ∈ s, ¬ WellOrderingRel y m := by
   sorry
 ```
 
 :::solution
 ```lean
-example (α : Type*) : WellFounded (WellOrderingRel : α → α → Prop) :=
-  WellOrderingRel.isWellOrder.wf
+example (α : Type*) (s : Set α) (hs : s.Nonempty) :
+    ∃ m ∈ s, ∀ y ∈ s, ¬ WellOrderingRel y m :=
+  -- Well-foundedness delivers a minimal element of any nonempty set.
+  WellOrderingRel.isWellOrder.wf.has_min s hs
 ```
 :::
 
@@ -484,16 +533,26 @@ example (x : ZFSet) : Class := (x : Class)
 ```
 
 The theorem that $`V` is a proper class is `Class.univ_notMem_univ`: there is no set of all sets.
-Prove $`V \notin V`.
 
 ```lean
-example : Class.univ ∉ Class.univ := by
+example : Class.univ ∉ Class.univ :=
+  Class.univ_notMem_univ
+```
+
+The proof of this is that a set of all sets would contain itself, contradicting foundation.
+Run that argument directly at the `ZFSet` level: show no set $`u` has *every* set as a member.
+Assume one did (`rintro ⟨u, hu⟩`); then $`u` is among its own members (`hu u`), and `ZFSet.mem_irrefl` closes it out.
+
+```lean
+example : ¬ ∃ u : ZFSet, ∀ x : ZFSet, x ∈ u := by
   sorry
 ```
 
 :::solution
 ```lean
-example : Class.univ ∉ Class.univ :=
-  Class.univ_notMem_univ
+example : ¬ ∃ u : ZFSet, ∀ x : ZFSet, x ∈ u := by
+  -- A universal set would contain itself, which foundation forbids.
+  rintro ⟨u, hu⟩
+  exact ZFSet.mem_irrefl u (hu u)
 ```
 :::

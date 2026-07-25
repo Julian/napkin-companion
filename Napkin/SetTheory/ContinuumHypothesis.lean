@@ -266,16 +266,25 @@ example : ContinuumHypothesis ↔ continuum.{0} = ℵ₁ :=
 ```
 
 Only one direction of that equality is a theorem of ZFC: the continuum is always at least $`\aleph_1`, since $`\aleph_1` is the very next cardinal past $`\aleph_0`.
-Prove this provable half, $`\aleph_1 \le \mathfrak{c}`; it is exactly `aleph_one_le_continuum`.
+This provable half, $`\aleph_1 \le \mathfrak{c}`, is exactly `aleph_one_le_continuum`.
 
 ```lean
-example : ℵ₁ ≤ 𝔠 := by
+example : ℵ₁ ≤ 𝔠 := aleph_one_le_continuum
+```
+
+Cantor's theorem lurks underneath: the continuum is not merely $`\ge \aleph_1` but strictly larger than $`\aleph_0` itself.
+Prove $`\aleph_0 < \mathfrak{c}` by chaining the strict step $`\aleph_0 < \aleph_1` (`aleph0_lt_aleph_one`) through the worked bound above with `LT.lt.trans_le`.
+
+```lean
+example : ℵ₀ < 𝔠 := by
   sorry
 ```
 
 :::solution
 ```lean
-example : ℵ₁ ≤ 𝔠 := aleph_one_le_continuum
+example : ℵ₀ < 𝔠 :=
+  -- ℵ₀ < ℵ₁ ≤ 𝔠, so a strict-then-weak chain lands strictly below 𝔠.
+  aleph0_lt_aleph_one.trans_le aleph_one_le_continuum
 ```
 :::
 
@@ -439,33 +448,52 @@ example (c : Cardinal) (h : ¬ c ≤ ℵ₀) : ℵ₁ ≤ c := by
 ```
 :::
 
-Every condition extends the empty condition $`1_\mathbb{P}`, because nothing is weaker than committing to nothing.
-Prove that each Cohen condition refines the top; since $`1_\mathbb{P}` is the order's `⊤`, this is `le_top`.
+Every condition extends the empty condition $`1_\mathbb{P}`, because nothing is weaker than committing to nothing; since $`1_\mathbb{P}` is the order's `⊤`, that each Cohen condition refines it is `le_top`.
 
 ```lean
-example {κ : Type} (p : CohenAdd κ) : p ≤ ⊤ := by
+example {κ : Type} (p : CohenAdd κ) : p ≤ ⊤ := le_top
+```
+
+One consequence is that the top condition is compatible with *everything*: it commits to nothing, so it can never conflict.
+Prove `Forcing.Compatible p ⊤` for any condition `p` by unfolding compatibility (`∃ r, r ≤ p ∧ r ≤ ⊤`) and offering `p` itself as the common refinement — `le_refl p` on one side and the `le_top` above on the other.
+
+```lean
+example {κ : Type} (p : CohenAdd κ) : Forcing.Compatible p ⊤ := by
   sorry
 ```
 
 :::solution
 ```lean
-example {κ : Type} (p : CohenAdd κ) : p ≤ ⊤ := le_top
+example {κ : Type} (p : CohenAdd κ) : Forcing.Compatible p ⊤ :=
+  -- p refines both p (reflexivity) and ⊤ (le_top), so it witnesses ∃ r.
+  ⟨p, le_refl p, le_top⟩
 ```
 :::
 
 Finally, the common `root` of a $`\Delta`-system sits inside every one of its sets, since it *is* the intersection of any two.
-Show this for the two sets of a $`\Delta`-system indexed by `Bool`, feeding `true ≠ false` to `DeltaSystem.root_subset`.
+Feeding `true ≠ false` to `DeltaSystem.root_subset` places the root inside the `true` set.
 
 ```lean
 example {α : Type} [DecidableEq α] (S : DeltaSystem α Bool) :
-    S.root ⊆ S.sets true := by
+    S.root ⊆ S.sets true :=
+  S.root_subset (show (true : Bool) ≠ false by decide)
+```
+
+"Inside *every* set" means inside both at once for a `Bool`-indexed system.
+Prove the conjunction `S.root ⊆ S.sets true ∧ S.root ⊆ S.sets false` by supplying the pair, invoking `root_subset` a second time with the opposite inequality `false ≠ true`.
+
+```lean
+example {α : Type} [DecidableEq α] (S : DeltaSystem α Bool) :
+    S.root ⊆ S.sets true ∧ S.root ⊆ S.sets false := by
   sorry
 ```
 
 :::solution
 ```lean
 example {α : Type} [DecidableEq α] (S : DeltaSystem α Bool) :
-    S.root ⊆ S.sets true :=
-  S.root_subset (show (true : Bool) ≠ false by decide)
+    S.root ⊆ S.sets true ∧ S.root ⊆ S.sets false :=
+  -- Each conjunct is root_subset fed the relevant distinctness of indices.
+  ⟨S.root_subset (show (true : Bool) ≠ false by decide),
+   S.root_subset (show (false : Bool) ≠ true by decide)⟩
 ```
 :::

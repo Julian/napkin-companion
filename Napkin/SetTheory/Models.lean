@@ -552,16 +552,32 @@ recall Foundation (𝓜 : SetModel) : Prop
 
 Unfolding the names, `Extensional 𝓜` is exactly `∀ a b, (∀ c, 𝓜.mem c a ↔ 𝓜.mem c b) → a = b` and `Foundation 𝓜` is `WellFounded 𝓜.mem`.
 The universe `zfSetModel` satisfies both, as `zfSetModel_extensional` (built from `ZFSet.ext`) and `zfSetModel_foundation` (built from `ZFSet.mem_wf`).
-Unfold the first to see it *is* extensionality of the real universe: `zfSetModel_extensional` closes the goal outright, or unfold `Extensional` and finish with `ZFSet.ext`.
+Unfold the name to see it *is* extensionality of the real universe: `zfSetModel_extensional` closes the goal outright.
 
 ```lean
-example : Extensional zfSetModel := by
+example : Extensional zfSetModel := zfSetModel_extensional
+```
+
+Extensionality's real force is its *backward* direction — sharing every member forces equality — since the forward direction is mere substitution.
+Package both into an iff: in any extensional model, two elements are equal exactly when they have the same `E`-members.
+Split with `constructor`; the forward direction is `rintro rfl` followed by `Iff.rfl` at each `c`, and the backward direction is the extensionality hypothesis applied to the two elements, `h a b`.
+
+```lean
+example {𝓜 : SetModel} (h : Extensional 𝓜) (a b : 𝓜.carrier) :
+    a = b ↔ ∀ c, 𝓜.mem c a ↔ 𝓜.mem c b := by
   sorry
 ```
 
 :::solution
 ```lean
-example : Extensional zfSetModel := zfSetModel_extensional
+example {𝓜 : SetModel} (h : Extensional 𝓜) (a b : 𝓜.carrier) :
+    a = b ↔ ∀ c, 𝓜.mem c a ↔ 𝓜.mem c b := by
+  constructor
+  · -- Equal elements trivially share every member.
+    rintro rfl
+    exact fun c => Iff.rfl
+  · -- The substantive direction is exactly extensionality.
+    exact h a b
 ```
 :::
 
@@ -594,19 +610,31 @@ example (L : Language) (M : Type*) [L.Structure M] (φ ψ : L.Sentence) :
 ```
 
 The chapter's question was where $`\land` and $`\forall` went; the answer is that they are *derived*, with $`\land` built from $`\neg` and $`\lor`.
-Confirm the corresponding satisfaction clause: a conjunction holds exactly when both conjuncts do.
-This is the mirror of `Sentence.realize_sup` shown just above — its twin is `Sentence.realize_inf` (again applied to `M`).
+The satisfaction clause for a conjunction is the mirror of `Sentence.realize_sup` shown just above — its twin `Sentence.realize_inf`, again applied to `M`.
 
 ```lean
 example (L : Language) (M : Type*) [L.Structure M] (φ ψ : L.Sentence) :
-    M ⊨ φ ⊓ ψ ↔ M ⊨ φ ∧ M ⊨ ψ := by
+    M ⊨ φ ⊓ ψ ↔ M ⊨ φ ∧ M ⊨ ψ := Sentence.realize_inf M
+```
+
+Now witness that $`\land` really *is* recoverable from $`\neg` and $`\lor`, exactly the chapter's point: reading $`\phi \land \psi` as $`\neg(\neg\phi \lor \neg\psi)` picks out the same models.
+Rewrite the left-hand side down to negations and a disjunction with `Sentence.realize_not` and `Sentence.realize_sup`, then let `tauto` discharge the propositional tautology that remains.
+
+```lean
+example (L : Language) (M : Type*) [L.Structure M] (φ ψ : L.Sentence) :
+    M ⊨ (φ.not ⊔ ψ.not).not ↔ M ⊨ φ ∧ M ⊨ ψ := by
   sorry
 ```
 
 :::solution
 ```lean
 example (L : Language) (M : Type*) [L.Structure M] (φ ψ : L.Sentence) :
-    M ⊨ φ ⊓ ψ ↔ M ⊨ φ ∧ M ⊨ ψ := Sentence.realize_inf M
+    M ⊨ (φ.not ⊔ ψ.not).not ↔ M ⊨ φ ∧ M ⊨ ψ := by
+  -- ¬(¬φ ∨ ¬ψ) unfolds to the connective clauses; then it is a
+  -- propositional tautology.
+  rw [Sentence.realize_not, Sentence.realize_sup,
+      Sentence.realize_not, Sentence.realize_not]
+  tauto
 ```
 :::
 
@@ -627,20 +655,34 @@ example (L : Language) (M : Type*) [L.Structure M] (S : L.ElementarySubstructure
     S ≅[L] M := S.elementarilyEquivalent
 ```
 
-Unwinding that equivalence recovers the defining property of $`\prec`: the substructure and the model agree on every sentence.
-Prove it by feeding the sentence to the equivalence from above: `S.elementarilyEquivalent.realize_sentence φ`.
+Unwinding that equivalence recovers the defining property of $`\prec`: the substructure and the model agree on every sentence, obtained by feeding the sentence to the equivalence, `S.elementarilyEquivalent.realize_sentence φ`.
 
 ```lean
-example (L : Language) (M : Type*) [L.Structure M] (S : L.ElementarySubstructure M)
-    (φ : L.Sentence) : (S ⊨ φ) ↔ M ⊨ φ := by
+example (L : Language) (M : Type*) [L.Structure M]
+    (S : L.ElementarySubstructure M) (φ : L.Sentence) :
+    (S ⊨ φ) ↔ M ⊨ φ := S.elementarilyEquivalent.realize_sentence φ
+```
+
+Put that agreement to work: whatever the ambient model satisfies, the substructure satisfies too.
+Show that if $`M \vDash \phi \land \psi` then $`S` satisfies each conjunct.
+Split the ambient satisfaction with `Sentence.realize_inf`, then push each half down through the `.mpr` direction of the sentence agreement above.
+
+```lean
+example (L : Language) (M : Type*) [L.Structure M]
+    (S : L.ElementarySubstructure M) (φ ψ : L.Sentence)
+    (h : M ⊨ φ ⊓ ψ) : S ⊨ φ ∧ S ⊨ ψ := by
   sorry
 ```
 
 :::solution
 ```lean
 example (L : Language) (M : Type*) [L.Structure M]
-    (S : L.ElementarySubstructure M) (φ : L.Sentence) :
-    (S ⊨ φ) ↔ M ⊨ φ := S.elementarilyEquivalent.realize_sentence φ
+    (S : L.ElementarySubstructure M) (φ ψ : L.Sentence)
+    (h : M ⊨ φ ⊓ ψ) : S ⊨ φ ∧ S ⊨ ψ := by
+  -- Break the conjunction in M, then transport each half down to S.
+  rw [Sentence.realize_inf] at h
+  exact ⟨(S.elementarilyEquivalent.realize_sentence φ).mpr h.1,
+    (S.elementarilyEquivalent.realize_sentence ψ).mpr h.2⟩
 ```
 :::
 
@@ -660,18 +702,30 @@ example : (∅ : ZFSet) ∈ ZFSet.omega := ZFSet.omega_zero
 ```
 
 What Mathlib does *not* phrase is the lemma as a whole: "$`M \vDash` Replacement" quantifies over $`M`-definable classes, which is a schema in the metatheory rather than one Lean proposition, and the whole point of a transitive *model* — a `ZFSet` closed under these operations that then satisfies ZFC internally — is not set up.
-Here is a concrete external fact you *can* prove: every set is a member of its own power set.
-Rewrite with `ZFSet.mem_powerset` (shown above) to reduce the goal to `x ⊆ x`, then close it by reflexivity of $`\subseteq` — `subset_refl x`.
+Here is a concrete external fact you *can* prove: every set is a member of its own power set, since $`x \subseteq x`.
 
 ```lean
-example (x : ZFSet) : x ∈ x.powerset := by
+example (x : ZFSet) : x ∈ x.powerset :=
+  ZFSet.mem_powerset.mpr (subset_refl x)
+```
+
+The content of `ZFSet.mem_powerset` is that membership in the power set *is* the subset relation, so it reads just as usefully in the forward direction.
+Read off the defining property of a power-set element: if $`y \in \mathcal{P}(x)` and $`z \in y`, then $`z \in x`.
+Turn `hy` into `y ⊆ x` with the `.mp` direction of `ZFSet.mem_powerset`, then apply that subset to `hz`.
+
+```lean
+example (x y z : ZFSet) (hy : y ∈ x.powerset) (hz : z ∈ y) :
+    z ∈ x := by
   sorry
 ```
 
 :::solution
 ```lean
-example (x : ZFSet) : x ∈ x.powerset :=
-  ZFSet.mem_powerset.mpr (subset_refl x)
+example (x y z : ZFSet) (hy : y ∈ x.powerset) (hz : z ∈ y) :
+    z ∈ x := by
+  -- `mem_powerset` says y ∈ 𝒫 x is exactly y ⊆ x; apply it to z ∈ y.
+  rw [ZFSet.mem_powerset] at hy
+  exact hy hz
 ```
 :::
 
@@ -709,8 +763,16 @@ recall MostowskiCollapse.foundation {𝓜 : SetModel}
     (π : MostowskiCollapse 𝓜) : Foundation 𝓜
 ```
 
-The point of the lemma is that living inside the well-founded $`\in` forces the model to be well-founded too: pulling `ZFSet.mem_wf` back along an injective $`\in`-isomorphism shows any collapsible model satisfies Foundation.
-That derivation is packaged for you as the `π.foundation` field above, so the exercise is a one-liner.
+The point of the lemma is that living inside the well-founded $`\in` forces the model to be well-founded too, a derivation packaged for you as the `π.foundation` field above.
+
+```lean
+example {𝓜 : SetModel} (π : MostowskiCollapse 𝓜) :
+    Foundation 𝓜 := π.foundation
+```
+
+Build that derivation yourself, to see *why* the collapse forces Foundation.
+The relation `𝓜.mem` is the pullback of the real `∈` along `π.toFun`, which is exactly what `π.mem_iff` says.
+Well-foundedness pulls back along any map, so `InvImage.wf π.toFun ZFSet.mem_wf` well-founds that pullback; since `𝓜.mem` sits inside it, `Subrelation.wf` fed `π.mem_iff` in the forward direction transfers the well-foundedness across.
 
 ```lean
 example {𝓜 : SetModel} (π : MostowskiCollapse 𝓜) :
@@ -721,7 +783,11 @@ example {𝓜 : SetModel} (π : MostowskiCollapse 𝓜) :
 :::solution
 ```lean
 example {𝓜 : SetModel} (π : MostowskiCollapse 𝓜) :
-    Foundation 𝓜 := π.foundation
+    Foundation 𝓜 :=
+  -- 𝓜.mem is a subrelation of the ∈-pullback along toFun, which is
+  -- well-founded because ∈ on ZFSet is.
+  Subrelation.wf (fun {a b} h => (π.mem_iff a b).mp h)
+    (InvImage.wf π.toFun ZFSet.mem_wf)
 ```
 :::
 
@@ -755,19 +821,26 @@ example (L : Language) (T : L.Theory) :
   Theory.isSatisfiable_iff_isFinitelySatisfiable
 ```
 
-Read one direction of that equivalence off as an exercise: a satisfiable theory is finitely satisfiable.
-That direction has its own name, `Theory.IsSatisfiable.isFinitelySatisfiable`, so the hypothesis closes it as `h.isFinitelySatisfiable`.
+One direction of that equivalence has its own name: a satisfiable theory is finitely satisfiable, `Theory.IsSatisfiable.isFinitelySatisfiable`.
 
 ```lean
 example (L : Language) (T : L.Theory) (h : T.IsSatisfiable) :
-    T.IsFinitelySatisfiable := by
+    T.IsFinitelySatisfiable := h.isFinitelySatisfiable
+```
+
+Chain that with the fact that the empty theory is satisfiable (`Theory.isSatisfiable_empty`, shown above) to conclude that the empty theory is finitely satisfiable.
+Compose the two: start from `Theory.isSatisfiable_empty L`, then hand it to `.isFinitelySatisfiable`.
+
+```lean
+example (L : Language) : (∅ : L.Theory).IsFinitelySatisfiable := by
   sorry
 ```
 
 :::solution
 ```lean
-example (L : Language) (T : L.Theory) (h : T.IsSatisfiable) :
-    T.IsFinitelySatisfiable := h.isFinitelySatisfiable
+example (L : Language) : (∅ : L.Theory).IsFinitelySatisfiable :=
+  -- Empty is satisfiable, and satisfiable ⟹ finitely satisfiable.
+  (Theory.isSatisfiable_empty L).isFinitelySatisfiable
 ```
 :::
 

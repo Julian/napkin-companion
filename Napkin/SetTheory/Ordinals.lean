@@ -439,34 +439,57 @@ example (a : Ordinal) : Order.succ a = a + 1 := Order.succ_eq_add_one a
 example (a : Ordinal) : Prop := Order.IsSuccLimit a
 ```
 
-The chapter lists $`\omega` among the limit ordinals.
-Confirm it: $`\omega` is neither zero nor a successor.
+The chapter lists $`\omega` among the limit ordinals: it is neither zero nor a successor, which is `Ordinal.isSuccLimit_omega0`.
 
 ```lean
-example : Order.IsSuccLimit Ordinal.omega0 := by
+example : Order.IsSuccLimit Ordinal.omega0 :=
+  Ordinal.isSuccLimit_omega0
+```
+
+The defining feature of a limit is that nothing sits *immediately* below it: the successor of anything below $`\lambda` is still below $`\lambda`.
+Prove this for $`\omega` — if $`b < \omega` then $`b + 1 < \omega`.
+Rewrite the successor $`b + 1` back to `Order.succ b` (with `Order.succ_eq_add_one`), then feed the limit fact above to `Order.IsSuccLimit.succ_lt`.
+
+```lean
+example (b : Ordinal) (h : b < Ordinal.omega0) : b + 1 < Ordinal.omega0 := by
   sorry
 ```
 
 :::solution
 ```lean
-example : Order.IsSuccLimit Ordinal.omega0 :=
-  Ordinal.isSuccLimit_omega0
+example (b : Ordinal) (h : b < Ordinal.omega0) :
+    b + 1 < Ordinal.omega0 := by
+  -- A limit has no element just below it: successors below ω stay below ω.
+  rw [← Order.succ_eq_add_one]
+  exact Ordinal.isSuccLimit_omega0.succ_lt h
 ```
 :::
 
 ## Ordinals are "tall"
 
-Because $`\operatorname{On}` is a proper class, there is no largest ordinal: past every ordinal there is a strictly greater one, namely its successor.
+Because $`\operatorname{On}` is a proper class, there is no largest ordinal: past every ordinal there is a strictly greater one, namely its successor $`\alpha + 1` (`lt_add_one`).
 
 ```lean
-example (α : Ordinal) : ∃ β, α < β := by
+example (α : Ordinal) : ∃ β, α < β :=
+  ⟨α + 1, lt_add_one α⟩
+```
+
+Unboundedness upgrades to something stronger: the ordinals are *directed*, so any two of them have a common strict upper bound.
+Prove that for any $`\alpha, \beta` there is a $`\gamma` with $`\alpha < \gamma` and $`\beta < \gamma`.
+Take $`\gamma = \max(\alpha, \beta) + 1`; each of $`\alpha, \beta` is $`\le \max(\alpha, \beta)` (`le_max_left`, `le_max_right`), which is in turn $`< \gamma` (`lt_add_one`), so chain the two with `lt_of_le_of_lt`.
+
+```lean
+example (α β : Ordinal) : ∃ γ, α < γ ∧ β < γ := by
   sorry
 ```
 
 :::solution
 ```lean
-example (α : Ordinal) : ∃ β, α < β :=
-  ⟨α + 1, lt_add_one α⟩
+example (α β : Ordinal) : ∃ γ, α < γ ∧ β < γ :=
+  -- max α β + 1 clears both: α, β ≤ max α β < max α β + 1.
+  ⟨max α β + 1,
+    lt_of_le_of_lt (le_max_left α β) (lt_add_one _),
+    lt_of_le_of_lt (le_max_right α β) (lt_add_one _)⟩
 ```
 :::
 
@@ -532,18 +555,30 @@ example : (1 : Ordinal) + Ordinal.omega0 ≠ Ordinal.omega0 + 1 := by
   exact (lt_add_one Ordinal.omega0).ne
 ```
 
-The chapter asked you to verify that $`2^\omega = \omega`.
+The chapter asked you to verify that $`2^\omega = \omega`; that is `Ordinal.opow_omega0`, which collapses $`a^\omega` to $`\omega` for any finite $`a > 1`.
 
 ```lean
-example : (2 : Ordinal) ^ Ordinal.omega0 = Ordinal.omega0 := by
+example : (2 : Ordinal) ^ Ordinal.omega0 = Ordinal.omega0 :=
+  Ordinal.opow_omega0 one_lt_two
+    (by exact_mod_cast Ordinal.natCast_lt_omega0 2)
+```
+
+So the exponential lands back on the limit $`\omega`, which — like every limit — is *not* a successor.
+Put the two facts together: show $`2^\omega \neq \omega + 1`.
+Rewrite $`2^\omega` to $`\omega` using the collapse above, then $`\omega \neq \omega + 1` is `lt_add_one` read as an inequality (`.ne`).
+
+```lean
+example : (2 : Ordinal) ^ Ordinal.omega0 ≠ Ordinal.omega0 + 1 := by
   sorry
 ```
 
 :::solution
 ```lean
-example : (2 : Ordinal) ^ Ordinal.omega0 = Ordinal.omega0 :=
-  Ordinal.opow_omega0 one_lt_two
-    (by exact_mod_cast Ordinal.natCast_lt_omega0 2)
+example : (2 : Ordinal) ^ Ordinal.omega0 ≠ Ordinal.omega0 + 1 := by
+  -- 2^ω = ω, a limit, hence strictly below its own successor ω+1.
+  rw [Ordinal.opow_omega0 one_lt_two
+        (by exact_mod_cast Ordinal.natCast_lt_omega0 2)]
+  exact (lt_add_one Ordinal.omega0).ne
 ```
 :::
 
@@ -561,18 +596,28 @@ example (o : Ordinal) :
   ZFSet.vonNeumann_add_one o
 ```
 
-The rank is what makes the completeness proof go: it strictly increases along membership, so a $`\in`-minimal counterexample cannot exist.
-Show that if $`y \in x` then $`\operatorname{rank}(y) < \operatorname{rank}(x)`.
+The rank is what makes the completeness proof go: it strictly increases along membership — if $`y \in x` then $`\operatorname{rank}(y) < \operatorname{rank}(x)`, which is `ZFSet.rank_lt_of_mem`.
 
 ```lean
-example (x y : ZFSet) (h : y ∈ x) : ZFSet.rank y < ZFSet.rank x := by
+example (x y : ZFSet) (h : y ∈ x) :
+    ZFSet.rank y < ZFSet.rank x :=
+  ZFSet.rank_lt_of_mem h
+```
+
+That strict increase is exactly what rules out a $`\in`-minimal counterexample — and, applied to a set and itself, it recovers foundation: no set is a member of itself.
+Prove $`x \notin x`.
+Assume $`x \in x` (`intro`); the fact above then gives $`\operatorname{rank}(x) < \operatorname{rank}(x)`, which `lt_irrefl` rejects.
+
+```lean
+example (x : ZFSet) : x ∉ x := by
   sorry
 ```
 
 :::solution
 ```lean
-example (x y : ZFSet) (h : y ∈ x) :
-    ZFSet.rank y < ZFSet.rank x :=
-  ZFSet.rank_lt_of_mem h
+example (x : ZFSet) : x ∉ x := by
+  -- x ∈ x would force rank x < rank x, which no ordinal satisfies.
+  intro h
+  exact lt_irrefl (ZFSet.rank x) (ZFSet.rank_lt_of_mem h)
 ```
 :::
