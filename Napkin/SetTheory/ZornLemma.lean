@@ -334,18 +334,31 @@ noncomputable example :
   Module.Basis.ofVectorSpace ℚ ℝ
 ```
 
-The whole point of the construction was that the basis elements stay independent over $`\mathbb{Q}`.
-Confirm this: the Hamel basis is `LinearIndependent` over $`\mathbb{Q}`.
+The whole point of the construction was that the basis elements stay independent over $`\mathbb{Q}`; that the Hamel basis is `LinearIndependent` is read straight off it with `Module.Basis.linearIndependent`.
 
 ```lean
-example : LinearIndependent ℚ (Module.Basis.ofVectorSpace ℚ ℝ) := by
+example : LinearIndependent ℚ (Module.Basis.ofVectorSpace ℚ ℝ) :=
+  (Module.Basis.ofVectorSpace ℚ ℝ).linearIndependent
+```
+
+Independence has teeth one vector at a time: no basis element can be scaled to $`0` by a nonzero rational.
+Prove that if $`a \cdot b_i = 0` then $`a = 0`.
+A basis vector is never zero (`Module.Basis.ne_zero`), so splitting $`a \cdot b_i = 0` with `smul_eq_zero` — which over the field $`\mathbb{Q}` reads "$`a = 0` or $`b_i = 0`" — leaves only the first disjunct.
+
+```lean
+example (i : Module.Basis.ofVectorSpaceIndex ℚ ℝ) (a : ℚ)
+    (ha : a • Module.Basis.ofVectorSpace ℚ ℝ i = 0) : a = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
-example : LinearIndependent ℚ (Module.Basis.ofVectorSpace ℚ ℝ) :=
-  (Module.Basis.ofVectorSpace ℚ ℝ).linearIndependent
+example (i : Module.Basis.ofVectorSpaceIndex ℚ ℝ) (a : ℚ)
+    (ha : a • Module.Basis.ofVectorSpace ℚ ℝ i = 0) : a = 0 := by
+  -- A basis vector is nonzero, so a • bᵢ = 0 collapses to a = 0.
+  rcases smul_eq_zero.mp ha with h0 | h0
+  · exact h0
+  · exact absurd h0 ((Module.Basis.ofVectorSpace ℚ ℝ).ne_zero i)
 ```
 :::
 
@@ -360,13 +373,14 @@ example {P : Type*} [PartialOrder P]
   zorn_le h
 ```
 
-The chapter phrased the hypothesis as "every chain has an upper bound", meaning an element greater than or equal to every member of the chain.
-Deduce a local maximum from that phrasing.
+The chapter phrased the hypothesis as "every chain has an upper bound" — an element greater than or equal to every member — and the conclusion as a *local maximum*, an element with nothing strictly greater than it.
+Both differ on the surface from Mathlib's `BddAbove` and `IsMax`, so bridge the gap.
+Feed the upper-bound hypothesis to `zorn_le` (it unfolds definitionally to `BddAbove`) to obtain a maximal `m`, then recover the chapter's phrasing by turning `IsMax m` into "no `x` has `m < x`" with `IsMax.not_lt`.
 
 ```lean
 example {P : Type*} [PartialOrder P]
     (h : ∀ c : Set P, IsChain (· ≤ ·) c → ∃ ub, ∀ p ∈ c, p ≤ ub) :
-    ∃ m : P, IsMax m := by
+    ∃ m : P, ∀ x, ¬ m < x := by
   sorry
 ```
 
@@ -374,7 +388,9 @@ example {P : Type*} [PartialOrder P]
 ```lean
 example {P : Type*} [PartialOrder P]
     (h : ∀ c : Set P, IsChain (· ≤ ·) c → ∃ ub, ∀ p ∈ c, p ≤ ub) :
-    ∃ m : P, IsMax m :=
-  zorn_le fun c hc => h c hc
+    ∃ m : P, ∀ x, ¬ m < x := by
+  -- zorn_le hands back IsMax m; IsMax.not_lt is exactly "nothing above m".
+  obtain ⟨m, hm⟩ := zorn_le fun c hc => h c hc
+  exact ⟨m, fun x => hm.not_lt⟩
 ```
 :::
