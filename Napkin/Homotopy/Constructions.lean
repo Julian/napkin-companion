@@ -750,19 +750,12 @@ example : Type := UnitAddCircle × UnitAddCircle -- (ℝ/ℤ)²
 ```
 
 The additive circle is compact, and a product of compact spaces is compact.
-Show that the torus is a compact space.
+Compactness of the torus therefore needs no argument of its own: it is assembled from the factors by instance resolution.
 
-```lean
-example : CompactSpace (UnitAddCircle × UnitAddCircle) := by
-  sorry
-```
-
-:::solution
 ```lean
 example : CompactSpace (UnitAddCircle × UnitAddCircle) :=
   inferInstance
 ```
-:::
 
 ## Real projective space
 

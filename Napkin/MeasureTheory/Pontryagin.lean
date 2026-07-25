@@ -281,22 +281,13 @@ example (G : Type*) [CommGroup G] [TopologicalSpace G]
 The double-duality isomorphism $`G \cong \widehat{\widehat{G}}` is not yet packaged for a general LCA group; the finite abelian case is available as `AddChar.doubleDualEquiv`.
 Here `AddChar G ℂ` is the additive-notation flavor of a character — a homomorphism from $`G` into the nonzero complex numbers — and `doubleDualEquiv` is the resulting isomorphism between a finite abelian group and the characters of its characters.
 One half of the "compact iff discrete" proposition is, however, already an instance: when $`G` is compact its dual is discrete.
-Because Mathlib registers precisely this direction — compact forces discrete — as an instance, the goal below is closed by `inferInstance`; the exercise is to notice that this half is already formalized (the reverse direction, and hence the full equivalence, is not).
+Because Mathlib registers precisely this direction — compact forces discrete — as an instance, the statement below is closed by `inferInstance`; what is worth noticing is that only this half is formalized (the reverse direction, and hence the full equivalence, is not).
 
-```lean
-example (G : Type*) [CommGroup G] [TopologicalSpace G]
-    [IsTopologicalGroup G] [CompactSpace G] :
-    DiscreteTopology (PontryaginDual G) := by
-  sorry
-```
-
-:::solution
 ```lean
 example (G : Type*) [CommGroup G] [TopologicalSpace G]
     [IsTopologicalGroup G] [CompactSpace G] :
     DiscreteTopology (PontryaginDual G) := inferInstance
 ```
-:::
 
 ## The orthonormal basis in the compact case
 

@@ -701,19 +701,12 @@ example (m : ℕ) [NeZero m] (a : ZMod m) (ha : IsUnit a) :
 The identification $`\operatorname{Gal}(L/\mathbb{Q}) \cong (\mathbb{Z}/q\mathbb{Z})^\times` is `IsCyclotomicExtension.autEquivPow`, as in the Galois theory chapter, and "check on generators" is once again `AlgHom.IsArithFrobAt.apply_of_pow_eq_one` doing all the work.
 
 Underlying that identification is the fact that for a prime $`q`, the group $`(\mathbb{Z}/q\mathbb{Z})^\times` is cyclic, so $`\operatorname{Gal}(L/\mathbb{Q}) \cong \mathbb{Z}/(q-1)\mathbb{Z}`.
-Confirm that Mathlib knows the unit group of a prime field is cyclic.
+Mathlib knows the unit group of a prime field is cyclic, and registers it as an instance.
 
-```lean
-example (q : ℕ) [Fact q.Prime] : IsCyclic (ZMod q)ˣ := by
-  sorry
-```
-
-:::solution
 ```lean
 example (q : ℕ) [Fact q.Prime] : IsCyclic (ZMod q)ˣ :=
   inferInstance
 ```
-:::
 
 ## Frobenius elements behave well with restriction
 

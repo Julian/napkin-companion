@@ -576,8 +576,17 @@ example {M : Type*} [MetricSpace M] (x y z : M) :
 
 ## Convergence in metric spaces
 
-Convergence of `x : ℕ → M` to a limit `l` is written `Filter.Tendsto x Filter.atTop (𝓝 l)`.
-Mathlib's `Metric.tendsto_atTop` repackages this as the familiar $`\varepsilon`-$`N` form.
+Convergence of `x : ℕ → M` to a limit `l` is written `Filter.Tendsto x Filter.atTop (𝓝 l)`, which deserves an unpacking, because every limit in the rest of the book is written this way.
+
+A `Filter` on a type is a notion of "eventually": it is a collection of subsets, closed under supersets and finite intersections, which you should read as *the sets that are large enough to count as everywhere*.
+Two filters are in play above.
+`Filter.atTop` on $`\mathbb{N}` collects the sets containing all sufficiently large $`n` — "eventually" in the sense of a sequence.
+`𝓝 l` — the *neighbourhood filter* of `l`, and the reason a topology is around at all — collects the sets containing a ball around $`l`, so it means "arbitrarily close to $`l`".
+And `Filter.Tendsto x F G` says that `x` carries the first sense of "eventually" into the second: whatever it means to be close to `l`, the terms `x n` are that, eventually.
+Spelling the two filters out recovers precisely $`\forall \varepsilon > 0\ \exists N\ \forall n \geq N`.
+
+The payoff of the indirection is that *one* definition covers every limit there is — sequences, limits at a point, one-sided limits, limits at infinity, even continuity, all by varying the two filters — so lemmas like "the sum of two convergent things converges to the sum" get proved once instead of once per flavour.
+The cost is that the $`\varepsilon`-$`N` statement you know is now a *theorem* rather than the definition, and here it is: `Metric.tendsto_atTop`.
 
 ```lean
 example (M : Type*) [MetricSpace M] (x : ℕ → M) (l : M) :

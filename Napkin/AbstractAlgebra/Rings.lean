@@ -861,15 +861,9 @@ recall (R : Type*) [CommRing R] [IsNoetherianRing R] :
 ```
 
 The chapter asked why fields are Noetherian.
-A field has only the two ideals `⊥` and `⊤`, both finitely generated — confirm Mathlib already knows a field is Noetherian.
+A field has only the two ideals `⊥` and `⊤`, both finitely generated, and Mathlib records that as an instance — so `inferInstance`, which asks instance resolution to produce a value of the stated type, is the entire proof.
+This is worth internalizing early: a surprising number of "prove that…" goals in Mathlib are already registered facts, and asking is faster than proving.
 
-```lean
-example (K : Type*) [Field K] : IsNoetherianRing K := by
-  sorry
-```
-
-:::solution
 ```lean
 example (K : Type*) [Field K] : IsNoetherianRing K := inferInstance
 ```
-:::

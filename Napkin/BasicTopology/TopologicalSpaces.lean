@@ -584,14 +584,8 @@ example (X : Type*) [TopologicalSpace X] [T2Space X]
 The QUESTION "all metric spaces are Hausdorff" is registered as an instance, so instance resolution proves it outright.
 
 ```lean
-example (X : Type*) [MetricSpace X] : T2Space X := by sorry
-```
-
-:::solution
-```lean
 example (X : Type*) [MetricSpace X] : T2Space X := inferInstance
 ```
-:::
 
 The PROBLEM "Hausdorff implies $`T_1`" — that every singleton `{p}` is closed — follows because `T2Space` already refines to `T1Space`, whose characteristic lemma is `isClosed_singleton`.
 
@@ -668,15 +662,8 @@ The EXERCISE "path-connected implies connected" is registered as an instance, so
 
 ```lean
 example (X : Type*) [TopologicalSpace X] [PathConnectedSpace X] :
-    ConnectedSpace X := by sorry
-```
-
-:::solution
-```lean
-example (X : Type*) [TopologicalSpace X] [PathConnectedSpace X] :
     ConnectedSpace X := inferInstance
 ```
-:::
 
 ## Homotopy and simply connected spaces
 

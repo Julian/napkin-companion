@@ -293,6 +293,8 @@ The latter is the workhorse for swapping limits and integrals — by far the mos
 
 The exercise asked you to show that $`|f|` is absolutely integrable exactly when both $`f^+` and $`f^-` are.
 Since Mathlib folds measurability into `Integrable`, phrase it directly on a real-valued $`f`: it is integrable if and only if its positive part `fun x => max (f x) 0` and negative part `fun x => max (-f x) 0` both are.
+Forwards, the two halves are `Integrable.pos_part` and `Integrable.neg_part`.
+Backwards, $`f = f^+ - f^-`, so `Integrable.sub` gives integrability of *a* function and `Integrable.congr` transports it to $`f` — but only up to an almost-everywhere equality, which is where `filter_upwards` comes in: it opens a goal of the form "$`P` holds almost everywhere" by handing you a single point `x` to check, discarding the null set along the way.
 
 ```lean
 example {α : Type*} [MeasurableSpace α] (μ : Measure α) (f : α → ℝ) :

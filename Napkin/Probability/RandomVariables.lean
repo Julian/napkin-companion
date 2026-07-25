@@ -312,19 +312,12 @@ recall ProbabilityTheory.gaussianReal (μ : ℝ) (v : NNReal) : Measure ℝ
 
 The variance parameter here has type `NNReal` (nonnegative reals) rather than carrying a side hypothesis $`\sigma^2 > 0`; the degenerate case `v = 0` is defined to be the point mass at the mean (`gaussianReal_zero_var`), which keeps the family closed under limits.
 
-Each of these example laws is a genuine probability measure; confirm it for the Gaussian, where Mathlib already registers the instance.
+Each of these example laws is a genuine probability measure, and for the Gaussian Mathlib already registers the instance.
 
-```lean
-example (m : ℝ) (v : NNReal) : IsProbabilityMeasure (gaussianReal m v) := by
-  sorry
-```
-
-:::solution
 ```lean
 example (m : ℝ) (v : NNReal) : IsProbabilityMeasure (gaussianReal m v) :=
   inferInstance
 ```
-:::
 
 ## Characteristic functions
 

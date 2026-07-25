@@ -1114,16 +1114,9 @@ example (K : Type*) [Field K] [NumberField K] (I : Ideal (𝓞 K)) :
 This second proof is the one Mathlib's development follows: the pairing $`(x,y) \mapsto \operatorname{Tr}(xy)` is `Algebra.traceForm`, its nondegeneracy (the invertible matrix above) is `traceForm_nondegenerate`, and squeezing the integral closure inside the dual basis of the trace form is how `IsIntegralClosure.isNoetherian` — and from it the `Module.Free ℤ (𝓞 K)` instance — gets proved.
 
 The payoff is exactly the free-module theorem this section set out to prove.
-Confirm that Mathlib already registers $`\mathcal{O}_K` as a free $`\mathbb{Z}`-module.
+Mathlib registers $`\mathcal{O}_K` as a free $`\mathbb{Z}`-module outright.
 
-```lean
-example (K : Type*) [Field K] [NumberField K] : Module.Free ℤ (𝓞 K) := by
-  sorry
-```
-
-:::solution
 ```lean
 example (K : Type*) [Field K] [NumberField K] : Module.Free ℤ (𝓞 K) :=
   inferInstance
 ```
-:::

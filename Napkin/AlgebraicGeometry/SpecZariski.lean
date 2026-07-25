@@ -457,21 +457,13 @@ example {A : Type*} [CommRing A] {s : Set (PrimeSpectrum A)} :
 ```
 
 Because an integral domain has $`(0)` as a prime ideal, sitting inside every nonempty open set, its spectrum is irreducible.
-Confirm that Mathlib already knows this.
+Mathlib already knows this, so instance resolution supplies it.
 
-```lean
-example (A : Type*) [CommRing A] [IsDomain A] :
-    IrreducibleSpace (PrimeSpectrum A) := by
-  sorry
-```
-
-:::solution
 ```lean
 example (A : Type*) [CommRing A] [IsDomain A] :
     IrreducibleSpace (PrimeSpectrum A) :=
   inferInstance
 ```
-:::
 
 ## Krull dimension
 

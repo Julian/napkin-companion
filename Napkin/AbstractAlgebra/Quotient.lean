@@ -751,6 +751,10 @@ noncomputable example {G H : Type*} [Group G] [Group H]
   QuotientGroup.quotientKerEquivRange φ
 ```
 
+The `noncomputable` marker there is the first of many, and it is bookkeeping rather than mathematics: the isomorphism's inverse is built by *choosing* a preimage for each element of the image, and a choice made by fiat is not something Lean can run as a program.
+Marking the definition `noncomputable` says "this is a mathematical object, not an algorithm", which is exactly the situation almost everywhere in this book.
+Nothing about the statement or its use changes.
+
 The chapter notes that when $`\phi` is injective its image is an isomorphic copy of $`G`.
 That an injective homomorphism has trivial kernel is one direction of the equivalence above:
 

@@ -274,19 +274,12 @@ recall NumberField.Units.exist_unique_eq_mul_prod {K : Type*} [Field K]
 Behind it sits the actual geometry: the logarithmic embedding of the units is a full-rank lattice in a hyperplane of $`\mathbb{R}^{r_1+r_2}`, and `basisModTorsion` extracts a $`\mathbb{Z}`-basis of the units modulo torsion.
 
 The exercise asked you to show that $`\mu(\mathcal{O}_K)` is a finite group — in fact a cyclic one.
-Confirm that the torsion subgroup is cyclic.
+That the torsion subgroup is cyclic is on the books as an instance.
 
-```lean
-example {K : Type*} [Field K] [NumberField K] : IsCyclic (torsion K) := by
-  sorry
-```
-
-:::solution
 ```lean
 example {K : Type*} [Field K] [NumberField K] :
     IsCyclic (torsion K) := inferInstance
 ```
-:::
 
 ## Finding fundamental units
 

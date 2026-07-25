@@ -270,18 +270,11 @@ example : Nonempty (ChartedSpace ℂ ℂ) := ⟨inferInstance⟩
 ```
 
 The same reasoning applies over $`\mathbb{R}`: the real line is a manifold over its trivial model.
-Confirm it; as over $`\mathbb{C}`, `inferInstance` supplies the structure.
+As over $`\mathbb{C}`, `inferInstance` supplies the structure.
 
-```lean
-example : IsManifold (𝓘(ℝ, ℝ)) ω ℝ := by
-  sorry
-```
-
-:::solution
 ```lean
 example : IsManifold (𝓘(ℝ, ℝ)) ω ℝ := inferInstance
 ```
-:::
 
 ## Riemann surfaces
 
@@ -327,18 +320,11 @@ example (n : ℕ) : IsManifold (𝓘(ℂ, (Fin n → ℂ))) ω (Fin n → ℂ) :
 ```
 
 At $`n = 1` this recovers a one-dimensional complex model, i.e. a Riemann-surface chart.
-Confirm it; `inferInstance` closes it just as at general $`n`.
+Here too `inferInstance` supplies it, just as at general $`n`.
 
-```lean
-example : IsManifold (𝓘(ℂ, (Fin 1 → ℂ))) ω (Fin 1 → ℂ) := by
-  sorry
-```
-
-:::solution
 ```lean
 example : IsManifold (𝓘(ℂ, (Fin 1 → ℂ))) ω (Fin 1 → ℂ) := inferInstance
 ```
-:::
 
 ## Examples of Riemann surfaces
 

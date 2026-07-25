@@ -564,20 +564,12 @@ Its torsion-only special case is `Module.equiv_directSum_of_isTorsion`, which dr
 
 The reduction step asks you to deduce that $`R^{\oplus d}` is Noetherian when $`R` is a PID.
 This one is pure instance search: a PID is a Noetherian ring (`IsPrincipalIdealRing R` gives `IsNoetherianRing R`), and a finite free module over a Noetherian ring is Noetherian, so Mathlib already has the instance.
-The whole proof is the single term `inferInstance`; confirm it, using `Fin d → R` as the model of $`R^{\oplus d}`.
+The whole proof is the single term `inferInstance`, taking `Fin d → R` as the model of $`R^{\oplus d}`.
 
-```lean
-example (R : Type*) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] (d : ℕ) :
-    IsNoetherian R (Fin d → R) := by
-  sorry
-```
-
-:::solution
 ```lean
 example (R : Type*) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] (d : ℕ) :
     IsNoetherian R (Fin d → R) := inferInstance
 ```
-:::
 
 ## Uniqueness of primary form
 

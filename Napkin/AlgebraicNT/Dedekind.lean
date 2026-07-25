@@ -667,19 +667,12 @@ recall (K : Type*) [Field K] [NumberField K] :
 ```
 
 The chapter's first example was that $`\mathbb{Z}` itself is a Dedekind domain.
-Confirm that Mathlib already knows this.
+Mathlib already knows this, so instance resolution supplies it.
 
-```lean
-example : IsDedekindDomain ℤ := by
-  sorry
-```
-
-:::solution
 ```lean
 example : IsDedekindDomain ℤ := by
   infer_instance
 ```
-:::
 
 ## Unique factorization works
 

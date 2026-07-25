@@ -733,14 +733,8 @@ example : Function.Injective (algebraMap ℤ ℚ) :=
 The chapter's question is to verify that $`\mathbb{Z}` is a UFD; Mathlib already carries this as an instance, so `inferInstance` confirms it.
 
 ```lean
-example : UniqueFactorizationMonoid ℤ := sorry
-```
-
-:::solution
-```lean
 example : UniqueFactorizationMonoid ℤ := inferInstance
 ```
-:::
 
 The theorem that every PID is a UFD is recorded as an instance too.
 
@@ -761,12 +755,6 @@ The chapter's proposition — a Euclidean domain is a PID — is already recorde
 The well-ordering argument from the chapter is what justifies that instance mathematically: an element of least norm in a nonzero ideal generates it.
 
 ```lean
-example (R : Type*) [EuclideanDomain R] : IsPrincipalIdealRing R := sorry
-```
-
-:::solution
-```lean
 example (R : Type*) [EuclideanDomain R] :
     IsPrincipalIdealRing R := inferInstance
 ```
-:::

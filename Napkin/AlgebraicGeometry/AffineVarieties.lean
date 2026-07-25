@@ -640,15 +640,8 @@ example (R : Type*) [CommRing R] : Type _ := PrimeSpectrum R
 ```
 
 There is only one topology on a single point, which is why a bare variety cannot record multiplicity: the prime spectrum of the field $`\mathbb{C}` has just one point.
-Confirm that its spectrum has a unique element.
+Its spectrum accordingly has a unique element, which instance resolution already knows.
 
-```lean
-example : Unique (PrimeSpectrum ℂ) := by
-  sorry
-```
-
-:::solution
 ```lean
 noncomputable example : Unique (PrimeSpectrum ℂ) := inferInstance
 ```
-:::

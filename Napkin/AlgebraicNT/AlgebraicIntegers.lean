@@ -390,17 +390,10 @@ That said, most of the number-theoretic API prefers to work with an abstract fie
 Since a number field contains $`\mathbb{Q}`, it has characteristic zero; confirm Mathlib already knows this.
 
 ```lean
-example (K : Type*) [Field K] [NumberField K] : CharZero K := by
-  sorry
-```
-
-:::solution
-```lean
 example (K : Type*) [Field K] [NumberField K] :
     CharZero K :=
   inferInstance
 ```
-:::
 
 ## Primitive element theorem, and monogenic extensions
 
