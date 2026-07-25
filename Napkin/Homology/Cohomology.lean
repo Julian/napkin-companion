@@ -414,21 +414,32 @@ noncomputable example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
   A.homology n
 ```
 
-Show that the differentials of a cochain complex compose to zero; `A.d_comp_d i j k`, the `HomologicalComplex.d_comp_d` above specialized to `A`, closes it.
+Consecutive differentials of a cochain complex compose to zero; `A.d_comp_d i j k`, the `HomologicalComplex.d_comp_d` above specialized to `A`, states exactly this.
 
 ```lean
 example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
     (A : CochainComplex V ℕ) (i j k : ℕ) :
-    A.d i j ≫ A.d j k = 0 := by
+    A.d i j ≫ A.d j k = 0 :=
+  A.d_comp_d i j k
+```
+
+Two differentials in a row therefore annihilate anything to their right.
+Show that `A.d i j ≫ A.d j k ≫ φ = 0` for any following map `φ`: reassociate with `← Category.assoc` so the two differentials meet, collapse them with `A.d_comp_d`, and finish with `Limits.zero_comp` (`0 ≫ φ = 0`).
+
+```lean
+example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
+    {W : V} (A : CochainComplex V ℕ) (i j k : ℕ) (φ : A.X k ⟶ W) :
+    A.d i j ≫ A.d j k ≫ φ = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
 example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
-    (A : CochainComplex V ℕ) (i j k : ℕ) :
-    A.d i j ≫ A.d j k = 0 :=
-  A.d_comp_d i j k
+    {W : V} (A : CochainComplex V ℕ) (i j k : ℕ) (φ : A.X k ⟶ W) :
+    A.d i j ≫ A.d j k ≫ φ = 0 := by
+  -- Reassociate so the two differentials meet, collapse them, 0 ≫ φ = 0.
+  rw [← Category.assoc, A.d_comp_d, Limits.zero_comp]
 ```
 :::
 
@@ -466,22 +477,34 @@ noncomputable example {X : Type*} {G : Type*} [AddCommGroup G] (n : ℕ) :
     AddCommGroup (Cohomology X G n) := inferInstance
 ```
 
-The coboundary is additive — this is the sense in which $`\delta` is linear.
-Prove it; the shim records this same statement as `coboundary_add`.
+The coboundary is additive — this is the sense in which $`\delta` is linear; the shim records it as `coboundary_add`.
 
 ```lean
 example {X : Type*} {G : Type*} [AddCommGroup G] {n : ℕ}
     (c₁ c₂ : Cochain X G n) :
-    coboundary (c₁ + c₂) = coboundary c₁ + coboundary c₂ := by
+    coboundary (c₁ + c₂) = coboundary c₁ + coboundary c₂ :=
+  coboundary_add c₁ c₂
+```
+
+Additivity is exactly what makes the *cocycles* — the cochains with $`\delta c = 0` — closed under addition, hence a subgroup.
+Prove that if $`c_1` and $`c_2` are both cocycles then so is $`c_1 + c_2`: rewrite the sum's coboundary with `coboundary_add`, then discharge each summand with its hypothesis.
+
+```lean
+example {X : Type*} {G : Type*} [AddCommGroup G] {n : ℕ}
+    (c₁ c₂ : Cochain X G n)
+    (h₁ : coboundary c₁ = 0) (h₂ : coboundary c₂ = 0) :
+    coboundary (c₁ + c₂) = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
 example {X : Type*} {G : Type*} [AddCommGroup G] {n : ℕ}
-    (c₁ c₂ : Cochain X G n) :
-    coboundary (c₁ + c₂) = coboundary c₁ + coboundary c₂ :=
-  coboundary_add c₁ c₂
+    (c₁ c₂ : Cochain X G n)
+    (h₁ : coboundary c₁ = 0) (h₂ : coboundary c₂ = 0) :
+    coboundary (c₁ + c₂) = 0 := by
+  -- δ is additive, so δ(c₁+c₂) = δc₁ + δc₂ = 0 + 0.
+  rw [coboundary_add, h₁, h₂, add_zero]
 ```
 :::
 
@@ -502,23 +525,37 @@ example {X : Type*} (v : Simplex X 1) :
   Chain.boundary_one v
 ```
 
-Prove this local constancy; the shim records it as `cocycle_zero_locally_constant`.
+This local constancy across a single edge is the shim's `cocycle_zero_locally_constant`.
 
-```lean
-example {X : Type*} {G : Type*} [AddCommGroup G] {c : Cochain X G 0}
-    (h : coboundary c = 0) (v : Simplex X 1) :
-    c (Chain.ofSimplex fun _ => v 1)
-      = c (Chain.ofSimplex fun _ => v 0) := by
-  sorry
-```
-
-:::solution
 ```lean
 example {X : Type*} {G : Type*} [AddCommGroup G] {c : Cochain X G 0}
     (h : coboundary c = 0) (v : Simplex X 1) :
     c (Chain.ofSimplex fun _ => v 1)
       = c (Chain.ofSimplex fun _ => v 0) :=
   cocycle_zero_locally_constant h v
+```
+
+Agreeing across every edge, the value then propagates along a path: two edges $`v \colon v_0 \to v_1` and $`w \colon w_0 \to w_1` that share the vertex $`v_1 = w_0` force the same value at the far endpoints $`v_0` and $`w_1`.
+Prove it by invoking the single-edge fact on each of $`v` and $`w`, then splicing the two equalities together through the shared vertex (rewrite with the hypothesis $`v_1 = w_0`).
+
+```lean
+example {X : Type*} {G : Type*} [AddCommGroup G] {c : Cochain X G 0}
+    (h : coboundary c = 0) (v w : Simplex X 1) (hvw : v 1 = w 0) :
+    c (Chain.ofSimplex fun _ => v 0)
+      = c (Chain.ofSimplex fun _ => w 1) := by
+  sorry
+```
+
+:::solution
+```lean
+example {X : Type*} {G : Type*} [AddCommGroup G] {c : Cochain X G 0}
+    (h : coboundary c = 0) (v w : Simplex X 1) (hvw : v 1 = w 0) :
+    c (Chain.ofSimplex fun _ => v 0)
+      = c (Chain.ofSimplex fun _ => w 1) := by
+  -- Local constancy on each edge, spliced at the shared vertex v 1 = w 0.
+  have hv := cocycle_zero_locally_constant h v
+  have hw := cocycle_zero_locally_constant h w
+  rw [← hv, hw, hvw]
 ```
 :::
 
@@ -540,8 +577,18 @@ example (R M N : Type*) [CommRing R] [AddCommGroup M] [Module R M]
   LinearMap.dualMap_apply f g x
 ```
 
-The exercise on functoriality asked you to read $`\operatorname{Hom}(-, G)` as a contravariant functor: a composite $`g \circ f` dualizes with the order reversed.
-Prove that dualization is contravariant; `LinearMap.dualMap_comp_dualMap` states the reversed equation, so its `.symm` closes it.
+The exercise on functoriality asked you to read $`\operatorname{Hom}(-, G)` as a contravariant functor: a composite $`g \circ f` dualizes with the order reversed, which `LinearMap.dualMap_comp_dualMap` states (its `.symm` orienting it as below).
+
+```lean
+example (R M N P : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
+    (f : M →ₗ[R] N) (g : N →ₗ[R] P) :
+    (g.comp f).dualMap = f.dualMap.comp g.dualMap :=
+  (LinearMap.dualMap_comp_dualMap f g).symm
+```
+
+But contravariance is forced by nothing more than how evaluation composes, so prove it by hand rather than quoting the lemma.
+Reduce to a pointwise statement with `ext φ x`, then rewrite each dualized evaluation via `LinearMap.dualMap_apply` (with `LinearMap.comp_apply`): both sides send $`\varphi` to the functional $`x \mapsto \varphi(g(f\,x))`.
 
 ```lean
 example (R M N P : Type*) [CommRing R] [AddCommGroup M] [Module R M]
@@ -556,8 +603,10 @@ example (R M N P : Type*) [CommRing R] [AddCommGroup M] [Module R M]
 example (R M N P : Type*) [CommRing R] [AddCommGroup M] [Module R M]
     [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
     (f : M →ₗ[R] N) (g : N →ₗ[R] P) :
-    (g.comp f).dualMap = f.dualMap.comp g.dualMap :=
-  (LinearMap.dualMap_comp_dualMap f g).symm
+    (g.comp f).dualMap = f.dualMap.comp g.dualMap := by
+  -- Evaluate on φ and x: each side gives x ↦ φ(g(f x)).
+  ext φ x
+  simp only [LinearMap.dualMap_apply, LinearMap.comp_apply]
 ```
 :::
 
@@ -573,12 +622,23 @@ example {V : Type*} [Category V] [Limits.HasZeroMorphisms V] :
 
 Over a field the $`\operatorname{Ext}` term vanishes, so cohomology is exactly the dual of homology — the content of the problem "cohomology over a field is a dual".
 The algebraic fact that makes this an honest isomorphism for finitely generated homology is that a finite-dimensional vector space and its dual have the same dimension.
-Prove it; `Subspace.dual_finrank_eq` is exactly this equality of dimensions.
+That the dual has the same dimension is `Subspace.dual_finrank_eq`.
 
 ```lean
 example (F V : Type*) [Field F] [AddCommGroup V] [Module F V]
     [FiniteDimensional F V] :
-    Module.finrank F (Module.Dual F V) = Module.finrank F V := by
+    Module.finrank F (Module.Dual F V) = Module.finrank F V :=
+  Subspace.dual_finrank_eq
+```
+
+Iterating this recovers the double dual: $`V`, its dual, and its double dual all share one dimension.
+Prove $`\dim V^{\vee\vee} = \dim V` by applying the dual-dimension equality twice — once to peel off the outer dual (on the space $`V^\vee`, itself finite-dimensional), once to peel off the inner one.
+
+```lean
+example (F V : Type*) [Field F] [AddCommGroup V] [Module F V]
+    [FiniteDimensional F V] :
+    Module.finrank F (Module.Dual F (Module.Dual F V))
+      = Module.finrank F V := by
   sorry
 ```
 
@@ -586,7 +646,9 @@ example (F V : Type*) [Field F] [AddCommGroup V] [Module F V]
 ```lean
 example (F V : Type*) [Field F] [AddCommGroup V] [Module F V]
     [FiniteDimensional F V] :
-    Module.finrank F (Module.Dual F V) = Module.finrank F V :=
-  Subspace.dual_finrank_eq
+    Module.finrank F (Module.Dual F (Module.Dual F V))
+      = Module.finrank F V := by
+  -- Apply the dual-dimension equality twice, peeling dual-of-dual to V.
+  rw [Subspace.dual_finrank_eq, Subspace.dual_finrank_eq]
 ```
 :::

@@ -676,25 +676,48 @@ example {X R : Type*} [CommRing R] (L : CupProductLaws X R) {p q : ℕ}
   L.cup_cocycle ha hb
 ```
 
-Prove the companion half of bilinearity, additivity in the *second* argument, mirroring `cup_add_left` above.
+The companion half of bilinearity, additivity in the *second* argument, is `cup_add_right`, mirroring `cup_add_left` above.
 
-```lean
-example {X R : Type*} [CommRing R] {p q : ℕ}
-    (a : Cochain X R p) (b₁ b₂ : Cochain X R q) :
-    cup a (b₁ + b₂) = cup a b₁ + cup a b₂ := by
-  sorry
-```
-
-:::solution
 ```lean
 example {X R : Type*} [CommRing R] {p q : ℕ}
     (a : Cochain X R p) (b₁ b₂ : Cochain X R q) :
     cup a (b₁ + b₂) = cup a b₁ + cup a b₂ :=
   cup_add_right a b₁ b₂
 ```
+
+With both one-sided laws in hand the cup product is fully bilinear, so a sum in each argument expands like a product of two binomials into four terms.
+Prove that expansion: `cup_add_left` splits the left argument, `cup_add_right` splits each of the two resulting right arguments, and `abel` reassociates the four cups.
+
+```lean
+example {X R : Type*} [CommRing R] {p q : ℕ}
+    (a₁ a₂ : Cochain X R p) (b₁ b₂ : Cochain X R q) :
+    cup (a₁ + a₂) (b₁ + b₂)
+      = cup a₁ b₁ + cup a₁ b₂ + cup a₂ b₁ + cup a₂ b₂ := by
+  sorry
+```
+
+:::solution
+```lean
+example {X R : Type*} [CommRing R] {p q : ℕ}
+    (a₁ a₂ : Cochain X R p) (b₁ b₂ : Cochain X R q) :
+    cup (a₁ + a₂) (b₁ + b₂)
+      = cup a₁ b₁ + cup a₁ b₂ + cup a₂ b₁ + cup a₂ b₂ := by
+  -- Split the left slot, then each right slot; `abel` reassociates.
+  rw [cup_add_left, cup_add_right, cup_add_right]
+  abel
+```
 :::
 
-Show that cupping with the zero cochain gives zero.
+Cupping with the zero cochain gives zero, `cup_zero_right`.
+
+```lean
+example {X R : Type*} [CommRing R] {p q : ℕ} (a : Cochain X R p) :
+    cup a (0 : Cochain X R q) = 0 :=
+  cup_zero_right a
+```
+
+But this already follows from additivity alone, for the same reason $`r \cdot 0 = 0` holds in any ring.
+Prove it without invoking `cup_zero_right`: rewrite one `0` as `0 + 0` and apply `cup_add_right` to reach `cup a 0 = cup a 0 + cup a 0`, an equation forcing `cup a 0 = 0`, since only `0` equals its own double.
 
 ```lean
 example {X R : Type*} [CommRing R] {p q : ℕ} (a : Cochain X R p) :
@@ -705,8 +728,12 @@ example {X R : Type*} [CommRing R] {p q : ℕ} (a : Cochain X R p) :
 :::solution
 ```lean
 example {X R : Type*} [CommRing R] {p q : ℕ} (a : Cochain X R p) :
-    cup a (0 : Cochain X R q) = 0 :=
-  cup_zero_right a
+    cup a (0 : Cochain X R q) = 0 := by
+  -- Additivity forces it: cup a 0 = cup a (0 + 0) = cup a 0 + cup a 0.
+  have h : cup a (0 : Cochain X R q) = cup a 0 + cup a 0 := by
+    rw [← cup_add_right, add_zero]
+  -- An element equal to its own double must be zero.
+  simpa using h.symm
 ```
 :::
 
@@ -720,17 +747,28 @@ example (R S : Type*) [CommRing R] [CommRing S] (r r' : R) (s s' : S) :
     (r, s) * (r', s') = (r * r', s * s') := rfl
 ```
 
-Confirm that the multiplicative identity of $`R \times S` is the pair $`(1, 1)`.
+The multiplicative identity of $`R \times S` is the pair $`(1, 1)`, true by definition.
 
 ```lean
-example (R S : Type*) [CommRing R] [CommRing S] : (1 : R × S) = (1, 1) := by
+example (R S : Type*) [CommRing R] [CommRing S] :
+    (1 : R × S) = (1, 1) := rfl
+```
+
+That pair earns the name "identity" only if it fixes every element under multiplication.
+Prove $`(1, 1) \cdot p = p` for an arbitrary $`p`, comparing the two coordinates with `Prod.ext`; each coordinate is then `one_mul`.
+
+```lean
+example (R S : Type*) [CommRing R] [CommRing S] (p : R × S) :
+    (1, 1) * p = p := by
   sorry
 ```
 
 :::solution
 ```lean
-example (R S : Type*) [CommRing R] [CommRing S] :
-    (1 : R × S) = (1, 1) := rfl
+example (R S : Type*) [CommRing R] [CommRing S] (p : R × S) :
+    (1, 1) * p = p :=
+  -- Componentwise (1,1) * p is (1 * p.1, 1 * p.2), and 1 * pᵢ = pᵢ.
+  Prod.ext (one_mul p.1) (one_mul p.2)
 ```
 :::
 
@@ -746,21 +784,36 @@ example (R M N : Type*) [CommRing R] [AddCommGroup M] [AddCommGroup N]
   TensorProduct.add_tmul a b c
 ```
 
-Prove the companion law in the second slot: $`a \otimes (b + c) = a \otimes b + a \otimes c`.
+The companion law in the second slot, $`a \otimes (b + c) = a \otimes b + a \otimes c`, is `TensorProduct.tmul_add`.
 
 ```lean
 example (R M N : Type*) [CommRing R] [AddCommGroup M] [AddCommGroup N]
     [Module R M] [Module R N] (a : M) (b c : N) :
-    a ⊗ₜ[R] (b + c) = a ⊗ₜ[R] b + a ⊗ₜ[R] c := by
+    a ⊗ₜ[R] (b + c) = a ⊗ₜ[R] b + a ⊗ₜ[R] c :=
+  TensorProduct.tmul_add a b c
+```
+
+With both one-sided laws the tensor is bilinear, so a sum in each slot expands into four elementary tensors.
+Prove that expansion: `TensorProduct.add_tmul` splits the left slot, `TensorProduct.tmul_add` splits each right slot, and `abel` reassembles the four terms.
+
+```lean
+example (R M N : Type*) [CommRing R] [AddCommGroup M] [AddCommGroup N]
+    [Module R M] [Module R N] (a a' : M) (b b' : N) :
+    (a + a') ⊗ₜ[R] (b + b')
+      = a ⊗ₜ[R] b + a ⊗ₜ[R] b' + a' ⊗ₜ[R] b + a' ⊗ₜ[R] b' := by
   sorry
 ```
 
 :::solution
 ```lean
 example (R M N : Type*) [CommRing R] [AddCommGroup M] [AddCommGroup N]
-    [Module R M] [Module R N] (a : M) (b c : N) :
-    a ⊗ₜ[R] (b + c) = a ⊗ₜ[R] b + a ⊗ₜ[R] c :=
-  TensorProduct.tmul_add a b c
+    [Module R M] [Module R N] (a a' : M) (b b' : N) :
+    (a + a') ⊗ₜ[R] (b + b')
+      = a ⊗ₜ[R] b + a ⊗ₜ[R] b' + a' ⊗ₜ[R] b + a' ⊗ₜ[R] b' := by
+  -- Split the left slot, then each right slot; `abel` reassociates.
+  rw [TensorProduct.add_tmul]
+  rw [TensorProduct.tmul_add, TensorProduct.tmul_add]
+  abel
 ```
 :::
 
@@ -774,20 +827,32 @@ example (R A B : Type*) [CommRing R] [CommRing A] [CommRing B]
     [Algebra R A] [Algebra R B] : Type _ := A ⊗[R] B
 ```
 
-Prove that multiplication in $`A \otimes_R B` multiplies the two factors separately.
+Multiplication in $`A \otimes_R B` multiplies the two factors separately, `Algebra.TensorProduct.tmul_mul_tmul`.
 
 ```lean
 example (R A B : Type*) [CommRing R] [CommRing A] [CommRing B]
     [Algebra R A] [Algebra R B] (a₁ a₂ : A) (b₁ b₂ : B) :
-    (a₁ ⊗ₜ[R] b₁) * (a₂ ⊗ₜ[R] b₂) = (a₁ * a₂) ⊗ₜ[R] (b₁ * b₂) := by
+    (a₁ ⊗ₜ[R] b₁) * (a₂ ⊗ₜ[R] b₂) = (a₁ * a₂) ⊗ₜ[R] (b₁ * b₂) :=
+  Algebra.TensorProduct.tmul_mul_tmul a₁ a₂ b₁ b₂
+```
+
+This is precisely the rule behind the computation separating $`\mathbb{CP}^3` from $`S^2 \times S^4`: there the degree-$`2` generator $`\beta \otimes 1` squares to zero because $`\beta^2 = 0`.
+Prove that instance — if $`\beta \cdot \beta = 0` in $`A`, then $`(\beta \otimes 1)^2 = 0` in $`A \otimes_R B` — by multiplying with the rule above, substituting $`\beta^2 = 0`, and collapsing $`0 \otimes 1` with `TensorProduct.zero_tmul`.
+
+```lean
+example (R A B : Type*) [CommRing R] [CommRing A] [CommRing B]
+    [Algebra R A] [Algebra R B] (β : A) (hβ : β * β = 0) :
+    (β ⊗ₜ[R] (1 : B)) * (β ⊗ₜ[R] (1 : B)) = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
 example (R A B : Type*) [CommRing R] [CommRing A] [CommRing B]
-    [Algebra R A] [Algebra R B] (a₁ a₂ : A) (b₁ b₂ : B) :
-    (a₁ ⊗ₜ[R] b₁) * (a₂ ⊗ₜ[R] b₂) = (a₁ * a₂) ⊗ₜ[R] (b₁ * b₂) :=
-  Algebra.TensorProduct.tmul_mul_tmul a₁ a₂ b₁ b₂
+    [Algebra R A] [Algebra R B] (β : A) (hβ : β * β = 0) :
+    (β ⊗ₜ[R] (1 : B)) * (β ⊗ₜ[R] (1 : B)) = 0 := by
+  -- (β⊗1)² = (β·β)⊗(1·1) = 0⊗1 = 0.
+  rw [Algebra.TensorProduct.tmul_mul_tmul, hβ, mul_one,
+    TensorProduct.zero_tmul]
 ```
 :::

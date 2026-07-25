@@ -339,16 +339,31 @@ The single-variable `HasDerivAt` from the calculus chapter is the `V = W = ℝ` 
 ```lean
 open ContinuousLinearMap in
 example (f : ℝ → ℝ) (f' x : ℝ) :
-    HasDerivAt f f' x ↔ HasFDerivAt f (toSpanSingleton ℝ f') x := by
+    HasDerivAt f f' x ↔ HasFDerivAt f (toSpanSingleton ℝ f') x :=
+  hasDerivAt_iff_hasFDerivAt
+```
+
+Put the bridge to work to see that the single-variable derivative is *unique*.
+Suppose $`f \colon \mathbb{R} \to \mathbb{R}` has derivative both $`a` and $`b` at $`x`.
+Push each hypothesis through the bridge (`.mp`), invoke that Fréchet derivatives are unique (`HasFDerivAt.unique`) to obtain `toSpanSingleton ℝ a = toSpanSingleton ℝ b`, then recover $`a = b` by evaluating these equal maps at `1` (`toSpanSingleton_apply_one`).
+
+```lean
+open ContinuousLinearMap in
+example (f : ℝ → ℝ) (a b x : ℝ)
+    (ha : HasDerivAt f a x) (hb : HasDerivAt f b x) : a = b := by
   sorry
 ```
 
 :::solution
 ```lean
 open ContinuousLinearMap in
-example (f : ℝ → ℝ) (f' x : ℝ) :
-    HasDerivAt f f' x ↔ HasFDerivAt f (toSpanSingleton ℝ f') x :=
-  hasDerivAt_iff_hasFDerivAt
+example (f : ℝ → ℝ) (a b x : ℝ)
+    (ha : HasDerivAt f a x) (hb : HasDerivAt f b x) : a = b := by
+  -- Equal Fréchet derivatives, evaluated at 1, give back a = b.
+  have h : toSpanSingleton ℝ a = toSpanSingleton ℝ b :=
+    (hasDerivAt_iff_hasFDerivAt.mp ha).unique
+      (hasDerivAt_iff_hasFDerivAt.mp hb)
+  simpa [toSpanSingleton_apply_one] using DFunLike.congr_fun h 1
 ```
 :::
 
@@ -360,7 +375,19 @@ example {V W : Type*}
     [NormedAddCommGroup V] [NormedSpace ℝ V]
     [NormedAddCommGroup W] [NormedSpace ℝ W]
     (f : V → W) (f' : V →L[ℝ] W) (p : V) (h : HasFDerivAt f f' p) :
-    ContinuousAt f p := by
+    ContinuousAt f p :=
+  h.continuousAt
+```
+
+Continuity *at* the point is the strong statement; every weaker localization follows from it.
+Show that a Fréchet-differentiable function is continuous *within* any set `s` at the point, by first extracting continuity at the point and then restricting it (`ContinuousAt.continuousWithinAt`).
+
+```lean
+example {V W : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V]
+    [NormedAddCommGroup W] [NormedSpace ℝ W]
+    (f : V → W) (f' : V →L[ℝ] W) (p : V) (s : Set V)
+    (h : HasFDerivAt f f' p) : ContinuousWithinAt f s p := by
   sorry
 ```
 
@@ -369,9 +396,10 @@ example {V W : Type*}
 example {V W : Type*}
     [NormedAddCommGroup V] [NormedSpace ℝ V]
     [NormedAddCommGroup W] [NormedSpace ℝ W]
-    (f : V → W) (f' : V →L[ℝ] W) (p : V) (h : HasFDerivAt f f' p) :
-    ContinuousAt f p :=
-  h.continuousAt
+    (f : V → W) (f' : V →L[ℝ] W) (p : V) (s : Set V)
+    (h : HasFDerivAt f f' p) : ContinuousWithinAt f s p :=
+  -- Continuous at p ⟹ continuous within any set at p.
+  h.continuousAt.continuousWithinAt
 ```
 :::
 
@@ -385,7 +413,20 @@ example {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     {ι : Type*} [Fintype ι] [DecidableEq ι]
     (Φ : V → (ι → ℝ)) (Φ' : V →L[ℝ] (ι → ℝ)) (x : V) :
     HasFDerivAt Φ Φ' x ↔
-      ∀ i, HasFDerivAt (fun v => Φ v i) ((proj i).comp Φ') x := by
+      ∀ i, HasFDerivAt (fun v => Φ v i) ((proj i).comp Φ') x :=
+  hasFDerivAt_pi'
+```
+
+The forward direction is the "each coordinate separately" moral in action: from differentiability of the whole map you can read off differentiability of any single coordinate function.
+Extract it — given `HasFDerivAt Φ Φ' x`, prove that the $`i`-th projection $`v \mapsto \Phi(v)_i` is differentiable — by taking the `.mp` direction of the equivalence and specializing it to your index `i`.
+
+```lean
+open ContinuousLinearMap in
+example {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Φ : V → (ι → ℝ)) (Φ' : V →L[ℝ] (ι → ℝ)) (x : V) (i : ι)
+    (h : HasFDerivAt Φ Φ' x) :
+    HasFDerivAt (fun v => Φ v i) ((proj i).comp Φ') x := by
   sorry
 ```
 
@@ -394,10 +435,11 @@ example {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
 open ContinuousLinearMap in
 example {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     {ι : Type*} [Fintype ι] [DecidableEq ι]
-    (Φ : V → (ι → ℝ)) (Φ' : V →L[ℝ] (ι → ℝ)) (x : V) :
-    HasFDerivAt Φ Φ' x ↔
-      ∀ i, HasFDerivAt (fun v => Φ v i) ((proj i).comp Φ') x :=
-  hasFDerivAt_pi'
+    (Φ : V → (ι → ℝ)) (Φ' : V →L[ℝ] (ι → ℝ)) (x : V) (i : ι)
+    (h : HasFDerivAt Φ Φ' x) :
+    HasFDerivAt (fun v => Φ v i) ((proj i).comp Φ') x :=
+  -- The forward direction gives every component; pick the i-th.
+  hasFDerivAt_pi'.mp h i
 ```
 :::
 
@@ -411,7 +453,20 @@ example {V W : Type*}
     [NormedAddCommGroup V] [NormedSpace ℝ V]
     [NormedAddCommGroup W] [NormedSpace ℝ W]
     (f : V → W) (L : V →L[ℝ] W) (p v : V) (h : HasFDerivAt f L p) :
-    HasLineDerivAt ℝ f (L v) p v := by
+    HasLineDerivAt ℝ f (L v) p v :=
+  h.hasLineDerivAt v
+```
+
+That lemma produces the *predicate* `HasLineDerivAt`; the chapter's equation $`\frac{\partial f}{\partial \mathbf{e}_i}(p) = (Df)_p(\mathbf{e}_i)` is the matching statement about the *value* `lineDeriv ℝ f p v`.
+Prove it: differentiability makes `lineDeriv ℝ f p v` equal to `L v`.
+Build the `HasLineDerivAt` witness with the worked model above, then read off its value with `HasLineDerivAt.lineDeriv`.
+
+```lean
+example {V W : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V]
+    [NormedAddCommGroup W] [NormedSpace ℝ W]
+    (f : V → W) (L : V →L[ℝ] W) (p v : V) (h : HasFDerivAt f L p) :
+    lineDeriv ℝ f p v = L v := by
   sorry
 ```
 
@@ -421,8 +476,9 @@ example {V W : Type*}
     [NormedAddCommGroup V] [NormedSpace ℝ V]
     [NormedAddCommGroup W] [NormedSpace ℝ W]
     (f : V → W) (L : V →L[ℝ] W) (p v : V) (h : HasFDerivAt f L p) :
-    HasLineDerivAt ℝ f (L v) p v :=
-  h.hasLineDerivAt v
+    lineDeriv ℝ f p v = L v :=
+  -- The directional-derivative value, read off the HasLineDerivAt witness.
+  (h.hasLineDerivAt v).lineDeriv
 ```
 :::
 
@@ -440,7 +496,20 @@ example {V W : Type*}
     [NormedAddCommGroup V] [NormedSpace ℝ V]
     [NormedAddCommGroup W] [NormedSpace ℝ W]
     (f : V → W) (p : V) (h : ContDiffAt ℝ 2 f p) :
-    IsSymmSndFDerivAt ℝ f p := by
+    IsSymmSndFDerivAt ℝ f p :=
+  h.isSymmSndFDerivAt (by simp)
+```
+
+`IsSymmSndFDerivAt` is exactly the promise that the second derivative may have its two arguments swapped.
+Cash it out: for a twice-differentiable `f` and any vectors `v w`, prove the second derivative is symmetric in those two slots.
+Produce the symmetry witness as above, then feed the vectors to its `.eq` field (`IsSymmSndFDerivAt.eq`) — this is Clairaut's theorem, one pair of directions at a time.
+
+```lean
+example {V W : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V]
+    [NormedAddCommGroup W] [NormedSpace ℝ W]
+    (f : V → W) (p v w : V) (h : ContDiffAt ℝ 2 f p) :
+    fderiv ℝ (fderiv ℝ f) p v w = fderiv ℝ (fderiv ℝ f) p w v := by
   sorry
 ```
 
@@ -449,9 +518,10 @@ example {V W : Type*}
 example {V W : Type*}
     [NormedAddCommGroup V] [NormedSpace ℝ V]
     [NormedAddCommGroup W] [NormedSpace ℝ W]
-    (f : V → W) (p : V) (h : ContDiffAt ℝ 2 f p) :
-    IsSymmSndFDerivAt ℝ f p :=
-  h.isSymmSndFDerivAt (by simp)
+    (f : V → W) (p v w : V) (h : ContDiffAt ℝ 2 f p) :
+    fderiv ℝ (fderiv ℝ f) p v w = fderiv ℝ (fderiv ℝ f) p w v :=
+  -- Symmetry witness, then swap the two argument slots.
+  (h.isSymmSndFDerivAt (by simp)).eq v w
 ```
 :::
 
@@ -467,7 +537,22 @@ example {V W X : Type*}
     [NormedAddCommGroup X] [NormedSpace ℝ X]
     (f : V → W) (g : W → X) (f' : V →L[ℝ] W) (g' : W →L[ℝ] X) (p : V)
     (hg : HasFDerivAt g g' (f p)) (hf : HasFDerivAt f f' p) :
-    HasFDerivAt (g ∘ f) (g'.comp f') p := by
+    HasFDerivAt (g ∘ f) (g'.comp f') p :=
+  hg.comp p hf
+```
+
+The predicate form pins down *which* map is the derivative; the total-function form `fderiv` then reads it off.
+Derive the `fderiv` version of the chain rule: with the same hypotheses, `fderiv ℝ (g ∘ f) p = g'.comp f'`.
+Assemble the `HasFDerivAt` witness with the worked model, then convert a `HasFDerivAt` into a `fderiv` equation with `HasFDerivAt.fderiv`.
+
+```lean
+example {V W X : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V]
+    [NormedAddCommGroup W] [NormedSpace ℝ W]
+    [NormedAddCommGroup X] [NormedSpace ℝ X]
+    (f : V → W) (g : W → X) (f' : V →L[ℝ] W) (g' : W →L[ℝ] X) (p : V)
+    (hg : HasFDerivAt g g' (f p)) (hf : HasFDerivAt f f' p) :
+    fderiv ℝ (g ∘ f) p = g'.comp f' := by
   sorry
 ```
 
@@ -479,7 +564,8 @@ example {V W X : Type*}
     [NormedAddCommGroup X] [NormedSpace ℝ X]
     (f : V → W) (g : W → X) (f' : V →L[ℝ] W) (g' : W →L[ℝ] X) (p : V)
     (hg : HasFDerivAt g g' (f p)) (hf : HasFDerivAt f f' p) :
-    HasFDerivAt (g ∘ f) (g'.comp f') p :=
-  hg.comp p hf
+    fderiv ℝ (g ∘ f) p = g'.comp f' :=
+  -- Turn the derivative predicate into a fderiv equation.
+  (hg.comp p hf).fderiv
 ```
 :::

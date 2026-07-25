@@ -370,20 +370,30 @@ The degree of a map $`S^n \to S^n` genuinely needs $`H_n(S^n) \cong \mathbb{Z}` 
 Bundling the degree axioms lets the chapter's degree facts be *derived* from `map_mul` rather than merely asserted.
 :::
 
-The chapter's {name}`MapDegreeData.deg_mul` is the multiplicativity $`\deg(f \circ g) = \deg(f)\deg(g)` asked for above, now genuinely proved.
-Re-derive it yourself, straight from the homomorphism law.
+The chapter's {name}`MapDegreeData.deg_mul` is the multiplicativity $`\deg(f \circ g) = \deg(f)\deg(g)` asked for above, now genuinely proved — straight from the homomorphism law.
 
 ```lean
 example (D : MapDegreeData) (f g : D.SelfMap) :
-    D.deg (f * g) = D.deg f * D.deg g := by
+    D.deg (f * g) = D.deg f * D.deg g :=
+  map_mul D.deg f g
+```
+
+A constant self-map wraps around $`S^n` zero times, so it has degree $`0`; this is {name}`MapDegreeData.deg_const`.
+Multiplicativity then makes degree $`0` *absorbing*: composing any map with a constant one again has degree $`0`.
+Prove it, by splitting the composite with `map_mul`, rewriting the constant factor's degree with {name}`MapDegreeData.deg_const`, and finishing with `mul_zero`.
+
+```lean
+example (D : MapDegreeData) (f : D.SelfMap) :
+    D.deg (f * D.const) = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (D : MapDegreeData) (f g : D.SelfMap) :
-    D.deg (f * g) = D.deg f * D.deg g :=
-  map_mul D.deg f g
+example (D : MapDegreeData) (f : D.SelfMap) :
+    D.deg (f * D.const) = 0 := by
+  -- map_mul splits the composite; the constant factor has degree 0.
+  rw [map_mul, D.deg_const, mul_zero]
 ```
 :::
 
@@ -447,19 +457,31 @@ noncomputable example (K : ChainComplex (ModuleCat ℤ) ℕ) (i : ℕ) :
 The cellular chain complex itself, its identification with singular homology, and the degree/Euler-characteristic machinery of this chapter are not yet part of Mathlib, so the computations here are carried out by hand.
 
 The chapter asked you to check that the composition of two adjacent maps $`d_k` is zero — the very condition that makes $`\operatorname{Cells}_\bullet(X)` a chain complex.
-In any chain complex the two boundary maps out of adjacent degrees compose to zero.
+In any chain complex the two boundary maps out of adjacent degrees compose to zero, {name}`HomologicalComplex.d_comp_d`.
 
 ```lean
 example (K : ChainComplex (ModuleCat ℤ) ℕ) (i j k : ℕ) :
-    K.d i j ≫ K.d j k = 0 := by
+    K.d i j ≫ K.d j k = 0 :=
+  K.d_comp_d i j k
+```
+
+This vanishing is stable under precomposition: anything that first passes through two consecutive boundaries composes to zero as well.
+Prove that for any morphism $`\varphi` into $`K_i` the composite $`\varphi \circ d \circ d` vanishes, by rewriting the inner {name}`HomologicalComplex.d_comp_d` to $`0` and then collapsing $`\varphi \circ 0` with `Limits.comp_zero`.
+
+```lean
+example (K : ChainComplex (ModuleCat ℤ) ℕ) (i j k : ℕ)
+    {M : ModuleCat ℤ} (φ : M ⟶ K.X i) :
+    φ ≫ K.d i j ≫ K.d j k = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (K : ChainComplex (ModuleCat ℤ) ℕ) (i j k : ℕ) :
-    K.d i j ≫ K.d j k = 0 :=
-  K.d_comp_d i j k
+example (K : ChainComplex (ModuleCat ℤ) ℕ) (i j k : ℕ)
+    {M : ModuleCat ℤ} (φ : M ⟶ K.X i) :
+    φ ≫ K.d i j ≫ K.d j k = 0 := by
+  -- The inner d ≫ d collapses to 0, and φ ≫ 0 = 0.
+  rw [K.d_comp_d, Limits.comp_zero]
 ```
 :::
 
@@ -496,7 +518,15 @@ The *combinatorial* side of the identity — the alternating sum $`\chi(X) = \su
 Mathlib's {name}`Topology.CWComplex` records the cells and attaching maps but has no cell-counting or Euler-characteristic API, so this too is a stopgap in `Napkin.Missing`.
 
 The minimal decomposition of $`S^n` (one $`0`-cell and one $`n`-cell) gives $`\chi(S^n) = 1 + (-1)^n`, which is {name}`CellStructure.eulerChar_sphere`; the standard torus (one $`0`-cell, two $`1`-cells, one $`2`-cell) gives $`\chi = 1 - 2 + 1 = 0`, which is {name}`CellStructure.eulerChar_torus`.
-Read the torus's Euler characteristic off its cell structure.
+Read the torus's Euler characteristic straight off that packaged lemma.
+
+```lean
+example : CellStructure.torus.eulerChar = 0 :=
+  CellStructure.eulerChar_torus
+```
+
+That value is worth recomputing from first principles rather than quoting.
+Unfold the alternating sum {name}`CellStructure.eulerChar` and the cell counts of {name}`CellStructure.torus`, then expand the finite `Finset.range` sum with `Finset.sum_range_succ`; the three surviving terms $`1`, $`-2`, $`1` collapse to $`0`.
 
 ```lean
 example : CellStructure.torus.eulerChar = 0 := by
@@ -505,8 +535,9 @@ example : CellStructure.torus.eulerChar = 0 := by
 
 :::solution
 ```lean
-example : CellStructure.torus.eulerChar = 0 :=
-  CellStructure.eulerChar_torus
+example : CellStructure.torus.eulerChar = 0 := by
+  -- Unfold the alternating sum and expand the three-term range sum.
+  simp [CellStructure.eulerChar, CellStructure.torus, Finset.sum_range_succ]
 ```
 :::
 

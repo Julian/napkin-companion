@@ -583,52 +583,84 @@ example {X : Type*} (v : Simplex X 1) :
 ```
 
 The obligatory theorem $`\partial^2 = 0` holds on this model: every face-of-a-face appears twice in $`\partial(\partial\sigma)`, once with each sign, so the alternating double sum cancels in pairs — the combinatorial heart of the text's "boundary of the boundary is empty".
-This is `boundary_boundary`; use it to close the exercise.
+This is `boundary_boundary`.
 
 ```lean
 example {X : Type*} {n : ℕ} (c : Chain X (n + 2)) :
-    boundary (boundary c) = 0 := by
+    boundary (boundary c) = 0 :=
+  boundary_boundary c
+```
+
+Read the other way, $`\partial^2 = 0` says *every boundary is a cycle*: anything of the shape $`\partial d` is killed by a further $`\partial`.
+Prove it — given a chain $`c` that is itself a boundary, $`c = \partial d`, show $`\partial c = 0` — by rewriting along the hypothesis and closing with $`\partial^2 = 0` above.
+
+```lean
+example {X : Type*} {n : ℕ} (d : Chain X (n + 3)) (c : Chain X (n + 2))
+    (hc : c = boundary d) : boundary c = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
-example {X : Type*} {n : ℕ} (c : Chain X (n + 2)) :
-    boundary (boundary c) = 0 := by
-  exact boundary_boundary c
+example {X : Type*} {n : ℕ} (d : Chain X (n + 3)) (c : Chain X (n + 2))
+    (hc : c = boundary d) : boundary c = 0 := by
+  -- A boundary is a cycle: ∂c = ∂(∂d) = 0.
+  rw [hc]
+  exact boundary_boundary d
 ```
 :::
 
-Because `boundary` is an additive homomorphism, the text's rule $`\partial(\sum a_i c_i) = \sum a_i \partial c_i` is automatic; prove its additive shadow, that the boundary of a sum of chains is the sum of their boundaries.
+Because `boundary` is an additive homomorphism, the boundary of a sum of chains is the sum of their boundaries — that is `map_add`.
 
 ```lean
 example {X : Type*} {n : ℕ} (c₁ c₂ : Chain X (n + 1)) :
-    boundary (c₁ + c₂) = boundary c₁ + boundary c₂ := by
+    boundary (c₁ + c₂) = boundary c₁ + boundary c₂ :=
+  map_add boundary c₁ c₂
+```
+
+The text's full rule $`\partial(\sum a_i c_i) = \sum a_i \partial c_i` bundles that additivity with compatibility with integer scaling.
+Prove the two-term case, $`\partial(a c_1 + c_2) = a \partial c_1 + \partial c_2`, by distributing over the sum (`map_add`) and pulling the scalar out (`map_zsmul`), the two properties of a $`\mathbb{Z}`-linear map.
+
+```lean
+example {X : Type*} {n : ℕ} (a : ℤ) (c₁ c₂ : Chain X (n + 1)) :
+    boundary (a • c₁ + c₂) = a • boundary c₁ + boundary c₂ := by
   sorry
 ```
 
 :::solution
 ```lean
-example {X : Type*} {n : ℕ} (c₁ c₂ : Chain X (n + 1)) :
-    boundary (c₁ + c₂) = boundary c₁ + boundary c₂ := by
-  exact map_add boundary c₁ c₂
+example {X : Type*} {n : ℕ} (a : ℤ) (c₁ c₂ : Chain X (n + 1)) :
+    boundary (a • c₁ + c₂) = a • boundary c₁ + boundary c₂ := by
+  -- boundary is ℤ-linear, so it commutes with + and •.
+  rw [map_add, map_zsmul]
 ```
 :::
 
 The one-dimensional shadow of all this is visible already in plain calculus: the boundary of a subdivided interval telescopes to its endpoints, mirroring $`\partial [a, b] = \{b\} - \{a\}`.
-Prove that a telescoping sum of successive differences collapses to the difference of the endpoints.
+The general telescoping identity is `Finset.sum_range_sub`.
 
 ```lean
 example (g : ℕ → ℝ) (n : ℕ) :
-    ∑ i ∈ Finset.range n, (g (i+1) - g i) = g n - g 0 := by
+    ∑ i ∈ Finset.range n, (g (i+1) - g i) = g n - g 0 :=
+  Finset.sum_range_sub g n
+```
+
+Put it to work on a concrete sum: with $`g(i) = i^2` every interior term cancels and only the endpoints $`g(n) - g(0) = n^2 - 0` survive.
+Prove $`\sum_{i<n} \left((i+1)^2 - i^2\right) = n^2` by instantiating the telescoping identity at $`g(i) = i^2` and letting `simp` clear the vanishing $`g(0)` term.
+
+```lean
+example (n : ℕ) : ∑ i ∈ Finset.range n,
+    (((i + 1 : ℕ) : ℝ) ^ 2 - ((i : ℕ) : ℝ) ^ 2) = (n : ℝ) ^ 2 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (g : ℕ → ℝ) (n : ℕ) :
-    ∑ i ∈ Finset.range n, (g (i+1) - g i) = g n - g 0 := by
-  exact Finset.sum_range_sub g n
+example (n : ℕ) : ∑ i ∈ Finset.range n,
+    (((i + 1 : ℕ) : ℝ) ^ 2 - ((i : ℕ) : ℝ) ^ 2) = (n : ℝ) ^ 2 := by
+  -- Telescopes to g n - g 0 = n² - 0² with g i = i².
+  rw [Finset.sum_range_sub (fun i => ((i : ℕ) : ℝ) ^ 2)]
+  simp
 ```
 :::
 
