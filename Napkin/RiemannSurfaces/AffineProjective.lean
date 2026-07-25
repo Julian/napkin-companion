@@ -364,14 +364,26 @@ example {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace 
   hf.implicitFunction_apply_image hf'
 ```
 
-The exercise asked you to check the smoothness criterion on the circle at $`(1, 0)`.
-Concretely, verify that the partial derivative $`\partial f / \partial z = 2z` does not vanish there, so the circle is smooth at $`(1, 0)`.
+The partial derivative $`\partial f / \partial z = 2z` does not vanish at $`(1, 0)`.
 The finisher is the same `simp [pderiv_X]` used just above: it rewrites the partial to $`2z`, evaluates it to $`2`, and recognizes that numeral as nonzero.
 
 ```lean
 example :
     MvPolynomial.eval ![1, 0]
       (pderiv 0 (X 0 ^ 2 + X 1 ^ 2 - 1 : MvPolynomial (Fin 2) ℂ)) ≠ 0 := by
+  simp [pderiv_X]
+```
+
+The smoothness criterion itself asks for less than this: not that this particular partial is nonzero, but that $`\partial f / \partial z` and $`\partial f / \partial w` do not *both* vanish.
+Prove that weaker disjunction at $`(1, 0)`, which is what actually certifies the circle is smooth there.
+Only one partial does the work, so `left` selects the $`\partial f / \partial z` branch and the same `simp [pderiv_X]` closes it.
+
+```lean
+example :
+    MvPolynomial.eval ![1, 0]
+        (pderiv 0 (X 0 ^ 2 + X 1 ^ 2 - 1 : MvPolynomial (Fin 2) ℂ)) ≠ 0 ∨
+      MvPolynomial.eval ![1, 0]
+        (pderiv 1 (X 0 ^ 2 + X 1 ^ 2 - 1 : MvPolynomial (Fin 2) ℂ)) ≠ 0 := by
   sorry
 ```
 
@@ -379,7 +391,11 @@ example :
 ```lean
 example :
     MvPolynomial.eval ![1, 0]
-      (pderiv 0 (X 0 ^ 2 + X 1 ^ 2 - 1 : MvPolynomial (Fin 2) ℂ)) ≠ 0 := by
+        (pderiv 0 (X 0 ^ 2 + X 1 ^ 2 - 1 : MvPolynomial (Fin 2) ℂ)) ≠ 0 ∨
+      MvPolynomial.eval ![1, 0]
+        (pderiv 1 (X 0 ^ 2 + X 1 ^ 2 - 1 : MvPolynomial (Fin 2) ℂ)) ≠ 0 := by
+  -- Either partial witnesses smoothness; the ∂/∂z branch is nonzero.
+  left
   simp [pderiv_X]
 ```
 :::
@@ -406,19 +422,32 @@ noncomputable example :
 ```
 
 Two nonzero vectors describe the same point of $`\mathbb{CP}^1` exactly when one is a scalar multiple of the other, recorded as `Projectivization.mk_eq_mk_iff'`.
-Use it to confirm that $`(x, y) \sim (\lambda x, \lambda y)`.
+When the scalar witnessing this is handed to you it is a one-liner: feed it as the existence witness into the `.mpr` direction.
 
 ```lean
 example (v w : Fin 2 → ℂ) (hv : v ≠ 0) (hw : w ≠ 0) (a : ℂ) (ha : a • w = v) :
-    Projectivization.mk ℂ v hv = Projectivization.mk ℂ w hw := by
+    Projectivization.mk ℂ v hv = Projectivization.mk ℂ w hw :=
+  (Projectivization.mk_eq_mk_iff' ℂ v w hv hw).mpr ⟨a, ha⟩
+```
+
+The equivalence $`(x, y) \sim (\lambda x, \lambda y)` is the substance behind $`\mathbb{CP}^1`, so prove it in the form that has to *produce* the scalar rather than receive it: for $`\lambda \neq 0`, the vector $`\lambda v` names the same point as $`v`.
+The witness that carries $`\lambda v` back to $`v` is the inverse scalar $`\lambda^{-1}`, so hand `mk_eq_mk_iff'` the witness $`\lambda^{-1}` and check the identity $`\lambda^{-1} \cdot (\lambda v) = v` with `smul_smul`, `inv_mul_cancel₀`, and `one_smul`.
+
+```lean
+example (v : Fin 2 → ℂ) (hv : v ≠ 0) (a : ℂ) (ha : a ≠ 0)
+    (hav : a • v ≠ 0) :
+    Projectivization.mk ℂ v hv = Projectivization.mk ℂ (a • v) hav := by
   sorry
 ```
 
 :::solution
 ```lean
-example (v w : Fin 2 → ℂ) (hv : v ≠ 0) (hw : w ≠ 0) (a : ℂ) (ha : a • w = v) :
-    Projectivization.mk ℂ v hv = Projectivization.mk ℂ w hw :=
-  (Projectivization.mk_eq_mk_iff' ℂ v w hv hw).mpr ⟨a, ha⟩
+example (v : Fin 2 → ℂ) (hv : v ≠ 0) (a : ℂ) (ha : a ≠ 0)
+    (hav : a • v ≠ 0) :
+    Projectivization.mk ℂ v hv = Projectivization.mk ℂ (a • v) hav := by
+  -- Exhibit a⁻¹ as the scalar taking a • v back to v.
+  refine (Projectivization.mk_eq_mk_iff' ℂ v (a • v) hv hav).mpr ⟨a⁻¹, ?_⟩
+  rw [smul_smul, inv_mul_cancel₀ ha, one_smul]
 ```
 :::
 

@@ -291,26 +291,28 @@ The concrete atlas is the data of the `ChartedSpace ℂ X`; the maximal atlas is
 
 ```lean
 example (X : Type*) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [IsManifold (𝓘(ℂ, ℂ)) ω X] (p : X) :
-    chartAt ℂ p ∈ IsManifold.maximalAtlas (𝓘(ℂ, ℂ)) ω X :=
-  IsManifold.chart_mem_maximalAtlas p
+    [IsManifold (𝓘(ℂ, ℂ)) ω X] :
+    atlas ℂ X ⊆ IsManifold.maximalAtlas (𝓘(ℂ, ℂ)) ω X :=
+  IsManifold.subset_maximalAtlas
 ```
 
-Show that every chart in the concrete atlas is a member of the maximal atlas; the set-level counterpart of the lemma above is `IsManifold.subset_maximalAtlas`.
+Read off a single point from that containment: the chart `chartAt ℂ p` at any `p` lies in the maximal atlas.
+Rather than cite the packaged `IsManifold.chart_mem_maximalAtlas`, assemble it — `chart_mem_atlas ℂ p` witnesses that `chartAt ℂ p` is one of the concrete charts, and feeding that membership through the containment `IsManifold.subset_maximalAtlas` lands it in the maximal atlas.
 
 ```lean
 example (X : Type*) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [IsManifold (𝓘(ℂ, ℂ)) ω X] :
-    atlas ℂ X ⊆ IsManifold.maximalAtlas (𝓘(ℂ, ℂ)) ω X := by
+    [IsManifold (𝓘(ℂ, ℂ)) ω X] (p : X) :
+    chartAt ℂ p ∈ IsManifold.maximalAtlas (𝓘(ℂ, ℂ)) ω X := by
   sorry
 ```
 
 :::solution
 ```lean
 example (X : Type*) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [IsManifold (𝓘(ℂ, ℂ)) ω X] :
-    atlas ℂ X ⊆ IsManifold.maximalAtlas (𝓘(ℂ, ℂ)) ω X :=
-  IsManifold.subset_maximalAtlas
+    [IsManifold (𝓘(ℂ, ℂ)) ω X] (p : X) :
+    chartAt ℂ p ∈ IsManifold.maximalAtlas (𝓘(ℂ, ℂ)) ω X :=
+  -- chartAt is a concrete chart, and concrete atlas ⊆ maximal atlas.
+  IsManifold.subset_maximalAtlas (chart_mem_atlas ℂ p)
 ```
 :::
 
@@ -370,22 +372,31 @@ example : AnalyticOnNhd ℂ (fun z : ℂ => z⁻¹) {z : ℂ | z ≠ 0} :=
 ```
 
 The transition `sphereTransition` is that very map $`z \mapsto z^{-1}`, so the same fact carries over, packaged in the shim as `sphereTransition_analyticOnNhd`.
-Confirm it.
 
 ```lean
-example : AnalyticOnNhd ℂ sphereTransition {z : ℂ | z ≠ 0} := by
+example : AnalyticOnNhd ℂ sphereTransition {z : ℂ | z ≠ 0} :=
+  sphereTransition_analyticOnNhd
+```
+
+Being analytic on a neighborhood means, unfolded, being analytic *at* each point of the overlap, and analyticity at a point is a strong enough condition to imply mere continuity there.
+Combine the two: at any $`z \neq 0`, feed the point and the hypothesis to `sphereTransition_analyticOnNhd` to extract `AnalyticAt` at $`z`, then hand that to `AnalyticAt.continuousAt`.
+
+```lean
+example (z : ℂ) (hz : z ≠ 0) : ContinuousAt sphereTransition z := by
   sorry
 ```
 
 :::solution
 ```lean
-example : AnalyticOnNhd ℂ sphereTransition {z : ℂ | z ≠ 0} :=
-  sphereTransition_analyticOnNhd
+example (z : ℂ) (hz : z ≠ 0) : ContinuousAt sphereTransition z :=
+  -- Analytic on a nbhd ⟹ analytic at z (apply pointwise) ⟹ continuous at z.
+  (sphereTransition_analyticOnNhd z hz).continuousAt
 ```
 :::
 
 The two chart domains cover the sphere: the only point outside `sphereChart0Dom` is $`\infty`, which lies in `sphereChart1Dom`.
-Show that every point lies in one chart or the other, and that $`\infty` in particular lands in the second chart but not the first; the shim proves these as `sphere_charts_cover`, `infty_mem_sphereChart1Dom`, and `infty_notMem_sphereChart0Dom`.
+The shim records the cover as `sphere_charts_cover`, but prove it directly to see the mechanism at work: split on whether $`p = \infty` with `by_cases`, then in each branch unfold the relevant domain with `simp` — `sphereChart1Dom` (which excludes $`\uparrow 0`) catches $`\infty`, while every other point, being different from $`\infty`, stays in `sphereChart0Dom`.
+For $`\infty` itself, assemble the two shim facts `infty_mem_sphereChart1Dom` and `infty_notMem_sphereChart0Dom` into the conjunction that it lands in the second chart but not the first.
 
 ```lean
 example (p : OnePoint ℂ) :
@@ -400,8 +411,11 @@ example : (∞ : OnePoint ℂ) ∈ sphereChart1Dom ∧
 :::solution
 ```lean
 example (p : OnePoint ℂ) :
-    p ∈ sphereChart0Dom ∨ p ∈ sphereChart1Dom :=
-  sphere_charts_cover p
+    p ∈ sphereChart0Dom ∨ p ∈ sphereChart1Dom := by
+  -- ∞ is the only point missing from the first chart; it lives in the second.
+  by_cases h : p = ∞
+  · exact Or.inr (by simp [sphereChart1Dom, h])
+  · exact Or.inl (by simpa [sphereChart0Dom] using h)
 
 example : (∞ : OnePoint ℂ) ∈ sphereChart1Dom ∧
     (∞ : OnePoint ℂ) ∉ sphereChart0Dom :=
@@ -465,21 +479,32 @@ example {f : ℂ → ℂ} {c : ℂ} (hd : ∀ᶠ z in 𝓝[≠] c, Differentiabl
   Complex.analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt hd hc
 ```
 
-Show the packaged equivalence: on a neighborhood of $`c`, being differentiable off $`c` together with continuity at $`c` is the same as being differentiable on the whole neighborhood.
+The packaged equivalence bundles the two sides: on a neighborhood of $`c`, being differentiable off $`c` together with continuity at $`c` is the same as being differentiable on the whole neighborhood.
 This bundled iff is `Complex.differentiableOn_compl_singleton_and_continuousAt_iff`, whose forward direction at a single point is the worked lemma above.
 
 ```lean
 example {f : ℂ → ℂ} {s : Set ℂ} {c : ℂ} (hs : s ∈ 𝓝 c) :
     DifferentiableOn ℂ f (s \ {c}) ∧ ContinuousAt f c ↔
-      DifferentiableOn ℂ f s := by
+      DifferentiableOn ℂ f s :=
+  Complex.differentiableOn_compl_singleton_and_continuousAt_iff hs
+```
+
+Now put that equivalence to work in the direction that "fills in the hole".
+Given a function differentiable on the punctured neighborhood $`s \setminus \{c\}` and merely continuous at $`c`, extend the differentiability across the puncture to all of $`s`: pair the two hypotheses into the left-hand side of the iff and push them through its forward direction (`.mp`).
+
+```lean
+example {f : ℂ → ℂ} {s : Set ℂ} {c : ℂ} (hs : s ∈ 𝓝 c)
+    (hd : DifferentiableOn ℂ f (s \ {c})) (hc : ContinuousAt f c) :
+    DifferentiableOn ℂ f s := by
   sorry
 ```
 
 :::solution
 ```lean
-example {f : ℂ → ℂ} {s : Set ℂ} {c : ℂ} (hs : s ∈ 𝓝 c) :
-    DifferentiableOn ℂ f (s \ {c}) ∧ ContinuousAt f c ↔
-      DifferentiableOn ℂ f s :=
-  Complex.differentiableOn_compl_singleton_and_continuousAt_iff hs
+example {f : ℂ → ℂ} {s : Set ℂ} {c : ℂ} (hs : s ∈ 𝓝 c)
+    (hd : DifferentiableOn ℂ f (s \ {c})) (hc : ContinuousAt f c) :
+    DifferentiableOn ℂ f s :=
+  -- The bundled equivalence's forward direction fills in the puncture.
+  (Complex.differentiableOn_compl_singleton_and_continuousAt_iff hs).mp ⟨hd, hc⟩
 ```
 :::

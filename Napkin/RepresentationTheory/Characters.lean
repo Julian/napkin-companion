@@ -310,19 +310,28 @@ example {k G : Type*} [Field k] [Monoid G] (V : FDRep k G) :
 ```
 
 Characters were promised to determine a representation up to isomorphism; the easy half of that is `FDRep.char_iso`, that isomorphic representations already share a character.
-Here `V ≅ W` is an isomorphism of representations — an invertible map that intertwines the two actions — and `i : V ≅ W` is such an isomorphism.
-This is a one-liner: apply `FDRep.char_iso` to `i`.
+Here `V ≅ W` is an isomorphism of representations — an invertible map that intertwines the two actions — and `i : V ≅ W` is such an isomorphism; applying `FDRep.char_iso` to `i` is a one-liner.
 
 ```lean
 example {k G : Type*} [Field k] [Monoid G] (V W : FDRep k G) (i : V ≅ W) :
-    V.character = W.character := by
+    V.character = W.character := FDRep.char_iso i
+```
+
+One invariant falls straight out of this: isomorphic representations have the same dimension, read as a scalar in `k`.
+Prove it by reading the dimension off the character — `FDRep.char_one` rewrites `(Module.finrank k V : k)` back into `V.character 1`, on each side — and then collapsing the two characters against one another with `FDRep.char_iso i`.
+
+```lean
+example {k G : Type*} [Field k] [Monoid G] (V W : FDRep k G) (i : V ≅ W) :
+    (Module.finrank k V : k) = (Module.finrank k W : k) := by
   sorry
 ```
 
 :::solution
 ```lean
 example {k G : Type*} [Field k] [Monoid G] (V W : FDRep k G) (i : V ≅ W) :
-    V.character = W.character := FDRep.char_iso i
+    (Module.finrank k V : k) = (Module.finrank k W : k) := by
+  -- χ(1) reads off the dimension, and χ is an isomorphism invariant.
+  rw [← FDRep.char_one V, ← FDRep.char_one W, FDRep.char_iso i]
 ```
 :::
 

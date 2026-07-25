@@ -352,13 +352,24 @@ example {A V : Type*} (k : Type*)
   IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed k
 ```
 
-Read off the contrapositive as an exercise: a *nonzero* intertwiner between two irreps has no choice but to be an isomorphism.
+Read off the contrapositive: a *nonzero* intertwiner between two irreps has no choice but to be bijective, since the zero alternative is ruled out by `Or.resolve_right`.
 
 ```lean
 example {R M N : Type*} [Ring R]
     [AddCommGroup M] [Module R M] [IsSimpleModule R M]
     [AddCommGroup N] [Module R N] [IsSimpleModule R N]
-    (f : M →ₗ[R] N) (hf : f ≠ 0) : Function.Bijective f := by
+    (f : M →ₗ[R] N) (hf : f ≠ 0) : Function.Bijective f :=
+  (LinearMap.bijective_or_eq_zero f).resolve_right hf
+```
+
+Bijectivity is not yet an isomorphism *of representations*, so make that last step.
+Show that a nonzero intertwiner packages into an honest isomorphism `M ≃ₗ[R] N`: obtain bijectivity as above, then hand it to `LinearEquiv.ofBijective`, which promotes a bijective linear map to a linear equivalence.
+
+```lean
+example {R M N : Type*} [Ring R]
+    [AddCommGroup M] [Module R M] [IsSimpleModule R M]
+    [AddCommGroup N] [Module R N] [IsSimpleModule R N]
+    (f : M →ₗ[R] N) (hf : f ≠ 0) : Nonempty (M ≃ₗ[R] N) := by
   sorry
 ```
 
@@ -367,8 +378,10 @@ example {R M N : Type*} [Ring R]
 example {R M N : Type*} [Ring R]
     [AddCommGroup M] [Module R M] [IsSimpleModule R M]
     [AddCommGroup N] [Module R N] [IsSimpleModule R N]
-    (f : M →ₗ[R] N) (hf : f ≠ 0) : Function.Bijective f :=
-  (LinearMap.bijective_or_eq_zero f).resolve_right hf
+    (f : M →ₗ[R] N) (hf : f ≠ 0) : Nonempty (M ≃ₗ[R] N) := by
+  -- Schur makes f bijective, then `ofBijective` promotes it to an equiv.
+  have hbij := (LinearMap.bijective_or_eq_zero f).resolve_right hf
+  exact ⟨LinearEquiv.ofBijective f hbij⟩
 ```
 :::
 
@@ -387,18 +400,34 @@ example {R : Type u} [Ring R] :
   isSemisimpleRing_iff_pi_matrix_divisionRing
 ```
 
-Each summand $`\operatorname{Mat}_{d_i}(k)` of the classification is already semisimple on its own; show that a matrix ring over a field is a semisimple ring.
+Each summand $`\operatorname{Mat}_{d_i}(k)` of the classification is already semisimple on its own: a matrix ring over a field is a semisimple ring.
 
 ```lean
 example (k : Type*) [Field k] (n : ℕ) :
-    IsSemisimpleRing (Matrix (Fin n) (Fin n) k) := by
+    IsSemisimpleRing (Matrix (Fin n) (Fin n) k) := inferInstance
+```
+
+The point of "semisimple" is complete reducibility: the regular representation is the sum of its irreducible subrepresentations.
+Prove exactly this for the matrix ring — the supremum of its simple submodules is everything.
+Being a semisimple ring means being semisimple *as a module over itself*, so the classification lemma `IsSemisimpleModule.sSup_simples_eq_top` (which says a semisimple module is the join of its simple submodules) applies with the regular module.
+
+```lean
+example (k : Type*) [Field k] (n : ℕ) :
+    sSup {m : Submodule (Matrix (Fin n) (Fin n) k)
+        (Matrix (Fin n) (Fin n) k) |
+      IsSimpleModule (Matrix (Fin n) (Fin n) k) m} = ⊤ := by
   sorry
 ```
 
 :::solution
 ```lean
 example (k : Type*) [Field k] (n : ℕ) :
-    IsSemisimpleRing (Matrix (Fin n) (Fin n) k) := inferInstance
+    sSup {m : Submodule (Matrix (Fin n) (Fin n) k)
+        (Matrix (Fin n) (Fin n) k) |
+      IsSimpleModule (Matrix (Fin n) (Fin n) k) m} = ⊤ := by
+  -- The matrix ring is semisimple as a module over itself, so it is the
+  -- join of its simple (irreducible) submodules.
+  exact IsSemisimpleModule.sSup_simples_eq_top _ _
 ```
 :::
 
@@ -414,13 +443,28 @@ example {k G : Type*} [Field k] [Group G] [Finite G] [NeZero (Nat.card G : k)] :
     IsSemisimpleRing (MonoidAlgebra k G) := inferInstance
 ```
 
-The exercise above asked you to build the supplementary $`G`-invariant subspace $`W'` with $`V = W \oplus W'` out of the averaged projection $`P`; here is that upshot as an exercise, that every subrepresentation has an invariant complement.
+The upshot of the averaging argument is that every subrepresentation has an invariant complement, packaged as `ComplementedLattice.exists_isCompl`.
 
 ```lean
-example {k G V : Type*} [Field k] [Group G] [Finite G] [NeZero (Nat.card G : k)]
+example {k G V : Type*} [Field k] [Group G] [Finite G]
+    [NeZero (Nat.card G : k)]
     [AddCommGroup V] [Module (MonoidAlgebra k G) V]
     (p : Submodule (MonoidAlgebra k G) V) :
-    ∃ q : Submodule (MonoidAlgebra k G) V, IsCompl p q := by
+    ∃ q : Submodule (MonoidAlgebra k G) V, IsCompl p q :=
+  ComplementedLattice.exists_isCompl p
+```
+
+An invariant complement is exactly the decomposition $`V = W \oplus W'` the section built out of the averaged projection $`P`.
+Unpack it: produce a complement $`q` for which $`p \sqcup q = \top` (together they span $`V`) and $`p` and $`q` are disjoint (their intersection is trivial).
+Grab the complement with `obtain`, then read the two halves off the `IsCompl` witness through its `sup_eq_top` and `disjoint` fields.
+
+```lean
+example {k G V : Type*} [Field k] [Group G] [Finite G]
+    [NeZero (Nat.card G : k)]
+    [AddCommGroup V] [Module (MonoidAlgebra k G) V]
+    (p : Submodule (MonoidAlgebra k G) V) :
+    ∃ q : Submodule (MonoidAlgebra k G) V,
+      p ⊔ q = ⊤ ∧ Disjoint p q := by
   sorry
 ```
 
@@ -430,7 +474,11 @@ example {k G V : Type*} [Field k] [Group G] [Finite G]
     [NeZero (Nat.card G : k)]
     [AddCommGroup V] [Module (MonoidAlgebra k G) V]
     (p : Submodule (MonoidAlgebra k G) V) :
-    ∃ q : Submodule (MonoidAlgebra k G) V, IsCompl p q :=
-  ComplementedLattice.exists_isCompl p
+    ∃ q : Submodule (MonoidAlgebra k G) V,
+      p ⊔ q = ⊤ ∧ Disjoint p q := by
+  -- Take the invariant complement, then read V = W ⊕ W' off the IsCompl
+  -- witness as the pair (spanning) sup_eq_top and (independence) disjoint.
+  obtain ⟨q, h⟩ := ComplementedLattice.exists_isCompl p
+  exact ⟨q, h.sup_eq_top, h.disjoint⟩
 ```
 :::

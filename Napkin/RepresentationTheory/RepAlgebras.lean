@@ -495,20 +495,34 @@ example (A B : Type*) [Ring A] [Ring B] : (1 : A × B) = (1, 1) := rfl
 ```
 
 The question of when $`k[G]` is commutative has the answer "exactly when $`G` is abelian".
-Prove the forward direction: a commutative group yields a commutative group algebra.
-The honest answer is `inferInstance`: Mathlib already registers `MonoidAlgebra.commRing` whenever the coefficients form a commutative ring and the group is abelian, which is exactly the `[CommGroup G]` hypothesis here.
+For the forward direction Mathlib already registers `MonoidAlgebra.commRing` whenever the coefficients form a commutative ring and the group is abelian, which is exactly the `[CommGroup G]` hypothesis here, so `inferInstance` hands back the whole commutative structure.
 That ring structure is `noncomputable`, so the example is marked accordingly --- without the marker even `inferInstance` is rejected.
 
 ```lean
 noncomputable example (k G : Type*) [CommRing k] [CommGroup G] :
-    CommRing (MonoidAlgebra k G) := by
+    CommRing (MonoidAlgebra k G) := inferInstance
+```
+
+See *why* that commutativity holds, one basis element at a time.
+Two basis elements multiply by `MonoidAlgebra.single_mul_single`, which multiplies the group labels and the coefficients separately; commuting each of those two products (`mul_comm` in $`G` and in $`k`) then swaps the factors back.
+
+```lean
+example (k G : Type*) [CommRing k] [CommGroup G] (a b : G) (r s : k) :
+    (MonoidAlgebra.single a r * MonoidAlgebra.single b s
+      : MonoidAlgebra k G)
+      = MonoidAlgebra.single b s * MonoidAlgebra.single a r := by
   sorry
 ```
 
 :::solution
 ```lean
-noncomputable example (k G : Type*) [CommRing k] [CommGroup G] :
-    CommRing (MonoidAlgebra k G) := inferInstance
+example (k G : Type*) [CommRing k] [CommGroup G] (a b : G) (r s : k) :
+    (MonoidAlgebra.single a r * MonoidAlgebra.single b s
+      : MonoidAlgebra k G)
+      = MonoidAlgebra.single b s * MonoidAlgebra.single a r := by
+  -- Each product multiplies labels and coefficients; commute both.
+  rw [MonoidAlgebra.single_mul_single, MonoidAlgebra.single_mul_single,
+    mul_comm a b, mul_comm r s]
 ```
 :::
 
@@ -533,18 +547,28 @@ example (A : Type*) [Ring A] : Module A A := inferInstance
 ```
 
 The action axioms are precisely the module axioms.
-As one instance, prove the axiom $`1_A \cdot v = v` from the definition of a representation; it is the module law `one_smul`, applied as `one_smul A v`.
+The axiom $`1_A \cdot v = v`, for instance, is the module law `one_smul`, applied as `one_smul A v`.
 
 ```lean
 example (A V : Type*) [Ring A] [AddCommGroup V] [Module A V] (v : V) :
-    (1 : A) • v = v := by
+    (1 : A) • v = v := one_smul A v
+```
+
+Assemble a small consequence that leans on this axiom.
+Show $`(1_A - a) \cdot v = v - a \cdot v`: distributing the action over the difference is `sub_smul`, after which the leading term collapses by `one_smul` above.
+
+```lean
+example (A V : Type*) [Ring A] [AddCommGroup V] [Module A V]
+    (a : A) (v : V) : (1 - a) • v = v - a • v := by
   sorry
 ```
 
 :::solution
 ```lean
-example (A V : Type*) [Ring A] [AddCommGroup V] [Module A V] (v : V) :
-    (1 : A) • v = v := one_smul A v
+example (A V : Type*) [Ring A] [AddCommGroup V] [Module A V]
+    (a : A) (v : V) : (1 - a) • v = v - a • v := by
+  -- Distribute over the subtraction, then 1 • v = v cleans up.
+  rw [sub_smul, one_smul]
 ```
 :::
 
@@ -648,7 +672,17 @@ example (A V W : Type*) [Ring A] [AddCommGroup V] [Module A V]
 ```
 
 Schur's lemma then follows: a nonzero intertwining operator out of an irreducible representation is injective, because its kernel --- a subrepresentation of a simple module --- must be zero.
-Mathlib packages exactly this as `LinearMap.injective_of_ne_zero`, so the finisher is `LinearMap.injective_of_ne_zero hT`; its own proof rewrites the kernel with `LinearMap.ker_eq_bot` and appeals to `eq_bot_or_eq_top` on the simple module's two submodules.
+Mathlib packages exactly this as `LinearMap.injective_of_ne_zero`.
+
+```lean
+example (A V W : Type*) [Ring A] [AddCommGroup V] [Module A V]
+    [AddCommGroup W] [Module A W] [IsSimpleModule A V]
+    (T : V →ₗ[A] W) (hT : T ≠ 0) : Function.Injective T :=
+  LinearMap.injective_of_ne_zero hT
+```
+
+Run the argument behind that lemma yourself, to see where irreducibility enters.
+Injectivity is $`\ker T = \{0\}` (`LinearMap.ker_eq_bot`), and $`\ker T` is a subrepresentation of the simple module $`V`, so by `eq_bot_or_eq_top` it is either $`\{0\}` or all of $`V`; the latter would force $`T = 0` (`LinearMap.ker_eq_top`), contradicting `hT`.
 
 ```lean
 example (A V W : Type*) [Ring A] [AddCommGroup V] [Module A V]
@@ -661,8 +695,12 @@ example (A V W : Type*) [Ring A] [AddCommGroup V] [Module A V]
 ```lean
 example (A V W : Type*) [Ring A] [AddCommGroup V] [Module A V]
     [AddCommGroup W] [Module A W] [IsSimpleModule A V]
-    (T : V →ₗ[A] W) (hT : T ≠ 0) : Function.Injective T :=
-  LinearMap.injective_of_ne_zero hT
+    (T : V →ₗ[A] W) (hT : T ≠ 0) : Function.Injective T := by
+  -- ker T is ⊥ or ⊤; ⊤ would make T zero, so ker T = ⊥.
+  rw [← LinearMap.ker_eq_bot]
+  rcases eq_bot_or_eq_top (LinearMap.ker T) with h | h
+  · exact h
+  · exact absurd (LinearMap.ker_eq_top.mp h) hT
 ```
 :::
 
