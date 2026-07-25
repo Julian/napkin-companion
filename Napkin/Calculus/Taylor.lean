@@ -371,18 +371,30 @@ Mathlib keeps the distinction between formal series and functions precise: the f
 The "function = sum of its series" view is recovered via `HasFPowerSeriesOnBall.hasSum_sub`, or just plain `HasSum`.
 
 The prototype geometric series $`\frac{1}{1 - z} = 1 + z + z^2 + \cdots` converges to $`(1 - z)^{-1}` for $`|z| < 1`.
-Prove the real case: for $`|r| < 1`, the series $`\sum_n r^n` sums to $`(1 - r)^{-1}`.
+For $`|r| < 1`, the real series $`\sum_n r^n` sums to $`(1 - r)^{-1}`, which is `hasSum_geometric_of_abs_lt_one`.
 
 ```lean
-example (r : ℝ) (h : |r| < 1) : HasSum (fun n : ℕ => r ^ n) (1 - r)⁻¹ := by
+example (r : ℝ) (h : |r| < 1) :
+    HasSum (fun n : ℕ => r ^ n) (1 - r)⁻¹ :=
+  hasSum_geometric_of_abs_lt_one h
+```
+
+Knowing the series converges lets us read off the *value* of the sum.
+Evaluate a concrete instance: $`\sum_n (1/2)^n = 2`.
+The `HasSum` above pins the sum down, and `HasSum.tsum_eq` turns it into the `tsum`, leaving only an arithmetic check.
+
+```lean
+example : ∑' n : ℕ, (1 / 2 : ℝ) ^ n = 2 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (r : ℝ) (h : |r| < 1) :
-    HasSum (fun n : ℕ => r ^ n) (1 - r)⁻¹ :=
-  hasSum_geometric_of_abs_lt_one h
+example : ∑' n : ℕ, (1 / 2 : ℝ) ^ n = 2 := by
+  -- The geometric series has a `HasSum`; `.tsum_eq` reads off its value.
+  have h : |(1 / 2 : ℝ)| < 1 := by norm_num
+  rw [(hasSum_geometric_of_abs_lt_one h).tsum_eq]
+  norm_num
 ```
 :::
 
@@ -394,19 +406,31 @@ The smoothness conclusion is exactly the `ContDiff ℝ ⊤` we met at the end of
 The identity $`a_n = \frac{f^{(n)}(0)}{n!}` for the coefficients is `HasFPowerSeriesOnBall.factorial_smul` (and its scalar specialization for $`E = F = \mathbb{R}`): the $`n`th coefficient scaled by $`n!` recovers `iteratedFDeriv n f`.
 
 Term by term, the derivative of $`\sum a_n x^n` is $`\sum n a_n x^{n-1}`; the single-monomial case is `hasDerivAt_pow`.
-Prove that $`x \mapsto x^n` has derivative $`n x^{n-1}`.
 
 ```lean
 example (n : ℕ) (x : ℝ) :
-    HasDerivAt (fun x : ℝ => x ^ n) (n * x ^ (n - 1)) x := by
+    HasDerivAt (fun x : ℝ => x ^ n) (n * x ^ (n - 1)) x :=
+  hasDerivAt_pow n x
+```
+
+"Term by term" means the derivative of a sum is the sum of the derivatives.
+Prove the two-monomial case: $`x \mapsto x^n + x^m` has derivative $`n x^{n-1} + m x^{m-1}`.
+Differentiate each power with `hasDerivAt_pow`, then combine them with `HasDerivAt.add`.
+
+```lean
+example (n m : ℕ) (x : ℝ) :
+    HasDerivAt (fun x : ℝ => x ^ n + x ^ m)
+      (n * x ^ (n - 1) + m * x ^ (m - 1)) x := by
   sorry
 ```
 
 :::solution
 ```lean
-example (n : ℕ) (x : ℝ) :
-    HasDerivAt (fun x : ℝ => x ^ n) (n * x ^ (n - 1)) x :=
-  hasDerivAt_pow n x
+example (n m : ℕ) (x : ℝ) :
+    HasDerivAt (fun x : ℝ => x ^ n + x ^ m)
+      (n * x ^ (n - 1) + m * x ^ (m - 1)) x :=
+  -- Differentiate each monomial, then add the two derivatives.
+  (hasDerivAt_pow n x).add (hasDerivAt_pow m x)
 ```
 :::
 
@@ -430,20 +454,32 @@ The "analytic at one point implies analytic on an interval" propagation is `HasF
 
 The closure properties are `AnalyticAt.add`, `AnalyticAt.mul`, `AnalyticAt.comp`, `AnalyticAt.inv` (with a nonzero hypothesis) — same naming convention as for `HasDerivAt`.
 
-The question asked you to show an analytic function is smooth.
-Prove that if $`f` is analytic at $`p`, it is $`C^n` there for any $`n`.
+The question asked you to show an analytic function is smooth; if $`f` is analytic at $`p`, it is $`C^n` there for any $`n`, via `AnalyticAt.contDiffAt`.
 
 ```lean
-example (f : ℝ → ℝ) (p : ℝ) (n : WithTop ℕ∞) (h : AnalyticAt ℝ f p) :
-    ContDiffAt ℝ n f p := by
+example (f : ℝ → ℝ) (p : ℝ) (n : WithTop ℕ∞)
+    (h : AnalyticAt ℝ f p) : ContDiffAt ℝ n f p :=
+  h.contDiffAt
+```
+
+Combine that with a closure property.
+Prove that a *sum* of two functions analytic at $`p` is $`C^n` at $`p`.
+Analyticity is closed under addition (`AnalyticAt.add`), and analytic-at implies $`C^n`-at (`AnalyticAt.contDiffAt`); chain the two.
+
+```lean
+example (f g : ℝ → ℝ) (p : ℝ) (n : WithTop ℕ∞)
+    (hf : AnalyticAt ℝ f p) (hg : AnalyticAt ℝ g p) :
+    ContDiffAt ℝ n (fun x => f x + g x) p := by
   sorry
 ```
 
 :::solution
 ```lean
-example (f : ℝ → ℝ) (p : ℝ) (n : WithTop ℕ∞)
-    (h : AnalyticAt ℝ f p) : ContDiffAt ℝ n f p :=
-  h.contDiffAt
+example (f g : ℝ → ℝ) (p : ℝ) (n : WithTop ℕ∞)
+    (hf : AnalyticAt ℝ f p) (hg : AnalyticAt ℝ g p) :
+    ContDiffAt ℝ n (fun x => f x + g x) p :=
+  -- Sum stays analytic, and analytic-at gives C^n-at.
+  (hf.add hg).contDiffAt
 ```
 :::
 
@@ -461,18 +497,27 @@ On nonpositive reals Mathlib gives `Real.log` the junk value $`0`, the same way 
 
 `Real.rpow` realizes $`a^r = \exp(r \log a)`: `x ^ y = Real.exp (y * Real.log x)` for `0 < x` (and a few corner cases for `x = 0`, `x < 0`, integer exponents that match the obvious value).
 
-The question asked you to show that under this definition $`\exp' = \exp`; the term-by-term differentiation theorem, applied to the defining series, gives `Real.deriv_exp` in one line.
-Prove it.
+The question asked you to show that under this definition $`\exp' = \exp`; the term-by-term differentiation theorem, applied to the defining series, gives `Real.deriv_exp`.
 
 ```lean
-example : deriv Real.exp = Real.exp := by
+example : deriv Real.exp = Real.exp :=
+  Real.deriv_exp
+```
+
+Because $`\exp` is its own derivative, *every* derivative of $`\exp` is again $`\exp`.
+Prove it for the second derivative: $`\exp'' = \exp`.
+Rewrite with `Real.deriv_exp` twice — the inner `deriv Real.exp` becomes `Real.exp`, and then the outer one does too.
+
+```lean
+example : deriv (deriv Real.exp) = Real.exp := by
   sorry
 ```
 
 :::solution
 ```lean
-example : deriv Real.exp = Real.exp :=
-  Real.deriv_exp
+example : deriv (deriv Real.exp) = Real.exp := by
+  -- Each `deriv` applied to `exp` returns `exp`, so peel them off in turn.
+  rw [Real.deriv_exp, Real.deriv_exp]
 ```
 :::
 
@@ -484,18 +529,27 @@ This is exactly the payoff of Mathlib parameterizing over a normed field `𝕜`:
 The huge surprise that a differentiable complex function is analytic is `DifferentiableOn.analyticOnNhd` (with hypotheses for an open subset of `ℂ`); in the form for whole-`ℂ` functions it's `Complex.analyticOnNhd_univ_iff_differentiable`.
 The proof rests on Cauchy's integral formula, which requires the complex-analysis machinery in `Mathlib.Analysis.Complex.CauchyIntegral`.
 
-The complex exponential has infinite radius of convergence, so it is analytic everywhere.
-Prove that $`\exp \colon \mathbb{C} \to \mathbb{C}` is analytic at every point $`z`.
+The complex exponential has infinite radius of convergence, so it is analytic at every point $`z`, which is `analyticAt_cexp`.
 
 ```lean
-example (z : ℂ) : AnalyticAt ℂ Complex.exp z := by
+example (z : ℂ) : AnalyticAt ℂ Complex.exp z :=
+  analyticAt_cexp
+```
+
+Analyticity is also closed under composition.
+Prove that $`z \mapsto \exp(\exp z)` is analytic at every point.
+The composite is `Complex.exp ∘ Complex.exp`; feed the analyticity of the outer and inner copies to `AnalyticAt.comp` (the outer one is analytic at the intermediate point $`\exp z` precisely because $`\exp` is analytic *everywhere*).
+
+```lean
+example (z : ℂ) : AnalyticAt ℂ (Complex.exp ∘ Complex.exp) z := by
   sorry
 ```
 
 :::solution
 ```lean
-example (z : ℂ) : AnalyticAt ℂ Complex.exp z :=
-  analyticAt_cexp
+example (z : ℂ) : AnalyticAt ℂ (Complex.exp ∘ Complex.exp) z :=
+  -- Both copies of exp are analytic everywhere, so the composite is too.
+  analyticAt_cexp.comp analyticAt_cexp
 ```
 :::
 
@@ -505,19 +559,31 @@ example (z : ℂ) : AnalyticAt ℂ Complex.exp z :=
 
 The Lagrange-form remainder is `taylor_mean_remainder_lagrange` in `Mathlib.Analysis.Calculus.Taylor` — it's a direct generalization of `exists_hasDerivAt_eq_slope` from the differentiation chapter, proved by repeated Rolle.
 
-The Euler-formula problem asked you to show $`\exp(i\theta) = \cos\theta + i\sin\theta`.
-Prove it.
+The Euler-formula problem asked you to show $`\exp(i\theta) = \cos\theta + i\sin\theta`, which is `Complex.exp_mul_I`.
 
 ```lean
 example (θ : ℝ) : Complex.exp (θ * Complex.I) =
-    Complex.cos θ + Complex.sin θ * Complex.I := by
+    Complex.cos θ + Complex.sin θ * Complex.I :=
+  Complex.exp_mul_I θ
+```
+
+Euler's formula is what turns the angle-addition laws for $`\sin` and $`\cos` into the single statement that $`\exp` sends a *sum* of angles to a *product*.
+Prove that underlying identity: $`\exp(i(\theta + \varphi)) = \exp(i\theta)\exp(i\varphi)`.
+Distribute the $`i` across the sum with `add_mul`, then split the exponential of a sum with `Complex.exp_add`.
+
+```lean
+example (θ φ : ℝ) :
+    Complex.exp (((θ : ℂ) + φ) * Complex.I) =
+      Complex.exp (θ * Complex.I) * Complex.exp (φ * Complex.I) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (θ : ℝ) : Complex.exp (θ * Complex.I) =
-    Complex.cos θ + Complex.sin θ * Complex.I :=
-  Complex.exp_mul_I θ
+example (θ φ : ℝ) :
+    Complex.exp (((θ : ℂ) + φ) * Complex.I) =
+      Complex.exp (θ * Complex.I) * Complex.exp (φ * Complex.I) := by
+  -- Expand (θ+φ)i = θi + φi, then exp turns the sum into a product.
+  rw [add_mul, Complex.exp_add]
 ```
 :::

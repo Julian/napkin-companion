@@ -573,19 +573,34 @@ example (C : Type*) [Category C] {X : C} (h : IsTerminal X) :
     IsInitial (Opposite.op X) := initialOpOfTerminal h
 ```
 
-Now repeat the proof for the dual: show that any two terminal objects are isomorphic.
+The dual statement — any two terminal objects are isomorphic — is `IsTerminal.uniqueUpToIso`.
 
 ```lean
 example (C : Type*) [Category C] {T₁ T₂ : C}
-    (h₁ : IsTerminal T₁) (h₂ : IsTerminal T₂) : T₁ ≅ T₂ := by
+    (h₁ : IsTerminal T₁) (h₂ : IsTerminal T₂) : T₁ ≅ T₂ :=
+  h₁.uniqueUpToIso h₂
+```
+
+But `uniqueUpToIso` is not magic; assemble the isomorphism yourself to see why it exists.
+An initial object supplies a canonical arrow to every object — `IsInitial.to` — and `IsInitial.hom_ext` records that any two arrows *out of* an initial object coincide.
+Build `I₁ ≅ I₂` by hand: the crossing arrows `h₁.to I₂` and `h₂.to I₁` serve as `hom` and `inv`, and each round-trip is an arrow out of an initial object, hence forced to be the identity by `hom_ext`.
+
+```lean
+example (C : Type*) [Category C] {I₁ I₂ : C}
+    (h₁ : IsInitial I₁) (h₂ : IsInitial I₂) : I₁ ≅ I₂ := by
   sorry
 ```
 
 :::solution
 ```lean
-example (C : Type*) [Category C] {T₁ T₂ : C}
-    (h₁ : IsTerminal T₁) (h₂ : IsTerminal T₂) : T₁ ≅ T₂ :=
-  h₁.uniqueUpToIso h₂
+example (C : Type*) [Category C] {I₁ I₂ : C}
+    (h₁ : IsInitial I₁) (h₂ : IsInitial I₂) : I₁ ≅ I₂ where
+  hom := h₁.to I₂
+  inv := h₂.to I₁
+  -- Each composite is an arrow out of an initial object, so `hom_ext`
+  -- pins it to the identity.
+  hom_inv_id := h₁.hom_ext _ _
+  inv_hom_id := h₂.hom_ext _ _
 ```
 :::
 
@@ -602,19 +617,31 @@ noncomputable example (C : Type*) [Category C] (X Y : C)
     [HasBinaryProduct X Y] : (X ⨯ Y) ⟶ Y := prod.snd
 ```
 
-One of the problems asks you to show products are associative up to isomorphism.
+One of the problems asks you to show products are associative up to isomorphism; `prod.associator` packages exactly this.
 
 ```lean
 noncomputable example (C : Type*) [Category C] [HasBinaryProducts C]
-    (X Y Z : C) : (X ⨯ Y) ⨯ Z ≅ X ⨯ (Y ⨯ Z) := by
+    (X Y Z : C) : (X ⨯ Y) ⨯ Z ≅ X ⨯ (Y ⨯ Z) :=
+  prod.associator X Y Z
+```
+
+Underneath such constructions is the universal property: a pair of arrows $`A \xrightarrow{f} X` and $`A \xrightarrow{g} Y` assembles into a single arrow $`A \to X \times Y`, namely `prod.lift f g`, and composing it back with the projections recovers the two pieces.
+Prove that defining property — `prod.lift_fst` and `prod.lift_snd` are the two halves — and hand back the conjunction.
+
+```lean
+noncomputable example (C : Type*) [Category C] {X Y A : C}
+    [HasBinaryProduct X Y] (f : A ⟶ X) (g : A ⟶ Y) :
+    prod.lift f g ≫ prod.fst = f ∧ prod.lift f g ≫ prod.snd = g := by
   sorry
 ```
 
 :::solution
 ```lean
-noncomputable example (C : Type*) [Category C] [HasBinaryProducts C]
-    (X Y Z : C) : (X ⨯ Y) ⨯ Z ≅ X ⨯ (Y ⨯ Z) :=
-  prod.associator X Y Z
+noncomputable example (C : Type*) [Category C] {X Y A : C}
+    [HasBinaryProduct X Y] (f : A ⟶ X) (g : A ⟶ Y) :
+    prod.lift f g ≫ prod.fst = f ∧ prod.lift f g ≫ prod.snd = g :=
+  -- The two projections recover the two arrows the lift was built from.
+  ⟨prod.lift_fst f g, prod.lift_snd f g⟩
 ```
 :::
 
@@ -630,7 +657,9 @@ example (C : Type*) [Category C] {X Y : C} (f : X ⟶ Y) [Mono f]
   (cancel_mono f).1 w
 ```
 
-The question asked you to show that the composition of two monic maps is monic.
+The question asked you to show that the composition of two monic maps is monic — Mathlib's one-liner is `mono_comp`.
+Prove it from the cancellation property instead, exercising the worked model above.
+To see `f ≫ g` is mono, take `p ≫ (f ≫ g) = q ≫ (f ≫ g)`, reassociate (`Category.assoc`) to expose the outer `g`, cancel it (`cancel_mono g`), then cancel the exposed `f` (`cancel_mono f`).
 
 ```lean
 example (C : Type*) [Category C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
@@ -641,6 +670,11 @@ example (C : Type*) [Category C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
 :::solution
 ```lean
 example (C : Type*) [Category C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [Mono f] [Mono g] : Mono (f ≫ g) := mono_comp f g
+    [Mono f] [Mono g] : Mono (f ≫ g) := by
+  -- Peel off g, then f: each cancels because it is mono.
+  constructor
+  intro W p q hpq
+  rw [← Category.assoc, ← Category.assoc] at hpq
+  exact (cancel_mono f).1 ((cancel_mono g).1 hpq)
 ```
 :::

@@ -401,20 +401,30 @@ example (C : Type*) [Category C] [HasZeroMorphisms C] {A B : C} (f : A ⟶ B)
   kernel.condition f
 ```
 
-Dually, $`f` composed with the projection to its cokernel vanishes.
-Prove it; `cokernel.condition` does the work.
+Dually, $`f` composed with the projection to its cokernel vanishes, `cokernel.condition`.
 
 ```lean
 example (C : Type*) [Category C] [HasZeroMorphisms C] {A B : C} (f : A ⟶ B)
-    [HasCokernel f] : f ≫ cokernel.π f = 0 := by
+    [HasCokernel f] : f ≫ cokernel.π f = 0 :=
+  cokernel.condition f
+```
+
+The point of that vanishing is stronger than it looks: not just $`f`, but *anything factoring through* $`f` dies in the cokernel.
+Prove that for any $`h \colon D \to A`, the composite $`(h \circ f) \circ \mathrm{coker}\, f` is zero.
+Reassociate with `Category.assoc` so the inner $`f \circ \mathrm{coker}\, f` appears, rewrite it away with `cokernel.condition`, and finish with `comp_zero`.
+
+```lean
+example (C : Type*) [Category C] [HasZeroMorphisms C] {A B D : C} (f : A ⟶ B)
+    (h : D ⟶ A) [HasCokernel f] : (h ≫ f) ≫ cokernel.π f = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (C : Type*) [Category C] [HasZeroMorphisms C] {A B : C} (f : A ⟶ B)
-    [HasCokernel f] : f ≫ cokernel.π f = 0 :=
-  cokernel.condition f
+example (C : Type*) [Category C] [HasZeroMorphisms C] {A B D : C} (f : A ⟶ B)
+    (h : D ⟶ A) [HasCokernel f] : (h ≫ f) ≫ cokernel.π f = 0 := by
+  -- Reassociate to expose f ≫ cokernel.π f, which is zero.
+  rw [Category.assoc, cokernel.condition, comp_zero]
 ```
 :::
 
@@ -431,20 +441,36 @@ example (C : Type*) [Category C] [Preadditive C] {A B D : C}
 ```
 
 The proposition above characterized isomorphisms as the maps that are both monic and epic.
-One half of that holds in every abelian category: a map that is monic and epic is an isomorphism.
-The lemma `isIso_of_mono_of_epi` does the work; prove it.
+One half of that holds in every abelian category: a map that is monic and epic is an isomorphism, `isIso_of_mono_of_epi`.
 
 ```lean
 example (C : Type*) [Category C] [Abelian C] {A B : C} (f : A ⟶ B)
-    [Mono f] [Epi f] : IsIso f := by
+    [Mono f] [Epi f] : IsIso f :=
+  isIso_of_mono_of_epi f
+```
+
+The other half is free — an isomorphism is always monic and epic — so in an abelian category the two conditions are in fact *equivalent*.
+Prove the full characterization: $`f` is an isomorphism $`\iff` $`f` is monic and epic.
+Split with `constructor`; the forward direction turns the `IsIso` hypothesis into an instance (`haveI`) and reads off both conditions by `inferInstance`, while the backward direction unpacks the pair and applies the worked model above.
+
+```lean
+example (C : Type*) [Category C] [Abelian C] {A B : C} (f : A ⟶ B) :
+    IsIso f ↔ (Mono f ∧ Epi f) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (C : Type*) [Category C] [Abelian C] {A B : C} (f : A ⟶ B)
-    [Mono f] [Epi f] : IsIso f :=
-  isIso_of_mono_of_epi f
+example (C : Type*) [Category C] [Abelian C] {A B : C} (f : A ⟶ B) :
+    IsIso f ↔ (Mono f ∧ Epi f) := by
+  constructor
+  · -- An iso is automatically both monic and epic.
+    intro h
+    haveI := h
+    exact ⟨inferInstance, inferInstance⟩
+  · -- The abelian-category converse: monic and epic ⟹ iso.
+    rintro ⟨_, _⟩
+    exact isIso_of_mono_of_epi f
 ```
 :::
 
@@ -460,20 +486,33 @@ example (C : Type*) [Category C] [HasZeroMorphisms C] (S : ShortComplex C) :
 ```
 
 The exercise above showed that $`0 \to A \to B` is exact exactly when $`A \to B` is monic.
-When the first map of a short complex is zero, exactness of the complex is precisely monicity of the second map.
-That equivalence is `ShortComplex.exact_iff_mono`, applied to `hf`.
+When the first map of a short complex is zero, exactness of the complex is precisely monicity of the second map — `ShortComplex.exact_iff_mono`, applied to `hf`.
 
 ```lean
 example (C : Type*) [Category C] [Abelian C] (S : ShortComplex C)
-    (hf : S.f = 0) : S.Exact ↔ Mono S.g := by
+    (hf : S.f = 0) : S.Exact ↔ Mono S.g :=
+  S.exact_iff_mono hf
+```
+
+Put that monicity to work.
+When such a complex is exact, its second map is monic, and monics are closed under composition — so postcomposing $`S.g` with any monic stays monic.
+From `hf` and exactness extract `Mono S.g` (the forward direction of the equivalence above), register it with `haveI`, and let `mono_comp` combine it with the given monic.
+
+```lean
+example (C : Type*) [Category C] [Abelian C] (S : ShortComplex C)
+    (hf : S.f = 0) (he : S.Exact) {D : C} (g' : S.X₃ ⟶ D) [Mono g'] :
+    Mono (S.g ≫ g') := by
   sorry
 ```
 
 :::solution
 ```lean
 example (C : Type*) [Category C] [Abelian C] (S : ShortComplex C)
-    (hf : S.f = 0) : S.Exact ↔ Mono S.g :=
-  S.exact_iff_mono hf
+    (hf : S.f = 0) (he : S.Exact) {D : C} (g' : S.X₃ ⟶ D) [Mono g'] :
+    Mono (S.g ≫ g') := by
+  -- Exactness with S.f = 0 makes S.g monic; monics compose.
+  haveI : Mono S.g := (S.exact_iff_mono hf).mp he
+  exact mono_comp S.g g'
 ```
 :::
 
@@ -537,22 +576,35 @@ example (C : Type*) [Category C] [Abelian C] {A B D : C} (f : A ⟶ B) (g : B �
   comp_apply f g a
 ```
 
-Every diagram chase relies on each map sending the zero pseudoelement to the zero pseudoelement.
-Prove it; `apply_zero` does the work.
+Every diagram chase relies on each map sending the zero pseudoelement to the zero pseudoelement, `apply_zero`.
 
 ```lean
 open CategoryTheory.Abelian.Pseudoelement in
 example (C : Type*) [Category C] [Abelian C] {A B : C} (f : A ⟶ B) :
-    pseudoApply f (0 : Abelian.Pseudoelement A) = 0 := by
+    pseudoApply f (0 : Abelian.Pseudoelement A) = 0 :=
+  apply_zero f
+```
+
+Chasing zero along a *composite* is the same principle applied twice.
+Prove that $`f` then $`g` sends the zero pseudoelement to zero.
+Rewrite the composite with `comp_apply` (the worked model further up) to split it into $`g` applied to $`f` applied to $`0`, then collapse each map in turn with `apply_zero`.
+
+```lean
+open CategoryTheory.Abelian.Pseudoelement in
+example (C : Type*) [Category C] [Abelian C] {A B D : C} (f : A ⟶ B)
+    (g : B ⟶ D) :
+    pseudoApply (f ≫ g) (0 : Abelian.Pseudoelement A) = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
 open CategoryTheory.Abelian.Pseudoelement in
-example (C : Type*) [Category C] [Abelian C] {A B : C} (f : A ⟶ B) :
-    pseudoApply f (0 : Abelian.Pseudoelement A) = 0 :=
-  apply_zero f
+example (C : Type*) [Category C] [Abelian C] {A B D : C} (f : A ⟶ B)
+    (g : B ⟶ D) :
+    pseudoApply (f ≫ g) (0 : Abelian.Pseudoelement A) = 0 := by
+  -- Split the composite, then send zero through each map.
+  rw [Abelian.Pseudoelement.comp_apply, apply_zero, apply_zero]
 ```
 :::
 
@@ -566,19 +618,31 @@ example (C : Type*) [Category C] [Preadditive C] {S : ShortComplex C}
     (hS : S.ShortExact) : Mono S.f := hS.mono_f
 ```
 
-Dually, the last map of a short exact sequence is epic.
-Prove it; `hS.epi_g` does the work.
+Dually, the last map of a short exact sequence is epic, `hS.epi_g`.
 
 ```lean
 example (C : Type*) [Category C] [Preadditive C] {S : ShortComplex C}
-    (hS : S.ShortExact) : Epi S.g := by
+    (hS : S.ShortExact) : Epi S.g :=
+  hS.epi_g
+```
+
+Being epic is exactly *right-cancellability*: because $`S.g` is epic, any two maps out of its target that agree after precomposition with $`S.g` are already equal.
+Register `hS.epi_g` as an instance with `haveI`, then apply the forward direction of `cancel_epi`.
+
+```lean
+example (C : Type*) [Category C] [Preadditive C] {S : ShortComplex C}
+    (hS : S.ShortExact) {D : C} (h h' : S.X₃ ⟶ D)
+    (w : S.g ≫ h = S.g ≫ h') : h = h' := by
   sorry
 ```
 
 :::solution
 ```lean
 example (C : Type*) [Category C] [Preadditive C] {S : ShortComplex C}
-    (hS : S.ShortExact) : Epi S.g :=
-  hS.epi_g
+    (hS : S.ShortExact) {D : C} (h h' : S.X₃ ⟶ D)
+    (w : S.g ≫ h = S.g ≫ h') : h = h' := by
+  -- S.g is epic, so it is right-cancellable.
+  haveI := hS.epi_g
+  exact (cancel_epi S.g).mp w
 ```
 :::

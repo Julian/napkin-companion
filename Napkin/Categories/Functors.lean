@@ -593,8 +593,16 @@ example (C : Type*) [Category C] : C ⥤ Cᵒᵖ ⥤ Type _ := yoneda
 example (C : Type*) [Category C] : Cᵒᵖ ⥤ C ⥤ Type _ := coyoneda
 ```
 
-Every functor $`F \colon \mathcal{A} \to \mathcal{B}` induces one on the opposite categories, $`\mathcal{A}^{\mathrm{op}} \to \mathcal{B}^{\mathrm{op}}`.
-Build it.
+Every functor $`F \colon \mathcal{A} \to \mathcal{B}` induces one on the opposite categories, $`\mathcal{A}^{\mathrm{op}} \to \mathcal{B}^{\mathrm{op}}`; Mathlib packages it as `Functor.op`.
+
+```lean
+example (C D : Type*) [Category C] [Category D] (F : C ⥤ D) :
+    Cᵒᵖ ⥤ Dᵒᵖ := F.op
+```
+
+Rather than take that packaging on faith, build the opposite functor by hand, so you see how reversing arrows works.
+On objects there is no choice: send `op X` to `op (F.obj X)`.
+On arrows, a morphism of `Cᵒᵖ` is `f.unop` running the other way in `C`; apply `F` to it and reverse again with `.op` (the identity and composition conditions are then routine, dispatched by `aesop_cat`).
 
 ```lean
 example (C D : Type*) [Category C] [Category D] (F : C ⥤ D) : Cᵒᵖ ⥤ Dᵒᵖ := by
@@ -604,7 +612,10 @@ example (C D : Type*) [Category C] [Category D] (F : C ⥤ D) : Cᵒᵖ ⥤ Dᵒ
 :::solution
 ```lean
 example (C D : Type*) [Category C] [Category D] (F : C ⥤ D) :
-    Cᵒᵖ ⥤ Dᵒᵖ := F.op
+    Cᵒᵖ ⥤ Dᵒᵖ where
+  -- Objects: op (F.obj X). Arrows: reverse, apply F, then reverse again.
+  obj X := Opposite.op (F.obj X.unop)
+  map f := (F.map f.unop).op
 ```
 :::
 
@@ -620,18 +631,29 @@ example (C D : Type*) [Category C] [Category D] (e : C ≌ D) : C ⥤ D := e.fun
 example (C D : Type*) [Category C] [Category D] (e : C ≌ D) : D ⥤ C := e.inverse
 ```
 
-Equivalence is a symmetric relation on categories: an equivalence $`\mathcal{A} \simeq \mathcal{B}` gives one $`\mathcal{B} \simeq \mathcal{A}`.
-Produce it.
+Equivalence is a symmetric relation on categories: an equivalence $`\mathcal{A} \simeq \mathcal{B}` gives one $`\mathcal{B} \simeq \mathcal{A}`, via `Equivalence.symm`.
 
 ```lean
-example (C D : Type*) [Category C] [Category D] (e : C ≌ D) : D ≌ C := by
+example (C D : Type*) [Category C] [Category D] (e : C ≌ D) : D ≌ C :=
+  e.symm
+```
+
+The cleaner criterion said an equivalence is in particular *essentially surjective*: every object of $`\mathcal{B}` is isomorphic to some $`F(A)`.
+Prove this directly from `e`.
+The witness is forced — the inverse's value $`G(Y)` is the only reasonable candidate — and the isomorphism $`F(G(Y)) \cong Y` is exactly a component of the counit natural isomorphism, `e.counitIso.app Y`.
+
+```lean
+example (C D : Type*) [Category C] [Category D] (e : C ≌ D) (Y : D) :
+    ∃ X, Nonempty (e.functor.obj X ≅ Y) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (C D : Type*) [Category C] [Category D] (e : C ≌ D) : D ≌ C :=
-  e.symm
+example (C D : Type*) [Category C] [Category D] (e : C ≌ D) (Y : D) :
+    ∃ X, Nonempty (e.functor.obj X ≅ Y) :=
+  -- G(Y) maps back to Y through the counit iso e.inverse ⋙ e.functor ≅ id.
+  ⟨e.inverse.obj Y, ⟨e.counitIso.app Y⟩⟩
 ```
 :::
 
@@ -646,21 +668,35 @@ example (C D : Type*) [Category C] [Category D] (F G : C ⥤ D)
     (α : F ⟶ G) (A : C) : F.obj A ⟶ G.obj A := α.app A
 ```
 
-The defining condition is the naturality square: for every arrow $`f \colon A_1 \to A_2` we have $`\alpha_{A_2} \circ F(f) = G(f) \circ \alpha_{A_1}`.
-Prove it holds.
+The defining condition is the naturality square: for every arrow $`f \colon A_1 \to A_2` we have $`\alpha_{A_2} \circ F(f) = G(f) \circ \alpha_{A_1}`, recorded as `NatTrans.naturality`.
 
 ```lean
 example (C D : Type*) [Category C] [Category D] (F G : C ⥤ D)
     (α : F ⟶ G) {A₁ A₂ : C} (f : A₁ ⟶ A₂) :
-    F.map f ≫ α.app A₂ = α.app A₁ ≫ G.map f := by
+    F.map f ≫ α.app A₂ = α.app A₁ ≫ G.map f := α.naturality f
+```
+
+Two natural transformations $`\alpha \colon F \to G` and $`\beta \colon G \to H` compose, and the point is that their componentwise composite is *again* natural — its naturality square is two of the above pasted side by side.
+Prove it for a single arrow `f`.
+Reassociate so the inner square is $`\alpha`'s, rewrite it with `α.naturality`, reassociate the other way to expose $`\beta`'s, and finish with `β.naturality` (`Category.assoc` does the regrouping).
+
+```lean
+example (C D : Type*) [Category C] [Category D] (F G H : C ⥤ D)
+    (α : F ⟶ G) (β : G ⟶ H) {A₁ A₂ : C} (f : A₁ ⟶ A₂) :
+    F.map f ≫ (α.app A₂ ≫ β.app A₂) =
+      (α.app A₁ ≫ β.app A₁) ≫ H.map f := by
   sorry
 ```
 
 :::solution
 ```lean
-example (C D : Type*) [Category C] [Category D] (F G : C ⥤ D)
-    (α : F ⟶ G) {A₁ A₂ : C} (f : A₁ ⟶ A₂) :
-    F.map f ≫ α.app A₂ = α.app A₁ ≫ G.map f := α.naturality f
+example (C D : Type*) [Category C] [Category D] (F G H : C ⥤ D)
+    (α : F ⟶ G) (β : G ⟶ H) {A₁ A₂ : C} (f : A₁ ⟶ A₂) :
+    F.map f ≫ (α.app A₂ ≫ β.app A₂) =
+      (α.app A₁ ≫ β.app A₁) ≫ H.map f := by
+  -- Paste α's naturality square onto β's, regrouping with associativity.
+  rw [← Category.assoc, α.naturality, Category.assoc, β.naturality,
+    ← Category.assoc]
 ```
 :::
 
@@ -674,19 +710,31 @@ example (C : Type*) [Category C] (X : C) (F : Cᵒᵖ ⥤ Type _) :
 ```
 
 Its most-quoted consequence is that $`H_\bullet` embeds $`\mathcal{A}` fully faithfully into the presheaf category — the Yoneda embedding, a category-theoretic Cayley theorem.
-One face of this: a fully faithful functor reflects isomorphisms, so if the Yoneda images of $`X` and $`Y` are isomorphic then $`X \cong Y`.
-Prove it.
+One face of this: a fully faithful functor reflects isomorphisms, so if the Yoneda images of $`X` and $`Y` are isomorphic then $`X \cong Y`, which is `Functor.preimageIso`.
+
+```lean
+noncomputable example (C : Type*) [Category C] (X Y : C)
+    (h : yoneda.obj X ≅ yoneda.obj Y) : X ≅ Y :=
+  yoneda.preimageIso h
+```
+
+*Fully faithful* also means *full*: that reflected isomorphism is not an accident but a genuine preimage, so pushing its forward map back through the embedding returns the original.
+Prove that `yoneda.map` applied to the reflected iso's `hom` recovers `h.hom`.
+Rewrite `(yoneda.preimageIso h).hom` into a `yoneda.preimage` with `Functor.preimageIso_hom`, then collapse `yoneda.map (yoneda.preimage _)` with `Functor.map_preimage`.
 
 ```lean
 example (C : Type*) [Category C] (X Y : C)
-    (h : yoneda.obj X ≅ yoneda.obj Y) : X ≅ Y := by
+    (h : yoneda.obj X ≅ yoneda.obj Y) :
+    yoneda.map (yoneda.preimageIso h).hom = h.hom := by
   sorry
 ```
 
 :::solution
 ```lean
-noncomputable example (C : Type*) [Category C] (X Y : C)
-    (h : yoneda.obj X ≅ yoneda.obj Y) : X ≅ Y :=
-  yoneda.preimageIso h
+example (C : Type*) [Category C] (X Y : C)
+    (h : yoneda.obj X ≅ yoneda.obj Y) :
+    yoneda.map (yoneda.preimageIso h).hom = h.hom := by
+  -- The forward map is a preimage; yoneda.map undoes preimage.
+  rw [Functor.preimageIso_hom, Functor.map_preimage]
 ```
 :::

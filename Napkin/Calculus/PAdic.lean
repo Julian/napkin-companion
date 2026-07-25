@@ -565,20 +565,31 @@ example (p : ℕ) [Fact p.Prime] (q r : ℚ_[p]) :
 ```
 
 The proposition also promised that equality holds when the two norms differ.
-Prove that if $`\|q\|_p \neq \|r\|_p` then $`\|q + r\|_p = \max\{\|q\|_p, \|r\|_p\}`.
-This "all triangles are isosceles" strengthening is `IsUltrametricDist.norm_add_eq_max_of_norm_ne_norm` (the additive twin, via `to_additive`, of the ultrametric norm-of-product lemma), and it consumes the hypothesis `h` directly — the whole proof is `exact IsUltrametricDist.norm_add_eq_max_of_norm_ne_norm h`.
+When $`\|q\|_p \neq \|r\|_p` the strong inequality is in fact an equality, $`\|q + r\|_p = \max\{\|q\|_p, \|r\|_p\}`; this "all triangles are isosceles" strengthening is `IsUltrametricDist.norm_add_eq_max_of_norm_ne_norm` (the additive twin, via `to_additive`, of the ultrametric norm-of-product lemma), consuming the hypothesis directly.
 
 ```lean
 example (p : ℕ) [Fact p.Prime] (q r : ℚ_[p]) (h : ‖q‖ ≠ ‖r‖) :
-    ‖q + r‖ = max ‖q‖ ‖r‖ := by
+    ‖q + r‖ = max ‖q‖ ‖r‖ :=
+  IsUltrametricDist.norm_add_eq_max_of_norm_ne_norm h
+```
+
+Put the isosceles principle to work: when one term is *strictly* smaller in norm it drops out entirely, and $`\|q + r\|_p = \|r\|_p`.
+Prove it by feeding the equality above the inequality `ne_of_lt h`, which rewrites the goal to `max ‖q‖ ‖r‖ = ‖r‖`; since $`\|q\|_p \leq \|r\|_p`, `max_eq_right` then collapses the maximum to the larger norm.
+
+```lean
+example (p : ℕ) [Fact p.Prime] (q r : ℚ_[p]) (h : ‖q‖ < ‖r‖) :
+    ‖q + r‖ = ‖r‖ := by
   sorry
 ```
 
 :::solution
 ```lean
-example (p : ℕ) [Fact p.Prime] (q r : ℚ_[p]) (h : ‖q‖ ≠ ‖r‖) :
-    ‖q + r‖ = max ‖q‖ ‖r‖ := by
-  exact IsUltrametricDist.norm_add_eq_max_of_norm_ne_norm h
+example (p : ℕ) [Fact p.Prime] (q r : ℚ_[p]) (h : ‖q‖ < ‖r‖) :
+    ‖q + r‖ = ‖r‖ := by
+  -- The isosceles equality turns the goal into a max; the smaller
+  -- norm drops out.
+  rw [IsUltrametricDist.norm_add_eq_max_of_norm_ne_norm (ne_of_lt h)]
+  exact max_eq_right (le_of_lt h)
 ```
 :::
 
@@ -591,35 +602,65 @@ This is exactly `NonarchimedeanAddGroup.summable_iff_tendsto_cofinite_zero`, whi
 ```lean
 open Filter Topology in
 example (p : ℕ) [Fact p.Prime] (f : ℕ → ℚ_[p]) :
-    Summable f ↔ Tendsto f cofinite (𝓝 0) := by
+    Summable f ↔ Tendsto f cofinite (𝓝 0) :=
+  NonarchimedeanAddGroup.summable_iff_tendsto_cofinite_zero f
+```
+
+Put the criterion to work.
+Over $`\mathbb{R}` you would reach for a comparison test, but here it is enough that the terms shrink: prove that $`\sum_n x^n` is summable whenever $`\|x\|_p < 1`.
+Rewrite the goal with the criterion, then `Nat.cofinite_eq_atTop` turns the cofinite filter on `ℕ` into `atTop`, leaving exactly `tendsto_pow_atTop_nhds_zero_of_norm_lt_one`.
+
+```lean
+open Filter Topology in
+example (p : ℕ) [Fact p.Prime] (x : ℚ_[p]) (h : ‖x‖ < 1) :
+    Summable (fun n : ℕ => x ^ n) := by
   sorry
 ```
 
 :::solution
 ```lean
 open Filter Topology in
-example (p : ℕ) [Fact p.Prime] (f : ℕ → ℚ_[p]) :
-    Summable f ↔ Tendsto f cofinite (𝓝 0) := by
-  exact NonarchimedeanAddGroup.summable_iff_tendsto_cofinite_zero f
+example (p : ℕ) [Fact p.Prime] (x : ℚ_[p]) (h : ‖x‖ < 1) :
+    Summable (fun n : ℕ => x ^ n) := by
+  -- Terms tending to 0 suffices; on ℕ the cofinite filter is atTop.
+  rw [NonarchimedeanAddGroup.summable_iff_tendsto_cofinite_zero,
+      Nat.cofinite_eq_atTop]
+  exact tendsto_pow_atTop_nhds_zero_of_norm_lt_one h
 ```
 :::
 
 ## More fun with geometric series
 
 The geometric series formula holds verbatim in $`\mathbb{Q}_p`: for $`\|x\|_p < 1`, the sum $`\sum_{n \geq 0} x^n` converges to $`\frac{1}{1 - x}`.
-Because $`\mathbb{Q}_p` is a complete normed field, Mathlib's general `tsum_geometric_of_norm_lt_one` applies with the norm hypothesis `h` unchanged — there is no $`p`-adic-specific input, and `exact tsum_geometric_of_norm_lt_one h` finishes.
+Because $`\mathbb{Q}_p` is a complete normed field, Mathlib's general `tsum_geometric_of_norm_lt_one` applies with the norm hypothesis `h` unchanged — there is no $`p`-adic-specific input.
 
 ```lean
 example (p : ℕ) [Fact p.Prime] (x : ℚ_[p]) (h : ‖x‖ < 1) :
-    ∑' n : ℕ, x ^ n = (1 - x)⁻¹ := by
+    ∑' n : ℕ, x ^ n = (1 - x)⁻¹ :=
+  tsum_geometric_of_norm_lt_one h
+```
+
+The formula says the sum *is* the inverse of $`1 - x`; verify it directly by clearing the denominator, proving $`(1 - x)\sum_n x^n = 1`.
+Rewrite the sum with the formula above, then observe that $`\|x\|_p < 1` forces $`x \neq 1` (otherwise $`\|x\|_p = \|1\|_p = 1`), so $`1 - x` is nonzero and `mul_inv_cancel₀` cancels it against its inverse.
+
+```lean
+example (p : ℕ) [Fact p.Prime] (x : ℚ_[p]) (h : ‖x‖ < 1) :
+    (1 - x) * ∑' n : ℕ, x ^ n = 1 := by
   sorry
 ```
 
 :::solution
 ```lean
 example (p : ℕ) [Fact p.Prime] (x : ℚ_[p]) (h : ‖x‖ < 1) :
-    ∑' n : ℕ, x ^ n = (1 - x)⁻¹ := by
-  exact tsum_geometric_of_norm_lt_one h
+    (1 - x) * ∑' n : ℕ, x ^ n = 1 := by
+  rw [tsum_geometric_of_norm_lt_one h]
+  -- ‖x‖ < 1 forces x ≠ 1, so 1 - x is nonzero and cancels its inverse.
+  have hx : (1 : ℚ_[p]) - x ≠ 0 := by
+    intro hc
+    rw [sub_eq_zero] at hc
+    rw [← hc, norm_one] at h
+    exact lt_irrefl 1 h
+  exact mul_inv_cancel₀ hx
 ```
 :::
 
