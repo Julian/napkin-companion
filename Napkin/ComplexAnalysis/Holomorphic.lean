@@ -589,17 +589,28 @@ example : Differentiable ℂ Complex.exp := Complex.differentiable_exp
 ```
 
 The first bullet of the examples box claimed that any polynomial is holomorphic.
-Confirm it for a concrete one by chaining the closure properties (`fun_prop` will discharge it).
+For a concrete one, chaining the closure properties works; `fun_prop` will discharge it.
 
 ```lean
 example : Differentiable ℂ (fun z : ℂ => z ^ 3 + 2 * z + 1) := by
+  fun_prop
+```
+
+The point of the closure properties is that they *compose* by hand, without any automation.
+Given two holomorphic functions $`f` and $`g`, assemble the holomorphicity of $`z \mapsto f(z) g(z) + f(z)` from `Differentiable.mul` and `Differentiable.add` directly.
+
+```lean
+example (f g : ℂ → ℂ) (hf : Differentiable ℂ f) (hg : Differentiable ℂ g) :
+    Differentiable ℂ (fun z => f z * g z + f z) := by
   sorry
 ```
 
 :::solution
 ```lean
-example : Differentiable ℂ (fun z : ℂ => z ^ 3 + 2 * z + 1) := by
-  fun_prop
+example (f g : ℂ → ℂ) (hf : Differentiable ℂ f) (hg : Differentiable ℂ g) :
+    Differentiable ℂ (fun z => f z * g z + f z) := by
+  -- The product is holomorphic, and so is its sum with f.
+  exact (hf.mul hg).add hf
 ```
 :::
 
@@ -617,18 +628,30 @@ The computation $`\oint_\gamma z^m \; dz` is `circleIntegral.integral_sub_inv_of
 Prove the headline instance: around the unit circle, $`\oint_\gamma z^{-1} \; dz = 2\pi i`.
 
 The finisher is `circleIntegral.integral_sub_center_inv`, whose statement is `(∮ z in C(c, R), (z - c)⁻¹) = 2 * π * I`.
-The subtlety is that the integrand it wants is `(z - c)⁻¹` with the *same* `c` that names the circle's center — which is exactly why the exercise is phrased with `(z - (0 : ℂ))⁻¹` rather than a bare `z⁻¹`, so that its center `0` lines up with the circle's center `0`.
-Its only hypothesis is `R ≠ 0`, so the first move is `exact circleIntegral.integral_sub_center_inv 0 ?_`, leaving `(1 : ℝ) ≠ 0` to discharge with `norm_num`.
+The subtlety is that the integrand it wants is `(z - c)⁻¹` with the *same* `c` that names the circle's center — which is exactly why it is phrased with `(z - (0 : ℂ))⁻¹` rather than a bare `z⁻¹`, so that its center `0` lines up with the circle's center `0`.
+Its only hypothesis is `R ≠ 0`, so it is `circleIntegral.integral_sub_center_inv 0 (by norm_num)`, the `norm_num` discharging `(1 : ℝ) ≠ 0`.
 
 ```lean
 example : (∮ z in C((0 : ℂ), 1), (z - (0 : ℂ))⁻¹) = 2 * Real.pi * Complex.I :=
-  by sorry
+  circleIntegral.integral_sub_center_inv 0 (by norm_num)
+```
+
+The contour integral is *linear*, so a constant multiple of the integrand pulls straight out — that is `circleIntegral.integral_const_mul`.
+Combine it with the headline computation above to evaluate $`\oint_\gamma \frac{3}{z} \; dz` around the unit circle: pull the `3` out first, then finish with `integral_sub_center_inv`.
+
+```lean
+example : (∮ z in C((0 : ℂ), 1), 3 * (z - (0 : ℂ))⁻¹) =
+    3 * (2 * Real.pi * Complex.I) := by
+  sorry
 ```
 
 :::solution
 ```lean
-example : (∮ z in C((0 : ℂ), 1), (z - (0 : ℂ))⁻¹) = 2 * Real.pi * Complex.I :=
-  circleIntegral.integral_sub_center_inv 0 (by norm_num)
+example : (∮ z in C((0 : ℂ), 1), 3 * (z - (0 : ℂ))⁻¹) =
+    3 * (2 * Real.pi * Complex.I) := by
+  -- Pull the constant out by linearity, then apply the headline value.
+  rw [circleIntegral.integral_const_mul,
+    circleIntegral.integral_sub_center_inv 0 (by norm_num)]
 ```
 :::
 
@@ -636,19 +659,28 @@ example : (∮ z in C((0 : ℂ), 1), (z - (0 : ℂ))⁻¹) = 2 * Real.pi * Compl
 
 `circleIntegral_eq_zero_of_differentiable_on_off_countable` is the closest raw lemma, but it asks for continuity on the closed disk plus differentiability off a countable set, which is fiddly to feed by hand.
 Mathlib packages the clean statement as `DiffContOnCl.circleIntegral_eq_zero`: if `f` is differentiable on the open ball and continuous up to its closure — the `DiffContOnCl ℂ f (Metric.ball c R)` bundle — then `∮ z in C(c, R), f z = 0` for `0 ≤ R`.
-An entire $`f` satisfies that bundle everywhere, and `Differentiable.diffContOnCl` produces it for any set, so the whole proof is `hf.diffContOnCl.circleIntegral_eq_zero hR` — start by writing `exact hf.diffContOnCl.circleIntegral_eq_zero hR` and let unification pick the ball.
+An entire $`f` satisfies that bundle everywhere, and `Differentiable.diffContOnCl` produces it for any set, so the whole proof is `hf.diffContOnCl.circleIntegral_eq_zero hR`, letting unification pick the ball.
 
 ```lean
 example (f : ℂ → ℂ) (hf : Differentiable ℂ f) (c : ℂ) (R : ℝ) (hR : 0 ≤ R) :
-    (∮ z in C(c, R), f z) = 0 := by
+    (∮ z in C(c, R), f z) = 0 :=
+  hf.diffContOnCl.circleIntegral_eq_zero hR
+```
+
+The theorem says $`\oint_\gamma z^m \; dz = 0` for $`m \geq 0`, undoing all our hard work from earlier.
+Recover the case $`m = 2` around the unit circle: first establish that $`z \mapsto z^2` is holomorphic (`fun_prop` chains the closure properties), then feed that to the theorem above.
+
+```lean
+example : (∮ z in C((0 : ℂ), 1), z ^ 2) = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (f : ℂ → ℂ) (hf : Differentiable ℂ f) (c : ℂ) (R : ℝ) (hR : 0 ≤ R) :
-    (∮ z in C(c, R), f z) = 0 :=
-  hf.diffContOnCl.circleIntegral_eq_zero hR
+example : (∮ z in C((0 : ℂ), 1), z ^ 2) = 0 := by
+  -- z² is entire, so Cauchy–Goursat kills its loop integral.
+  have hf : Differentiable ℂ (fun z : ℂ => z ^ 2) := by fun_prop
+  exact hf.diffContOnCl.circleIntegral_eq_zero (by norm_num)
 ```
 :::
 
@@ -659,21 +691,34 @@ Specialized to a fully-differentiable $`f`, it reads exactly as the formula abov
 
 The general-interval $`ML` estimate `intervalIntegral.norm_integral_le_of_norm_le_const` gives a bound of the shape $`M \cdot (b - a)`; on a circle the parameter interval is $`[0, 2\pi]`, and folding in the radius from the $`|\gamma'| = R` speed of `circleMap` turns that length $`2\pi` into the arclength $`2\pi R`.
 Mathlib has already done that reshaping for us in `circleIntegral.norm_integral_le_of_norm_le_const`, which reads `‖∮ z in C(c, R), f z‖ ≤ 2 * π * R * C` — matching this goal on the nose.
-So the finisher is `exact circleIntegral.norm_integral_le_of_norm_le_const hR hf`; the pointwise bound `hf` over `Metric.sphere c R` is exactly the `sphere c R` hypothesis the lemma wants, no massaging needed.
+The pointwise bound `hf` over `Metric.sphere c R` is exactly the `sphere c R` hypothesis the lemma wants, no massaging needed.
 
-```lean
-example (f : ℂ → ℂ) (c : ℂ) (R C : ℝ) (hR : 0 ≤ R)
-    (hf : ∀ z ∈ Metric.sphere c R, ‖f z‖ ≤ C) :
-    ‖∮ z in C(c, R), f z‖ ≤ 2 * Real.pi * R * C := by
-  sorry
-```
-
-:::solution
 ```lean
 example (f : ℂ → ℂ) (c : ℂ) (R C : ℝ) (hR : 0 ≤ R)
     (hf : ∀ z ∈ Metric.sphere c R, ‖f z‖ ≤ C) :
     ‖∮ z in C(c, R), f z‖ ≤ 2 * Real.pi * R * C :=
   circleIntegral.norm_integral_le_of_norm_le_const hR hf
+```
+
+Specialize the estimate to the unit circle, where $`R = 1` collapses the arclength $`2\pi R` to $`2\pi`.
+Feed the radius `1` to the lemma above, then clean up the leftover `* 1` factor (`mul_one` does it, e.g. via `simpa only [mul_one]`).
+
+```lean
+example (f : ℂ → ℂ) (C : ℝ)
+    (hf : ∀ z ∈ Metric.sphere (0 : ℂ) 1, ‖f z‖ ≤ C) :
+    ‖∮ z in C((0 : ℂ), 1), f z‖ ≤ 2 * Real.pi * C := by
+  sorry
+```
+
+:::solution
+```lean
+example (f : ℂ → ℂ) (C : ℝ)
+    (hf : ∀ z ∈ Metric.sphere (0 : ℂ) 1, ‖f z‖ ≤ C) :
+    ‖∮ z in C((0 : ℂ), 1), f z‖ ≤ 2 * Real.pi * C := by
+  -- The general bound gives 2·π·1·C; drop the radius factor of 1.
+  have h := circleIntegral.norm_integral_le_of_norm_le_const
+    (by norm_num : (0 : ℝ) ≤ 1) hf
+  simpa only [mul_one] using h
 ```
 :::
 
@@ -689,7 +734,15 @@ example {s : Set ℂ} {f : ℂ → ℂ} (hf : DifferentiableOn ℂ f s) (hs : Is
 ```
 
 Specialize to an entire function: differentiability on all of $`\mathbb{C}` makes it analytic everywhere.
-The dedicated equivalence `Complex.analyticOnNhd_univ_iff_differentiable` states exactly `AnalyticOnNhd ℂ f univ ↔ Differentiable ℂ f`, so the finisher is its `.mpr` direction fed `hf` — start with `exact Complex.analyticOnNhd_univ_iff_differentiable.mpr hf`.
+The dedicated equivalence `Complex.analyticOnNhd_univ_iff_differentiable` states exactly `AnalyticOnNhd ℂ f univ ↔ Differentiable ℂ f`, so its `.mpr` direction fed `hf` does it.
+
+```lean
+example (f : ℂ → ℂ) (hf : Differentiable ℂ f) : AnalyticOnNhd ℂ f Set.univ :=
+  Complex.analyticOnNhd_univ_iff_differentiable.mpr hf
+```
+
+That packaged equivalence is convenient, but derive the entire case from the general open-set version instead, seeing how it factors.
+Weaken `hf` to differentiability on the *set* `univ` (`Differentiable.differentiableOn`), note `univ` is open (`isOpen_univ`), and hand both to `DifferentiableOn.analyticOnNhd`.
 
 ```lean
 example (f : ℂ → ℂ) (hf : Differentiable ℂ f) : AnalyticOnNhd ℂ f Set.univ := by
@@ -699,27 +752,38 @@ example (f : ℂ → ℂ) (hf : Differentiable ℂ f) : AnalyticOnNhd ℂ f Set.
 :::solution
 ```lean
 example (f : ℂ → ℂ) (hf : Differentiable ℂ f) : AnalyticOnNhd ℂ f Set.univ :=
-  Complex.analyticOnNhd_univ_iff_differentiable.mpr hf
+  -- Differentiable everywhere ⟹ differentiable on the open set univ ⟹ analytic.
+  hf.differentiableOn.analyticOnNhd isOpen_univ
 ```
 :::
 
 ## Problems
 
-Liouville's theorem is `Differentiable.apply_eq_apply_of_bounded` in Mathlib: any entire $`f \colon \mathbb{C} \to \mathbb{C}` whose image is bounded takes the same value at every two points, i.e. is constant.
-Prove the first problem: a bounded entire function agrees at any two points.
-The lemma takes the boundedness of `Set.range f` and the two points as arguments, so via dot notation on `hf` the finisher is `exact hf.apply_eq_apply_of_bounded hb z w`.
+Liouville's theorem is `Differentiable.apply_eq_apply_of_bounded` in Mathlib: any entire $`f \colon \mathbb{C} \to \mathbb{C}` whose image is bounded takes the same value at every two points.
+The lemma takes the boundedness of `Set.range f` and the two points as arguments, so via dot notation on `hf` it is `hf.apply_eq_apply_of_bounded hb z w`.
 
 ```lean
 example (f : ℂ → ℂ) (hf : Differentiable ℂ f)
-    (hb : Bornology.IsBounded (Set.range f)) (z w : ℂ) : f z = f w := by
+    (hb : Bornology.IsBounded (Set.range f)) (z w : ℂ) : f z = f w :=
+  hf.apply_eq_apply_of_bounded hb z w
+```
+
+"Agrees at any two points" is what *constant* means, but stated as an honest existential.
+Prove the first problem in that form: a bounded entire function equals a single constant everywhere.
+Exhibit the constant — the value $`f(0)` is the natural choice — and then close each `f z = f 0` with the two-point equality above.
+
+```lean
+example (f : ℂ → ℂ) (hf : Differentiable ℂ f)
+    (hb : Bornology.IsBounded (Set.range f)) : ∃ c, ∀ z, f z = c := by
   sorry
 ```
 
 :::solution
 ```lean
 example (f : ℂ → ℂ) (hf : Differentiable ℂ f)
-    (hb : Bornology.IsBounded (Set.range f)) (z w : ℂ) : f z = f w :=
-  hf.apply_eq_apply_of_bounded hb z w
+    (hb : Bornology.IsBounded (Set.range f)) : ∃ c, ∀ z, f z = c :=
+  -- Pin the constant to f 0; Liouville equates every value to it.
+  ⟨f 0, fun z => hf.apply_eq_apply_of_bounded hb z 0⟩
 ```
 :::
 

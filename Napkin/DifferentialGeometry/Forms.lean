@@ -569,15 +569,31 @@ Here `![]` is the empty vector literal, the unique map `Fin 0 → E`; the read-b
 ```lean
 example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
     (f : E → ℝ) (p : E) :
-    DiffForm.eval (DiffForm.ofScalar f) p ![] = f p := by
+    DiffForm.eval (DiffForm.ofScalar f) p ![] = f p := rfl
+```
+
+Because the read-back is this transparent, the scalar-function structure crosses over intact: the $`0`-form built from a sum of functions evaluates to the sum of their values.
+Prove it by reading each of the three $`0`-forms back with `DiffForm.ofScalar_eval`; the two sides then agree definitionally.
+
+```lean
+example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
+    (f g : E → ℝ) (p : E) :
+    DiffForm.eval (DiffForm.ofScalar (fun x => f x + g x)) p ![]
+      = DiffForm.eval (DiffForm.ofScalar f) p ![]
+        + DiffForm.eval (DiffForm.ofScalar g) p ![] := by
   sorry
 ```
 
 :::solution
 ```lean
 example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
-    (f : E → ℝ) (p : E) :
-    DiffForm.eval (DiffForm.ofScalar f) p ![] = f p := rfl
+    (f g : E → ℝ) (p : E) :
+    DiffForm.eval (DiffForm.ofScalar (fun x => f x + g x)) p ![]
+      = DiffForm.eval (DiffForm.ofScalar f) p ![]
+        + DiffForm.eval (DiffForm.ofScalar g) p ![] := by
+  -- Each read-back gives back its scalar; the sides then agree.
+  rw [DiffForm.ofScalar_eval, DiffForm.ofScalar_eval,
+    DiffForm.ofScalar_eval]
 ```
 :::
 
@@ -683,17 +699,40 @@ example (V : Type*) [AddCommGroup V] [Module ℝ V]
 ```
 
 The word *additive* there is literal: `MultilinearMap.alternatization` is bundled as an `AddMonoidHom`, not merely a function on multilinear maps.
-Verify that it respects addition — the alternatization of a sum is the sum of the alternatizations.
-Every `AddMonoidHom` satisfies this, so the finishing lemma is the generic `map_add`.
+That it respects addition — the alternatization of a sum is the sum of the alternatizations — is then the generic `map_add` every `AddMonoidHom` satisfies.
 
 ```lean
 example (V : Type*) [AddCommGroup V] [Module ℝ V]
     (m m' : MultilinearMap ℝ (fun _ : Fin 2 => V) ℝ) :
     MultilinearMap.alternatization (m + m')
       = MultilinearMap.alternatization m
-        + MultilinearMap.alternatization m' := by
+        + MultilinearMap.alternatization m' :=
+  map_add _ _ _
+```
+
+Additivity is a *tool*, not just a slogan: it lets you undo an alternatization sitting inside a difference.
+Recover `alternatization m` from `alternatization (m + m') - alternatization m'` — open the sum with `map_add`, then cancel the shared summand with `add_sub_cancel_right`.
+
+```lean
+example (V : Type*) [AddCommGroup V] [Module ℝ V]
+    (m m' : MultilinearMap ℝ (fun _ : Fin 2 => V) ℝ) :
+    MultilinearMap.alternatization m
+      = MultilinearMap.alternatization (m + m')
+        - MultilinearMap.alternatization m' := by
   sorry
 ```
+
+:::solution
+```lean
+example (V : Type*) [AddCommGroup V] [Module ℝ V]
+    (m m' : MultilinearMap ℝ (fun _ : Fin 2 => V) ℝ) :
+    MultilinearMap.alternatization m
+      = MultilinearMap.alternatization (m + m')
+        - MultilinearMap.alternatization m' := by
+  -- Additivity opens the sum; the shared summand then cancels.
+  rw [map_add, add_sub_cancel_right]
+```
+:::
 
 ## Closed and exact forms
 

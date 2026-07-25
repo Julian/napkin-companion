@@ -457,21 +457,28 @@ example (f g : ℂ → ℂ) (z : ℂ)
   meromorphicOrderAt_mul hf hg
 ```
 
-Specialize additivity to the square $`f \cdot f`, whose order is twice the order of $`f`.
+Now chain additivity across three factors.
+The order of $`f g g` is $`\operatorname{ord} f + \operatorname{ord} g + \operatorname{ord} g`; peel one factor at a time with `meromorphicOrderAt_mul`, whose meromorphy hypothesis for the partial product $`f g` is `hf.mul hg` — a product of meromorphic functions is again meromorphic.
 
 ```lean
-example (f : ℂ → ℂ) (z : ℂ) (hf : MeromorphicAt f z) :
-    meromorphicOrderAt (f * f) z
-      = meromorphicOrderAt f z + meromorphicOrderAt f z := by
+example (f g : ℂ → ℂ) (z : ℂ)
+    (hf : MeromorphicAt f z) (hg : MeromorphicAt g z) :
+    meromorphicOrderAt (f * g * g) z
+      = meromorphicOrderAt f z + meromorphicOrderAt g z
+        + meromorphicOrderAt g z := by
   sorry
 ```
 
 :::solution
 ```lean
-example (f : ℂ → ℂ) (z : ℂ) (hf : MeromorphicAt f z) :
-    meromorphicOrderAt (f * f) z
-      = meromorphicOrderAt f z + meromorphicOrderAt f z :=
-  meromorphicOrderAt_mul hf hf
+example (f g : ℂ → ℂ) (z : ℂ)
+    (hf : MeromorphicAt f z) (hg : MeromorphicAt g z) :
+    meromorphicOrderAt (f * g * g) z
+      = meromorphicOrderAt f z + meromorphicOrderAt g z
+        + meromorphicOrderAt g z := by
+  -- Peel the outer factor (needs meromorphy of `f * g`, i.e. `hf.mul hg`),
+  -- then the inner one.
+  rw [meromorphicOrderAt_mul (hf.mul hg) hg, meromorphicOrderAt_mul hf hg]
 ```
 :::
 
@@ -540,19 +547,22 @@ recall residue_sub_zpow_of_ne {n : ℤ} (hn : n ≠ -1) (w z₀ : ℂ)
     (r : ℝ) : residue (fun z => (z - w) ^ n) z₀ r = 0
 ```
 
-Prove the representative case $`n = 2`: feed it to `residue_sub_zpow_of_ne`, whose side condition $`(2 : \mathbb{Z}) \neq -1` is discharged by `decide`.
+Combine that vanishing with linearity: a *scaled* monomial $`a (z - w)^2` still has residue $`0`.
+Pull the constant out with `residue_const_mul`, hand the bare monomial to `residue_sub_zpow_of_ne` (its side condition $`(2 : \mathbb{Z}) \neq -1` discharged by `decide`), and clean up with `mul_zero`.
 
 ```lean
-example (w z₀ : ℂ) (r : ℝ) :
-    residue (fun z => (z - w) ^ (2 : ℤ)) z₀ r = 0 := by
+example (a w z₀ : ℂ) (r : ℝ) :
+    residue (fun z => a * (z - w) ^ (2 : ℤ)) z₀ r = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (w z₀ : ℂ) (r : ℝ) :
-    residue (fun z => (z - w) ^ (2 : ℤ)) z₀ r = 0 :=
-  residue_sub_zpow_of_ne (by decide) w z₀ r
+example (a w z₀ : ℂ) (r : ℝ) :
+    residue (fun z => a * (z - w) ^ (2 : ℤ)) z₀ r = 0 := by
+  -- Linearity pulls out `a`; the monomial `n = 2 ≠ -1` then vanishes.
+  rw [residue_const_mul, residue_sub_zpow_of_ne (n := 2) (by decide),
+    mul_zero]
 ```
 :::
 
@@ -561,21 +571,38 @@ example (w z₀ : ℂ) (r : ℝ) :
 Mathlib has the logarithmic derivative itself as `logDeriv`, but not the meromorphic statement that $`f'/f` has a simple pole whose residue is exactly the order of $`f`; nor does it have the argument principle in any form, which would first need the residue theorem and a winding-number API.
 
 The one piece that is available is the algebra behind the logarithmic derivative: it turns products into sums, which is exactly why $`P'/P = \sum_i \frac{e_i}{x - a_i}` for a factored polynomial.
-This is `logDeriv_mul`; prove `logDeriv (f g) = logDeriv f + logDeriv g` for nonzero, differentiable factors by applying it to the point `x`, the two nonvanishing hypotheses, and the two differentiability hypotheses.
+This is `logDeriv_mul`, applied to the point `x`, the two nonvanishing hypotheses, and the two differentiability hypotheses.
 
-```lean
-example (f g : ℂ → ℂ) (x : ℂ) (hf : f x ≠ 0) (hg : g x ≠ 0)
-    (hdf : DifferentiableAt ℂ f x) (hdg : DifferentiableAt ℂ g x) :
-    logDeriv (fun z => f z * g z) x = logDeriv f x + logDeriv g x := by
-  sorry
-```
-
-:::solution
 ```lean
 example (f g : ℂ → ℂ) (x : ℂ) (hf : f x ≠ 0) (hg : g x ≠ 0)
     (hdf : DifferentiableAt ℂ f x) (hdg : DifferentiableAt ℂ g x) :
     logDeriv (fun z => f z * g z) x = logDeriv f x + logDeriv g x :=
   logDeriv_mul x hf hg hdf hdg
+```
+
+Iterate it across three factors, mirroring $`P'/P = \sum_i \frac{e_i}{x - a_i}` for more roots.
+Group $`f g h` as $`(f g) h` and peel the outer product first, then the inner; each peel feeds `logDeriv_mul` the partial product's nonvanishing (`mul_ne_zero`) and differentiability (`DifferentiableAt.mul`, written `hdf.mul hdg`).
+
+```lean
+example (f g h : ℂ → ℂ) (x : ℂ) (hf : f x ≠ 0) (hg : g x ≠ 0)
+    (hh : h x ≠ 0) (hdf : DifferentiableAt ℂ f x)
+    (hdg : DifferentiableAt ℂ g x) (hdh : DifferentiableAt ℂ h x) :
+    logDeriv (fun z => f z * g z * h z) x
+      = logDeriv f x + logDeriv g x + logDeriv h x := by
+  sorry
+```
+
+:::solution
+```lean
+example (f g h : ℂ → ℂ) (x : ℂ) (hf : f x ≠ 0) (hg : g x ≠ 0)
+    (hh : h x ≠ 0) (hdf : DifferentiableAt ℂ f x)
+    (hdg : DifferentiableAt ℂ g x) (hdh : DifferentiableAt ℂ h x) :
+    logDeriv (fun z => f z * g z * h z) x
+      = logDeriv f x + logDeriv g x + logDeriv h x := by
+  -- Peel (f·g)·h: the outer product needs `mul_ne_zero`/`.mul` for f·g.
+  rw [logDeriv_mul (f := fun z => f z * g z) (g := h) x
+      (mul_ne_zero hf hg) hh (hdf.mul hdg) hdh,
+    logDeriv_mul x hf hg hdf hdg]
 ```
 :::
 
@@ -620,17 +647,27 @@ example : IsAlgClosed ℂ := Complex.isAlgClosed
 Rouché's theorem is not in Mathlib — it rests on the argument principle, which is also absent — but its zero-counting core is `ArgumentPrincipleData.eq_zero_count_of_eq` above, the two functions of the problem being $`f` and $`f + g`.
 
 The fundamental theorem of algebra problem asks that a polynomial of degree $`n` has $`n` roots.
-Because $`\mathbb{C}` is algebraically closed, the number of roots counted with multiplicity is exactly the degree: `IsAlgClosed.card_roots_eq_natDegree`, resting on the `Complex.isAlgClosed` instance, closes the goal in one step.
+Because $`\mathbb{C}` is algebraically closed, the number of roots counted with multiplicity is exactly the degree — `IsAlgClosed.card_roots_eq_natDegree`, resting on the `Complex.isAlgClosed` instance.
 
 ```lean
-example (f : ℂ[X]) : f.roots.card = f.natDegree := by
+example (f : ℂ[X]) : f.roots.card = f.natDegree :=
+  IsAlgClosed.card_roots_eq_natDegree
+```
+
+Read existence off that count: a polynomial of positive degree really does have a root, since its root multiset is then nonempty.
+Rewrite the cardinality via the count, after which the positive-degree hypothesis finishes.
+
+```lean
+example (f : ℂ[X]) (hf : 0 < f.natDegree) : 0 < f.roots.card := by
   sorry
 ```
 
 :::solution
 ```lean
-example (f : ℂ[X]) : f.roots.card = f.natDegree :=
-  IsAlgClosed.card_roots_eq_natDegree
+example (f : ℂ[X]) (hf : 0 < f.natDegree) : 0 < f.roots.card := by
+  -- The count turns positive degree into a positive number of roots.
+  rw [IsAlgClosed.card_roots_eq_natDegree]
+  exact hf
 ```
 :::
 

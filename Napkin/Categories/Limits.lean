@@ -116,7 +116,17 @@ example {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y)
 ```
 
 The exercise asked you to show that two equalizers $`E \xrightarrow{e} X` and $`E' \xrightarrow{e'} X` of the same parallel pair are isomorphic.
-Universality does all the work: two forks that are both universal have canonically isomorphic apexes, via {name}`CategoryTheory.Limits.IsLimit.conePointUniqueUpToIso`.
+Universality does all the work: two forks that are both universal have canonically isomorphic apexes, packaged as {name}`CategoryTheory.Limits.IsLimit.conePointUniqueUpToIso`.
+
+```lean
+example {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y)
+    (c c' : Fork f g) (hc : IsLimit c) (hc' : IsLimit c') : c.pt ≅ c'.pt :=
+  IsLimit.conePointUniqueUpToIso hc hc'
+```
+
+That one-liner hides the actual reason the isomorphism exists, so build it by hand and watch it fall out of the universal property.
+Lift each apex through the other's universality (`hc'.lift c` and `hc.lift c`, using {name}`CategoryTheory.Limits.IsLimit.lift`) to get the two comparison maps.
+Each round-trip is a map from a universal fork to itself, and a map into a limit is pinned down by its composites with the legs: {name}`CategoryTheory.Limits.IsLimit.hom_ext` reduces the two `id` goals leg-by-leg, where {name}`CategoryTheory.Limits.IsLimit.fac` (a `simp` lemma) recovers each leg from the lift that built it.
 
 ```lean
 example {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y)
@@ -128,8 +138,14 @@ example {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y)
 ```lean
 example {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y)
     (c c' : Fork f g) (hc : IsLimit c) (hc' : IsLimit c') :
-    c.pt ≅ c'.pt :=
-  IsLimit.conePointUniqueUpToIso hc hc'
+    c.pt ≅ c'.pt where
+  -- The comparison maps: lift each apex through the other's universality.
+  hom := hc'.lift c
+  inv := hc.lift c'
+  -- Each round-trip agrees with the identity on every leg, so `hom_ext`
+  -- (with `fac` firing through `simp`) collapses it to `𝟙`.
+  hom_inv_id := hc.hom_ext (by simp)
+  inv_hom_id := hc'.hom_ext (by simp)
 ```
 :::
 

@@ -403,19 +403,30 @@ recall ChartedSpace.chartAt
 For a "concrete" topological $`n`-manifold one would take $`H = \mathbb{R}^n`, but the abstract setup `ChartedSpace H M` is more flexible: we can model on $`H = \mathbb{R}^n`, on a half-space (for manifolds with boundary), or on a Banach space (for the infinite-dimensional case).
 
 The local picture — "every point has a neighborhood looking like the model" — is guaranteed by the field `mem_chart_source`, which says every point lies in the source of the chart chosen through it.
-Show it directly; applied to a point, `mem_chart_source H x` is exactly this witness.
+Applied to a point, `mem_chart_source H x` is exactly this witness.
 
 ```lean
 example {H : Type*} [TopologicalSpace H] {M : Type*} [TopologicalSpace M]
-    [ChartedSpace H M] (x : M) : x ∈ (chartAt H x).source := by
+    [ChartedSpace H M] (x : M) : x ∈ (chartAt H x).source :=
+  mem_chart_source H x
+```
+
+But the chart's source is more than a set containing $`x`: it is *open*, so it is an open neighborhood of $`x` — the honest "looks like the model near $`x`" picture.
+Show that the source is a neighborhood of $`x`.
+Combine that the source is open (`OpenPartialHomeomorph.open_source`) with the membership above, fed to `IsOpen.mem_nhds`.
+
+```lean
+example {H : Type*} [TopologicalSpace H] {M : Type*} [TopologicalSpace M]
+    [ChartedSpace H M] (x : M) : (chartAt H x).source ∈ nhds x := by
   sorry
 ```
 
 :::solution
 ```lean
 example {H : Type*} [TopologicalSpace H] {M : Type*} [TopologicalSpace M]
-    [ChartedSpace H M] (x : M) : x ∈ (chartAt H x).source :=
-  mem_chart_source H x
+    [ChartedSpace H M] (x : M) : (chartAt H x).source ∈ nhds x :=
+  -- The source is open and contains x, so it is a neighborhood of x.
+  (chartAt H x).open_source.mem_nhds (mem_chart_source H x)
 ```
 :::
 
@@ -448,14 +459,27 @@ example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   contMDiff_const
 ```
 
-Now show that the identity map is smooth; the finisher is `contMDiff_id`.
+The identity map is smooth too; that is `contMDiff_id`.
 
 ```lean
 example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
     {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {n : WithTop ℕ∞} :
-    ContMDiff I I n (id : M → M) := by
+    ContMDiff I I n (id : M → M) :=
+  contMDiff_id
+```
+
+The real workhorse is that smoothness survives composition, `ContMDiff.comp`.
+Use it together with the identity above: given a smooth self-map $`f`, show $`f \circ \mathrm{id}` is smooth.
+Feed `contMDiff_id` as the inner map to `hf.comp`.
+
+```lean
+example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {n : WithTop ℕ∞}
+    (f : M → M) (hf : ContMDiff I I n f) : ContMDiff I I n (f ∘ id) := by
   sorry
 ```
 
@@ -464,9 +488,10 @@ example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
-    {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {n : WithTop ℕ∞} :
-    ContMDiff I I n (id : M → M) :=
-  contMDiff_id
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {n : WithTop ℕ∞}
+    (f : M → M) (hf : ContMDiff I I n f) : ContMDiff I I n (f ∘ id) :=
+  -- Compose the smooth f with the smooth identity.
+  hf.comp contMDiff_id
 ```
 :::
 
@@ -476,23 +501,8 @@ The regular value theorem is not yet packaged as a one-liner in Mathlib's manifo
 The implicit function theorem `HasStrictFDerivAt.implicitFunction` from `Mathlib.Analysis.Calculus.Implicit` gives the chart construction at a regular point, and the "rank $`m`" hypothesis becomes surjectivity of the differential.
 The smoothness of the resulting local inverse is packaged by `IsLocalDiffeomorphAt`: a map that near a point is a diffeomorphism onto its image.
 
-Such a local diffeomorphism is in particular smooth at the point.
-Prove it by drawing the smoothness out of the hypothesis, `IsLocalDiffeomorphAt.contMDiffAt`.
+Such a local diffeomorphism is in particular smooth at the point, `IsLocalDiffeomorphAt.contMDiffAt`.
 
-```lean
-example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
-    {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-    {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-    {H' : Type*} [TopologicalSpace H'] {J : ModelWithCorners 𝕜 E' H'}
-    {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
-    {n : WithTop ℕ∞} {f : M → N} {x : M}
-    (hf : IsLocalDiffeomorphAt I J n f x) : ContMDiffAt I J n f x := by
-  sorry
-```
-
-:::solution
 ```lean
 example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -504,6 +514,37 @@ example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {n : WithTop ℕ∞} {f : M → N} {x : M}
     (hf : IsLocalDiffeomorphAt I J n f x) : ContMDiffAt I J n f x :=
   hf.contMDiffAt
+```
+
+Smoothness at a point is stronger than mere continuity there, so the local diffeomorphism is in particular continuous at $`x`.
+Draw the smoothness out of the hypothesis as above, then weaken it with `ContMDiffAt.continuousAt`.
+
+```lean
+example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+    {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+    {H' : Type*} [TopologicalSpace H'] {J : ModelWithCorners 𝕜 E' H'}
+    {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
+    {n : WithTop ℕ∞} {f : M → N} {x : M}
+    (hf : IsLocalDiffeomorphAt I J n f x) : ContinuousAt f x := by
+  sorry
+```
+
+:::solution
+```lean
+example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+    {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+    {H' : Type*} [TopologicalSpace H'] {J : ModelWithCorners 𝕜 E' H'}
+    {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
+    {n : WithTop ℕ∞} {f : M → N} {x : M}
+    (hf : IsLocalDiffeomorphAt I J n f x) : ContinuousAt f x :=
+  -- Smooth at x ⟹ continuous at x.
+  hf.contMDiffAt.continuousAt
 ```
 :::
 
@@ -528,13 +569,27 @@ noncomputable example {E : Type*} [NormedAddCommGroup E]
 ```
 
 Each $`\alpha_p` is alternating, so swapping two tangent vectors flips the sign and feeding the same vector twice returns zero; the volume form of an *orientable* manifold is a nowhere-vanishing top form, `ManifoldForm.Nonvanishing`.
-Show that exhibiting one witnesses orientability, via `ManifoldForm.Orientable.of_volumeForm`.
+Exhibiting one witnesses orientability, via `ManifoldForm.Orientable.of_volumeForm`.
 
 ```lean
 example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
     {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {n : ℕ}
     (ω : ManifoldForm I M n) (hω : ManifoldForm.Nonvanishing ω) :
+    ManifoldForm.Orientable (I := I) (M := M) n :=
+  ManifoldForm.Orientable.of_volumeForm ω hω
+```
+
+An orientation is only defined up to rescaling: multiplying a volume form by a nonzero constant leaves it nowhere-zero, so it still orients $`M`.
+Prove that if $`\omega` is a volume form and $`c \neq 0`, then $`c \cdot \omega` witnesses orientability too.
+The scaling acts pointwise (`ManifoldForm.smul_apply`), and a nonzero scalar times a nonzero vector is nonzero (`smul_ne_zero`); feed the resulting nonvanishing form to `of_volumeForm`.
+
+```lean
+example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {n : ℕ}
+    (ω : ManifoldForm I M n) (hω : ManifoldForm.Nonvanishing ω)
+    (c : ℝ) (hc : c ≠ 0) :
     ManifoldForm.Orientable (I := I) (M := M) n := by
   sorry
 ```
@@ -544,27 +599,19 @@ example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
     {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {n : ℕ}
-    (ω : ManifoldForm I M n) (hω : ManifoldForm.Nonvanishing ω) :
-    ManifoldForm.Orientable (I := I) (M := M) n :=
-  ManifoldForm.Orientable.of_volumeForm ω hω
+    (ω : ManifoldForm I M n) (hω : ManifoldForm.Nonvanishing ω)
+    (c : ℝ) (hc : c ≠ 0) :
+    ManifoldForm.Orientable (I := I) (M := M) n := by
+  -- c • ω is again nowhere-zero, so it too orients M.
+  refine ManifoldForm.Orientable.of_volumeForm (c • ω) (fun p => ?_)
+  rw [ManifoldForm.smul_apply]
+  exact smul_ne_zero hc (hω p)
 ```
 :::
 
 The anchor tying these forms back to calculus is the *differential* $`df` of a scalar function `f : M → ℝ`, packaged as the $`1`-form `ManifoldForm.differential f`.
-Its value at $`p` on a single tangent vector is the directional derivative — the manifold derivative `mfderiv I 𝓘(ℝ) f p` applied to that vector.
-Show that evaluating it reads off exactly that `mfderiv`; the finisher is `ManifoldForm.differential_eval`.
+Its value at $`p` on a single tangent vector is the directional derivative — the manifold derivative `mfderiv I 𝓘(ℝ) f p` applied to that vector, which is exactly `ManifoldForm.differential_eval`.
 
-```lean
-example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
-    {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-    (f : M → ℝ) (p : M) (v : Fin 1 → TangentSpace I p) :
-    ManifoldForm.eval (ManifoldForm.differential f) p v
-      = mfderiv I (modelWithCornersSelf ℝ ℝ) f p (v 0) := by
-  sorry
-```
-
-:::solution
 ```lean
 example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
@@ -573,6 +620,34 @@ example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     ManifoldForm.eval (ManifoldForm.differential f) p v
       = mfderiv I (modelWithCornersSelf ℝ ℝ) f p (v 0) :=
   ManifoldForm.differential_eval f p v
+```
+
+With this description in hand, differentials behave like the derivatives they package: a constant function has zero differential.
+Prove that the differential of a constant $`0`-form vanishes on every tangent vector.
+Rewrite the evaluation with `ManifoldForm.differential_eval`, then use that the derivative of a constant is zero (`mfderiv_const`) and that the zero map sends $`v_0` to $`0` (`ContinuousLinearMap.zero_apply`).
+
+```lean
+example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+    (c : ℝ) (p : M) (v : Fin 1 → TangentSpace I p) :
+    ManifoldForm.eval (ManifoldForm.differential (fun _ : M => c)) p v
+      = 0 := by
+  sorry
+```
+
+:::solution
+```lean
+example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+    (c : ℝ) (p : M) (v : Fin 1 → TangentSpace I p) :
+    ManifoldForm.eval (ManifoldForm.differential (fun _ : M => c)) p v
+      = 0 := by
+  -- The differential reads off mfderiv, and a constant has zero derivative.
+  rw [ManifoldForm.differential_eval, mfderiv_const,
+    ContinuousLinearMap.zero_apply]
+  rfl
 ```
 :::
 
@@ -626,19 +701,8 @@ recall PointDerivation
 Underneath the hood, `PointDerivation` is a special case of the algebraic `Derivation R A M`: an $`R`-linear map $`A \to M` satisfying the Leibniz rule, where here $`R = 𝕜`, $`A = C^\infty(M; 𝕜)`, and $`M = 𝕜` viewed as a module over $`A` via evaluation at $`x`.
 
 The `mfderiv` of a map is the induced linear map on tangent spaces.
-Show that the derivative of the identity map is the identity linear map; the finisher is `mfderiv_id`.
+The derivative of the identity map is the identity linear map, `mfderiv_id`.
 
-```lean
-example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
-    {M : Type*} [TopologicalSpace M] [ChartedSpace H M] (x : M) :
-    mfderiv I I (id : M → M) x
-      = ContinuousLinearMap.id 𝕜 (TangentSpace I x) := by
-  sorry
-```
-
-:::solution
 ```lean
 example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -647,6 +711,33 @@ example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     mfderiv I I (id : M → M) x
       = ContinuousLinearMap.id 𝕜 (TangentSpace I x) :=
   mfderiv_id
+```
+
+Unwind what that means on an actual tangent vector: the induced map fixes every $`v`.
+Show that `mfderiv I I id x v = v`.
+Rewrite with `mfderiv_id` to replace the derivative by the identity linear map, which then sends $`v` to itself (`ContinuousLinearMap.id_apply`).
+
+```lean
+example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M] (x : M)
+    (v : TangentSpace I x) :
+    mfderiv I I (id : M → M) x v = v := by
+  sorry
+```
+
+:::solution
+```lean
+example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M] (x : M)
+    (v : TangentSpace I x) :
+    mfderiv I I (id : M → M) x v = v := by
+  -- The identity's derivative is the identity map, which fixes v.
+  rw [mfderiv_id]
+  rfl
 ```
 :::
 
@@ -662,19 +753,31 @@ recall IsLocalRing.CotangentSpace
 
 The smooth-manifold cotangent space is the same idea applied to $`R = C^\infty(M; \mathbb{R})`.
 The sanity check that a point has trivial cotangent space when there is no room to differentiate is visible on the algebraic side: a field is a local ring whose maximal ideal is $`0`, so its cotangent space is trivial.
-Show that the cotangent space of a field is a subsingleton.
-The equivalence `IsLocalRing.subsingleton_cotangentSpace_iff` reads `Subsingleton (CotangentSpace R) ↔ IsField R`, so its `.mpr` direction fed `Field.toIsField K` is the finisher.
+The equivalence `IsLocalRing.subsingleton_cotangentSpace_iff` reads `Subsingleton (CotangentSpace R) ↔ IsField R`, so its `.mpr` direction fed `Field.toIsField K` shows the cotangent space of a field is a subsingleton.
 
 ```lean
 example (K : Type*) [Field K] :
-    Subsingleton (IsLocalRing.CotangentSpace K) := by
+    Subsingleton (IsLocalRing.CotangentSpace K) :=
+  IsLocalRing.subsingleton_cotangentSpace_iff.mpr (Field.toIsField K)
+```
+
+"Subsingleton" is exactly the statement that there is no room to differentiate: any two cotangent vectors are forced to agree.
+Draw that concrete consequence out — for a field $`K`, show any two elements of the cotangent space are equal.
+Establish the `Subsingleton` instance as above, then any two of its elements coincide by `Subsingleton.elim`.
+
+```lean
+example (K : Type*) [Field K]
+    (x y : IsLocalRing.CotangentSpace K) : x = y := by
   sorry
 ```
 
 :::solution
 ```lean
-example (K : Type*) [Field K] :
-    Subsingleton (IsLocalRing.CotangentSpace K) :=
-  IsLocalRing.subsingleton_cotangentSpace_iff.mpr (Field.toIsField K)
+example (K : Type*) [Field K]
+    (x y : IsLocalRing.CotangentSpace K) : x = y := by
+  -- The cotangent space of a field is a subsingleton, so its elements agree.
+  haveI : Subsingleton (IsLocalRing.CotangentSpace K) :=
+    IsLocalRing.subsingleton_cotangentSpace_iff.mpr (Field.toIsField K)
+  exact Subsingleton.elim x y
 ```
 :::
