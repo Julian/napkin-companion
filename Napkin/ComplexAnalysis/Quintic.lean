@@ -178,30 +178,76 @@ The first half is the instance `Subgroup.commutator_normal`, so it is found auto
 example (G : Type*) [Group G] : (commutator G).Normal := inferInstance
 ```
 
-The second half says $`G/[G, G]` is the universal abelian quotient; Mathlib packages it as `Abelianization G` and equips it with a commutative group structure, and `commutator_eq_bot_iff` records that $`[G, G]` is trivial exactly when $`G` is already Abelian.
-Show that the abelianization is Abelian.
+The second half says $`G/[G, G]` is the universal abelian quotient; Mathlib packages it as `Abelianization G` and equips it with a commutative group structure, so its commutativity is available with no work at all.
 
 ```lean
-example (G : Type*) [Group G] (x y : Abelianization G) : x * y = y * x := by
+example (G : Type*) [Group G] (x y : Abelianization G) :
+    x * y = y * x := mul_comm x y
+```
+
+What is worth proving is the *reason* it is commutative: the quotient map $`G \to G/[G,G]` throws away exactly the commutators.
+Show that a commutator $`xyx^{-1}y^{-1}` becomes trivial downstairs.
+`Abelianization.of` is a group homomorphism, so `simp` will push it through the product and the inverses (`map_mul`, `map_inv`) on its own; what it needs supplied is that the resulting product may be reordered, i.e. `mul_comm`.
+
+```lean
+example (G : Type*) [Group G] (x y : G) :
+    Abelianization.of (x * y * x⁻¹ * y⁻¹) = 1 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (G : Type*) [Group G] (x y : Abelianization G) :
-    x * y = y * x := mul_comm x y
+example (G : Type*) [Group G] (x y : G) :
+    Abelianization.of (x * y * x⁻¹ * y⁻¹) = 1 := by
+  simp [mul_comm]
 ```
 :::
 
 A group is *solvable* when its derived series eventually reaches the trivial subgroup.
-Mathlib spells this `IsSolvable G`, a typeclass on a group whose single field asserts the existence of an `n` with `derivedSeries G n = ⊥`.
-The unfold lemma is `isSolvable_def`.
+Mathlib spells this `IsSolvable G`, a typeclass on a group whose single field asserts the existence of an `n` with `derivedSeries G n = ⊥`; the unfold lemma is `isSolvable_def`.
+Abelian groups are the base case: their derived series dies immediately, at step one.
+Prove that version of the statement.
+Unfold with `isSolvable_def` and supply the witness `n = 1`; what makes `n = 1` work is `derivedSeries_one`, which says the first step of the derived series is the commutator subgroup.
+
+```lean
+example (G : Type*) [Group G] (h : commutator G = ⊥) : IsSolvable G := by
+  sorry
+```
+
+:::solution
+```lean
+example (G : Type*) [Group G] (h : commutator G = ⊥) : IsSolvable G := by
+  rw [isSolvable_def]
+  exact ⟨1, by rwa [derivedSeries_one]⟩
+```
+:::
+
+(`commutator_eq_bot_iff` records that the hypothesis $`[G,G] = 1` says exactly that $`G` is Abelian, so this is the promised base case.)
 
 ## Problems
 
-The corresponding Mathlib statement for the *alternating* group $`A_5` is `alternatingGroup.isSimpleGroup` (specialized to `Fin 5`), which is even stronger: $`A_5` is *simple*.
-A simple group is solvable iff it's abelian, and $`A_5` is plainly nonabelian, so $`A_5` is not solvable.
-The bridge is the simple-group solvable-iff-abelian lemma `IsSimpleGroup.comm_iff_isSolvable` (in `Mathlib.GroupTheory.Solvable`).
+Solvability is engineered so that the derived series is a *descending* chain of normal subgroups; a simple group has no room for such a chain, so the only way it can be solvable is to be abelian outright.
+That dichotomy is `IsSimpleGroup.comm_iff_isSolvable` (in `Mathlib.GroupTheory.Solvable`): for a simple group, "all elements commute" and "solvable" are the *same* statement.
+Turn it into an unsolvability criterion: a simple group with even one pair of non-commuting elements cannot be solvable.
+The contrapositive is the whole proof — assume solvability, feed it to the equivalence to learn that $`x` and $`y` commute, and contradict the hypothesis.
+
+```lean
+example (G : Type*) [Group G] [IsSimpleGroup G] (x y : G)
+    (hxy : x * y ≠ y * x) : ¬ IsSolvable G := by
+  sorry
+```
+
+:::solution
+```lean
+example (G : Type*) [Group G] [IsSimpleGroup G] (x y : G)
+    (hxy : x * y ≠ y * x) : ¬ IsSolvable G := fun hs =>
+  hxy (IsSimpleGroup.comm_iff_isSolvable.mpr hs x y)
+```
+:::
+
+Now $`A_5`.
+The corresponding Mathlib statement for the *alternating* group is `alternatingGroup.isSimpleGroup` (specialized to `Fin 5`), which is even stronger than what we need: $`A_5` is *simple*.
+Register that as an instance with `haveI` — it takes the hypothesis $`5 \geq 5`, which `simp` discharges — and then, rather than exhibiting a non-commuting pair by hand, rewrite backwards along the equivalence above and let `decide` search the (finite!) group for one.
 Show that $`A_5` is not solvable.
 
 ```lean

@@ -433,7 +433,28 @@ noncomputable example {σ : Type*} (V : Set (σ → ℂ)) :
   MvPolynomial.vanishingIdeal ℂ V
 ```
 
-The bridge between these two directions is the Nullstellensatz.
+Before either of those, the most basic feature of $`\mathbb{V}(-)`: it *reverses* inclusions.
+Asking more equations to hold cuts down the solution set, so a bigger set of polynomials has a smaller zero locus.
+Prove it.
+Everything is unfolded by `PrimeSpectrum.mem_zeroLocus`, which says a prime $`\mathfrak{p}` lies in $`\mathbb{V}(s)` exactly when $`s \subseteq \mathfrak{p}`; once both sides are in that form the statement is transitivity of $`\subseteq`.
+
+```lean
+example (R : Type*) [CommRing R] (s t : Set R) (h : s ⊆ t) :
+    PrimeSpectrum.zeroLocus t ⊆ PrimeSpectrum.zeroLocus s := by
+  sorry
+```
+
+:::solution
+```lean
+example (R : Type*) [CommRing R] (s t : Set R) (h : s ⊆ t) :
+    PrimeSpectrum.zeroLocus t ⊆ PrimeSpectrum.zeroLocus s := by
+  intro p hp
+  rw [PrimeSpectrum.mem_zeroLocus] at hp ⊢
+  exact h.trans hp
+```
+:::
+
+The bridge between the two directions $`\mathbb{V}` and $`\mathbb{I}` is the Nullstellensatz.
 Because $`\mathbb{C}` is algebraically closed, the ideal of functions vanishing on the zero locus of $`I` is exactly the radical of $`I`, recorded as `MvPolynomial.vanishingIdeal_zeroLocus_eq_radical`.
 
 ```lean
@@ -443,21 +464,13 @@ example {σ : Type*} [Finite σ] (I : Ideal (MvPolynomial σ ℂ)) :
 ```
 
 The chapter verifies that the closed sets really do form a topology, and later problems ask you to show this topology has no infinite strictly-descending chain of closed sets.
-That property is `TopologicalSpace.NoetherianSpace`, and Mathlib already knows it whenever the ring is Noetherian — so a coordinate ring of an affine variety qualifies.
+That property is `TopologicalSpace.NoetherianSpace`, and Mathlib already knows it whenever the ring is Noetherian — so a coordinate ring of an affine variety qualifies, and `inferInstance` finds the proof with no input from us.
 
-```lean
-example (R : Type*) [CommRing R] [IsNoetherianRing R] :
-    TopologicalSpace.NoetherianSpace (PrimeSpectrum R) := by
-  sorry
-```
-
-:::solution
 ```lean
 example (R : Type*) [CommRing R] [IsNoetherianRing R] :
     TopologicalSpace.NoetherianSpace (PrimeSpectrum R) :=
   inferInstance
 ```
-:::
 
 ## The Zariski topology on affine varieties
 
@@ -478,22 +491,51 @@ example (R : Type*) [CommRing R] (f g : R) :
   PrimeSpectrum.basicOpen_le_basicOpen_iff f g
 ```
 
-The chapter asks what $`D(xy)` is.
-Prove that it is $`D(x) \cap D(y)`, the meet of the two distinguished opens.
+Cash that out in the case the chapter cares about: if $`g \mid f`, then $`f` vanishes wherever $`g` does, so $`D(f) \subseteq D(g)`.
+Rewrite with the criterion and the goal becomes an ideal membership; divisibility by $`g` *is* membership in the ideal $`(g)` (`Ideal.mem_span_singleton`), and any ideal sits inside its own radical (`Ideal.le_radical`).
 
 ```lean
-example {σ : Type*} (x y : MvPolynomial σ ℂ) :
-    PrimeSpectrum.basicOpen (x * y) =
-      PrimeSpectrum.basicOpen x ⊓ PrimeSpectrum.basicOpen y := by
+example (R : Type*) [CommRing R] (f g : R) (h : g ∣ f) :
+    PrimeSpectrum.basicOpen f ≤ PrimeSpectrum.basicOpen g := by
   sorry
 ```
 
 :::solution
 ```lean
-example {σ : Type*} (x y : MvPolynomial σ ℂ) :
-    PrimeSpectrum.basicOpen (x * y) =
-      PrimeSpectrum.basicOpen x ⊓ PrimeSpectrum.basicOpen y :=
-  PrimeSpectrum.basicOpen_mul x y
+example (R : Type*) [CommRing R] (f g : R) (h : g ∣ f) :
+    PrimeSpectrum.basicOpen f ≤ PrimeSpectrum.basicOpen g := by
+  rw [PrimeSpectrum.basicOpen_le_basicOpen_iff]
+  exact Ideal.le_radical (Ideal.mem_span_singleton.mpr h)
+```
+:::
+
+The chapter asks what $`D(xy)` is, and the answer is $`D(x) \cap D(y)`.
+This is the first place the points being *prime* ideals does real work, so prove it pointwise rather than citing the packaged `PrimeSpectrum.basicOpen_mul`.
+Unfolding with `PrimeSpectrum.mem_basicOpen` turns all three memberships into non-memberships $`f \notin \mathfrak{p}`, and then the two directions are genuinely different: one is closure of an ideal under multiplication (`Ideal.mul_mem_left`, `Ideal.mul_mem_right`, in contrapositive), and the other is primality itself, `Ideal.IsPrime.mem_or_mem`, reached through `p.isPrime`.
+
+```lean
+example (R : Type*) [CommRing R] (f g : R) (p : PrimeSpectrum R) :
+    p ∈ PrimeSpectrum.basicOpen (f * g) ↔
+      p ∈ PrimeSpectrum.basicOpen f ∧ p ∈ PrimeSpectrum.basicOpen g := by
+  sorry
+```
+
+:::solution
+```lean
+example (R : Type*) [CommRing R] (f g : R) (p : PrimeSpectrum R) :
+    p ∈ PrimeSpectrum.basicOpen (f * g) ↔
+      p ∈ PrimeSpectrum.basicOpen f ∧ p ∈ PrimeSpectrum.basicOpen g := by
+  simp only [PrimeSpectrum.mem_basicOpen]
+  constructor
+  · -- If a factor were in `p`, the product would be too.
+    intro h
+    exact ⟨fun hf => h (Ideal.mul_mem_right _ _ hf),
+      fun hg => h (Ideal.mul_mem_left _ _ hg)⟩
+  · -- This direction is exactly primality.
+    rintro ⟨hf, hg⟩ hfg
+    rcases p.isPrime.mem_or_mem hfg with h | h
+    · exact hf h
+    · exact hg h
 ```
 :::
 
@@ -542,23 +584,14 @@ example (R : Type*) [CommRing R] (f : R) (x : PrimeSpectrum R) :
 ```
 
 The chapter asks you to check that the set on which $`f/g` is well-defined is open.
-It is the distinguished open of the denominator, so prove it is open.
+It is the distinguished open of the denominator, and openness comes for free: `TopologicalSpace.Opens` is the type of open sets, carrying its own proof, which `.isOpen` extracts.
 
-```lean
-example {σ : Type*} (g : MvPolynomial σ ℂ) :
-    IsOpen (PrimeSpectrum.basicOpen g :
-      Set (PrimeSpectrum (MvPolynomial σ ℂ))) := by
-  sorry
-```
-
-:::solution
 ```lean
 example {σ : Type*} (g : MvPolynomial σ ℂ) :
     IsOpen (PrimeSpectrum.basicOpen g :
       Set (PrimeSpectrum (MvPolynomial σ ℂ))) :=
   (PrimeSpectrum.basicOpen g).isOpen
 ```
-:::
 
 ## Regular functions on distinguished open sets
 
@@ -571,7 +604,11 @@ example (R : Type*) [CommRing R] (g : R) (S : Type*) [CommRing S]
 ```
 
 The denominators $`g^k` appearing in these fractions all cut out the same open set, since raising to a positive power does not change a distinguished open.
-Prove $`D(g^n) = D(g)`.
+Prove $`D(g^n) = D(g)`, and note what makes the two directions asymmetric.
+Split with `le_antisymm` and use the radical criterion on each half.
+One half is the divisibility exercise above, since $`g \mid g^n` (`dvd_pow_self`).
+The other half is *only* true because a radical is involved: $`g` need not lie in the ideal $`(g^n)`, but it lies in its radical, because that means exactly $`g^m \in (g^n)` for *some* $`m` — and $`m = n` works.
+This is the reason the radical shows up in the criterion at all.
 
 ```lean
 example {σ : Type*} (g : MvPolynomial σ ℂ) (n : ℕ) (hn : 0 < n) :
@@ -582,10 +619,18 @@ example {σ : Type*} (g : MvPolynomial σ ℂ) (n : ℕ) (hn : 0 < n) :
 :::solution
 ```lean
 example {σ : Type*} (g : MvPolynomial σ ℂ) (n : ℕ) (hn : 0 < n) :
-    PrimeSpectrum.basicOpen (g ^ n) = PrimeSpectrum.basicOpen g :=
-  PrimeSpectrum.basicOpen_pow g n hn
+    PrimeSpectrum.basicOpen (g ^ n) = PrimeSpectrum.basicOpen g := by
+  apply le_antisymm
+  · rw [PrimeSpectrum.basicOpen_le_basicOpen_iff]
+    exact Ideal.le_radical
+      (Ideal.mem_span_singleton.mpr (dvd_pow_self g hn.ne'))
+  · rw [PrimeSpectrum.basicOpen_le_basicOpen_iff]
+    -- `g ∈ radical (gⁿ)` unfolds to "some power of `g` lies in `(gⁿ)`".
+    exact ⟨n, Ideal.mem_span_singleton_self _⟩
 ```
 :::
+
+(Mathlib packages the result as `PrimeSpectrum.basicOpen_pow`.)
 
 ## Baby ringed spaces
 
@@ -596,16 +641,41 @@ example : Type _ := AlgebraicGeometry.RingedSpace
 ```
 
 A later problem shows every affine variety is topologically compact.
-On the intrinsic object this is already available: the prime spectrum of any commutative ring is a compact space.
+On the intrinsic object this is already available: the prime spectrum of *any* commutative ring is a compact space, Noetherian or not.
 
 ```lean
-example (R : Type*) [CommRing R] : CompactSpace (PrimeSpectrum R) := by
+example (R : Type*) [CommRing R] : CompactSpace (PrimeSpectrum R) :=
+  inferInstance
+```
+
+The first problem asks you to show the Zariski topology is not Hausdorff.
+Hausdorff is a strong separation property, and the spectrum fails a much weaker one: its points need not even be *closed*.
+The dictionary entry is `PrimeSpectrum.isClosed_singleton_iff_isMaximal` — a one-point set is closed exactly when the corresponding prime is maximal — so any non-maximal prime is a point whose closure is bigger than itself.
+Show this happens already in $`\operatorname{Spec} \mathbb{Z}`, at the point $`(0)`.
+After the rewrite you have `(⊥ : Ideal ℤ).IsMaximal` to refute.
+Maximality says every proper ideal above $`\bot` *is* $`\bot` (`Ideal.IsMaximal.eq_of_le`), so feed it $`(2)`, which is proper because $`2` is not a unit (`Ideal.span_singleton_eq_top`, then `Int.isUnit_iff`); concluding $`(2) = \bot` puts $`2` in $`\bot`, i.e. makes $`2 = 0`.
+
+```lean
+example : ¬ IsClosed
+    ({⟨(⊥ : Ideal ℤ), Ideal.isPrime_bot⟩} : Set (PrimeSpectrum ℤ)) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (R : Type*) [CommRing R] : CompactSpace (PrimeSpectrum R) :=
-  inferInstance
+example : ¬ IsClosed
+    ({⟨(⊥ : Ideal ℤ), Ideal.isPrime_bot⟩} : Set (PrimeSpectrum ℤ)) := by
+  rw [PrimeSpectrum.isClosed_singleton_iff_isMaximal]
+  intro h
+  have hne : Ideal.span ({2} : Set ℤ) ≠ ⊤ := by
+    rw [Ne, Ideal.span_singleton_eq_top, Int.isUnit_iff]
+    norm_num
+  have hbot : (⊥ : Ideal ℤ) = Ideal.span ({2} : Set ℤ) := h.eq_of_le hne bot_le
+  have h2 : (2 : ℤ) ∈ (⊥ : Ideal ℤ) := by
+    rw [hbot]; exact Ideal.mem_span_singleton_self 2
+  norm_num [Ideal.mem_bot] at h2
 ```
 :::
+
+The point $`(0)` is the *generic point* of $`\operatorname{Spec} \mathbb{Z}`: it is contained in every other prime, so every nonempty open set contains it, and no two nonempty opens can be disjoint.
+That is the failure of Hausdorffness, in its sharpest form.

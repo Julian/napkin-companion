@@ -238,30 +238,28 @@ The existence of holomorphic $`n`th roots is not packaged as one named theorem, 
 Composing the two recovers the theorem above.
 
 The question about the image of $`p` being $`2\mathbb{Z}` is, once we identify $`\pi_1(\mathbb{C}^*)` with $`\mathbb{Z}`, the statement that the doubling map on $`\mathbb{Z}` has the even integers as its image.
-Prove the two set inclusions separately: `ext n` splits the equation into a membership `↔`, and `Even n` unfolds to `∃ r, n = r + r`.
-Both directions are then the lemma `two_mul k : 2 * k = k + k` (forwards as given, backwards after `rintro ⟨k, rfl⟩`).
+Nothing about the argument cares that the exponent is $`2`, so prove the general statement: the image of multiplication by $`n` consists of the multiples of $`n` — which is the obstruction to an $`n`th root, namely that the winding number must be divisible by $`n`.
+Two `∃`s are in play and they are *not* stated the same way around: membership in `Set.range f` gives a `k` with `f k = m`, while `n ∣ m` unfolds to a `k` with `m = n * k`.
+So each direction is the other's witness with the equation flipped; `ext m` splits the set equality into that `↔`, and `rintro ⟨k, rfl⟩` opens each side.
 
 ```lean
-example : Set.range (fun k : ℤ => 2 * k) = {n : ℤ | Even n} := by
-  ext n
-  constructor
-  · rintro ⟨k, rfl⟩
-    sorry
-  · rintro ⟨k, rfl⟩
-    sorry
+example (n : ℤ) : Set.range (fun k : ℤ => n * k) = {m : ℤ | n ∣ m} := by
+  sorry
 ```
 
 :::solution
 ```lean
-example : Set.range (fun k : ℤ => 2 * k) = {n : ℤ | Even n} := by
-  ext n
+example (n : ℤ) : Set.range (fun k : ℤ => n * k) = {m : ℤ | n ∣ m} := by
+  ext m
   constructor
   · rintro ⟨k, rfl⟩
-    exact ⟨k, two_mul k⟩
+    exact Dvd.intro k rfl
   · rintro ⟨k, rfl⟩
-    exact ⟨k, two_mul k⟩
+    exact ⟨k, rfl⟩
 ```
 :::
+
+Taking $`n = 2` recovers the even integers, and hence the criterion for a square root.
 
 ## Complex logarithms
 
@@ -281,23 +279,21 @@ example {X : Type*} [TopologicalSpace X] [LocPathConnectedSpace X] {U : Set X}
 
 The question asked why a function with a zero can have no logarithm.
 Since $`\exp` is never zero, a $`g` with $`\exp(g(z)) = f(z)` forces $`f` to be zero-free.
-The finisher is `Complex.exp_ne_zero (g z₀) : Complex.exp (g z₀) ≠ 0`: rewrite it with `hfg z₀` and then `hz` to turn it into `(0 : ℂ) ≠ 0`, which closes the goal.
+Prove exactly that, in the positive form: a function admitting a logarithm never vanishes.
+It is one rewrite plus one lemma — replace the goal's `f z₀` by `Complex.exp (g z₀)` by rewriting *backwards* along `hfg z₀`, and then the goal is literally `Complex.exp_ne_zero`.
 
 ```lean
-example (f g : ℂ → ℂ) (z₀ : ℂ) (hfg : ∀ z, Complex.exp (g z) = f z)
-    (hz : f z₀ = 0) : False := by
-  have hne := Complex.exp_ne_zero (g z₀)
-  rw [hfg z₀, hz] at hne
+example (f g : ℂ → ℂ) (hfg : ∀ z, Complex.exp (g z) = f z) (z₀ : ℂ) :
+    f z₀ ≠ 0 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (f g : ℂ → ℂ) (z₀ : ℂ) (hfg : ∀ z, Complex.exp (g z) = f z)
-    (hz : f z₀ = 0) : False := by
-  have hne := Complex.exp_ne_zero (g z₀)
-  rw [hfg z₀, hz] at hne
-  exact hne rfl
+example (f g : ℂ → ℂ) (hfg : ∀ z, Complex.exp (g z) = f z) (z₀ : ℂ) :
+    f z₀ ≠ 0 := by
+  rw [← hfg z₀]
+  exact Complex.exp_ne_zero (g z₀)
 ```
 :::
 
@@ -311,6 +307,25 @@ recall Complex.log (z : ℂ) : ℂ
 recall Complex.exp_log {z : ℂ} (hz : z ≠ 0) : Complex.exp (Complex.log z) = z
 ```
 
+Choosing a branch costs us the identity $`\log(zw) = \log z + \log w`, which can fail by $`2\pi i` when the arguments add up past $`\pi`.
+What survives is the identity one exponential away from it.
+Prove that $`\exp(\log z + \log w) = zw` for nonzero $`z` and $`w`, which says the two sides of the false identity differ by an integer multiple of $`2\pi i` and no more.
+Split the exponential of a sum with `Complex.exp_add`, then round-trip each factor with the lemma above.
+
+```lean
+example (z w : ℂ) (hz : z ≠ 0) (hw : w ≠ 0) :
+    Complex.exp (Complex.log z + Complex.log w) = z * w := by
+  sorry
+```
+
+:::solution
+```lean
+example (z w : ℂ) (hz : z ≠ 0) (hw : w ≠ 0) :
+    Complex.exp (Complex.log z + Complex.log w) = z * w := by
+  rw [Complex.exp_add, Complex.exp_log hz, Complex.exp_log hw]
+```
+:::
+
 The branch-cut domain $`\mathbb{C} \setminus (-\infty, 0]` is `Complex.slitPlane`, and the principal log is holomorphic at every one of its points (and not at the cut, where the imaginary part jumps from $`\pi` to $`-\pi`).
 
 ```lean
@@ -321,17 +336,33 @@ example (z : ℂ) (hz : z ∈ Complex.slitPlane) :
 
 On the slit plane the principal log has the derivative $`(\log z)' = 1/z` you would expect.
 Note that `Complex.differentiableAt_log` only records *that* the log is differentiable, not the *value* of its derivative.
-The value comes from `Complex.hasDerivAt_log hz : HasDerivAt Complex.log z⁻¹ z`, and `HasDerivAt.deriv` reads the `deriv` off of it, so the whole proof is `(Complex.hasDerivAt_log hz).deriv`.
+The value comes from `Complex.hasDerivAt_log hz : HasDerivAt Complex.log z⁻¹ z`, and `HasDerivAt.deriv` reads the `deriv` off of it.
 
 ```lean
-example (z : ℂ) (hz : z ∈ Complex.slitPlane) : deriv Complex.log z = z⁻¹ := by
+example (z : ℂ) (hz : z ∈ Complex.slitPlane) :
+    deriv Complex.log z = z⁻¹ :=
+  (Complex.hasDerivAt_log hz).deriv
+```
+
+The `HasDerivAt` form is the useful one precisely because it *composes*: each differentiation rule is a lemma taking `HasDerivAt` hypotheses to a `HasDerivAt` conclusion, so a derivative is computed by assembling rules and only then read off with `HasDerivAt.deriv` at the very end.
+Try the pattern on $`(\log z)^2`.
+The rule you need is `HasDerivAt.pow`, which turns a `HasDerivAt f f' z` into a statement about `fun w => f w ^ n` with derivative `n * f z ^ (n - 1) * f'`.
+Note that the derivative it produces is *not syntactically* the one asked for — it carries an exponent `2 - 1` and an inverse rather than a division — so state the intermediate `HasDerivAt` with `have` in the shape the lemma yields, and let `ring` reconcile the two afterwards.
+
+```lean
+example (z : ℂ) (hz : z ∈ Complex.slitPlane) :
+    deriv (fun w => Complex.log w ^ 2) z = 2 * Complex.log z / z := by
   sorry
 ```
 
 :::solution
 ```lean
 example (z : ℂ) (hz : z ∈ Complex.slitPlane) :
-    deriv Complex.log z = z⁻¹ :=
-  (Complex.hasDerivAt_log hz).deriv
+    deriv (fun w => Complex.log w ^ 2) z = 2 * Complex.log z / z := by
+  have h : HasDerivAt (fun w => Complex.log w ^ 2)
+      (2 * Complex.log z ^ (2 - 1) * z⁻¹) z :=
+    (Complex.hasDerivAt_log hz).pow 2
+  rw [h.deriv]
+  ring
 ```
 :::

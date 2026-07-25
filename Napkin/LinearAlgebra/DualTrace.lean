@@ -348,18 +348,58 @@ example (k V W : Type*) [CommRing k]
   TensorProduct.add_tmul v₁ v₂ w
 ```
 
-The proposition that $`\dim(V \otimes_k W) = \dim V \cdot \dim W` is `Module.finrank_tensorProduct`.
-Prove it for finite-dimensional $`V` and $`W`.
+Those relations really are *all* you get: every other identity between pure tensors has to be squeezed out of them.
+Squeeze out the first one, that $`0 \otimes w = 0`.
+The trick is the usual one for showing something is an additive identity: use distributivity on $`0 = 0 + 0` to get $`0 \otimes w = 0 \otimes w + 0 \otimes w`, then cancel (`add_eq_left` turns `a + b = a` into `b = 0`).
 
 ```lean
-example (k V W : Type*) [Field k]
-    [AddCommGroup V] [Module k V] [FiniteDimensional k V]
-    [AddCommGroup W] [Module k W] [FiniteDimensional k W] :
-    Module.finrank k (V ⊗[k] W) = Module.finrank k V * Module.finrank k W := by
+example (k V W : Type*) [CommRing k]
+    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
+    (w : W) : (0 : V) ⊗ₜ[k] w = 0 := by
   sorry
 ```
 
 :::solution
+```lean
+example (k V W : Type*) [CommRing k]
+    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
+    (w : W) : (0 : V) ⊗ₜ[k] w = 0 := by
+  -- Distributivity applied to `0 = 0 + 0` makes the element absorb itself.
+  have h : (0 : V) ⊗ₜ[k] w = (0 : V) ⊗ₜ[k] w + (0 : V) ⊗ₜ[k] w := by
+    rw [← TensorProduct.add_tmul, add_zero]
+  exact add_eq_left.mp h.symm
+```
+:::
+
+A warning that the notation hides: a general element of $`V \otimes_k W` is *not* a pure tensor $`v \otimes w`, only a finite sum of them.
+That "only a finite sum" is a theorem, and it is the single most useful fact about tensor products: the pure tensors span.
+Prove it.
+The statement is that the span of $`\{v \otimes w\}` is everything, and the proof is the recursion principle `TensorProduct.induction_on`, which builds an arbitrary tensor out of `zero`, `tmul`, and `add` — exactly the three cases you must supply.
+(Start from `Submodule.eq_top_iff'`, which reduces `= ⊤` to membership of an arbitrary element.)
+
+```lean
+example (k V W : Type*) [CommRing k]
+    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W] :
+    Submodule.span k {t : V ⊗[k] W | ∃ v w, v ⊗ₜ[k] w = t} = ⊤ := by
+  sorry
+```
+
+:::solution
+```lean
+example (k V W : Type*) [CommRing k]
+    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W] :
+    Submodule.span k {t : V ⊗[k] W | ∃ v w, v ⊗ₜ[k] w = t} = ⊤ := by
+  refine Submodule.eq_top_iff'.mpr fun t => ?_
+  induction t using TensorProduct.induction_on with
+  | zero => exact Submodule.zero_mem _
+  | tmul v w => exact Submodule.subset_span ⟨v, w, rfl⟩
+  | add x y hx hy => exact Submodule.add_mem _ hx hy
+```
+:::
+
+Mathlib knows this as `TensorProduct.span_tmul_eq_top`, and it is what makes the induction principle above so effective: to prove *anything* about all tensors, it is enough to handle pure ones and check that the property survives addition.
+The dimension count $`\dim(V \otimes_k W) = \dim V \cdot \dim W` is `Module.finrank_tensorProduct`.
+
 ```lean
 example (k V W : Type*) [Field k]
     [AddCommGroup V] [Module k V] [FiniteDimensional k V]
@@ -367,7 +407,6 @@ example (k V W : Type*) [Field k]
     Module.finrank k (V ⊗[k] W) = Module.finrank k V * Module.finrank k W :=
   Module.finrank_tensorProduct
 ```
-:::
 
 ## Dual space
 
@@ -386,22 +425,35 @@ example (k V : Type*) [Field k] [AddCommGroup V] [Module k V] :
   Subspace.dual_finrank_eq
 ```
 
-Given a basis $`e_1, \dots, e_n` of $`V`, its dual basis `Module.Basis.dualBasis` consists of the coordinate functions $`e_i^\vee`, characterized by $`e_i^\vee(e_j) = 1` when $`i = j` and $`0` otherwise.
-Prove this defining property.
+Given a basis $`e_1, \dots, e_n` of $`V`, its dual basis `Module.Basis.dualBasis` consists of the coordinate functions $`e_i^\vee`, characterized by $`e_i^\vee(e_j) = 1` when $`i = j` and $`0` otherwise — that defining property is `Module.Basis.dualBasis_apply_self`.
 
 ```lean
 example (k V ι : Type*) [Field k] [AddCommGroup V] [Module k V]
     [DecidableEq ι] [Fintype ι] (b : Module.Basis ι k V) (i j : ι) :
-    b.dualBasis i (b j) = if j = i then 1 else 0 := by
+    b.dualBasis i (b j) = if j = i then 1 else 0 :=
+  b.dualBasis_apply_self i j
+```
+
+Calling $`e_i^\vee` a *basis* of $`V^\vee` means every functional is a combination of them, and the coefficients are forced: expanding $`f` in the dual basis must reproduce the values $`f(e_i)`.
+Prove that expansion, $`f = \sum_i f(e_i) \, e_i^\vee`.
+Any basis expansion starts from `Module.Basis.sum_repr`, which rebuilds a vector — here the vector is $`f` and the basis is `b.dualBasis` — from its coordinates; rewriting *backwards* with it turns the bare `f` on the left into a sum.
+What identifies those coordinates as the values $`f(e_i)` is `Module.Basis.dualBasis_repr`.
+
+```lean
+example (k V ι : Type*) [Field k] [AddCommGroup V] [Module k V]
+    [DecidableEq ι] [Fintype ι] (b : Module.Basis ι k V) (f : Module.Dual k V) :
+    f = ∑ i, f (b i) • b.dualBasis i := by
   sorry
 ```
 
 :::solution
 ```lean
 example (k V ι : Type*) [Field k] [AddCommGroup V] [Module k V]
-    [DecidableEq ι] [Fintype ι] (b : Module.Basis ι k V) (i j : ι) :
-    b.dualBasis i (b j) = if j = i then 1 else 0 :=
-  b.dualBasis_apply_self i j
+    [DecidableEq ι] [Fintype ι] (b : Module.Basis ι k V) (f : Module.Dual k V) :
+    f = ∑ i, f (b i) • b.dualBasis i := by
+  -- Only the left side is rewritten, or the rewrite would loop on the sum.
+  conv_lhs => rw [← b.dualBasis.sum_repr f]
+  simp [Module.Basis.dualBasis_repr]
 ```
 :::
 
@@ -428,13 +480,26 @@ noncomputable example (k V W : Type*) [Field k]
 ```
 
 Interpreting a pure tensor $`f \otimes w` as a map sends $`v` to $`f(v) \cdot w`, which is `dualTensorHom_apply`.
-Prove it.
 
 ```lean
 example (k V W : Type*) [CommRing k]
     [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
     (f : Module.Dual k V) (w : W) (v : V) :
-    dualTensorHom k V W (f ⊗ₜ[k] w) v = f v • w := by
+    dualTensorHom k V W (f ⊗ₜ[k] w) v = f v • w :=
+  dualTensorHom_apply f v w
+```
+
+Read that formula again: whatever $`v` is fed in, the output is a *multiple of the single vector* $`w`.
+So a pure tensor corresponds to a matrix of rank at most one, which is why the pure tensors are so far from being all of $`V^\vee \otimes W`, and why a general matrix needs a sum of them.
+Make that precise: show the image of $`\Psi(f \otimes w)` lies in the line spanned by $`w`.
+Take an arbitrary element of the range apart with `rintro _ ⟨v, rfl⟩` — a range membership is a witness $`v` together with the equation naming the output — then rewrite with the formula above and note that a span is closed under scaling (`Submodule.smul_mem`, applied to `Submodule.mem_span_singleton_self`).
+
+```lean
+example (k V W : Type*) [CommRing k]
+    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
+    (f : Module.Dual k V) (w : W) :
+    LinearMap.range (dualTensorHom k V W (f ⊗ₜ[k] w))
+      ≤ Submodule.span k {w} := by
   sorry
 ```
 
@@ -442,9 +507,12 @@ example (k V W : Type*) [CommRing k]
 ```lean
 example (k V W : Type*) [CommRing k]
     [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
-    (f : Module.Dual k V) (w : W) (v : V) :
-    dualTensorHom k V W (f ⊗ₜ[k] w) v = f v • w :=
-  dualTensorHom_apply f v w
+    (f : Module.Dual k V) (w : W) :
+    LinearMap.range (dualTensorHom k V W (f ⊗ₜ[k] w))
+      ≤ Submodule.span k {w} := by
+  rintro _ ⟨v, rfl⟩
+  rw [dualTensorHom_apply]
+  exact Submodule.smul_mem _ _ (Submodule.mem_span_singleton_self w)
 ```
 :::
 
@@ -474,17 +542,59 @@ example (k V W : Type*) [Field k]
     [AddCommGroup V] [Module k V] [FiniteDimensional k V]
     [AddCommGroup W] [Module k W] [FiniteDimensional k W]
     (f : V →ₗ[k] W) (g : W →ₗ[k] V) :
-    LinearMap.trace k V (g ∘ₗ f) = LinearMap.trace k W (f ∘ₗ g) := by
+    LinearMap.trace k V (g ∘ₗ f) = LinearMap.trace k W (f ∘ₗ g) :=
+  LinearMap.trace_comp_comm' f g
+```
+
+That innocuous-looking commutation is the workhorse of the whole theory, because it is what makes the trace *basis-independent*: changing basis replaces $`T` by $`u T u^{-1}`, and cycling $`u^{-1}` around to the front cancels it.
+Prove that invariance.
+Reassociate first — `LinearMap.comp_assoc` regroups $`u \circ (T \circ u^{-1})` as $`(u \circ T) \circ u^{-1}` — and then a single application of the commutation above moves $`u^{-1}` to the front, where `simp` can cancel it against $`u`.
+
+```lean
+example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    [FiniteDimensional k V] (f : V →ₗ[k] V) (u : V ≃ₗ[k] V) :
+    LinearMap.trace k V ((u : V →ₗ[k] V) ∘ₗ f ∘ₗ (u.symm : V →ₗ[k] V))
+      = LinearMap.trace k V f := by
   sorry
 ```
 
 :::solution
 ```lean
-example (k V W : Type*) [Field k]
-    [AddCommGroup V] [Module k V] [FiniteDimensional k V]
-    [AddCommGroup W] [Module k W] [FiniteDimensional k W]
-    (f : V →ₗ[k] W) (g : W →ₗ[k] V) :
-    LinearMap.trace k V (g ∘ₗ f) = LinearMap.trace k W (f ∘ₗ g) :=
-  LinearMap.trace_comp_comm' f g
+example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    [FiniteDimensional k V] (f : V →ₗ[k] V) (u : V ≃ₗ[k] V) :
+    LinearMap.trace k V ((u : V →ₗ[k] V) ∘ₗ f ∘ₗ (u.symm : V →ₗ[k] V))
+      = LinearMap.trace k V f := by
+  -- Regroup as `(u ∘ f) ∘ u⁻¹`, then cycle `u⁻¹` to the front.
+  rw [← LinearMap.comp_assoc, LinearMap.trace_comp_comm']
+  simp
+```
+:::
+
+(Mathlib has this packaged as `LinearMap.trace_conj'`, but the two-line derivation is the point: everything the trace knows is a consequence of linearity plus cycling.)
+
+Here is a famous payoff, and a good test of both.
+On a finite-dimensional space there is *no* pair of operators with $`AB - BA = 1`; equivalently, the canonical commutation relation of quantum mechanics has no finite-dimensional model.
+The argument is three lines of trace bookkeeping: the trace of the left side is $`0` because the trace is linear (`map_sub`) and cycles, while the trace of the identity is $`\dim V` (`LinearMap.trace_one`), which is nonzero in characteristic $`0` whenever $`V \neq 0`.
+Finish it: from `(finrank k V : k) = 0` get `finrank k V = 0` by `Nat.cast_eq_zero` (this is where `CharZero k` is used), and contradict `Module.finrank_pos`.
+
+```lean
+example (k V : Type*) [Field k] [CharZero k] [AddCommGroup V] [Module k V]
+    [FiniteDimensional k V] [Nontrivial V] (A B : V →ₗ[k] V) :
+    A ∘ₗ B - B ∘ₗ A ≠ 1 := by
+  sorry
+```
+
+:::solution
+```lean
+example (k V : Type*) [Field k] [CharZero k] [AddCommGroup V] [Module k V]
+    [FiniteDimensional k V] [Nontrivial V] (A B : V →ₗ[k] V) :
+    A ∘ₗ B - B ∘ₗ A ≠ 1 := by
+  intro h
+  -- Linearity plus cycling kill the commutator's trace.
+  have h1 : LinearMap.trace k V (A ∘ₗ B - B ∘ₗ A) = 0 := by
+    rw [map_sub, LinearMap.trace_comp_comm' A B, sub_self]
+  -- But the supposed value `1` has trace `dim V ≠ 0`.
+  rw [h, LinearMap.trace_one] at h1
+  exact (Module.finrank_pos (R := k) (M := V)).ne' (Nat.cast_eq_zero.mp h1)
 ```
 :::

@@ -381,15 +381,35 @@ Since $`e(0) = \exp(0) = 1`, the canonical map sends the identity of the circle 
 
 ```lean
 example {T : ℝ} : AddCircle.toCircle (0 : AddCircle T) = 1 := by
+  simp
+```
+
+The property that makes $`e` a *character* rather than just some map is that it converts addition into multiplication.
+Prove it.
+The obstacle is that a point of `AddCircle T` is an equivalence class, so there is nothing to compute with until you name a representative: `induction x using QuotientAddGroup.induction_on` replaces `x` by an honest real number (do it for both variables).
+After that `AddCircle.coe_add` pushes the sum inside the class, `AddCircle.toCircle_apply_mk` evaluates each side, and `Circle.exp_add` finishes — modulo distributing the factor $`2\pi/T` over the sum with `mul_add`.
+This "reduce to representatives" move is how essentially every statement about a quotient gets proved.
+
+```lean
+example {T : ℝ} (x y : AddCircle T) :
+    AddCircle.toCircle (x + y)
+      = AddCircle.toCircle x * AddCircle.toCircle y := by
   sorry
 ```
 
 :::solution
 ```lean
-example {T : ℝ} : AddCircle.toCircle (0 : AddCircle T) = 1 := by
-  simp
+example {T : ℝ} (x y : AddCircle T) :
+    AddCircle.toCircle (x + y)
+      = AddCircle.toCircle x * AddCircle.toCircle y := by
+  induction x using QuotientAddGroup.induction_on
+  induction y using QuotientAddGroup.induction_on
+  simp_rw [← AddCircle.coe_add, AddCircle.toCircle_apply_mk, mul_add,
+    Circle.exp_add]
 ```
 :::
+
+(Mathlib records the result as `AddCircle.toCircle_add`; it is well-definedness of $`e` on the quotient that the induction is really checking.)
 
 ## A reminder on Hilbert spaces
 
@@ -418,16 +438,25 @@ The second of them — that the coefficient $`a_\xi` equals the inner product ag
 ```lean
 example {ι : Type*} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E]
     (b : HilbertBasis ι ℂ E) (x : E) (i : ι) :
-    b.repr x i = inner ℂ (b i) x := by
+    b.repr x i = inner ℂ (b i) x :=
+  b.repr_apply_apply x i
+```
+
+The first fact — that the coefficients determine the vector — is where the *basis* part of "orthonormal basis" is doing work: an orthonormal family whose span is not dense would have vectors invisible to it.
+Prove the sharpest form: a vector all of whose Fourier coefficients vanish is zero.
+No computation is needed, only the observation that `repr` is not merely a linear map but a bundled isometric *equivalence*, so it is injective; `map_eq_zero_iff` converts injectivity of a map into the statement that only zero is sent to zero.
+
+```lean
+example {ι : Type*} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E]
+    (b : HilbertBasis ι ℂ E) (x : E) : b.repr x = 0 ↔ x = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
 example {ι : Type*} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E]
-    (b : HilbertBasis ι ℂ E) (x : E) (i : ι) :
-    b.repr x i = inner ℂ (b i) x :=
-  b.repr_apply_apply x i
+    (b : HilbertBasis ι ℂ E) (x : E) : b.repr x = 0 ↔ x = 0 :=
+  map_eq_zero_iff b.repr b.repr.injective
 ```
 :::
 
@@ -442,33 +471,47 @@ Viewing $`\{\pm 1\}^n` as an abelian group under pointwise multiplication (as in
 The direct cube model here is nevertheless the more legible one for the multilinear expansion, and is retired the day Mathlib adopts a hypercube vocabulary.
 :::
 
-The empty character is the constant function $`1`, since an empty product is $`1`.
+The empty character is the constant function $`1`, since an empty product is $`1`; that is `chi_empty`.
 
 ```lean
-example (x : BoolCube 3) : chi ∅ x = 1 := by
+example (x : BoolCube 3) : chi ∅ x = 1 :=
+  chi_empty x
+```
+
+At the other extreme, a one-element set gives back a single coordinate, $`\chi_{\{i\}}(x) = x_i`.
+Prove it by unfolding the definition and letting `simp` collapse the one-term product (`Finset.prod_singleton`).
+This is the base case of the slogan that the $`\chi_S` are the *square-free monomials* in the coordinates.
+
+```lean
+example {n : ℕ} (i : Fin n) (x : BoolCube n) : chi {i} x = pm (x i) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (x : BoolCube 3) : chi ∅ x = 1 :=
-  chi_empty x
+example {n : ℕ} (i : Fin n) (x : BoolCube n) : chi {i} x = pm (x i) := by
+  simp [chi]
 ```
 :::
 
 Each character takes values in $`\{\pm1\}` — that is `chi_eq_one_or` — because it is a product of $`\pm1`'s; the fact underneath it is that $`\chi_S` squares to $`1`.
+Prove that, which is where the $`\pm1`-valued model earns its keep (over $`\{0,1\}` nothing like it is true).
+The single-coordinate version is `pm_mul_self`, so the work is getting from one coordinate to the whole product: after unfolding `chi` you have a product times a product, and `Finset.prod_mul_distrib` (used right-to-left) merges them into a single product of $`x_i \cdot x_i`.
 
 ```lean
-example (S : Finset (Fin 3)) (x : BoolCube 3) :
+example {n : ℕ} (S : Finset (Fin n)) (x : BoolCube n) :
     chi S x * chi S x = 1 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (S : Finset (Fin 3)) (x : BoolCube 3) :
-    chi S x * chi S x = 1 :=
-  chi_mul_self S x
+example {n : ℕ} (S : Finset (Fin n)) (x : BoolCube n) :
+    chi S x * chi S x = 1 := by
+  unfold chi
+  -- Merge the two products into one, then kill it factor by factor.
+  rw [← Finset.prod_mul_distrib]
+  simp [pm_mul_self]
 ```
 :::
 
@@ -487,18 +530,9 @@ The exercise on the special role of $`\varnothing` is likewise on the books as `
 ```lean
 example {n : ℕ} (f : BoolFn n) :
     boolFourierCoeff f (∅ : Finset (Fin n))
-      = (2 ^ n : ℂ)⁻¹ * ∑ x, f x := by
-  sorry
-```
-
-:::solution
-```lean
-example {n : ℕ} (f : BoolFn n) :
-    boolFourierCoeff f (∅ : Finset (Fin n))
       = (2 ^ n : ℂ)⁻¹ * ∑ x, f x :=
   boolFourierCoeff_empty f
 ```
-:::
 
 ## Fourier analysis on finite groups Z
 
@@ -521,18 +555,26 @@ recall AddChar.sum_eq_zero_iff_ne_zero {A R : Type*} [AddGroup A]
 ```
 
 That last fact is the heart of the orthonormality proof: a nonzero character on a finite group sums to zero.
+The trivial character is the exception, and it is worth having both halves in a single statement, since that combined form — sum equals $`|A|` on the trivial character and $`0` on every other — is what actually gets substituted into orthogonality computations.
+Prove it.
+Split on whether $`\psi` is trivial with `by_cases`; in the trivial branch `subst` and let `simp` observe that the character is constantly $`1`, so the sum counts the group, and the other branch is the lemma above.
+Note that additive notation makes the *trivial* character `0` even though its values are all `1`, since `AddChar A ℂ` records a map from $`(A, +)` to $`(\mathbb{C}, \times)`.
 
 ```lean
-example {A : Type*} [AddGroup A] [Fintype A] (ψ : AddChar A ℂ) (h : ψ ≠ 0) :
-    ∑ x, ψ x = 0 := by
+example {A : Type*} [AddGroup A] [Fintype A] (ψ : AddChar A ℂ) :
+    ∑ x, ψ x = if ψ = 0 then (Fintype.card A : ℂ) else 0 := by
   sorry
 ```
 
 :::solution
 ```lean
-example {A : Type*} [AddGroup A] [Fintype A] (ψ : AddChar A ℂ) (h : ψ ≠ 0) :
-    ∑ x, ψ x = 0 :=
-  AddChar.sum_eq_zero_iff_ne_zero.mpr h
+example {A : Type*} [AddGroup A] [Fintype A] (ψ : AddChar A ℂ) :
+    ∑ x, ψ x = if ψ = 0 then (Fintype.card A : ℂ) else 0 := by
+  by_cases h : ψ = 0
+  · subst h
+    simp
+  · rw [if_neg h]
+    exact AddChar.sum_eq_zero_iff_ne_zero.mpr h
 ```
 :::
 
@@ -576,16 +618,9 @@ For a function presented on an interval $`[a, b]` rather than on the circle, `fo
 The zeroth character is the constant function $`1`, since $`\exp(i \cdot 0 \cdot x) = 1`.
 
 ```lean
-example {T : ℝ} (x : AddCircle T) : fourier 0 x = 1 := by
-  sorry
-```
-
-:::solution
-```lean
 example {T : ℝ} (x : AddCircle T) : fourier 0 x = 1 :=
   fourier_zero
 ```
-:::
 
 Consequently the exercise's identity $`\widehat{f}(0) = \frac{1}{2\pi}\int f` holds by definition: at $`n = 0` the character drops out of the integral, leaving the plain average of $`f` against the normalized measure.
 
@@ -593,14 +628,23 @@ Consequently the exercise's identity $`\widehat{f}(0) = \frac{1}{2\pi}\int f` ho
 example {T : ℝ} [hT : Fact (0 < T)] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℂ E] (f : AddCircle T → E) :
     fourierCoeff f 0 = ∫ t : AddCircle T, f t ∂AddCircle.haarAddCircle := by
+  simp [fourierCoeff]
+```
+
+Now put the normalization to work on the simplest possible input.
+Show that a constant function has that constant as its zeroth Fourier coefficient — the statement that the "average" really is an average, and the sanity check that would fail if `haarAddCircle` had total mass $`2\pi` instead of $`1`.
+Unfolding `fourierCoeff` leaves the integral of a constant, which `simp` evaluates to (total mass) $`\cdot\, c`; the mass is $`1` because Mathlib registers `AddCircle.haarAddCircle` as a probability measure, and that instance is what makes the constant come back unchanged.
+
+```lean
+example {T : ℝ} [hT : Fact (0 < T)] (c : ℂ) :
+    fourierCoeff (fun _ : AddCircle T => c) 0 = c := by
   sorry
 ```
 
 :::solution
 ```lean
-example {T : ℝ} [hT : Fact (0 < T)] {E : Type*} [NormedAddCommGroup E]
-    [NormedSpace ℂ E] (f : AddCircle T → E) :
-    fourierCoeff f 0 = ∫ t : AddCircle T, f t ∂AddCircle.haarAddCircle := by
+example {T : ℝ} [hT : Fact (0 < T)] (c : ℂ) :
+    fourierCoeff (fun _ : AddCircle T => c) 0 = c := by
   simp [fourierCoeff]
 ```
 :::
@@ -611,17 +655,10 @@ For finite abelian groups the duality is already on the books: `AddChar.zmodAddE
 The first of these is an additive equivalence between $`\mathbb{Z}/n\mathbb{Z}` and its character group.
 
 ```lean
-example {n : ℕ} [NeZero n] : ZMod n ≃+ AddChar (ZMod n) ℂ := by
-  sorry
-```
-
-:::solution
-```lean
 noncomputable example {n : ℕ} [NeZero n] :
     ZMod n ≃+ AddChar (ZMod n) ℂ :=
   AddChar.zmodAddEquiv
 ```
-:::
 
 ## Parseval and friends
 
@@ -644,19 +681,9 @@ The Parseval corollary for a square-integrable function on the circle is then th
 example {T : ℝ} [hT : Fact (0 < T)]
     (f : Lp ℂ 2 (@AddCircle.haarAddCircle T hT)) :
     ∑' i : ℤ, ‖fourierCoeff (f : AddCircle T → ℂ) i‖ ^ 2
-      = ∫ t : AddCircle T, ‖f t‖ ^ 2 ∂AddCircle.haarAddCircle := by
-  sorry
-```
-
-:::solution
-```lean
-example {T : ℝ} [hT : Fact (0 < T)]
-    (f : Lp ℂ 2 (@AddCircle.haarAddCircle T hT)) :
-    ∑' i : ℤ, ‖fourierCoeff (f : AddCircle T → ℂ) i‖ ^ 2
       = ∫ t : AddCircle T, ‖f t‖ ^ 2 ∂AddCircle.haarAddCircle :=
   tsum_sq_fourierCoeff f
 ```
-:::
 
 ## Application: Basel problem
 
@@ -677,15 +704,24 @@ The Mathlib proof is Fourier-analytic in exactly this chapter's spirit: it compu
 The first problem below asks for $`\sum_{n \ge 1} \frac{1}{n^4} = \frac{\pi^4}{90}`, which is `hasSum_zeta_four`.
 
 ```lean
-example : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 4) (Real.pi ^ 4 / 90) := by
+example :
+    HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 4) (Real.pi ^ 4 / 90) :=
+  hasSum_zeta_four
+```
+
+Every result above is phrased with `HasSum`, not with an equation between a `∑'` and a number, and the distinction matters: `HasSum f a` asserts that the net of finite partial sums converges to `a`, whereas `∑' n, f n` is a *total* function that silently returns `0` when no such limit exists.
+Converting the honest statement into the convenient equation is `HasSum.tsum_eq`, and it only goes that way.
+Write the $`\zeta(4)` evaluation as an equation between sums.
+
+```lean
+example : ∑' n : ℕ, (1 : ℝ) / (n : ℝ) ^ 4 = Real.pi ^ 4 / 90 := by
   sorry
 ```
 
 :::solution
 ```lean
-example :
-    HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 4) (Real.pi ^ 4 / 90) :=
-  hasSum_zeta_four
+example : ∑' n : ℕ, (1 : ℝ) / (n : ℝ) ^ 4 = Real.pi ^ 4 / 90 :=
+  hasSum_zeta_four.tsum_eq
 ```
 :::
 
