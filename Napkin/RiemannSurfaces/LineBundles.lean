@@ -343,19 +343,32 @@ These bundles come in topological and smooth flavors, but there is no *holomorph
 What survives the gap is the *transition data* of the definition — the nonvanishing scaling factors that weld the charts — and that datum is enough to model the twisted bundles below; it is packaged as `Napkin.Missing.LineBundleCocycle`.
 
 The zero section sends each base point to the zero of the fiber above it.
-That it lands back over the point it came from is the definitional accessor `Bundle.zeroSection_proj`, no different from the `TotalSpace.mk` computation above; the coordinate worth reading off is the other one — the fiber value it picks out is the zero of $`\mathbb{C}`, which is `Bundle.zeroSection_snd`.
+The coordinate worth reading off is the fiber value it picks out — the zero of $`\mathbb{C}`, which is the definitional accessor `Bundle.zeroSection_snd`.
 
 ```lean
 example (B : Type*) [TopologicalSpace B] (x : B) :
     (Bundle.zeroSection ℂ (Bundle.Trivial B ℂ) x).2 = 0 := by
+  rw [Bundle.zeroSection_snd]
+```
+
+What makes the zero section a *section* at all is the defining property that projecting it back down recovers the identity, $`\pi \circ f = \mathrm{id}`.
+Prove it: the pointwise fact that it lands back over the point it came from is `Bundle.zeroSection_proj`, so `funext` reduces the goal to that accessor at each base point.
+
+```lean
+example (B : Type*) [TopologicalSpace B] :
+    Bundle.TotalSpace.proj ∘ Bundle.zeroSection ℂ (Bundle.Trivial B ℂ)
+      = id := by
   sorry
 ```
 
 :::solution
 ```lean
-example (B : Type*) [TopologicalSpace B] (x : B) :
-    (Bundle.zeroSection ℂ (Bundle.Trivial B ℂ) x).2 = 0 := by
-  rw [Bundle.zeroSection_snd]
+example (B : Type*) [TopologicalSpace B] :
+    Bundle.TotalSpace.proj ∘ Bundle.zeroSection ℂ (Bundle.Trivial B ℂ)
+      = id := by
+  -- A section satisfies π ∘ f = id; check it base point by base point.
+  funext x
+  exact Bundle.zeroSection_proj ℂ (Bundle.Trivial B ℂ) x
 ```
 :::
 
@@ -365,16 +378,30 @@ That equation is the accessor `Trivialization.coe_fst`, which consumes exactly t
 ```lean
 example (B F Z : Type*) [TopologicalSpace B] [TopologicalSpace F]
     [TopologicalSpace Z] (p : Z → B) (e : Bundle.Trivialization F p) (z : Z)
-    (hz : z ∈ e.source) : (e z).1 = p z := by
+    (hz : z ∈ e.source) : (e z).1 = p z :=
+  e.coe_fst hz
+```
+
+Put that accessor to work: two source points whose charts share a base coordinate must sit over the same base point.
+Rewrite the goal $`p z = p w` backwards through `coe_fst` at each point (`rw [← e.coe_fst hz, ← e.coe_fst hw]`), turning it into the hypothesis on the chart coordinates.
+
+```lean
+example (B F Z : Type*) [TopologicalSpace B] [TopologicalSpace F]
+    [TopologicalSpace Z] (p : Z → B) (e : Bundle.Trivialization F p)
+    (z w : Z) (hz : z ∈ e.source) (hw : w ∈ e.source)
+    (h : (e z).1 = (e w).1) : p z = p w := by
   sorry
 ```
 
 :::solution
 ```lean
 example (B F Z : Type*) [TopologicalSpace B] [TopologicalSpace F]
-    [TopologicalSpace Z] (p : Z → B) (e : Bundle.Trivialization F p) (z : Z)
-    (hz : z ∈ e.source) : (e z).1 = p z :=
-  e.coe_fst hz
+    [TopologicalSpace Z] (p : Z → B) (e : Bundle.Trivialization F p)
+    (z w : Z) (hz : z ∈ e.source) (hw : w ∈ e.source)
+    (h : (e z).1 = (e w).1) : p z = p w := by
+  -- Read each base point off its chart coordinate, then use the shared value.
+  rw [← e.coe_fst hz, ← e.coe_fst hw]
+  exact h
 ```
 :::
 
@@ -468,14 +495,24 @@ This equivalence is exactly why the transition data above records its scaling fa
 The finisher is `isUnit_iff_ne_zero`.
 
 ```lean
-example (c : ℂ) : IsUnit c ↔ c ≠ 0 := by
+example (c : ℂ) : IsUnit c ↔ c ≠ 0 :=
+  isUnit_iff_ne_zero
+```
+
+The prose example's fiber map multiplies by $`x^2`, and it degenerates exactly at $`x = 0`.
+Confirm that from the equivalence above: the scalar $`x^2` is a unit iff $`x \neq 0`.
+Rewrite with `isUnit_iff_ne_zero` to reduce to $`x^2 \neq 0`, then `pow_ne_zero_iff` (which needs the exponent nonzero) strips the square.
+
+```lean
+example (x : ℂ) : IsUnit (x ^ 2) ↔ x ≠ 0 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (c : ℂ) : IsUnit c ↔ c ≠ 0 :=
-  isUnit_iff_ne_zero
+example (x : ℂ) : IsUnit (x ^ 2) ↔ x ≠ 0 := by
+  -- x² is a unit ⟺ x² ≠ 0 ⟺ x ≠ 0, degenerate exactly at the origin.
+  rw [isUnit_iff_ne_zero, pow_ne_zero_iff (by norm_num)]
 ```
 :::
 

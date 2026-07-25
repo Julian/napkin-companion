@@ -321,13 +321,31 @@ function at the top of `WithTop ℤ`.
 
 ```lean
 example (x : ℂ) : meromorphicOrderAt (0 : ℂ → ℂ) x = ⊤ := by
+  simp
+```
+
+Those last two facts combine.
+Since a product's order is the *sum* of the orders — `meromorphicOrderAt_mul`,
+fed a `MeromorphicAt` from each factor via `AnalyticAt.meromorphicAt` — and
+each analytic factor has nonnegative order, a product of two analytic functions
+again has nonnegative order.
+Rewrite with the product identity, then add the two bounds with `add_nonneg`.
+
+```lean
+example (f g : ℂ → ℂ) (x : ℂ) (hf : AnalyticAt ℂ f x)
+    (hg : AnalyticAt ℂ g x) :
+    0 ≤ meromorphicOrderAt (f * g) x := by
   sorry
 ```
 
 :::solution
 ```lean
-example (x : ℂ) : meromorphicOrderAt (0 : ℂ → ℂ) x = ⊤ := by
-  simp
+example (f g : ℂ → ℂ) (x : ℂ) (hf : AnalyticAt ℂ f x)
+    (hg : AnalyticAt ℂ g x) :
+    0 ≤ meromorphicOrderAt (f * g) x := by
+  -- ord(fg) = ord f + ord g, and each summand is ≥ 0 for analytic f, g.
+  rw [meromorphicOrderAt_mul hf.meromorphicAt hg.meromorphicAt]
+  exact add_nonneg hf.meromorphicOrderAt_nonneg hg.meromorphicOrderAt_nonneg
 ```
 :::
 
@@ -374,19 +392,35 @@ example (X : Type*) (p : X) (m n : ℤ) :
   Finsupp.single_add p m n
 ```
 
-Show that the divisor of a single point is supported at just that point.
+The divisor of a single point is supported at just that point.
 
 ```lean
 example (X : Type*) (p : X) :
     (Divisor.single p (1 : ℤ)).support = {p} := by
+  simp [Divisor.single]
+```
+
+Reading a *sum* of divisors coefficient-wise runs on the same principle.
+Show that `single p a + single q b`, evaluated at `p` for a point `q ≠ p`, has
+value `a`: only the term based at `p` contributes.
+Unfold `Divisor.single`, split the sum pointwise with `Finsupp.add_apply`, then
+evaluate each single — `Finsupp.single_eq_same` at the matching point and
+`Finsupp.single_eq_of_ne'` at the mismatched one.
+
+```lean
+example (X : Type*) (p q : X) (a b : ℤ) (h : q ≠ p) :
+    (Divisor.single p a + Divisor.single q b) p = a := by
   sorry
 ```
 
 :::solution
 ```lean
-example (X : Type*) (p : X) :
-    (Divisor.single p (1 : ℤ)).support = {p} := by
-  simp [Divisor.single]
+example (X : Type*) (p q : X) (a b : ℤ) (h : q ≠ p) :
+    (Divisor.single p a + Divisor.single q b) p = a := by
+  -- At p only the p-term survives; single q b vanishes there since q ≠ p.
+  simp only [Divisor.single]
+  rw [Finsupp.add_apply, Finsupp.single_eq_same,
+    Finsupp.single_eq_of_ne' h, add_zero]
 ```
 :::
 
@@ -436,19 +470,36 @@ example :
 ```
 :::
 
-Show that the degree flips sign along with the divisor.
+The degree flips sign along with the divisor — it is a homomorphism.
 
 ```lean
 example (X : Type*) (D : Divisor X) :
     Divisor.degree (-D) = - Divisor.degree D := by
+  rw [map_neg]
+```
+
+Being a homomorphism turns *any* relation between degrees into one between
+divisors.
+Show that two divisors of equal degree have a difference of degree $`0`:
+`map_sub` splits `degree (D₁ - D₂)` into `degree D₁ - degree D₂`, the
+hypothesis collapses it, and `sub_self` finishes.
+(This degree-$`0` difference is precisely the relation behind the earlier
+proposition that principal divisors have degree $`0`.)
+
+```lean
+example (X : Type*) (D₁ D₂ : Divisor X)
+    (h : Divisor.degree D₁ = Divisor.degree D₂) :
+    Divisor.degree (D₁ - D₂) = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (X : Type*) (D : Divisor X) :
-    Divisor.degree (-D) = - Divisor.degree D := by
-  rw [map_neg]
+example (X : Type*) (D₁ D₂ : Divisor X)
+    (h : Divisor.degree D₁ = Divisor.degree D₂) :
+    Divisor.degree (D₁ - D₂) = 0 := by
+  -- degree is a homomorphism: deg(D₁ - D₂) = deg D₁ - deg D₂ = 0.
+  rw [map_sub, h, sub_self]
 ```
 :::
 
@@ -515,9 +566,13 @@ example {X : Type*} (R : Divisor.RiemannRochData X) (h : R.l 0 = 1) :
   R.degree_K h
 ```
 
-Feed it instead $`D = 0` (where $`\deg 0 = 0` and $`K - 0 = K`) and show that
-the two linear systems at the ends differ in dimension by $`1 - g`, i.e.
-$`\dim L(0) - \dim L(K) = 1 - g`.
+Feed it instead $`D = 0`, but this time *derive* the corollary from
+`R.riemannRoch` rather than citing the packaged `l_zero_sub_l_K`.
+Instantiate the identity at $`0`, simplify the two easy pieces —
+$`\deg 0 = 0` (that is `map_zero`) and $`K - 0 = K` (`sub_zero`) — and let
+`omega` finish the linear arithmetic.
+The upshot: the two linear systems at the ends differ in dimension by
+$`1 - g`, i.e. $`\dim L(0) - \dim L(K) = 1 - g`.
 
 ```lean
 example {X : Type*} (R : Divisor.RiemannRochData X) :
@@ -528,8 +583,12 @@ example {X : Type*} (R : Divisor.RiemannRochData X) :
 :::solution
 ```lean
 example {X : Type*} (R : Divisor.RiemannRochData X) :
-    (R.l 0 : ℤ) - R.l R.K = 1 - R.genus :=
-  R.l_zero_sub_l_K
+    (R.l 0 : ℤ) - R.l R.K = 1 - R.genus := by
+  -- Instantiate Riemann-Roch at D = 0; deg 0 = 0 and K - 0 = K.
+  have h := R.riemannRoch 0
+  rw [sub_zero, map_zero] at h
+  -- h now reads l 0 - l K = 0 - g + 1; rearrange.
+  omega
 ```
 :::
 

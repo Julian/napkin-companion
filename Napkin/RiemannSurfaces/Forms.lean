@@ -199,21 +199,50 @@ These building blocks really do read off the coordinates: `Complex.reCLM` return
 example (z : ℂ) : Complex.reCLM z = z.re := rfl
 ```
 
-Check that the imaginary building block behaves the same way, and that composing with `Complex.ofRealCLM` genuinely lands the real part back inside $`\mathbb{C}`.
+The imaginary building block reads off its coordinate the same way, and composing with `Complex.ofRealCLM` genuinely lands the real part back inside $`\mathbb{C}`.
 
-```lean
-example (z : ℂ) : Complex.imCLM z = z.im := by sorry
-
-example (z : ℂ) :
-    (Complex.ofRealCLM.comp Complex.reCLM) z = (z.re : ℂ) := by sorry
-```
-
-:::solution
 ```lean
 example (z : ℂ) : Complex.imCLM z = z.im := rfl
 
 example (z : ℂ) :
     (Complex.ofRealCLM.comp Complex.reCLM) z = (z.re : ℂ) := rfl
+```
+
+Now assemble the two blocks into a genuine form $`f \, d\operatorname{Re} + g \, d\operatorname{Im}` and check what it computes.
+Taking $`f \equiv 1`, $`g \equiv i` reconstructs the change in $`z`, and $`f \equiv 1`, $`g \equiv -i` the change in $`\overline{z}`.
+Each `comp` reduces to a coordinate by the facts above; then `Complex.re_add_im` closes the first, and `Complex.ext` splits the second into equal real and imaginary parts.
+
+```lean
+example (z : ℂ) :
+    (Complex.ofRealCLM.comp Complex.reCLM) z
+      + Complex.I * (Complex.ofRealCLM.comp Complex.imCLM) z = z := by
+  sorry
+
+example (z : ℂ) :
+    (Complex.ofRealCLM.comp Complex.reCLM) z
+      - Complex.I * (Complex.ofRealCLM.comp Complex.imCLM) z
+        = starRingEnd ℂ z := by
+  sorry
+```
+
+:::solution
+```lean
+example (z : ℂ) :
+    (Complex.ofRealCLM.comp Complex.reCLM) z
+      + Complex.I * (Complex.ofRealCLM.comp Complex.imCLM) z = z := by
+  -- Each `comp` is a coordinate; the rest is `re_add_im` up to `ring`.
+  simp only [ContinuousLinearMap.comp_apply, Complex.ofRealCLM_apply,
+    Complex.reCLM_apply, Complex.imCLM_apply]
+  linear_combination Complex.re_add_im z
+
+example (z : ℂ) :
+    (Complex.ofRealCLM.comp Complex.reCLM) z
+      - Complex.I * (Complex.ofRealCLM.comp Complex.imCLM) z
+        = starRingEnd ℂ z := by
+  -- Same reduction; `Complex.ext` checks real and imaginary parts apart.
+  simp only [ContinuousLinearMap.comp_apply, Complex.ofRealCLM_apply,
+    Complex.reCLM_apply, Complex.imCLM_apply]
+  apply Complex.ext <;> simp
 ```
 :::
 
@@ -239,18 +268,27 @@ example (f : ℂ → ℂ) (x : ℂ) (hf : DifferentiableAt ℝ f x) :
 ```
 
 When $`f` is already complex-differentiable, its real derivative is nothing but the `restrictScalars` of its complex derivative — which is exactly the sense in which $`df = f'(z)\,dz`.
-Prove it.
 
 ```lean
 example (f : ℂ → ℂ) (x : ℂ) (hf : DifferentiableAt ℂ f x) :
-    fderiv ℝ f x = (fderiv ℂ f x).restrictScalars ℝ := by sorry
+    fderiv ℝ f x = (fderiv ℂ f x).restrictScalars ℝ :=
+  hf.fderiv_restrictScalars ℝ
+```
+
+Read against `differentiableAt_iff_restrictScalars`, this says a holomorphic $`f` has no $`d\overline{z}` component: its real derivative lies in the image of `restrictScalars ℝ`.
+Prove that half of the equivalence directly — supply the complex derivative as the witness, and close with the identity just proved (reversed).
+
+```lean
+example (f : ℂ → ℂ) (x : ℂ) (hf : DifferentiableAt ℂ f x) :
+    ∃ g : ℂ →L[ℂ] ℂ, g.restrictScalars ℝ = fderiv ℝ f x := by sorry
 ```
 
 :::solution
 ```lean
 example (f : ℂ → ℂ) (x : ℂ) (hf : DifferentiableAt ℂ f x) :
-    fderiv ℝ f x = (fderiv ℂ f x).restrictScalars ℝ :=
-  hf.fderiv_restrictScalars ℝ
+    ∃ g : ℂ →L[ℂ] ℂ, g.restrictScalars ℝ = fderiv ℝ f x :=
+  -- Witness = complex derivative; the worked model, reversed, finishes it.
+  ⟨fderiv ℂ f x, (hf.fderiv_restrictScalars ℝ).symm⟩
 ```
 :::
 
@@ -315,18 +353,31 @@ example : Type10 (differential (id : ℂ → ℂ)) := by
   exact differentiableAt_id
 ```
 
-Finally, unpack the definition: a type $`(1, 0)` form's value really is $`\mathbb{C}`-linear, so one can extract a genuinely $`\mathbb{C}`-linear map agreeing with it at each point.
+Unpacking the definition, a type $`(1, 0)` form's value really is $`\mathbb{C}`-linear, so `Type10.value_clinear` extracts a genuinely $`\mathbb{C}`-linear map agreeing with it at each point.
 
 ```lean
 example (ω : OneForm) (h : Type10 ω) (p : ℂ) :
-    ∃ T : ℂ →L[ℂ] ℂ, ∀ v, ω p v = T v := by sorry
+    ∃ T : ℂ →L[ℂ] ℂ, ∀ v, ω p v = T v :=
+  h.value_clinear p
+```
+
+That extraction is what makes the moral precise: rotating a tangent vector by $`90^\circ` — multiplying it by $`i` — multiplies the value by $`i`, because the value is $`\mathbb{C}`-linear.
+Pull out the $`\mathbb{C}`-linear map with `value_clinear`, rewrite both sides through it, and let its `map_smul` turn $`i \cdot 1` into $`i`.
+
+```lean
+example (ω : OneForm) (h : Type10 ω) (p : ℂ) :
+    ω p Complex.I = Complex.I * ω p 1 := by sorry
 ```
 
 :::solution
 ```lean
 example (ω : OneForm) (h : Type10 ω) (p : ℂ) :
-    ∃ T : ℂ →L[ℂ] ℂ, ∀ v, ω p v = T v :=
-  h.value_clinear p
+    ω p Complex.I = Complex.I * ω p 1 := by
+  -- Through the `ℂ`-linear `T` the claim is `T i = i · T 1`, i.e. `map_smul`.
+  obtain ⟨T, hT⟩ := h.value_clinear p
+  simp only [hT]
+  rw [← smul_eq_mul, ← T.map_smul]
+  simp
 ```
 :::
 

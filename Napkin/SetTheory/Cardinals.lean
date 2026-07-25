@@ -400,17 +400,32 @@ example (α β : Type u) : #α ≤ #β ↔ Nonempty (α ↪ β) := Cardinal.le_d
 ```
 
 The proposition's first clause says $`X \approx Y` exactly when $`\left\lvert X \right\rvert = \left\lvert Y \right\rvert`.
-One half of this is the Schröder–Bernstein theorem, which appears here as antisymmetry of `≤`: injections both ways force the two cardinalities to be equal.
+One half of this is the Schröder–Bernstein theorem, which appears here as antisymmetry of `≤`: injections both ways force the two cardinalities to be equal, `le_antisymm`.
 
 ```lean
-example (α β : Type u) (h1 : #α ≤ #β) (h2 : #β ≤ #α) : #α = #β := by
+example (α β : Type u) (h1 : #α ≤ #β) (h2 : #β ≤ #α) : #α = #β :=
+  le_antisymm h1 h2
+```
+
+Antisymmetry is really one direction of an equivalence: two cardinals are equal exactly when each is `≤` the other.
+Prove that packaging, splitting the iff with `constructor`.
+The forward direction turns an equality into two inequalities with `le_of_eq` (applied to `h` and to `h.symm`), and the backward direction is the antisymmetry above.
+
+```lean
+example (α β : Type u) : #α = #β ↔ #α ≤ #β ∧ #β ≤ #α := by
   sorry
 ```
 
 :::solution
 ```lean
-example (α β : Type u) (h1 : #α ≤ #β) (h2 : #β ≤ #α) : #α = #β :=
-  le_antisymm h1 h2
+example (α β : Type u) : #α = #β ↔ #α ≤ #β ∧ #β ≤ #α := by
+  constructor
+  · -- An equality gives both inequalities, via `le_of_eq` and its symm.
+    intro h
+    exact ⟨le_of_eq h, le_of_eq h.symm⟩
+  · -- The converse is exactly antisymmetry of `≤`.
+    rintro ⟨h1, h2⟩
+    exact le_antisymm h1 h2
 ```
 :::
 
@@ -484,13 +499,22 @@ example (α : Type*) : #(Set α) = 2 ^ #α := Cardinal.mk_set
 In particular $`2^{\aleph_0} > \aleph_0`, so the continuum is uncountable — a special case of Cantor's theorem.
 
 ```lean
-example : ℵ₀ < 2 ^ ℵ₀ := by
+example : ℵ₀ < 2 ^ ℵ₀ := Cardinal.cantor ℵ₀
+```
+
+Cantor's theorem also shows there is no largest cardinal: applying it twice climbs past $`2^{\aleph_0}` as well.
+Prove $`\aleph_0 < 2^{2^{\aleph_0}}` by feeding `Cardinal.cantor` the two cardinals $`\aleph_0` and $`2^{\aleph_0}` and chaining the strict inequalities with `lt_trans`.
+
+```lean
+example : ℵ₀ < 2 ^ (2 ^ ℵ₀ : Cardinal) := by
   sorry
 ```
 
 :::solution
 ```lean
-example : ℵ₀ < 2 ^ ℵ₀ := Cardinal.cantor ℵ₀
+example : ℵ₀ < 2 ^ (2 ^ ℵ₀ : Cardinal) :=
+  -- Cantor at ℵ₀ and at 2^ℵ₀, chained by transitivity of `<`.
+  lt_trans (Cardinal.cantor ℵ₀) (Cardinal.cantor (2 ^ ℵ₀))
 ```
 :::
 
@@ -505,18 +529,29 @@ noncomputable example (o : Ordinal) : Cardinal := Ordinal.cof o
 example : Cardinal.IsRegular ℵ₀ := Cardinal.isRegular_aleph0
 ```
 
-The theorem above was that successor cardinals are regular.
-Show that $`\kappa^+` is regular whenever $`\kappa` is infinite, where `Order.succ` is the successor cardinal.
+The theorem above was that successor cardinals are regular; that $`\kappa^+` is regular whenever $`\kappa` is infinite is `Cardinal.isRegular_succ`, where `Order.succ` is the successor cardinal.
 
 ```lean
-example (κ : Cardinal) (h : ℵ₀ ≤ κ) : (Order.succ κ).IsRegular := by
+example (κ : Cardinal) (h : ℵ₀ ≤ κ) : (Order.succ κ).IsRegular :=
+  Cardinal.isRegular_succ h
+```
+
+Being regular bundles two facts: the cardinal is infinite, and it is equal to its own cofinality.
+Unpack both for $`\kappa^+`, showing $`\aleph_0 \le \kappa^+` and $`\operatorname{cof}(\kappa^+) = \kappa^+` together.
+Regularity comes from the worked model, and then its two components are `.aleph0_le` and `.cof_ord`.
+
+```lean
+example (κ : Cardinal) (h : ℵ₀ ≤ κ) :
+    ℵ₀ ≤ Order.succ κ ∧ (Order.succ κ).ord.cof = Order.succ κ := by
   sorry
 ```
 
 :::solution
 ```lean
-example (κ : Cardinal) (h : ℵ₀ ≤ κ) : (Order.succ κ).IsRegular :=
-  Cardinal.isRegular_succ h
+example (κ : Cardinal) (h : ℵ₀ ≤ κ) :
+    ℵ₀ ≤ Order.succ κ ∧ (Order.succ κ).ord.cof = Order.succ κ :=
+  -- Regularity of κ⁺ splits into "infinite" and "self-cofinal".
+  ⟨(Cardinal.isRegular_succ h).aleph0_le, (Cardinal.isRegular_succ h).cof_ord⟩
 ```
 :::
 
@@ -528,17 +563,28 @@ Mathlib bundles a strongly inaccessible cardinal as `Cardinal.IsInaccessible`: u
 example (κ : Cardinal) : Prop := κ.IsInaccessible
 ```
 
-By definition an inaccessible cardinal is regular.
-Extract that fact from the bundled predicate.
+By definition an inaccessible cardinal is regular; `IsInaccessible.isRegular` extracts that fact from the bundled predicate.
 
 ```lean
-example (κ : Cardinal) (h : κ.IsInaccessible) : κ.IsRegular := by
+example (κ : Cardinal) (h : κ.IsInaccessible) : κ.IsRegular :=
+  h.isRegular
+```
+
+Regularity is only one of the three properties folded into inaccessibility: uncountable, regular, and a strong limit.
+Recover all three at once.
+The projections are `.aleph0_lt` for uncountability, the worked model `.isRegular`, and `.isStrongLimit`.
+
+```lean
+example (κ : Cardinal) (h : κ.IsInaccessible) :
+    ℵ₀ < κ ∧ κ.IsRegular ∧ IsStrongLimit κ := by
   sorry
 ```
 
 :::solution
 ```lean
-example (κ : Cardinal) (h : κ.IsInaccessible) : κ.IsRegular :=
-  h.isRegular
+example (κ : Cardinal) (h : κ.IsInaccessible) :
+    ℵ₀ < κ ∧ κ.IsRegular ∧ IsStrongLimit κ :=
+  -- The three clauses of inaccessibility, projected out one by one.
+  ⟨h.aleph0_lt, h.isRegular, h.isStrongLimit⟩
 ```
 :::

@@ -281,19 +281,29 @@ example (p : ℂ) : AnalyticAt ℂ (fun z : ℂ => z ^ 3) p := by
   exact analyticAt_id
 ```
 
-A composition of holomorphic maps is holomorphic, which is what makes "holomorphic in charts" a well-behaved notion.
+A composition of holomorphic maps is holomorphic, which is what makes "holomorphic in charts" a well-behaved notion; the general fact is `AnalyticAt.comp`.
 
 ```lean
 example (f g : ℂ → ℂ) (p : ℂ) (hf : AnalyticAt ℂ f (g p))
-    (hg : AnalyticAt ℂ g p) : AnalyticAt ℂ (f ∘ g) p := by
+    (hg : AnalyticAt ℂ g p) : AnalyticAt ℂ (f ∘ g) p :=
+  hf.comp hg
+```
+
+Put that closure to work on the running example $`z \mapsto z^3`: its composite with itself, $`z \mapsto (z^3)^3`, is again holomorphic everywhere.
+The cube map is analytic at every point (`AnalyticAt.pow` fed `analyticAt_id`, the worked model above), so hand that same fact to `AnalyticAt.comp` as both the outer and the inner map.
+
+```lean
+example (p : ℂ) :
+    AnalyticAt ℂ ((fun w : ℂ => w ^ 3) ∘ fun z : ℂ => z ^ 3) p := by
   sorry
 ```
 
 :::solution
 ```lean
-example (f g : ℂ → ℂ) (p : ℂ) (hf : AnalyticAt ℂ f (g p))
-    (hg : AnalyticAt ℂ g p) : AnalyticAt ℂ (f ∘ g) p :=
-  hf.comp hg
+example (p : ℂ) :
+    AnalyticAt ℂ ((fun w : ℂ => w ^ 3) ∘ fun z : ℂ => z ^ 3) p :=
+  -- The cube map is analytic everywhere, so compose it with itself.
+  (analyticAt_id.pow 3).comp (analyticAt_id.pow 3)
 ```
 :::
 
@@ -369,19 +379,30 @@ example (n : ℕ) : analyticOrderAt (fun z : ℂ => z ^ n) 0 = n := by
   exact analyticOrderAt_centeredMonomial
 ```
 
-A point where the value is nonzero is not a zero at all, so its order is $`0`.
+A point where the value is nonzero is not a zero at all, so its order is $`0` — the forward reading of the equivalence `AnalyticAt.analyticOrderAt_eq_zero`.
 
 ```lean
 example (f : ℂ → ℂ) (x : ℂ) (hf : AnalyticAt ℂ f x)
-    (h : f x ≠ 0) : analyticOrderAt f x = 0 := by
+    (h : f x ≠ 0) : analyticOrderAt f x = 0 :=
+  hf.analyticOrderAt_eq_zero.mpr h
+```
+
+Turn that criterion on a concrete map: $`z \mapsto z^2 + 1` has order $`0` at the origin, since it takes the nonzero value $`1` there.
+First assemble its analyticity from `AnalyticAt.pow`, `analyticAt_id`, and `analyticAt_const` through `AnalyticAt.add`; then rewrite along `analyticOrderAt_eq_zero` and settle the value $`0^2 + 1 \neq 0` by computation.
+
+```lean
+example : analyticOrderAt (fun z : ℂ => z ^ 2 + 1) 0 = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (f : ℂ → ℂ) (x : ℂ) (hf : AnalyticAt ℂ f x)
-    (h : f x ≠ 0) : analyticOrderAt f x = 0 :=
-  hf.analyticOrderAt_eq_zero.mpr h
+example : analyticOrderAt (fun z : ℂ => z ^ 2 + 1) 0 = 0 := by
+  -- Order 0 ⟺ nonvanishing; here the value is 0² + 1 = 1 ≠ 0.
+  have hf : AnalyticAt ℂ (fun z : ℂ => z ^ 2 + 1) 0 :=
+    (analyticAt_id.pow 2).add analyticAt_const
+  rw [hf.analyticOrderAt_eq_zero]
+  norm_num
 ```
 :::
 
@@ -404,17 +425,28 @@ example (f : ℂ → ℂ) (p : ℂ)
   ramificationIndex_ne_zero f p hf
 ```
 
-Show that the cube map $`z \mapsto z^3` has ramification index $`3` at the origin, its unique ramification point.
+The multiplicity is designed to be blind to a reparametrization of the target, the simplest of which is a shift.
+Show that adding a constant $`c` to the cube map leaves its ramification index at the origin equal to $`3`: recentering on the value cancels the shift, since $`(z^3 + c) - (0^3 + c) = z^3`.
+Unfold the definition (a `show` that recenters on the value), rewrite the recentered map to the plain cube by `ring` and then to the centered cube `(\cdot - 0)^3`, and finish with `analyticOrderAt_centeredMonomial` — the same monomial-order fact behind the $`z^5` worked model above.
 
 ```lean
-example : ramificationIndex (fun z : ℂ => z ^ 3) 0 = 3 := by
+example (c : ℂ) : ramificationIndex (fun z : ℂ => z ^ 3 + c) 0 = 3 := by
   sorry
 ```
 
 :::solution
 ```lean
-example : ramificationIndex (fun z : ℂ => z ^ 3) 0 = 3 :=
-  ramificationIndex_centeredMonomial 3 (by norm_num)
+example (c : ℂ) : ramificationIndex (fun z : ℂ => z ^ 3 + c) 0 = 3 := by
+  -- Recentering on the value cancels the shift: (z³+c) - (0³+c) = z³.
+  show analyticOrderAt (fun z : ℂ => z ^ 3 + c - (0 ^ 3 + c)) 0 = 3
+  have h : (fun z : ℂ => z ^ 3 + c - (0 ^ 3 + c)) = fun z : ℂ => z ^ 3 := by
+    funext z; ring
+  rw [h]
+  -- The centered cube has order 3.
+  have h2 : (fun z : ℂ => z ^ 3) = (fun x : ℂ => x - 0) ^ 3 := by
+    funext z; simp
+  rw [h2]
+  exact analyticOrderAt_centeredMonomial
 ```
 :::
 
@@ -476,7 +508,8 @@ example {X : Type} (H : RiemannHurwitzData X) (g : ℕ)
   H.genus_of_double_cover hd hY g hR
 ```
 
-As a reader exercise, derive the Hurwitz monotonicity bound: a nonconstant map ($`d \geq 1`) onto a target of positive genus ($`g_Y \geq 1`) can only raise the genus, $`g_Y \leq g_X`, because $`2 g_Y - 2 \geq 0` makes the degree factor and the nonnegative ramification term only add.
+As a reader exercise, derive the Hurwitz monotonicity bound directly from the solved identity `two_gX_eq` above, rather than quoting a packaged lemma: a nonconstant map ($`d \geq 1`) onto a target of positive genus ($`g_Y \geq 1`) can only raise the genus, $`g_Y \leq g_X`, because $`2 g_Y - 2 \geq 0` makes the degree factor and the nonnegative ramification term only add.
+Cast the natural-number hypotheses into $`\mathbb{Z}`, establish $`2 g_Y - 2 \geq 0`, and let `nlinarith` combine the identity with the product bound $`d (2 g_Y - 2) \geq 1 \cdot (2 g_Y - 2)`.
 
 ```lean
 example {X : Type} (H : RiemannHurwitzData X)
@@ -489,8 +522,15 @@ example {X : Type} (H : RiemannHurwitzData X)
 ```lean
 example {X : Type} (H : RiemannHurwitzData X)
     (hpos : 0 ≤ H.totalRamification) (hd : 1 ≤ H.d)
-    (hY : 1 ≤ H.gY) : (H.gY : ℤ) ≤ H.gX :=
-  H.hurwitz_bound hpos hd hY
+    (hY : 1 ≤ H.gY) : (H.gY : ℤ) ≤ H.gX := by
+  -- Read 2·gX off the identity; with gY ≥ 1 the factor 2·gY - 2 ≥ 0,
+  -- so scaling it by d ≥ 1 and adding ramification only pushes gX up.
+  have h := H.two_gX_eq
+  have hgY : (0 : ℤ) ≤ 2 * H.gY - 2 := by
+    have : (1 : ℤ) ≤ H.gY := by exact_mod_cast hY
+    omega
+  have hd' : (1 : ℤ) ≤ H.d := by exact_mod_cast hd
+  nlinarith [mul_le_mul_of_nonneg_right hd' hgY]
 ```
 :::
 
