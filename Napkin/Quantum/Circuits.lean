@@ -483,19 +483,31 @@ The five gates named — identity, the three Pauli matrices $`\sigma_x, \sigma_y
 The *$`U`-rotation gate* is just the statement that every element of this group is "some" gate.
 A controlled-$`U` gate on $`\mathbb{C}^{\oplus 2} \otimes \mathbb{C}^{\oplus 2}` is the block-diagonal sum of $`I` and $`U` along the first qubit; for $`2 \times 2` work it is cleanest to write the $`4 \times 4` block matrix directly: $$`\text{C}U = \begin{bmatrix} 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & u_{00} & u_{01} \\ 0 & 0 & u_{10} & u_{11} \end{bmatrix}.`
 
-Show that $`\sigma_z` also squares to the identity.
+The same entry-by-entry computation shows $`\sigma_z` squares to the identity.
 
-```lean
-example : pauliZ * pauliZ = 1 := by
-  sorry
-```
-
-:::solution
 ```lean
 example : pauliZ * pauliZ = 1 := by
   ext i j
   fin_cases i <;> fin_cases j <;>
     simp [pauliZ, Matrix.mul_apply, Fin.sum_univ_two]
+```
+
+But the Pauli matrices satisfy more than "each squares to $`I`": they multiply into one another, and it is these products that make them a basis for the single-qubit rotations.
+Verify the relation $`\sigma_x \sigma_y = i \sigma_z` — the same `fin_cases`/`Matrix.mul_apply` bash as above, except the right-hand side is now a scalar multiple, so unfold `Matrix.smul_apply` (and `smul_eq_mul`) and watch the $`i` land on $`\sigma_z`'s diagonal.
+
+```lean
+example : pauliX * pauliY = Complex.I • pauliZ := by
+  sorry
+```
+
+:::solution
+```lean
+example : pauliX * pauliY = Complex.I • pauliZ := by
+  ext i j
+  -- The only nonzero products put i and -i on the diagonal — i.e. i · σ_z.
+  fin_cases i <;> fin_cases j <;>
+    simp [pauliX, pauliY, pauliZ, Matrix.mul_apply, Fin.sum_univ_two,
+      Matrix.smul_apply, smul_eq_mul]
 ```
 :::
 
@@ -560,12 +572,22 @@ What is in scope is the finite-state-vector computation itself: each step is a u
 :::
 
 The black box $`U_f` acts on $`n + 1` qubits, whose joint state space is `EuclideanSpace ℂ (Fin (2 ^ (n + 1)))`.
-Confirm that this space has dimension $`2^{n+1}`, one amplitude per basis string.
+Its dimension is $`2^{n+1}`, one amplitude per basis string — `finrank_euclideanSpace_fin` reads it straight off the index type.
 
 ```lean
 example (n : ℕ) :
     Module.finrank ℂ (EuclideanSpace ℂ (Fin (2 ^ (n + 1))))
       = 2 ^ (n + 1) := by
+  rw [finrank_euclideanSpace_fin]
+```
+
+The content of that count is that *adjoining one qubit doubles the dimension*: the extra tensor factor $`\mathbb{C}^{\oplus 2}` doubles the number of basis strings.
+Prove it directly by rewriting both dimensions with `finrank_euclideanSpace_fin`, splitting off the new qubit with `pow_succ`, and finishing with `ring`.
+
+```lean
+example (n : ℕ) :
+    Module.finrank ℂ (EuclideanSpace ℂ (Fin (2 ^ (n + 1))))
+      = 2 * Module.finrank ℂ (EuclideanSpace ℂ (Fin (2 ^ n))) := by
   sorry
 ```
 
@@ -573,8 +595,10 @@ example (n : ℕ) :
 ```lean
 example (n : ℕ) :
     Module.finrank ℂ (EuclideanSpace ℂ (Fin (2 ^ (n + 1))))
-      = 2 ^ (n + 1) := by
-  rw [finrank_euclideanSpace_fin]
+      = 2 * Module.finrank ℂ (EuclideanSpace ℂ (Fin (2 ^ n))) := by
+  -- Each side collapses to a power of two; 2 ^ (n + 1) = 2 · 2 ^ n.
+  rw [finrank_euclideanSpace_fin, finrank_euclideanSpace_fin, pow_succ]
+  ring
 ```
 :::
 
@@ -597,19 +621,35 @@ example {n : ℕ} (ψ : QubitState n) (h : Normalized ψ) :
   sum_bornProb_normalized ψ h
 ```
 
-A probability is never negative; show that every Born probability is at least $`0`.
+A probability is never negative: every Born probability is at least $`0`, which is `bornProb_nonneg`.
 
 ```lean
 example {n : ℕ} (ψ : QubitState n) (i : Fin (2 ^ n)) :
-    0 ≤ bornProb ψ i := by
+    0 ≤ bornProb ψ i :=
+  bornProb_nonneg ψ i
+```
+
+Nonnegativity has teeth once the state is normalized: the probabilities then sum to $`1`, so they cannot *all* vanish — some outcome must carry positive probability.
+Argue by contradiction — `by_contra` then `push_neg` leaves every `bornProb ψ i ≤ 0`, which with `bornProb_nonneg` forces each term to $`0` (`le_antisymm`); then `sum_bornProb_normalized` turns the total into the false $`1 = 0`.
+
+```lean
+example {n : ℕ} (ψ : QubitState n) (h : Normalized ψ) :
+    ∃ i, 0 < bornProb ψ i := by
   sorry
 ```
 
 :::solution
 ```lean
-example {n : ℕ} (ψ : QubitState n) (i : Fin (2 ^ n)) :
-    0 ≤ bornProb ψ i :=
-  bornProb_nonneg ψ i
+example {n : ℕ} (ψ : QubitState n) (h : Normalized ψ) :
+    ∃ i, 0 < bornProb ψ i := by
+  by_contra hcon
+  push_neg at hcon
+  -- With nonnegativity, "no positive outcome" collapses every term to 0.
+  have hzero : ∑ i, bornProb ψ i = 0 :=
+    Finset.sum_eq_zero fun i _ =>
+      le_antisymm (hcon i) (bornProb_nonneg ψ i)
+  rw [sum_bornProb_normalized ψ h] at hzero
+  exact one_ne_zero hzero
 ```
 :::
 

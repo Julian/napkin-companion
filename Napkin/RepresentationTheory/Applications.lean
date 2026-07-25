@@ -270,20 +270,29 @@ example (G : Type*) [Group G] : (Subgroup.center G).Normal := inferInstance
 ```
 
 Simplicity is `IsSimpleGroup`: it says a group has no normal subgroups other than $`\bot` and the whole group.
-That dichotomy is what a nontrivial proper normal subgroup (such as $`Z(G)`, or the subgroup $`H` built in the lemma) contradicts.
-Show that in a simple group any normal subgroup is either trivial or everything.
+Concretely, every normal subgroup obeys the dichotomy `IsSimpleGroup.eq_bot_or_eq_top_of_normal`.
 
 ```lean
 example (G : Type*) [Group G] [IsSimpleGroup G] (H : Subgroup G)
-    (hH : H.Normal) : H = ⊥ ∨ H = ⊤ := by
+    (hH : H.Normal) : H = ⊥ ∨ H = ⊤ :=
+  IsSimpleGroup.eq_bot_or_eq_top_of_normal H hH
+```
+
+That dichotomy is exactly what a *proper* normal subgroup — one that is not all of $`G`, such as $`Z(G)` in the final contradiction — rules out: it forces the subgroup to be trivial.
+Prove this by feeding the hypothesis $`H \neq \top` to `Or.resolve_right`, which discards the impossible branch of the dichotomy.
+
+```lean
+example (G : Type*) [Group G] [IsSimpleGroup G] (H : Subgroup G)
+    (hH : H.Normal) (hne : H ≠ ⊤) : H = ⊥ := by
   sorry
 ```
 
 :::solution
 ```lean
 example (G : Type*) [Group G] [IsSimpleGroup G] (H : Subgroup G)
-    (hH : H.Normal) : H = ⊥ ∨ H = ⊤ :=
-  IsSimpleGroup.eq_bot_or_eq_top_of_normal H hH
+    (hH : H.Normal) (hne : H ≠ ⊤) : H = ⊥ :=
+  -- Only H = ⊥ survives the dichotomy once H ≠ ⊤ is ruled out.
+  (IsSimpleGroup.eq_bot_or_eq_top_of_normal H hH).resolve_right hne
 ```
 :::
 
@@ -317,25 +326,44 @@ example {R : Type*} [CommRing R] (x : C2 → R) :
 
 The $`S_3` determinant, its cubic irreducible factor, and the general theorem — that $`\det M_G` splits into one irreducible per conjugacy class, each raised to its degree — remain out of reach: neither the density-theorem input nor the irreducibility of the generic determinant $`\det (y_{ij})` in $`m^2` variables is in Mathlib, so they would have to be built by hand.
 
-Every diagonal entry of the group matrix equals $`x_1`, because $`g g^{-1} = 1`.
-Prove it.
+Every diagonal entry of the group matrix equals $`x_1`, because $`g g^{-1} = 1`; this is `groupMatrix_diag`.
 
 ```lean
 example {R : Type*} [CommRing R] {G : Type*} [Group G] [Fintype G]
-    [DecidableEq G] (x : G → R) (g : G) : groupMatrix x g g = x 1 := by
+    [DecidableEq G] (x : G → R) (g : G) : groupMatrix x g g = x 1 :=
+  groupMatrix_diag x g
+```
+
+The upshot is that the whole diagonal is *constant*: any two diagonal entries agree.
+Prove this straight from the entry formula, without invoking `groupMatrix_diag`: unfold both entries with `groupMatrix_apply`, then collapse each $`g g^{-1}` with `mul_inv_cancel`.
+
+```lean
+example {R : Type*} [CommRing R] {G : Type*} [Group G] [Fintype G]
+    [DecidableEq G] (x : G → R) (g h : G) :
+    groupMatrix x g g = groupMatrix x h h := by
   sorry
 ```
 
 :::solution
 ```lean
 example {R : Type*} [CommRing R] {G : Type*} [Group G] [Fintype G]
-    [DecidableEq G] (x : G → R) (g : G) : groupMatrix x g g = x 1 :=
-  groupMatrix_diag x g
+    [DecidableEq G] (x : G → R) (g h : G) :
+    groupMatrix x g g = groupMatrix x h h := by
+  -- Both entries unfold to x 1, since g * g⁻¹ = h * h⁻¹ = 1.
+  rw [groupMatrix_apply, groupMatrix_apply, mul_inv_cancel, mul_inv_cancel]
 ```
 :::
 
-For the one-element group, the group determinant is the lone entry $`x_1`.
-Prove this from `Matrix.det_unique`.
+For a one-element index type, a determinant is just its single (diagonal) entry — that is `Matrix.det_unique`.
+
+```lean
+example {R : Type*} [CommRing R] {n : Type*} [Unique n] [DecidableEq n]
+    [Fintype n] (M : Matrix n n R) : M.det = M default default :=
+  Matrix.det_unique M
+```
+
+Use it to compute the group determinant of the one-element group.
+Unfold `groupDeterminant`, read the $`1 \times 1` determinant off its single entry with `Matrix.det_unique`, and recognize that entry as a diagonal one via `groupMatrix_diag`.
 
 ```lean
 example {R : Type*} [CommRing R] {G : Type*} [Group G] [Fintype G]
@@ -346,8 +374,9 @@ example {R : Type*} [CommRing R] {G : Type*} [Group G] [Fintype G]
 :::solution
 ```lean
 example {R : Type*} [CommRing R] {G : Type*} [Group G] [Fintype G]
-    [DecidableEq G] [Unique G] (x : G → R) : groupDeterminant x = x 1 :=
-  groupDeterminant_unique x
+    [DecidableEq G] [Unique G] (x : G → R) : groupDeterminant x = x 1 := by
+  -- 1×1 determinant = its single diagonal entry = x 1.
+  rw [groupDeterminant, Matrix.det_unique, groupMatrix_diag]
 ```
 :::
 
@@ -360,21 +389,32 @@ example {n : Type*} [Fintype n] [DecidableEq n] {R : Type*} [CommRing R]
   Matrix.det_mul M N
 ```
 
-The decomposition $`V = \bigoplus_i V_i^{\oplus \dim V_i}` turns $`T` into a block-diagonal operator, and the identity $`\det T = \prod_i (\det T|_{V_i})^{\dim V_i}` is an instance of the determinant of a block-diagonal matrix being the product of the blocks' determinants.
-Prove this using `Matrix.det_blockDiagonal`.
+The decomposition $`V = \bigoplus_i V_i^{\oplus \dim V_i}` turns $`T` into a block-diagonal operator, and the identity $`\det T = \prod_i (\det T|_{V_i})^{\dim V_i}` is an instance of the determinant of a block-diagonal matrix being the product of the blocks' determinants, `Matrix.det_blockDiagonal`.
 
 ```lean
 example {n o : Type*} [Fintype n] [DecidableEq n] [Fintype o] [DecidableEq o]
     {R : Type*} [CommRing R] (M : o → Matrix n n R) :
-    (Matrix.blockDiagonal M).det = ∏ k, (M k).det := by
+    (Matrix.blockDiagonal M).det = ∏ k, (M k).det :=
+  Matrix.det_blockDiagonal M
+```
+
+The exponents $`\dim V_i` come from each block $`T|_{V_i}` recurring with that multiplicity.
+Model that with a block-diagonal built from many copies of a *single* block $`N`: its determinant is $`(\det N)^{\#\text{copies}}`.
+Prove it by rewriting with `Matrix.det_blockDiagonal` and then reducing the now-constant product with `Finset.prod_const`.
+
+```lean
+example {n o : Type*} [Fintype n] [DecidableEq n] [Fintype o] [DecidableEq o]
+    {R : Type*} [CommRing R] (N : Matrix n n R) :
+    (Matrix.blockDiagonal (fun _ : o => N)).det = N.det ^ Fintype.card o := by
   sorry
 ```
 
 :::solution
 ```lean
 example {n o : Type*} [Fintype n] [DecidableEq n] [Fintype o] [DecidableEq o]
-    {R : Type*} [CommRing R] (M : o → Matrix n n R) :
-    (Matrix.blockDiagonal M).det = ∏ k, (M k).det :=
-  Matrix.det_blockDiagonal M
+    {R : Type*} [CommRing R] (N : Matrix n n R) :
+    (Matrix.blockDiagonal (fun _ : o => N)).det = N.det ^ Fintype.card o := by
+  -- Every block determinant equals N.det, so the product is a power.
+  rw [Matrix.det_blockDiagonal, Finset.prod_const, Finset.card_univ]
 ```
 :::

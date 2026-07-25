@@ -291,19 +291,29 @@ example : qft 2 1 1 = (-1 / Real.sqrt 2 : ℂ) := by
 ```
 :::
 
-Every $`\omega_N` is an $`N`-th root of unity, so its $`N`-th power is $`1`.
+Every $`\omega_N` is an $`N`-th root of unity, so its $`N`-th power is $`1`; this is the `pow_eq_one` field of `IsPrimitiveRoot`.
 
 ```lean
 example (N : ℕ) (hN : N ≠ 0) :
-    Complex.exp (2 * Real.pi * Complex.I / N) ^ N = 1 := by
+    Complex.exp (2 * Real.pi * Complex.I / N) ^ N = 1 :=
+  (Complex.isPrimitiveRoot_exp N hN).pow_eq_one
+```
+
+More is true, and it is exactly the periodicity that drives the interference: *every* multiple of $`N` in the exponent returns $`\omega_N` to $`1`, since $`\omega_N^{Nk} = (\omega_N^N)^k = 1`.
+Prove it by splitting the exponent with `pow_mul` and feeding in the fact just above.
+
+```lean
+example (N : ℕ) (hN : N ≠ 0) (k : ℕ) :
+    Complex.exp (2 * Real.pi * Complex.I / N) ^ (N * k) = 1 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (N : ℕ) (hN : N ≠ 0) :
-    Complex.exp (2 * Real.pi * Complex.I / N) ^ N = 1 :=
-  (Complex.isPrimitiveRoot_exp N hN).pow_eq_one
+example (N : ℕ) (hN : N ≠ 0) (k : ℕ) :
+    Complex.exp (2 * Real.pi * Complex.I / N) ^ (N * k) = 1 := by
+  -- ω^(N*k) = (ω^N)^k, and ω^N = 1, so the whole thing is 1^k = 1.
+  rw [pow_mul, (Complex.isPrimitiveRoot_exp N hN).pow_eq_one, one_pow]
 ```
 :::
 
@@ -338,30 +348,54 @@ example (ζ : ℂ) : Matrix (Fin 2) (Fin 2) ℂ := Matrix.diagonal ![1, ζ]
 example (ζ : ℂ) : Matrix.diagonal ![(1 : ℂ), ζ] 1 1 = ζ := by simp
 ```
 
-Its determinant is the single nontrivial diagonal entry $`\zeta`.
+Its determinant is the single nontrivial diagonal entry $`\zeta`, straight from `Matrix.det_diagonal`.
 
-```lean
-example (ζ : ℂ) : (Matrix.diagonal ![(1 : ℂ), ζ]).det = ζ := by
-  sorry
-```
-
-:::solution
 ```lean
 example (ζ : ℂ) : (Matrix.diagonal ![(1 : ℂ), ζ]).det = ζ := by
   simp [Matrix.det_diagonal, Fin.prod_univ_two]
 ```
-:::
 
-Its trace is $`1 + \zeta`.
+A quantum gate must be invertible, which for a matrix means its determinant is a unit.
+Show that $`R_k` is invertible whenever $`\zeta \neq 0`: reduce the determinant to $`\zeta` as above, then read invertibility off $`\zeta \neq 0` with `isUnit_iff_ne_zero`.
 
 ```lean
-example (ζ : ℂ) : (Matrix.diagonal ![(1 : ℂ), ζ]).trace = 1 + ζ := by
+example (ζ : ℂ) (hζ : ζ ≠ 0) :
+    IsUnit (Matrix.diagonal ![(1 : ℂ), ζ]).det := by
   sorry
 ```
 
 :::solution
 ```lean
+example (ζ : ℂ) (hζ : ζ ≠ 0) :
+    IsUnit (Matrix.diagonal ![(1 : ℂ), ζ]).det := by
+  -- The determinant collapses to ζ, and a nonzero complex number is a unit.
+  rw [Matrix.det_diagonal, Fin.prod_univ_two]
+  simpa using isUnit_iff_ne_zero.mpr hζ
+```
+:::
+
+Its trace is $`1 + \zeta`, the sum of the two diagonal entries.
+
+```lean
 example (ζ : ℂ) : (Matrix.diagonal ![(1 : ℂ), ζ]).trace = 1 + ζ := by
+  simp [Matrix.trace, Matrix.diag, Fin.sum_univ_two]
+```
+
+Applying $`R_k` twice squares the phase: $`R_k^2` is again diagonal, now carrying entries $`1` and $`\zeta^2`.
+Compute its trace by first rewriting the power of a diagonal matrix as a diagonal of powers (`Matrix.diagonal_pow`), then reading off the two entries as before.
+
+```lean
+example (ζ : ℂ) :
+    (Matrix.diagonal ![(1 : ℂ), ζ] ^ 2).trace = 1 + ζ ^ 2 := by
+  sorry
+```
+
+:::solution
+```lean
+example (ζ : ℂ) :
+    (Matrix.diagonal ![(1 : ℂ), ζ] ^ 2).trace = 1 + ζ ^ 2 := by
+  -- (diagonal d)² = diagonal (d²), whose diagonal entries are 1² and ζ².
+  rw [Matrix.diagonal_pow]
   simp [Matrix.trace, Matrix.diag, Fin.sum_univ_two]
 ```
 :::

@@ -213,19 +213,33 @@ recall MeasureTheory.integral_indicator_one {X : Type*}
 
 (`μ.real s` is the measure of $`s` coerced from $`[0,+\infty]` to $`\mathbb{R}`, which is the honest way to compare an integral with a measure.)
 
-The other half of that question — that $`\mathbf{1}_A` really is a random variable — asks only for Borel measurability, which follows from measurability of the constant $`1`.
+The other half of that question — that $`\mathbf{1}_A` really is a random variable — asks only for Borel measurability, which follows from measurability of the constant $`1` handed to `Measurable.indicator`.
 
 ```lean
 example {Ω : Type*} [MeasurableSpace Ω] {A : Set Ω} (hA : MeasurableSet A) :
-    Measurable (Set.indicator A (1 : Ω → ℝ)) := by
+    Measurable (Set.indicator A (1 : Ω → ℝ)) :=
+  measurable_const.indicator hA
+```
+
+The prose observed that sums of random variables are again random variables; concretely that is closure of measurability under addition, `Measurable.add`.
+Prove that the indicator of one measurable set plus the indicator of another is measurable, by producing each indicator as in the model above and combining the two with `.add`.
+
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] {A B : Set Ω}
+    (hA : MeasurableSet A) (hB : MeasurableSet B) :
+    Measurable (Set.indicator A (1 : Ω → ℝ)
+      + Set.indicator B (1 : Ω → ℝ)) := by
   sorry
 ```
 
 :::solution
 ```lean
-example {Ω : Type*} [MeasurableSpace Ω] {A : Set Ω} (hA : MeasurableSet A) :
-    Measurable (Set.indicator A (1 : Ω → ℝ)) :=
-  measurable_const.indicator hA
+example {Ω : Type*} [MeasurableSpace Ω] {A B : Set Ω}
+    (hA : MeasurableSet A) (hB : MeasurableSet B) :
+    Measurable (Set.indicator A (1 : Ω → ℝ)
+      + Set.indicator B (1 : Ω → ℝ)) :=
+  -- Each indicator is measurable; measurability is closed under +.
+  (measurable_const.indicator hA).add (measurable_const.indicator hB)
 ```
 :::
 
@@ -264,14 +278,25 @@ and completeness of the invariant is `MeasureTheory.Measure.eq_of_cdf`: if `cdf 
 The exercise asks for all four properties directly; the monotonicity half is already the `StieltjesFunction.mono` field of the bundled CDF.
 
 ```lean
-example (μ : Measure ℝ) : Monotone ⇑(cdf μ) := by
+example (μ : Measure ℝ) : Monotone ⇑(cdf μ) :=
+  (cdf μ).mono
+```
+
+Monotonicity is exactly what makes the CDF assign nonnegative probability to every interval $`(x, y]`: the increment $`F_X(y) - F_X(x)` is $`\ge 0`.
+Prove it by feeding the ordering `x ≤ y` through the monotonicity above (`(cdf μ).mono`) and repackaging the resulting inequality as a nonnegative difference with `sub_nonneg`.
+
+```lean
+example (μ : Measure ℝ) (x y : ℝ) (h : x ≤ y) :
+    0 ≤ cdf μ y - cdf μ x := by
   sorry
 ```
 
 :::solution
 ```lean
-example (μ : Measure ℝ) : Monotone ⇑(cdf μ) :=
-  (cdf μ).mono
+example (μ : Measure ℝ) (x y : ℝ) (h : x ≤ y) :
+    0 ≤ cdf μ y - cdf μ x :=
+  -- Monotonicity gives cdf μ x ≤ cdf μ y; read it as a nonneg difference.
+  sub_nonneg.mpr ((cdf μ).mono h)
 ```
 :::
 
@@ -313,17 +338,28 @@ recall MeasureTheory.charFun {E : Type*} {mE : MeasurableSpace E}
 
 so that $`\varphi_X` is `charFun (ℙ.map X)`, and the uniqueness theorem is `MeasureTheory.Measure.ext_of_charFun`.
 
-One sanity check falls straight out of the definition: since $`e^{i \cdot 0 \cdot X} = 1`, the characteristic function of any probability measure takes the value $`1` at $`t = 0`.
+One sanity check falls straight out of the definition: since $`e^{i \cdot 0 \cdot X} = 1`, the characteristic function of any probability measure takes the value $`1` at $`t = 0` — the total mass, via `charFun_zero`.
 
 ```lean
 example (μ : Measure ℝ) [IsProbabilityMeasure μ] : charFun μ 0 = 1 := by
+  simp [charFun_zero]
+```
+
+A subtler structural fact is that the characteristic function is *Hermitian*: evaluating at $`-t` conjugates the value (`charFun_neg`), so $`\varphi_X(t) + \varphi_X(-t)` collapses to twice the real part.
+Prove it by rewriting the second summand with `charFun_neg` and then `Complex.add_conj`, which says $`z + \overline{z} = 2\operatorname{Re} z`.
+
+```lean
+example (μ : Measure ℝ) (t : ℝ) :
+    charFun μ t + charFun μ (-t) = (2 * (charFun μ t).re : ℝ) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (μ : Measure ℝ) [IsProbabilityMeasure μ] : charFun μ 0 = 1 := by
-  simp [charFun_zero]
+example (μ : Measure ℝ) (t : ℝ) :
+    charFun μ t + charFun μ (-t) = (2 * (charFun μ t).re : ℝ) := by
+  -- charFun at -t is the conjugate; z + conj z = 2·Re z.
+  rw [charFun_neg, Complex.add_conj]
 ```
 :::
 
@@ -343,18 +379,31 @@ recall ProbabilityTheory.IndepFun.variance_add {Ω : Type*}
     variance (X + Y) μ = variance X μ + variance Y μ
 ```
 
-The definition is visibly symmetric in $`X` and $`Y`: independence of $`X` and $`Y` is the same statement as independence of $`Y` and $`X`.
+The definition is visibly symmetric in $`X` and $`Y`: independence of $`X` and $`Y` is the same statement as independence of $`Y` and $`X`, via `IndepFun.symm`.
 
 ```lean
 example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} {X Y : Ω → ℝ}
-    (h : IndepFun X Y μ) : IndepFun Y X μ := by
+    (h : IndepFun X Y μ) : IndepFun Y X μ :=
+  h.symm
+```
+
+Independence is also stable under measurable post-processing: any measurable function of $`X` stays independent from $`Y`.
+This is `IndepFun.comp`, which transforms *both* coordinates at once; leave the second one untouched by feeding it the identity (`measurable_id`).
+Prove that $`\varphi \circ X` and $`Y` are independent.
+
+```lean
+example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} {X Y : Ω → ℝ}
+    {φ : ℝ → ℝ} (h : IndepFun X Y μ) (hφ : Measurable φ) :
+    IndepFun (φ ∘ X) Y μ := by
   sorry
 ```
 
 :::solution
 ```lean
 example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} {X Y : Ω → ℝ}
-    (h : IndepFun X Y μ) : IndepFun Y X μ :=
-  h.symm
+    {φ : ℝ → ℝ} (h : IndepFun X Y μ) (hφ : Measurable φ) :
+    IndepFun (φ ∘ X) Y μ :=
+  -- Post-compose X with φ; the identity leaves Y unchanged.
+  h.comp hφ measurable_id
 ```
 :::

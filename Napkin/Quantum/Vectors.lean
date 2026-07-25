@@ -297,20 +297,30 @@ example (n : ℕ) (φ ψ : EuclideanSpace ℂ (Fin n)) :
   inner_conj_symm φ ψ
 ```
 
-The chapter notes that the squared norm of $`|\psi\rangle` is just $`\langle\psi|\psi\rangle`.
-Show that this inner product of a vector with itself really is the square of its norm.
+The chapter notes that the squared norm of $`|\psi\rangle` is just $`\langle\psi|\psi\rangle`; that this inner product of a vector with itself really is the square of its norm is `inner_self_eq_norm_sq_to_K`.
 
 ```lean
 example (n : ℕ) (ψ : EuclideanSpace ℂ (Fin n)) :
-    inner ℂ ψ ψ = (‖ψ‖ : ℂ) ^ 2 := by
+    inner ℂ ψ ψ = (‖ψ‖ : ℂ) ^ 2 :=
+  inner_self_eq_norm_sq_to_K ψ
+```
+
+This is exactly why we normalize a state: when $`|\psi\rangle` has norm $`1`, it forces $`\langle\psi|\psi\rangle = 1`, the condition $`|c_0|^2 + \dots + |c_{n-1}|^2 = 1` from the chapter.
+Prove it — rewrite with the squared-norm identity above, substitute the hypothesis that the norm is $`1`, and finish the numerics with `norm_num`.
+
+```lean
+example (n : ℕ) (ψ : EuclideanSpace ℂ (Fin n)) (h : ‖ψ‖ = 1) :
+    inner ℂ ψ ψ = 1 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (n : ℕ) (ψ : EuclideanSpace ℂ (Fin n)) :
-    inner ℂ ψ ψ = (‖ψ‖ : ℂ) ^ 2 :=
-  inner_self_eq_norm_sq_to_K ψ
+example (n : ℕ) (ψ : EuclideanSpace ℂ (Fin n)) (h : ‖ψ‖ = 1) :
+    inner ℂ ψ ψ = 1 := by
+  -- ⟨ψ|ψ⟩ = ‖ψ‖² = 1² = 1 once the norm is 1.
+  rw [inner_self_eq_norm_sq_to_K, h]
+  norm_num
 ```
 :::
 
@@ -326,17 +336,28 @@ recall : FiniteDimensional ℂ (EuclideanSpace ℂ (Fin 2))
 
 The orthonormal basis $`|0\rangle, \dots, |n-1\rangle` is `EuclideanSpace.basisFun (Fin n) ℂ`, and the squared norm $`\langle\psi|\psi\rangle = |c_0|^2 + \dots + |c_{n-1}|^2` is `EuclideanSpace.norm_eq`.
 
-When $`\dim H = n` there are $`n` basis states $`|0\rangle, \dots, |n-1\rangle`; confirm that the dimension of the state space is indeed $`n`.
+When $`\dim H = n` there are $`n` basis states $`|0\rangle, \dots, |n-1\rangle`; that the dimension of the state space is indeed $`n` is `finrank_euclideanSpace_fin`.
 
 ```lean
-example (n : ℕ) : Module.finrank ℂ (EuclideanSpace ℂ (Fin n)) = n := by
+example (n : ℕ) : Module.finrank ℂ (EuclideanSpace ℂ (Fin n)) = n :=
+  finrank_euclideanSpace_fin
+```
+
+A qubit is a *nonzero* element of the state space, so we had better know a nonzero vector exists whenever there is at least one basis state.
+Prove that $`\mathbb{C}^{\oplus (n+1)}` is nontrivial: `Module.nontrivial_of_finrank_pos` reduces the goal to positivity of the dimension, which the computation above turns into $`0 < n + 1`.
+
+```lean
+example (n : ℕ) : Nontrivial (EuclideanSpace ℂ (Fin (n + 1))) := by
   sorry
 ```
 
 :::solution
 ```lean
-example (n : ℕ) : Module.finrank ℂ (EuclideanSpace ℂ (Fin n)) = n :=
-  finrank_euclideanSpace_fin
+example (n : ℕ) : Nontrivial (EuclideanSpace ℂ (Fin (n + 1))) := by
+  -- Positive dimension guarantees a nonzero vector; here dim = n+1 > 0.
+  apply Module.nontrivial_of_finrank_pos (R := ℂ)
+  rw [finrank_euclideanSpace_fin]
+  exact Nat.succ_pos n
 ```
 :::
 
@@ -367,14 +388,24 @@ recall LinearMap.IsSymmetric.apply_eigenvectorBasis
 ```
 
 The chapter asks you to show that the eigenvalues of a Hermitian $`T` are real.
-The key step is that the "Rayleigh quotient" $`\langle Tx|x\rangle` is its own conjugate, hence a real number.
-Prove this using the symmetry of $`T`.
+The key step is that the "Rayleigh quotient" $`\langle Tx|x\rangle` is its own conjugate: conjugating swaps the two sides (`inner_conj_symm`), and symmetry of $`T` puts them back (`hT x x`).
 
 ```lean
 example {n : ℕ}
     (T : EuclideanSpace ℂ (Fin n) →ₗ[ℂ] EuclideanSpace ℂ (Fin n))
     (hT : T.IsSymmetric) (x : EuclideanSpace ℂ (Fin n)) :
     (starRingEnd ℂ) (inner ℂ (T x) x) = inner ℂ (T x) x := by
+  rw [inner_conj_symm, hT x x]
+```
+
+A complex number equal to its own conjugate is real — its imaginary part vanishes.
+Combine the self-conjugacy above with `Complex.conj_eq_iff_im` to conclude that the Rayleigh quotient $`\langle Tx|x\rangle` has imaginary part $`0`, which is exactly what makes each eigenvalue real.
+
+```lean
+example {n : ℕ}
+    (T : EuclideanSpace ℂ (Fin n) →ₗ[ℂ] EuclideanSpace ℂ (Fin n))
+    (hT : T.IsSymmetric) (x : EuclideanSpace ℂ (Fin n)) :
+    (inner ℂ (T x) x).im = 0 := by
   sorry
 ```
 
@@ -383,8 +414,11 @@ example {n : ℕ}
 example {n : ℕ}
     (T : EuclideanSpace ℂ (Fin n) →ₗ[ℂ] EuclideanSpace ℂ (Fin n))
     (hT : T.IsSymmetric) (x : EuclideanSpace ℂ (Fin n)) :
-    (starRingEnd ℂ) (inner ℂ (T x) x) = inner ℂ (T x) x := by
-  rw [inner_conj_symm, hT x x]
+    (inner ℂ (T x) x).im = 0 := by
+  -- Self-conjugate ⟹ imaginary part is zero, i.e. the value is real.
+  have h : (starRingEnd ℂ) (inner ℂ (T x) x) = inner ℂ (T x) x := by
+    rw [inner_conj_symm, hT x x]
+  exact Complex.conj_eq_iff_im.mp h
 ```
 :::
 
