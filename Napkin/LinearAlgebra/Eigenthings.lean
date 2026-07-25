@@ -446,12 +446,21 @@ example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
 ```
 
 The theorem that eigenvalues always exist over an algebraically closed field is `Module.End.exists_eigenvalue`, which needs `V` to be finite-dimensional and nontrivial.
-Restate it as a reader exercise.
 
 ```lean
 example (k V : Type*) [Field k] [IsAlgClosed k] [AddCommGroup V] [Module k V]
     [FiniteDimensional k V] [Nontrivial V] (T : Module.End k V) :
-    ∃ μ : k, T.HasEigenvalue μ := by
+    ∃ μ : k, T.HasEigenvalue μ :=
+  T.exists_eigenvalue
+```
+
+That only asserts an eigen*value* exists; extract from it an actual eigen*vector*.
+Chain the two equivalences above with the existence theorem: `hasEigenvalue_iff` recasts the eigenvalue as "its eigenspace is not `⊥`", `Submodule.exists_mem_ne_zero_of_ne_bot` then hands you a nonzero member, and `mem_eigenspace_iff` unfolds that membership back into the defining equation $`T(v) = \mu v`.
+
+```lean
+example (k V : Type*) [Field k] [IsAlgClosed k] [AddCommGroup V] [Module k V]
+    [FiniteDimensional k V] [Nontrivial V] (T : Module.End k V) :
+    ∃ (μ : k) (v : V), v ≠ 0 ∧ T v = μ • v := by
   sorry
 ```
 
@@ -459,8 +468,13 @@ example (k V : Type*) [Field k] [IsAlgClosed k] [AddCommGroup V] [Module k V]
 ```lean
 example (k V : Type*) [Field k] [IsAlgClosed k] [AddCommGroup V] [Module k V]
     [FiniteDimensional k V] [Nontrivial V] (T : Module.End k V) :
-    ∃ μ : k, T.HasEigenvalue μ :=
-  T.exists_eigenvalue
+    ∃ (μ : k) (v : V), v ≠ 0 ∧ T v = μ • v := by
+  -- An eigenvalue means a nonzero eigenspace; pull a nonzero vector out.
+  obtain ⟨μ, hμ⟩ := T.exists_eigenvalue
+  obtain ⟨v, hv, hv0⟩ :=
+    Submodule.exists_mem_ne_zero_of_ne_bot
+      (Module.End.hasEigenvalue_iff.mp hμ)
+  exact ⟨μ, v, hv0, Module.End.mem_eigenspace_iff.mp hv⟩
 ```
 :::
 
@@ -474,21 +488,36 @@ example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
 ```
 
 The exercise showed the descending staircase has $`0` as its only eigenvalue.
-That holds for any nilpotent map over a field: prove that every eigenvalue of a nilpotent map is zero.
+That holds for any nilpotent map over a field: every eigenvalue of a nilpotent map is zero, obtained from `Module.End.HasEigenvalue.isNilpotent_of_isNilpotent` followed by `IsNilpotent.eq_zero`.
 
 ```lean
 example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
-    (T : Module.End k V) (hT : IsNilpotent T) (μ : k) (hμ : T.HasEigenvalue μ) :
-    μ = 0 := by
+    (T : Module.End k V) (hT : IsNilpotent T) (μ : k)
+    (hμ : T.HasEigenvalue μ) : μ = 0 :=
+  (hμ.isNilpotent_of_isNilpotent hT).eq_zero
+```
+
+See *why* it holds by running the argument by hand on an actual eigenvector.
+Applying $`T` repeatedly scales it, $`T^m(v) = \mu^m v` (`Module.End.HasEigenvector.pow_apply`); but $`T^m = 0`, so $`\mu^m v = 0`, and since $`v \neq 0` this forces $`\mu^m = 0` (`smul_eq_zero`), hence $`\mu = 0` (`pow_eq_zero_iff`).
+
+```lean
+example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    (T : Module.End k V) (m : ℕ) (hm : 0 < m) (hTm : T ^ m = 0)
+    (μ : k) (v : V) (hv : T.HasEigenvector μ v) : μ = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
 example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
-    (T : Module.End k V) (hT : IsNilpotent T) (μ : k)
-    (hμ : T.HasEigenvalue μ) : μ = 0 :=
-  (hμ.isNilpotent_of_isNilpotent hT).eq_zero
+    (T : Module.End k V) (m : ℕ) (hm : 0 < m) (hTm : T ^ m = 0)
+    (μ : k) (v : V) (hv : T.HasEigenvector μ v) : μ = 0 := by
+  -- Tᵐ scales v by μᵐ, yet Tᵐ = 0, so μᵐ • v = 0 with v ≠ 0.
+  have hpow : (T ^ m) v = μ ^ m • v := hv.pow_apply m
+  rw [hTm, LinearMap.zero_apply] at hpow
+  rcases smul_eq_zero.mp hpow.symm with h | h
+  · exact (pow_eq_zero_iff hm.ne').mp h
+  · exact absurd h hv.2
 ```
 :::
 
@@ -502,8 +531,8 @@ example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
   T.genEigenspace μ n
 ```
 
-The key inclusion behind "geometric multiplicity $`\leq` algebraic multiplicity" is that the eigenspace sits inside every generalized eigenspace of positive index.
-Prove that inclusion, then deduce the inequality of dimensions.
+The key inclusion behind "geometric multiplicity $`\leq` algebraic multiplicity" is that the eigenspace sits inside every generalized eigenspace of positive index — because a genuine eigenvector is already killed by the *first* power of $`T - \mu`.
+Prove that inclusion by hand — unfold membership with `Module.End.mem_genEigenspace` and supply the exponent $`1` as the witness — then deduce the inequality of dimensions from it, using that dimension is monotone under inclusion (`Submodule.finrank_mono`).
 
 ```lean
 example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
@@ -522,8 +551,13 @@ example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
 ```lean
 example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
     (T : Module.End k V) (μ : k) (n : ℕ) (hn : 0 < n) :
-    T.eigenspace μ ≤ T.genEigenspace μ n :=
-  Module.End.eigenspace_le_genEigenspace hn
+    T.eigenspace μ ≤ T.genEigenspace μ n := by
+  -- A genuine eigenvector lies in the kernel of the first power of T - μ,
+  -- so exponent l = 1 witnesses membership in the generalized eigenspace.
+  intro x hx
+  rw [Module.End.mem_genEigenspace]
+  refine ⟨1, by exact_mod_cast hn, ?_⟩
+  rwa [pow_one, ← Module.End.eigenspace_def]
 
 example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
     [FiniteDimensional k V] (T : Module.End k V) (μ : k) (n : ℕ)

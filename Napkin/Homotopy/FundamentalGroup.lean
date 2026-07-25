@@ -537,23 +537,37 @@ noncomputable example {X : Type*} [TopologicalSpace X] {x y z : X}
 ```
 
 The second displayed fact of this section — that if $`\alpha_1 \simeq \alpha_2` and $`\beta_1 \simeq \beta_2` then $`\alpha_1 \ast \beta_1 \simeq \alpha_2 \ast \beta_2` — is what makes fusion well-defined on homotopy classes.
-It is {name}`Path.Homotopic.hcomp`; prove it by supplying that lemma.
+It is {name}`Path.Homotopic.hcomp`, which fuses two homotopies side by side.
 
-```lean
-example {X : Type*} [TopologicalSpace X] {x y z : X}
-    {p₀ p₁ : Path x y} {q₀ q₁ : Path y z}
-    (hp : p₀.Homotopic p₁) (hq : q₀.Homotopic q₁) :
-    (p₀.trans q₀).Homotopic (p₁.trans q₁) := by
-  sorry
-```
-
-:::solution
 ```lean
 example {X : Type*} [TopologicalSpace X] {x y z : X}
     {p₀ p₁ : Path x y} {q₀ q₁ : Path y z}
     (hp : p₀.Homotopic p₁) (hq : q₀.Homotopic q₁) :
     (p₀.trans q₀).Homotopic (p₁.trans q₁) :=
   hp.hcomp hq
+```
+
+The same lemma handles the triple fusion $`\gamma_1 \ast \gamma_2 \ast \gamma_3` once you apply it twice, replacing all three factors at once.
+Prove it by fusing the first two homotopies with `hcomp`, then fusing that result against the third.
+
+```lean
+example {X : Type*} [TopologicalSpace X] {w x y z : X}
+    {p₀ p₁ : Path w x} {q₀ q₁ : Path x y} {r₀ r₁ : Path y z}
+    (hp : p₀.Homotopic p₁) (hq : q₀.Homotopic q₁)
+    (hr : r₀.Homotopic r₁) :
+    ((p₀.trans q₀).trans r₀).Homotopic ((p₁.trans q₁).trans r₁) := by
+  sorry
+```
+
+:::solution
+```lean
+example {X : Type*} [TopologicalSpace X] {w x y z : X}
+    {p₀ p₁ : Path w x} {q₀ q₁ : Path x y} {r₀ r₁ : Path y z}
+    (hp : p₀.Homotopic p₁) (hq : q₀.Homotopic q₁)
+    (hr : r₀.Homotopic r₁) :
+    ((p₀.trans q₀).trans r₀).Homotopic ((p₁.trans q₁).trans r₁) :=
+  -- Fuse the first two, then fuse that result against the third.
+  (hp.hcomp hq).hcomp hr
 ```
 :::
 
@@ -575,19 +589,32 @@ noncomputable example {X : Type*} [TopologicalSpace X] [PathConnectedSpace X]
 ```
 
 Mathlib defines simple connectedness by {name}`SimplyConnectedSpace`, which asks that the fundamental groupoid be equivalent to a point; for a path-connected space this is the same as asking that every $`\pi_1(X, x_0)` be trivial.
-Prove the easy direction of the exercise above: in a simply connected space, any two elements of the fundamental group are equal.
+The easy direction of the exercise above is immediate: in a simply connected space the fundamental group is a subsingleton, so any two elements are equal.
 
 ```lean
 example {X : Type*} [TopologicalSpace X] [SimplyConnectedSpace X] (x : X)
-    (p q : FundamentalGroup X x) : p = q := by
+    (p q : FundamentalGroup X x) : p = q :=
+  Subsingleton.elim p q
+```
+
+The basepoint-independence isomorphism lets that triviality *travel*: because {name}`FundamentalGroup.fundamentalGroupMulEquivOfPathConnected` identifies the groups at any two basepoints, what holds at one holds at all.
+Show that if $`\pi_1(X, x_0)` is trivial then so is $`\pi_1(X, x_1)`, by pushing the two loops over to $`x_0` through the isomorphism and pulling the resulting equality back with its injectivity.
+
+```lean
+example {X : Type*} [TopologicalSpace X] [PathConnectedSpace X] (x₀ x₁ : X)
+    (h : ∀ p q : FundamentalGroup X x₀, p = q)
+    (p q : FundamentalGroup X x₁) : p = q := by
   sorry
 ```
 
 :::solution
 ```lean
-example {X : Type*} [TopologicalSpace X] [SimplyConnectedSpace X] (x : X)
-    (p q : FundamentalGroup X x) : p = q :=
-  Subsingleton.elim p q
+example {X : Type*} [TopologicalSpace X] [PathConnectedSpace X] (x₀ x₁ : X)
+    (h : ∀ p q : FundamentalGroup X x₀, p = q)
+    (p q : FundamentalGroup X x₁) : p = q := by
+  -- Push both loops to x₀, equate them there, pull back by injectivity.
+  have e := FundamentalGroup.fundamentalGroupMulEquivOfPathConnected x₁ x₀
+  exact e.injective (h (e p) (e q))
 ```
 :::
 
@@ -602,20 +629,29 @@ recall (X : Type*) [TopologicalSpace X] (x : X) (n : ℕ) :
     Group (π_ (n + 1) X x)
 ```
 
-The structural fact that $`\pi_n(X)` is abelian for all $`n \ge 2` is a {name}`CommGroup` instance on `π_ (n + 2) X x`.
-Confirm it by proving that multiplication commutes there.
+The structural fact that $`\pi_n(X)` is abelian for all $`n \ge 2` is a {name}`CommGroup` instance on `π_ (n + 2) X x`, so multiplication there commutes on the nose.
 
 ```lean
 example {X : Type*} [TopologicalSpace X] (x : X) (n : ℕ)
-    (a b : π_ (n + 2) X x) : a * b = b * a := by
+    (a b : π_ (n + 2) X x) : a * b = b * a :=
+  mul_comm a b
+```
+
+Commutativity is exactly what collapses conjugation: in an abelian group $`a b a^{-1}` is just $`b`.
+Prove it inside $`\pi_n` for $`n \ge 2` by commuting $`a` past $`b` with `mul_comm`, then cancelling $`a` against $`a^{-1}`.
+
+```lean
+example {X : Type*} [TopologicalSpace X] (x : X) (n : ℕ)
+    (a b : π_ (n + 2) X x) : a * b * a⁻¹ = b := by
   sorry
 ```
 
 :::solution
 ```lean
 example {X : Type*} [TopologicalSpace X] (x : X) (n : ℕ)
-    (a b : π_ (n + 2) X x) : a * b = b * a :=
-  mul_comm a b
+    (a b : π_ (n + 2) X x) : a * b * a⁻¹ = b := by
+  -- Commute a past b, then a * a⁻¹ cancels to 1.
+  rw [mul_comm a b, mul_assoc, mul_inv_cancel, mul_one]
 ```
 :::
 
@@ -631,20 +667,29 @@ recall (X : Type*) [TopologicalSpace X] [ContractibleSpace X] :
     SimplyConnectedSpace X
 ```
 
-A homeomorphism is in particular a homotopy equivalence, which answers why homeomorphic spaces are homotopy equivalent.
-Supply the map {name}`Homeomorph.toHomotopyEquiv`.
+A homeomorphism is in particular a homotopy equivalence, which answers why homeomorphic spaces are homotopy equivalent; the coercion is {name}`Homeomorph.toHomotopyEquiv`.
 
 ```lean
 example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    (h : X ≃ₜ Y) : X ≃ₕ Y := by
+    (h : X ≃ₜ Y) : X ≃ₕ Y :=
+  h.toHomotopyEquiv
+```
+
+Homotopy equivalences also compose, via {name}`ContinuousMap.HomotopyEquiv.trans`, so a homeomorphism placed in front of a homotopy equivalence still yields one.
+Given a homeomorphism $`X \cong Y` and a homotopy equivalence $`Y \simeq Z`, build $`X \simeq Z` by converting the homeomorphism and chaining.
+
+```lean
+example {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    [TopologicalSpace Z] (h : X ≃ₜ Y) (e : Y ≃ₕ Z) : X ≃ₕ Z := by
   sorry
 ```
 
 :::solution
 ```lean
-example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    (h : X ≃ₜ Y) : X ≃ₕ Y :=
-  h.toHomotopyEquiv
+example {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    [TopologicalSpace Z] (h : X ≃ₜ Y) (e : Y ≃ₕ Z) : X ≃ₕ Z :=
+  -- Turn the homeomorphism into a homotopy equivalence, then compose.
+  h.toHomotopyEquiv.trans e
 ```
 :::
 

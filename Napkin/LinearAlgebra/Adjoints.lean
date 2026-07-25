@@ -362,25 +362,43 @@ example (k V W : Type*) [Field k]
   Module.Dual.transpose T
 ```
 
-Unfolding the definition, the dual map really is precomposition $`f \mapsto f \circ T`: evaluating $`T^\vee f` at a vector $`v` gives $`f(T v)`.
-This is true by definition, so `rfl` closes the goal.
+Unfolding the definition, the dual map really is precomposition $`f \mapsto f \circ T`: evaluating $`T^\vee f` at a vector $`v` gives $`f(T v)`, true by definition.
 
-```lean
-example (k V W : Type*) [Field k]
-    [AddCommGroup V] [Module k V]
-    [AddCommGroup W] [Module k W]
-    (T : V →ₗ[k] W) (f : Module.Dual k W) (v : V) :
-    Module.Dual.transpose T f v = f (T v) := by
-  sorry
-```
-
-:::solution
 ```lean
 example (k V W : Type*) [Field k]
     [AddCommGroup V] [Module k V]
     [AddCommGroup W] [Module k W]
     (T : V →ₗ[k] W) (f : Module.Dual k W) (v : V) :
     Module.Dual.transpose T f v = f (T v) := rfl
+```
+
+The characteristic feature of the dual map is that it is *contravariant*: it reverses the order of a composition, since $`f \circ (T \circ S) = (f \circ T) \circ S`.
+Prove $`(T \circ S)^\vee = S^\vee \circ T^\vee`.
+Peel off a functional and a vector with `ext f v`, then evaluate each side with `Module.Dual.transpose_apply` and `LinearMap.comp_apply`.
+
+```lean
+example (k U V W : Type*) [Field k]
+    [AddCommGroup U] [Module k U]
+    [AddCommGroup V] [Module k V]
+    [AddCommGroup W] [Module k W]
+    (S : U →ₗ[k] V) (T : V →ₗ[k] W) :
+    Module.Dual.transpose (T.comp S)
+      = (Module.Dual.transpose S).comp (Module.Dual.transpose T) := by
+  sorry
+```
+
+:::solution
+```lean
+example (k U V W : Type*) [Field k]
+    [AddCommGroup U] [Module k U]
+    [AddCommGroup V] [Module k V]
+    [AddCommGroup W] [Module k W]
+    (S : U →ₗ[k] V) (T : V →ₗ[k] W) :
+    Module.Dual.transpose (T.comp S)
+      = (Module.Dual.transpose S).comp (Module.Dual.transpose T) := by
+  -- Both sides send f to f ∘ T ∘ S; check on a functional f and vector v.
+  ext f v
+  simp only [Module.Dual.transpose_apply, LinearMap.comp_apply]
 ```
 :::
 
@@ -428,7 +446,6 @@ noncomputable example {𝕜 V W : Type*} [RCLike 𝕜]
 ```
 
 The defining property of the adjoint is the inner-product identity $`\langle v, T^\dagger(w) \rangle_V = \langle T(v), w \rangle_W`, which Mathlib records as `LinearMap.adjoint_inner_right`.
-Applying `LinearMap.adjoint_inner_right T v w` is exactly the goal.
 
 ```lean
 example {𝕜 V W : Type*} [RCLike 𝕜]
@@ -436,7 +453,20 @@ example {𝕜 V W : Type*} [RCLike 𝕜]
     [NormedAddCommGroup W] [InnerProductSpace 𝕜 W]
     [FiniteDimensional 𝕜 V] [FiniteDimensional 𝕜 W]
     (T : V →ₗ[𝕜] W) (v : V) (w : W) :
-    inner 𝕜 v (T.adjoint w) = inner 𝕜 (T v) w := by
+    inner 𝕜 v (T.adjoint w) = inner 𝕜 (T v) w :=
+  LinearMap.adjoint_inner_right T v w
+```
+
+That identity has a mirror image on the other side, $`\langle T^\dagger(w), v \rangle_V = \langle w, T(v) \rangle_W`, and deriving it exposes the sesquilinearity at the heart of this chapter.
+Conjugate symmetry of the inner product is `inner_conj_symm`, which swaps the two arguments at the cost of a complex conjugate; rewriting with it, then the defining property above, then it once more, conjugates twice and lands on the goal.
+
+```lean
+example {𝕜 V W : Type*} [RCLike 𝕜]
+    [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
+    [NormedAddCommGroup W] [InnerProductSpace 𝕜 W]
+    [FiniteDimensional 𝕜 V] [FiniteDimensional 𝕜 W]
+    (T : V →ₗ[𝕜] W) (v : V) (w : W) :
+    inner 𝕜 (T.adjoint w) v = inner 𝕜 w (T v) := by
   sorry
 ```
 
@@ -447,8 +477,9 @@ example {𝕜 V W : Type*} [RCLike 𝕜]
     [NormedAddCommGroup W] [InnerProductSpace 𝕜 W]
     [FiniteDimensional 𝕜 V] [FiniteDimensional 𝕜 W]
     (T : V →ₗ[𝕜] W) (v : V) (w : W) :
-    inner 𝕜 v (T.adjoint w) = inner 𝕜 (T v) w :=
-  LinearMap.adjoint_inner_right T v w
+    inner 𝕜 (T.adjoint w) v = inner 𝕜 w (T v) := by
+  -- Flip to the right slot, apply the adjoint identity, then flip back.
+  rw [← inner_conj_symm, LinearMap.adjoint_inner_right, inner_conj_symm]
 ```
 :::
 
@@ -464,14 +495,24 @@ example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
 ```
 
 Complex conjugation on the scalars appears here as `starRingEnd 𝕜`: it is the ring map sending each scalar to its conjugate, so $`\texttt{starRingEnd } 𝕜\ \mu` is $`\overline{\mu}` (Mathlib also writes this `conj μ`, and on $`\mathbb{R}` it is the identity).
-The corollary that a Hermitian map has real eigenvalues — every eigenvalue equals its own conjugate — is `LinearMap.IsSymmetric.conj_eigenvalue_eq_self`.
-It takes the symmetry hypothesis and the `HasEigenvalue` witness, so `hT.conj_eigenvalue_eq_self hμ` finishes the goal.
+The corollary that a Hermitian map has real eigenvalues — every eigenvalue equals its own conjugate — is `LinearMap.IsSymmetric.conj_eigenvalue_eq_self`, which takes the symmetry hypothesis and the `HasEigenvalue` witness.
 
 ```lean
 example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
     [InnerProductSpace 𝕜 V]
     (T : V →ₗ[𝕜] V) (hT : T.IsSymmetric) (μ : 𝕜)
-    (hμ : Module.End.HasEigenvalue T μ) : starRingEnd 𝕜 μ = μ := by
+    (hμ : Module.End.HasEigenvalue T μ) : starRingEnd 𝕜 μ = μ :=
+  hT.conj_eigenvalue_eq_self hμ
+```
+
+Even before eigenvalues enter, symmetry already forces the "diagonal" values $`\langle T v, v \rangle` to equal their own conjugates — this self-conjugacy is exactly the computation that makes the eigenvalues real.
+Flip the conjugate with `inner_conj_symm`, which moves $`T` across to the other argument, then finish with the symmetry hypothesis $`\langle T v, v \rangle = \langle v, T v \rangle` supplied by `hT v v`.
+
+```lean
+example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
+    [InnerProductSpace 𝕜 V]
+    (T : V →ₗ[𝕜] V) (hT : T.IsSymmetric) (v : V) :
+    starRingEnd 𝕜 (inner 𝕜 (T v) v) = inner 𝕜 (T v) v := by
   sorry
 ```
 
@@ -479,9 +520,11 @@ example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
 ```lean
 example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
     [InnerProductSpace 𝕜 V]
-    (T : V →ₗ[𝕜] V) (hT : T.IsSymmetric) (μ : 𝕜)
-    (hμ : Module.End.HasEigenvalue T μ) : starRingEnd 𝕜 μ = μ :=
-  hT.conj_eigenvalue_eq_self hμ
+    (T : V →ₗ[𝕜] V) (hT : T.IsSymmetric) (v : V) :
+    starRingEnd 𝕜 (inner 𝕜 (T v) v) = inner 𝕜 (T v) v := by
+  -- Conjugating flips the two arguments; symmetry flips T back.
+  rw [inner_conj_symm]
+  exact (hT v v).symm
 ```
 :::
 

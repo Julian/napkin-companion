@@ -6,6 +6,7 @@ import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -350,37 +351,56 @@ example {k : Type*} [CommRing k] (M : Matrix (Fin 2) (Fin 2) k) :
   Matrix.det_fin_two M
 ```
 
-The basis-free definition makes multiplicativity, $`\det(S \circ T) = \det(S)\det(T)`, fall out for free.
-Show that the determinant of a product of matrices is the product of the determinants.
+The basis-free definition makes multiplicativity, $`\det(S \circ T) = \det(S)\det(T)`, fall out for free; the determinant of a product is the product of the determinants, `Matrix.det_mul`.
 
-```lean
-example {n : Type*} [Fintype n] [DecidableEq n] {k : Type*}
-    [CommRing k] (M N : Matrix n n k) : (M * N).det = M.det * N.det := by
-  sorry
-```
-
-:::solution
 ```lean
 example {n : Type*} [Fintype n] [DecidableEq n] {k : Type*}
     [CommRing k] (M N : Matrix n n k) : (M * N).det = M.det * N.det :=
   Matrix.det_mul M N
 ```
-:::
 
-The problem "determinant detects isomorphism" says $`T` is invertible exactly when $`\det T \neq 0`.
-Over a field the invertible elements are the nonzero ones, and Mathlib phrases the general statement with `IsUnit`: a matrix is invertible exactly when its determinant is.
+A striking consequence: although matrix multiplication is *not* commutative, the determinant of a product does not notice the order — $`\det(MN) = \det(NM)` even when $`MN \neq NM`.
+Prove it by expanding each side with `Matrix.det_mul` and commuting the resulting scalars in $`k`.
 
 ```lean
 example {n : Type*} [Fintype n] [DecidableEq n] {k : Type*}
-    [CommRing k] (M : Matrix n n k) : IsUnit M ↔ IsUnit M.det := by
+    [CommRing k] (M N : Matrix n n k) : (M * N).det = (N * M).det := by
   sorry
 ```
 
 :::solution
 ```lean
 example {n : Type*} [Fintype n] [DecidableEq n] {k : Type*}
+    [CommRing k] (M N : Matrix n n k) : (M * N).det = (N * M).det := by
+  -- Both sides become det M * det N, up to commuting scalars in k.
+  rw [Matrix.det_mul, Matrix.det_mul, mul_comm]
+```
+:::
+
+The problem "determinant detects isomorphism" says $`T` is invertible exactly when $`\det T \neq 0`.
+Mathlib phrases the general statement over any commutative ring with `IsUnit`: a matrix is invertible exactly when its determinant is, `Matrix.isUnit_iff_isUnit_det`.
+
+```lean
+example {n : Type*} [Fintype n] [DecidableEq n] {k : Type*}
     [CommRing k] (M : Matrix n n k) : IsUnit M ↔ IsUnit M.det :=
   Matrix.isUnit_iff_isUnit_det M
+```
+
+Over a *field* the units are exactly the nonzero elements, and this recovers the familiar $`\det T \neq 0` form of the criterion.
+Prove that a matrix over a field is invertible iff its determinant is nonzero, by rewriting with the criterion above and then trading `IsUnit` for `≠ 0` in the field (`isUnit_iff_ne_zero`).
+
+```lean
+example {n : Type*} [Fintype n] [DecidableEq n] {K : Type*}
+    [Field K] (M : Matrix n n K) : IsUnit M ↔ M.det ≠ 0 := by
+  sorry
+```
+
+:::solution
+```lean
+example {n : Type*} [Fintype n] [DecidableEq n] {K : Type*}
+    [Field K] (M : Matrix n n K) : IsUnit M ↔ M.det ≠ 0 := by
+  -- Invertible ⟺ det is a unit ⟺ (in a field) det ≠ 0.
+  rw [Matrix.isUnit_iff_isUnit_det, isUnit_iff_ne_zero]
 ```
 :::
 
@@ -394,19 +414,30 @@ noncomputable example {n : Type*} [DecidableEq n] [Fintype n]
   M.charpoly
 ```
 
-The Cayley-Hamilton theorem says $`p_T(T)` is the zero map.
-Substituting the matrix into its own characteristic polynomial — through the algebra evaluation `Polynomial.aeval` — yields zero, and Mathlib records this as `Matrix.aeval_self_charpoly`.
+The Cayley-Hamilton theorem says $`p_T(T)` is the zero map: substituting the matrix into its own characteristic polynomial — through the algebra evaluation `Polynomial.aeval` — yields zero, recorded as `Matrix.aeval_self_charpoly`.
 
 ```lean
 example {n : Type*} [DecidableEq n] [Fintype n] {k : Type*} [CommRing k]
-    (M : Matrix n n k) : Polynomial.aeval M M.charpoly = 0 := by
+    (M : Matrix n n k) : Polynomial.aeval M M.charpoly = 0 :=
+  Matrix.aeval_self_charpoly M
+```
+
+The payoff is that *every* matrix is a root of some monic polynomial — it is "algebraic" over $`k` — since its own characteristic polynomial is monic (`Matrix.charpoly_monic`) and, by the theorem above, annihilates it.
+Exhibit that polynomial: give the witness together with the two facts it must satisfy.
+
+```lean
+example {n : Type*} [DecidableEq n] [Fintype n] {k : Type*} [CommRing k]
+    (M : Matrix n n k) :
+    ∃ p : Polynomial k, p.Monic ∧ Polynomial.aeval M p = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
 example {n : Type*} [DecidableEq n] [Fintype n] {k : Type*} [CommRing k]
-    (M : Matrix n n k) : Polynomial.aeval M M.charpoly = 0 :=
-  Matrix.aeval_self_charpoly M
+    (M : Matrix n n k) :
+    ∃ p : Polynomial k, p.Monic ∧ Polynomial.aeval M p = 0 :=
+  -- The characteristic polynomial is monic and kills M (Cayley-Hamilton).
+  ⟨M.charpoly, M.charpoly_monic, M.aeval_self_charpoly⟩
 ```
 :::

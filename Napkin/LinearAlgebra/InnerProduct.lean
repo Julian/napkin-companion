@@ -372,19 +372,32 @@ example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 ```
 
 The complex definition replaces symmetry by *conjugate symmetry* $`\langle v, w \rangle = \overline{\langle w, v \rangle}`, recorded in Mathlib as `inner_conj_symm`.
-Confirm the conjugate symmetry axiom over $`\mathbb{C}`.
 
 ```lean
 example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] (v w : V) :
-    inner ℂ v w = starRingEnd ℂ (inner ℂ w v) := by
+    inner ℂ v w = starRingEnd ℂ (inner ℂ w v) :=
+  (inner_conj_symm v w).symm
+```
+
+The payoff of conjugate symmetry is that it forces certain quantities to be *real*, meaning equal to their own conjugate — this is the point of the "why sesquilinear?" remark.
+Prove that $`\langle v, w \rangle + \langle w, v \rangle` is self-conjugate.
+Conjugation is a ring homomorphism, so `map_add` splits the conjugate of the sum; rewrite each summand with `inner_conj_symm`, and the two terms come back swapped, agreeing after `ring`.
+
+```lean
+example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] (v w : V) :
+    starRingEnd ℂ (inner ℂ v w + inner ℂ w v)
+      = inner ℂ v w + inner ℂ w v := by
   sorry
 ```
 
 :::solution
 ```lean
 example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] (v w : V) :
-    inner ℂ v w = starRingEnd ℂ (inner ℂ w v) :=
-  (inner_conj_symm v w).symm
+    starRingEnd ℂ (inner ℂ v w + inner ℂ w v)
+      = inner ℂ v w + inner ℂ w v := by
+  -- conj distributes over +; each conjugated inner flips its arguments.
+  rw [map_add, inner_conj_symm, inner_conj_symm]
+  ring
 ```
 :::
 
@@ -439,12 +452,22 @@ The bundled form is `OrthonormalBasis ι 𝕜 E`: a structure carrying a basis i
 For `EuclideanSpace 𝕜 (Fin n)`, the standard basis is `EuclideanSpace.basisFun (Fin n) 𝕜`.
 
 The lemma that pairwise-orthogonal unit vectors are linearly independent is `Orthonormal.linearIndependent`.
-Derive it from an `Orthonormal` family.
 
 ```lean
 example (𝕜 E : Type*) [RCLike 𝕜] [NormedAddCommGroup E]
     [InnerProductSpace 𝕜 E] {ι : Type*} (v : ι → E)
-    (h : Orthonormal 𝕜 v) : LinearIndependent 𝕜 v := by
+    (h : Orthonormal 𝕜 v) : LinearIndependent 𝕜 v :=
+  h.linearIndependent
+```
+
+`Orthonormal 𝕜 v` is by definition the conjunction "each $`\|v_i\| = 1`" and "distinct vectors are orthogonal", so its first component `h.1` gives you the norm-1 fact directly.
+Turn that into the *inner-product* form of a unit vector: show $`\langle v_i, v_i \rangle = 1`.
+Rewrite with `inner_self_eq_norm_sq_to_K` — the identity $`\langle x, x \rangle = \|x\|^2` valid over any `RCLike` field — and then `h.1 i`, leaving a cast of $`1^2` that `norm_num` settles.
+
+```lean
+example (𝕜 E : Type*) [RCLike 𝕜] [NormedAddCommGroup E]
+    [InnerProductSpace 𝕜 E] {ι : Type*} (v : ι → E)
+    (h : Orthonormal 𝕜 v) (i : ι) : inner 𝕜 (v i) (v i) = 1 := by
   sorry
 ```
 
@@ -452,8 +475,10 @@ example (𝕜 E : Type*) [RCLike 𝕜] [NormedAddCommGroup E]
 ```lean
 example (𝕜 E : Type*) [RCLike 𝕜] [NormedAddCommGroup E]
     [InnerProductSpace 𝕜 E] {ι : Type*} (v : ι → E)
-    (h : Orthonormal 𝕜 v) : LinearIndependent 𝕜 v :=
-  h.linearIndependent
+    (h : Orthonormal 𝕜 v) (i : ι) : inner 𝕜 (v i) (v i) = 1 := by
+  -- ⟨vᵢ, vᵢ⟩ = ‖vᵢ‖² and orthonormality makes ‖vᵢ‖ = 1.
+  rw [inner_self_eq_norm_sq_to_K, h.1 i]
+  norm_num
 ```
 :::
 
@@ -466,14 +491,28 @@ The chapter problem "finite-dimensional $`\Rightarrow` Hilbert" then amounts to 
 
 ```lean
 example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℝ V]
-    [FiniteDimensional ℝ V] : CompleteSpace V := by
+    [FiniteDimensional ℝ V] : CompleteSpace V :=
+  FiniteDimensional.complete ℝ V
+```
+
+But completeness is not an end in itself — its whole content is that *every Cauchy sequence converges*, which is exactly what lets a Hilbert space take the infinite limits the chapter is after.
+Make that concrete: in a finite-dimensional inner product space, show any Cauchy sequence has a limit.
+Install the instance from the worked model with `haveI`, then hand your Cauchy sequence to `cauchySeq_tendsto_of_complete`, which produces the limit point.
+
+```lean
+example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+    [FiniteDimensional ℝ V] (u : ℕ → V) (hu : CauchySeq u) :
+    ∃ p, Filter.Tendsto u Filter.atTop (nhds p) := by
   sorry
 ```
 
 :::solution
 ```lean
 example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℝ V]
-    [FiniteDimensional ℝ V] : CompleteSpace V :=
-  FiniteDimensional.complete ℝ V
+    [FiniteDimensional ℝ V] (u : ℕ → V) (hu : CauchySeq u) :
+    ∃ p, Filter.Tendsto u Filter.atTop (nhds p) := by
+  -- Finite dimension supplies completeness; completeness gives the limit.
+  haveI := FiniteDimensional.complete ℝ V
+  exact cauchySeq_tendsto_of_complete hu
 ```
 :::
