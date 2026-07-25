@@ -529,19 +529,33 @@ example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
 
 The chapter noted that a $`0`-chain has empty boundary, i.e. $`\partial \colon C_0(X) \to 0` is the zero map.
 This is one instance of a differential vanishing whenever the complex shape does not relate its two degrees: a $`\mathbb{N}`-indexed chain complex has its degree drop by one, and nothing sits below degree $`0`.
-Show that the boundary out of degree $`0` is zero.
+The differential out of degree $`0` is therefore zero, read straight off `C.shape` (which kills the differential on any pair of unrelated degrees) once `simp` discharges the shape relation.
 
 ```lean
 example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
-    (C : ChainComplex V ℕ) (j : ℕ) : C.d 0 j = 0 := by
+    (C : ChainComplex V ℕ) (j : ℕ) : C.d 0 j = 0 :=
+  C.shape 0 j (by simp)
+```
+
+The same principle governs every degree, not just the bottom: since $`\partial` drops the degree by exactly one, `C.d i j` can only be nonzero when $`i = j + 1`.
+Prove the general vanishing whenever $`i \le j`.
+Hand the goal to `C.shape`, unfold the shape relation to the arithmetic statement $`j + 1 = i` with `ComplexShape.down_Rel`, and let `omega` derive the contradiction with $`i \le j`.
+
+```lean
+example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
+    (C : ChainComplex V ℕ) (i j : ℕ) (h : i ≤ j) : C.d i j = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
 example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
-    (C : ChainComplex V ℕ) (j : ℕ) : C.d 0 j = 0 :=
-  C.shape 0 j (by simp)
+    (C : ChainComplex V ℕ) (i j : ℕ) (h : i ≤ j) : C.d i j = 0 := by
+  -- The differential vanishes unless i = j + 1, impossible when i ≤ j.
+  apply C.shape
+  intro hr
+  simp only [ComplexShape.down_Rel] at hr
+  omega
 ```
 :::
 
@@ -557,22 +571,39 @@ noncomputable example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
   C.homology i
 ```
 
-A cycle of $`A_n` is sent to a cycle, and a boundary to a boundary, so every chain map $`f \colon A_\bullet \to B_\bullet` induces a map $`f_\ast \colon H_n(A) \to H_n(B)` on homology.
-Produce that induced map from a chain map.
+A cycle of $`A_n` is sent to a cycle, and a boundary to a boundary, so every chain map $`f \colon A_\bullet \to B_\bullet` induces a map $`f_\ast \colon H_n(A) \to H_n(B)` on homology, namely `HomologicalComplex.homologyMap`.
 
-```lean
-noncomputable example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
-    [CategoryWithHomology V] {C D : ChainComplex V ℕ} (f : C ⟶ D) (i : ℕ) :
-    C.homology i ⟶ D.homology i := by
-  sorry
-```
-
-:::solution
 ```lean
 noncomputable example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
     [CategoryWithHomology V] {C D : ChainComplex V ℕ} (f : C ⟶ D) (i : ℕ) :
     C.homology i ⟶ D.homology i :=
   HomologicalComplex.homologyMap f i
+```
+
+This assignment is *functorial*: it carries identities to identities (`HomologicalComplex.homologyMap_id`) and composites to composites (`HomologicalComplex.homologyMap_comp`).
+That functoriality is exactly why homology cannot tell isomorphic complexes apart — a chain map with an inverse must induce an invertible map on homology.
+Prove one half of that: if a chain map $`g` undoes $`f`, in the sense that the composite $`C \xrightarrow{f} D \xrightarrow{g} C` is the identity, then $`f_\ast` and $`g_\ast` compose to the identity on homology too.
+Fold the two induced maps back into one with `homologyMap_comp` run backwards, rewrite along the hypothesis, and collapse the result with `homologyMap_id`.
+
+```lean
+example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
+    [CategoryWithHomology V] {C D : ChainComplex V ℕ} (f : C ⟶ D) (g : D ⟶ C)
+    (h : f ≫ g = 𝟙 C) (i : ℕ) :
+    HomologicalComplex.homologyMap f i ≫ HomologicalComplex.homologyMap g i =
+      𝟙 (C.homology i) := by
+  sorry
+```
+
+:::solution
+```lean
+example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
+    [CategoryWithHomology V] {C D : ChainComplex V ℕ} (f : C ⟶ D) (g : D ⟶ C)
+    (h : f ≫ g = 𝟙 C) (i : ℕ) :
+    HomologicalComplex.homologyMap f i ≫ HomologicalComplex.homologyMap g i =
+      𝟙 (C.homology i) := by
+  -- Functoriality folds the composite into 𝟙, which induces 𝟙 on homology.
+  rw [← HomologicalComplex.homologyMap_comp, h,
+    HomologicalComplex.homologyMap_id]
 ```
 :::
 
@@ -599,24 +630,33 @@ noncomputable example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
   HomologicalComplex.homologyFunctor V _ i
 ```
 
-The key proposition was that chain homotopic maps induce the *same* map on homology.
-Given a chain homotopy between $`f` and $`g`, show their induced maps on homology coincide.
+The key proposition was that chain homotopic maps induce the *same* map on homology; a chain homotopy `h : Homotopy f g` yields that equality through `Homotopy.homologyMap_eq`.
 
-```lean
-example {V : Type*} [Category V] [Preadditive V] [CategoryWithHomology V]
-    {C D : ChainComplex V ℕ} (f g : C ⟶ D) (h : Homotopy f g) (i : ℕ) :
-    HomologicalComplex.homologyMap f i =
-      HomologicalComplex.homologyMap g i := by
-  sorry
-```
-
-:::solution
 ```lean
 example {V : Type*} [Category V] [Preadditive V] [CategoryWithHomology V]
     {C D : ChainComplex V ℕ} (f g : C ⟶ D) (h : Homotopy f g) (i : ℕ) :
     HomologicalComplex.homologyMap f i =
       HomologicalComplex.homologyMap g i :=
   h.homologyMap_eq i
+```
+
+The most useful special case is a *nullhomotopic* map — one chain homotopic to the zero map: it must induce the *zero* map on homology.
+Prove this by combining the invariance above (with $`g = 0`) with the fact that the zero chain map induces zero on homology, `HomologicalComplex.homologyMap_zero`.
+
+```lean
+example {V : Type*} [Category V] [Preadditive V] [CategoryWithHomology V]
+    {C D : ChainComplex V ℕ} (f : C ⟶ D) (h : Homotopy f 0) (i : ℕ) :
+    HomologicalComplex.homologyMap f i = 0 := by
+  sorry
+```
+
+:::solution
+```lean
+example {V : Type*} [Category V] [Preadditive V] [CategoryWithHomology V]
+    {C D : ChainComplex V ℕ} (f : C ⟶ D) (h : Homotopy f 0) (i : ℕ) :
+    HomologicalComplex.homologyMap f i = 0 := by
+  -- Nullhomotopic: f agrees with 0 on homology, and 0 induces 0.
+  rw [h.homologyMap_eq i, HomologicalComplex.homologyMap_zero]
 ```
 :::
 
@@ -631,13 +671,23 @@ noncomputable example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
   ChainComplex.augment C f w
 ```
 
-In the augmented complex, the new differential out of degree $`0` is exactly the augmentation map $`\varepsilon`.
-Show that the boundary $`\widetilde C_0(X) \to \widetilde C_{-1}(X)` of the augmented complex is the augmentation map it was built from.
+In the augmented complex, the new differential out of degree $`0` is exactly the augmentation map $`\varepsilon`, which is the content of `ChainComplex.augment_d_one_zero`.
 
 ```lean
 example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
     (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0) :
-    (ChainComplex.augment C f w).d 1 0 = f := by
+    (ChainComplex.augment C f w).d 1 0 = f :=
+  ChainComplex.augment_d_one_zero C f w
+```
+
+The hypothesis $`w` was not decoration: it is precisely what makes $`\varepsilon` annihilate boundaries, so that the augmented sequence really is a chain complex across the seam.
+Concretely, the boundary $`C_1(X) \to C_0(X)` followed by the augmentation $`\varepsilon` is zero.
+Prove it by rewriting the augmentation differential to $`f` with the worked model above, which leaves exactly the hypothesis $`w`.
+
+```lean
+example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
+    (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0) :
+    C.d 1 0 ≫ (ChainComplex.augment C f w).d 1 0 = 0 := by
   sorry
 ```
 
@@ -645,7 +695,9 @@ example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
 ```lean
 example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
     (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0) :
-    (ChainComplex.augment C f w).d 1 0 = f :=
-  ChainComplex.augment_d_one_zero C f w
+    C.d 1 0 ≫ (ChainComplex.augment C f w).d 1 0 = 0 := by
+  -- The new differential out of degree 0 is ε = f, so this is w.
+  rw [ChainComplex.augment_d_one_zero]
+  exact w
 ```
 :::

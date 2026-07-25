@@ -476,19 +476,30 @@ example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
 
 The chapter's complex examples include the exponential map $`\exp \colon \mathbb{C} \to \mathbb{C} \setminus \{0\}`.
 The goal writes the codomain $`\mathbb{C} \setminus \{0\}` as the subtype `{z : ℂ // z ≠ 0}`, so the map sends $`z` to `Complex.exp z` bundled with the proof `z.exp_ne_zero` that it lands away from the origin.
-Mathlib has already done the work and named this exact map: {name}`Complex.isCoveringMap_exp` closes the goal outright.
+Mathlib has already done the work and named this exact map: {name}`Complex.isCoveringMap_exp` closes the covering goal outright.
 
 ```lean
 example :
-    IsCoveringMap fun z : ℂ ↦ (⟨_, z.exp_ne_zero⟩ : {z : ℂ // z ≠ 0}) := by
+    IsCoveringMap fun z : ℂ ↦ (⟨_, z.exp_ne_zero⟩ : {z : ℂ // z ≠ 0}) :=
+  Complex.isCoveringMap_exp
+```
+
+Now put that to work.
+Every covering map is a local homeomorphism ({name}`IsCoveringMap.isLocalHomeomorph`), and a local homeomorphism is an open map ({name}`IsLocalHomeomorph.isOpenMap`).
+Chain those two facts off `Complex.isCoveringMap_exp` to show the complex exponential is an *open* map — it carries open sets to open sets.
+
+```lean
+example :
+    IsOpenMap fun z : ℂ ↦ (⟨_, z.exp_ne_zero⟩ : {z : ℂ // z ≠ 0}) := by
   sorry
 ```
 
 :::solution
 ```lean
 example :
-    IsCoveringMap fun z : ℂ ↦ (⟨_, z.exp_ne_zero⟩ : {z : ℂ // z ≠ 0}) :=
-  Complex.isCoveringMap_exp
+    IsOpenMap fun z : ℂ ↦ (⟨_, z.exp_ne_zero⟩ : {z : ℂ // z ≠ 0}) :=
+  -- covering map ⟹ local homeomorphism ⟹ open map.
+  Complex.isCoveringMap_exp.isLocalHomeomorph.isOpenMap
 ```
 :::
 
@@ -529,7 +540,18 @@ Feed it the two continuity proofs `h₁` and `h₂`, the shared composite `he`, 
 example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
     {p : E → B} (cov : IsCoveringMap p) (g₁ g₂ : I → E)
     (h₁ : Continuous g₁) (h₂ : Continuous g₂)
-    (he : p ∘ g₁ = p ∘ g₂) (h0 : g₁ 0 = g₂ 0) : g₁ = g₂ := by
+    (he : p ∘ g₁ = p ∘ g₂) (h0 : g₁ 0 = g₂ 0) : g₁ = g₂ :=
+  cov.eq_of_comp_eq h₁ h₂ he 0 h0
+```
+
+That two lifts agreeing at the start agree *entirely* is exactly what makes the endpoint $`\tilde\gamma(1)` a well-defined function of the starting data — the value the lifting correspondence reads off next.
+Conclude it: the two lifts are equal as functions, so they agree in particular at the endpoint $`1`.
+
+```lean
+example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
+    {p : E → B} (cov : IsCoveringMap p) (g₁ g₂ : I → E)
+    (h₁ : Continuous g₁) (h₂ : Continuous g₂)
+    (he : p ∘ g₁ = p ∘ g₂) (h0 : g₁ 0 = g₂ 0) : g₁ 1 = g₂ 1 := by
   sorry
 ```
 
@@ -538,8 +560,10 @@ example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
 example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
     {p : E → B} (cov : IsCoveringMap p) (g₁ g₂ : I → E)
     (h₁ : Continuous g₁) (h₂ : Continuous g₂)
-    (he : p ∘ g₁ = p ∘ g₂) (h0 : g₁ 0 = g₂ 0) : g₁ = g₂ :=
-  cov.eq_of_comp_eq h₁ h₂ he 0 h0
+    (he : p ∘ g₁ = p ∘ g₂) (h0 : g₁ 0 = g₂ 0) : g₁ 1 = g₂ 1 := by
+  -- The two lifts are equal as functions, so they agree at 1 in particular.
+  have hg : g₁ = g₂ := cov.eq_of_comp_eq h₁ h₂ he 0 h0
+  rw [hg]
 ```
 :::
 
@@ -562,7 +586,17 @@ That lifting the constant path at $`p(e)` from $`e` gives the constant path at $
 ```lean
 example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
     {p : E → B} (cov : IsCoveringMap p) (e : E) :
-    cov.liftPath (.const I (p e)) e rfl = .const I e := by
+    cov.liftPath (.const I (p e)) e rfl = .const I e :=
+  cov.liftPath_const rfl
+```
+
+Reading off the endpoint makes the slogan precise: $`\Phi` sends the identity class to $`e_0`.
+Show that the lifted constant path ends where it started, at $`e` — rewrite by the identity above, then evaluate the constant path at $`1` (that is {name}`ContinuousMap.const_apply`).
+
+```lean
+example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
+    {p : E → B} (cov : IsCoveringMap p) (e : E) :
+    cov.liftPath (.const I (p e)) e rfl 1 = e := by
   sorry
 ```
 
@@ -570,8 +604,9 @@ example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
 ```lean
 example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
     {p : E → B} (cov : IsCoveringMap p) (e : E) :
-    cov.liftPath (.const I (p e)) e rfl = .const I e :=
-  cov.liftPath_const rfl
+    cov.liftPath (.const I (p e)) e rfl 1 = e := by
+  -- The lift is the constant path at e, whose value at 1 is e.
+  rw [cov.liftPath_const rfl, ContinuousMap.const_apply]
 ```
 :::
 
@@ -625,18 +660,30 @@ example {E₁ E₂ B : Type*} [TopologicalSpace E₁] [TopologicalSpace E₂]
     [TopologicalSpace B] [PreconnectedSpace E₁] {p : E₂ → B}
     (cov : IsCoveringMap p) (f g : E₁ → E₂)
     (hf : Continuous f) (hg : Continuous g) (he : p ∘ f = p ∘ g)
-    (x : E₁) (hx : f x = g x) : f = g := by
+    (x : E₁) (hx : f x = g x) : f = g :=
+  cov.eq_of_comp_eq hf hg he x hx
+```
+
+The sharpest consequence is for a self-map of a single connected cover: a continuous $`f \colon E \to E` lying over $`p` (so $`p \circ f = p`) that fixes even one point must be the identity everywhere — a cover admits no nontrivial deck transformation pinned down at a point.
+Prove it by comparing $`f` against `id`: the shared composite is $`p \circ f = p = p \circ \operatorname{id}`, and $`f` agrees with `id` at $`x`, so {name}`IsCoveringMap.eq_of_comp_eq` finishes.
+
+```lean
+example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
+    [PreconnectedSpace E] {p : E → B} (cov : IsCoveringMap p)
+    (f : E → E) (hf : Continuous f) (he : p ∘ f = p)
+    (x : E) (hx : f x = x) : f = id := by
   sorry
 ```
 
 :::solution
 ```lean
-example {E₁ E₂ B : Type*} [TopologicalSpace E₁] [TopologicalSpace E₂]
-    [TopologicalSpace B] [PreconnectedSpace E₁] {p : E₂ → B}
-    (cov : IsCoveringMap p) (f g : E₁ → E₂)
-    (hf : Continuous f) (hg : Continuous g) (he : p ∘ f = p ∘ g)
-    (x : E₁) (hx : f x = g x) : f = g :=
-  cov.eq_of_comp_eq hf hg he x hx
+example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
+    [PreconnectedSpace E] {p : E → B} (cov : IsCoveringMap p)
+    (f : E → E) (hf : Continuous f) (he : p ∘ f = p)
+    (x : E) (hx : f x = x) : f = id := by
+  -- Compare f with id: both lie over p and agree at x.
+  have he' : p ∘ f = p ∘ id := he
+  exact cov.eq_of_comp_eq hf continuous_id he' x hx
 ```
 :::
 
@@ -679,15 +726,28 @@ Every order isomorphism is injective, so apply `D.corr.injective` to the hypothe
 
 ```lean
 example {G : Type*} [Group G] (D : CoveringClassificationData G)
-    (H₁ H₂ : Subgroup G) (h : D.corr H₁ = D.corr H₂) : H₁ = H₂ := by
+    (H₁ H₂ : Subgroup G) (h : D.corr H₁ = D.corr H₂) : H₁ = H₂ :=
+  D.corr.injective h
+```
+
+Injectivity pins down the extremes of the correspondence.
+The universal cover is by definition the cover of the trivial subgroup, `D.corr ⊥`, so a subgroup whose cover *is* the universal cover can only be `⊥`.
+Show that if `D.corr H` is the universal cover then `H = ⊥` — `apply` injectivity to reduce to an equality of covers, then close it with the hypothesis (the definition of `universalCover` does the rest).
+
+```lean
+example {G : Type*} [Group G] (D : CoveringClassificationData G)
+    (H : Subgroup G) (h : D.corr H = D.universalCover) : H = ⊥ := by
   sorry
 ```
 
 :::solution
 ```lean
 example {G : Type*} [Group G] (D : CoveringClassificationData G)
-    (H₁ H₂ : Subgroup G) (h : D.corr H₁ = D.corr H₂) : H₁ = H₂ :=
-  D.corr.injective h
+    (H : Subgroup G) (h : D.corr H = D.universalCover) : H = ⊥ := by
+  -- `universalCover` is `corr ⊥`; injectivity turns the covers' equality
+  -- back into an equality of subgroups.
+  apply D.corr.injective
+  exact h
 ```
 :::
 
@@ -696,14 +756,26 @@ Read off one direction: apply the forward implication `(D.regular_iff_normal H).
 
 ```lean
 example {G : Type*} [Group G] (D : CoveringClassificationData G)
-    (H : Subgroup G) (h : D.Regular (D.corr H)) : H.Normal := by
+    (H : Subgroup G) (h : D.Regular (D.corr H)) : H.Normal :=
+  (D.regular_iff_normal H).mp h
+```
+
+Run the equivalence backwards to see a concrete regular cover.
+The base itself, `D.baseCover`, is the cover of the whole group `⊤`, which is always normal ({name}`Subgroup.normal_top`), so the base is a regular cover.
+Prove it: rewrite the goal to `⊤`'s cover with `show`, then feed normality of `⊤` through the *backward* direction `.mpr` of the equivalence.
+
+```lean
+example {G : Type*} [Group G] (D : CoveringClassificationData G) :
+    D.Regular D.baseCover := by
   sorry
 ```
 
 :::solution
 ```lean
-example {G : Type*} [Group G] (D : CoveringClassificationData G)
-    (H : Subgroup G) (h : D.Regular (D.corr H)) : H.Normal :=
-  (D.regular_iff_normal H).mp h
+example {G : Type*} [Group G] (D : CoveringClassificationData G) :
+    D.Regular D.baseCover := by
+  -- baseCover is `corr ⊤`, and ⊤ is normal, so it is a regular cover.
+  show D.Regular (D.corr ⊤)
+  exact (D.regular_iff_normal ⊤).mpr Subgroup.normal_top
 ```
 :::

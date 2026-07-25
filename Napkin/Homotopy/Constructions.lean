@@ -483,20 +483,34 @@ example (n : ℕ) : Set (EuclideanSpace ℝ (Fin (n + 1))) :=
   Metric.closedBall 0 1 -- Dⁿ⁺¹
 ```
 
-The chapter's exercise — that the open ball is homeomorphic to $`\mathbb{R}^n` — is real work; here is a warm-up in the same spirit.
-Show that a point lies on $`S^n` exactly when it has norm $`1`, recovering the defining equation $`x_0^2 + \dots + x_n^2 = 1`.
+A point lies on $`S^n` exactly when it has norm $`1`, recovering the defining equation $`x_0^2 + \dots + x_n^2 = 1`; this is `mem_sphere_zero_iff_norm`.
 
 ```lean
 example (n : ℕ) (x : EuclideanSpace ℝ (Fin (n + 1))) :
-    x ∈ Metric.sphere (0 : EuclideanSpace ℝ (Fin (n + 1))) 1 ↔ ‖x‖ = 1 := by
+    x ∈ Metric.sphere (0 : EuclideanSpace ℝ (Fin (n + 1))) 1 ↔ ‖x‖ = 1 :=
+  mem_sphere_zero_iff_norm
+```
+
+The chapter's exercise — that the open ball is homeomorphic to $`\mathbb{R}^n` — is real work; here is a smaller step relating the two objects above.
+Show that the sphere sits inside the closed ball.
+Take a point of the sphere, unfold membership in the closed ball to a distance bound with `Metric.mem_closedBall`, rewrite the distance to a norm with `dist_zero_right`, and finish with the norm-one fact above.
+
+```lean
+example (n : ℕ) :
+    Metric.sphere (0 : EuclideanSpace ℝ (Fin (n + 1))) 1 ⊆
+      Metric.closedBall (0 : EuclideanSpace ℝ (Fin (n + 1))) 1 := by
   sorry
 ```
 
 :::solution
 ```lean
-example (n : ℕ) (x : EuclideanSpace ℝ (Fin (n + 1))) :
-    x ∈ Metric.sphere (0 : EuclideanSpace ℝ (Fin (n + 1))) 1 ↔ ‖x‖ = 1 :=
-  mem_sphere_zero_iff_norm
+example (n : ℕ) :
+    Metric.sphere (0 : EuclideanSpace ℝ (Fin (n + 1))) 1 ⊆
+      Metric.closedBall (0 : EuclideanSpace ℝ (Fin (n + 1))) 1 := by
+  -- On the sphere the distance to 0 is exactly 1, so it is ≤ 1.
+  intro x hx
+  refine Metric.mem_closedBall.mpr (le_of_eq ?_)
+  rw [dist_zero_right, mem_sphere_zero_iff_norm.mp hx]
 ```
 :::
 
@@ -512,20 +526,32 @@ example {X : Type*} [TopologicalSpace X] (s : Setoid X) (U : Set (Quotient s)) :
   isOpen_coinduced
 ```
 
-Because the quotient carries the finest topology making $`x \mapsto [x]` continuous, that projection is in particular continuous.
-Show it.
+Because the quotient carries the finest topology making $`x \mapsto [x]` continuous, that projection is in particular continuous — `continuous_coinduced_rng`.
 
 ```lean
 example {X : Type*} [TopologicalSpace X] (s : Setoid X) :
-    Continuous (Quotient.mk s) := by
+    Continuous (Quotient.mk s) :=
+  continuous_coinduced_rng
+```
+
+Continuity of the projection is exactly what lets any continuous map *out* of the quotient be recognized on representatives.
+Show that if $`f : X/{\sim} \to Z` is continuous, then so is $`x \mapsto f([x])`.
+Continuity composes: `Continuous.comp` glues $`f` onto the projection above.
+
+```lean
+example {X Z : Type*} [TopologicalSpace X] [TopologicalSpace Z]
+    (s : Setoid X) (f : Quotient s → Z) (hf : Continuous f) :
+    Continuous (fun x => f (Quotient.mk s x)) := by
   sorry
 ```
 
 :::solution
 ```lean
-example {X : Type*} [TopologicalSpace X] (s : Setoid X) :
-    Continuous (Quotient.mk s) :=
-  continuous_coinduced_rng
+example {X Z : Type*} [TopologicalSpace X] [TopologicalSpace Z]
+    (s : Setoid X) (f : Quotient s → Z) (hf : Continuous f) :
+    Continuous (fun x => f (Quotient.mk s x)) := by
+  -- The projection is continuous, and continuity composes.
+  exact hf.comp continuous_coinduced_rng
 ```
 :::
 
@@ -538,8 +564,18 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] :
     TopologicalSpace (X × Y) := inferInstance
 ```
 
-The basic open sets are the rectangles themselves.
-Show that if $`U` and $`V` are open then so is $`U \times V`.
+The basic open sets are the rectangles themselves: if $`U` and $`V` are open then so is $`U \times V`, packaged as `IsOpen.prod`.
+
+```lean
+example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    (U : Set X) (V : Set Y) (hU : IsOpen U) (hV : IsOpen V) :
+    IsOpen (U ×ˢ V) :=
+  hU.prod hV
+```
+
+That a rectangle is open is not an extra axiom; it falls out of the projections being continuous.
+Reprove it that way.
+Rewrite $`U \times V` as the intersection $`\pi_1^{-1}(U) \cap \pi_2^{-1}(V)` with `Set.prod_eq`, note each factor is an open set pulled back along a continuous projection (`IsOpen.preimage` with `continuous_fst`, `continuous_snd`), and combine them with `IsOpen.inter`.
 
 ```lean
 example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
@@ -552,8 +588,10 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 ```lean
 example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     (U : Set X) (V : Set Y) (hU : IsOpen U) (hV : IsOpen V) :
-    IsOpen (U ×ˢ V) :=
-  hU.prod hV
+    IsOpen (U ×ˢ V) := by
+  -- A rectangle is the intersection of two open preimages of projections.
+  rw [Set.prod_eq]
+  exact (hU.preimage continuous_fst).inter (hV.preimage continuous_snd)
 ```
 :::
 
@@ -568,20 +606,31 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] :
 ```
 
 The chapter asked you to show that a disjoint union of two nonempty spaces is disconnected.
-The heart of that fact is that the copy of $`X` inside $`X \oplus Y` is both open and closed, i.e. a nontrivial _clopen_ set.
-Show that the range of the inclusion is clopen.
+The heart of that fact is that the copy of $`X` inside $`X \oplus Y` is both open and closed, i.e. a nontrivial _clopen_ set — `isClopen_range_inl`.
 
 ```lean
 example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] :
-    IsClopen (Set.range (Sum.inl : X → X ⊕ Y)) := by
+    IsClopen (Set.range (Sum.inl : X → X ⊕ Y)) :=
+  isClopen_range_inl
+```
+
+The copy of $`Y` is the other piece, and it is clopen for a free reason: it is the *complement* of the first.
+Show it without re-running the argument.
+Rewrite the range of $`\mathrm{inr}` as the complement of the range of $`\mathrm{inl}` (`Set.compl_range_inl`), then use that a complement of a clopen set is clopen (`IsClopen.compl`).
+
+```lean
+example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] :
+    IsClopen (Set.range (Sum.inr : Y → X ⊕ Y)) := by
   sorry
 ```
 
 :::solution
 ```lean
 example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] :
-    IsClopen (Set.range (Sum.inl : X → X ⊕ Y)) :=
-  isClopen_range_inl
+    IsClopen (Set.range (Sum.inr : Y → X ⊕ Y)) := by
+  -- inr's range is the complement of inl's clopen range.
+  rw [← Set.compl_range_inl]
+  exact isClopen_range_inl.compl
 ```
 :::
 
@@ -596,8 +645,18 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     (x₀ : X) (y₀ : Y) : WedgeSum x₀ y₀ := WedgeSum.base x₀ y₀
 ```
 
-The whole reason for the construction is that the two chosen basepoints stop being two points: in the wedge $`x_0` and $`y_0` name the *same* point.
-Show it — the relation glues exactly the pair $`(x_0, y_0)`, so `Quotient.sound` closes the goal.
+The whole reason for the construction is that the two chosen basepoints stop being two points: in the wedge $`x_0` and $`y_0` name the *same* point, recorded as `WedgeSum.inl_base_eq_inr_base`.
+
+```lean
+example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    (x₀ : X) (y₀ : Y) :
+    WedgeSum.inl x₀ y₀ x₀ = WedgeSum.inr x₀ y₀ y₀ :=
+  WedgeSum.inl_base_eq_inr_base x₀ y₀
+```
+
+But this identification is not magic; it is forced by the gluing relation.
+Reprove it straight from the quotient.
+Two representatives of $`X \oplus Y` name the same point as soon as they are related, which is `Quotient.sound`; here the relation's basepoint clause relates $`\mathrm{inl}\,x_0` and $`\mathrm{inr}\,y_0` via a pair of `rfl`s.
 
 ```lean
 example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
@@ -610,30 +669,51 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 ```lean
 example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     (x₀ : X) (y₀ : Y) :
-    WedgeSum.inl x₀ y₀ x₀ = WedgeSum.inr x₀ y₀ y₀ :=
-  WedgeSum.inl_base_eq_inr_base x₀ y₀
+    WedgeSum.inl x₀ y₀ x₀ = WedgeSum.inr x₀ y₀ y₀ := by
+  -- sound needs the representatives WedgeRel-related: the basepoint clause,
+  -- `inl x₀ = inl x₀ ∧ inr y₀ = inr y₀`.
+  exact Quotient.sound (Or.inr (Or.inl ⟨rfl, rfl⟩))
 ```
 :::
 
-Each space still sits inside the wedge, and it does so continuously: the inclusion $`X \hookrightarrow X \vee Y` is $`x \mapsto [\,\mathrm{inl}\,x\,]`, a quotient projection composed with the sum inclusion.
-Show that the inclusion of the first space is continuous.
+Each space still sits inside the wedge, and it does so continuously: the inclusion $`X \hookrightarrow X \vee Y` is $`x \mapsto [\,\mathrm{inl}\,x\,]`, a quotient projection composed with the sum inclusion — `WedgeSum.continuous_inl`.
 
 ```lean
 example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    (x₀ : X) (y₀ : Y) : Continuous (WedgeSum.inl x₀ y₀) := by
+    (x₀ : X) (y₀ : Y) : Continuous (WedgeSum.inl x₀ y₀) :=
+  WedgeSum.continuous_inl x₀ y₀
+```
+
+The same recipe gives continuity of the *other* inclusion, and it is worth running once by hand rather than quoting the packaged lemma.
+Show that $`Y \hookrightarrow X \vee Y` is continuous by composing the continuity of the quotient projection (`continuous_quotient_mk'`) with that of the sum inclusion (`continuous_inr`).
+
+```lean
+example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    (x₀ : X) (y₀ : Y) : Continuous (WedgeSum.inr x₀ y₀) := by
   sorry
 ```
 
 :::solution
 ```lean
 example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    (x₀ : X) (y₀ : Y) : Continuous (WedgeSum.inl x₀ y₀) :=
-  WedgeSum.continuous_inl x₀ y₀
+    (x₀ : X) (y₀ : Y) : Continuous (WedgeSum.inr x₀ y₀) := by
+  -- inr is the sum-inclusion followed by the quotient projection.
+  exact continuous_quotient_mk'.comp _root_.continuous_inr
 ```
 :::
 
-Away from the basepoint the gluing does nothing, so the inclusion loses no information there.
-Show that if two points of $`X` have the same image under $`\mathrm{inl}`, they were equal to begin with.
+Away from the basepoint the gluing does nothing, so the inclusion loses no information: if two points of $`X` have the same image under $`\mathrm{inl}` they were equal to begin with — `WedgeSum.inl_injOn`.
+
+```lean
+example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    (x₀ : X) (y₀ : Y) {x x' : X}
+    (h : WedgeSum.inl x₀ y₀ x = WedgeSum.inl x₀ y₀ x') : x = x' :=
+  WedgeSum.inl_injOn x₀ y₀ h
+```
+
+Prove that injectivity from the quotient directly, to see where the gluing could have interfered.
+Equality of two classes unpacks, via `Quotient.exact`, into the relation `WedgeRel`, whose three disjuncts `rcases` splits.
+The genuine case is closed by `Sum.inl_injective`; the other two would force $`\mathrm{inl}` and $`\mathrm{inr}` values to coincide, which `simp` refutes.
 
 ```lean
 example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
@@ -646,8 +726,13 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 ```lean
 example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     (x₀ : X) (y₀ : Y) {x x' : X}
-    (h : WedgeSum.inl x₀ y₀ x = WedgeSum.inl x₀ y₀ x') : x = x' :=
-  WedgeSum.inl_injOn x₀ y₀ h
+    (h : WedgeSum.inl x₀ y₀ x = WedgeSum.inl x₀ y₀ x') : x = x' := by
+  -- Quotient.exact turns class-equality into WedgeRel; only the equality
+  -- disjunct is possible, the basepoint disjuncts are contradictory.
+  rcases Quotient.exact h with h | ⟨_, h⟩ | ⟨h, _⟩
+  · exact Sum.inl_injective h
+  · exact absurd h (by simp)
+  · exact absurd h (by simp)
 ```
 :::
 
@@ -690,22 +775,33 @@ example (n : ℕ) : Type := Projectivization ℝ (Fin (n + 1) → ℝ) -- ℝℙ
 
 The topology that makes these the spaces of this section is not yet part of the general `Projectivization` API — Mathlib currently carries a topology only for the projective line — so for the moment this construction gives us the _set_ of points but not, out of the box, their gluing.
 
-The defining feature of these coordinates is that they are only defined "up to scaling".
-Show that two nonzero vectors name the same point of $`\mathbb{RP}^n` exactly when one is a scalar multiple of the other.
+The defining feature of these coordinates is that they are only defined "up to scaling": two nonzero vectors name the same point of $`\mathbb{RP}^n` exactly when one is a scalar multiple of the other, `Projectivization.mk_eq_mk_iff`.
 
-```lean
-example (n : ℕ) (v w : Fin (n + 1) → ℝ) (hv : v ≠ 0) (hw : w ≠ 0) :
-    Projectivization.mk ℝ v hv = Projectivization.mk ℝ w hw ↔
-      ∃ a : ℝˣ, a • w = v := by
-  sorry
-```
-
-:::solution
 ```lean
 example (n : ℕ) (v w : Fin (n + 1) → ℝ) (hv : v ≠ 0) (hw : w ≠ 0) :
     Projectivization.mk ℝ v hv = Projectivization.mk ℝ w hw ↔
       ∃ a : ℝˣ, a • w = v :=
   Projectivization.mk_eq_mk_iff ℝ v w hv hw
+```
+
+Read off that criterion, "names the same point" is visibly symmetric: if $`v` and $`w` agree as points, then $`w` is *also* a scalar multiple of $`v`.
+Extract the scalar with `obtain`, then invert the unit — `inv_smul_smul` cancels it — to hand back the witness the other way around.
+
+```lean
+example (n : ℕ) (v w : Fin (n + 1) → ℝ) (hv : v ≠ 0) (hw : w ≠ 0)
+    (h : Projectivization.mk ℝ v hv = Projectivization.mk ℝ w hw) :
+    ∃ a : ℝˣ, a • v = w := by
+  sorry
+```
+
+:::solution
+```lean
+example (n : ℕ) (v w : Fin (n + 1) → ℝ) (hv : v ≠ 0) (hw : w ≠ 0)
+    (h : Projectivization.mk ℝ v hv = Projectivization.mk ℝ w hw) :
+    ∃ a : ℝˣ, a • v = w := by
+  -- The criterion gives a • w = v; the inverse unit sends v back to w.
+  obtain ⟨a, ha⟩ := (Projectivization.mk_eq_mk_iff ℝ v w hv hw).mp h
+  exact ⟨a⁻¹, by rw [← ha, inv_smul_smul]⟩
 ```
 :::
 
@@ -717,21 +813,31 @@ Complex projective $`n`-space is the same construction over $`\mathbb{C}`.
 example (n : ℕ) : Type := Projectivization ℂ (Fin (n + 1) → ℂ) -- ℂℙⁿ
 ```
 
-The scaling relation reads the same way, now with a complex scalar.
-Show that two nonzero vectors name the same point of $`\mathbb{CP}^n` exactly when one is a complex scalar multiple of the other.
+The scaling relation reads the same way, now with a complex scalar: two nonzero vectors name the same point of $`\mathbb{CP}^n` exactly when one is a complex scalar multiple of the other, `Projectivization.mk_eq_mk_iff` again.
 
-```lean
-example (n : ℕ) (v w : Fin (n + 1) → ℂ) (hv : v ≠ 0) (hw : w ≠ 0) :
-    Projectivization.mk ℂ v hv = Projectivization.mk ℂ w hw ↔
-      ∃ a : ℂˣ, a • w = v := by
-  sorry
-```
-
-:::solution
 ```lean
 example (n : ℕ) (v w : Fin (n + 1) → ℂ) (hv : v ≠ 0) (hw : w ≠ 0) :
     Projectivization.mk ℂ v hv = Projectivization.mk ℂ w hw ↔
       ∃ a : ℂˣ, a • w = v :=
   Projectivization.mk_eq_mk_iff ℂ v w hv hw
+```
+
+The same symmetry holds over $`\mathbb{C}`; run the argument again with complex units.
+
+```lean
+example (n : ℕ) (v w : Fin (n + 1) → ℂ) (hv : v ≠ 0) (hw : w ≠ 0)
+    (h : Projectivization.mk ℂ v hv = Projectivization.mk ℂ w hw) :
+    ∃ a : ℂˣ, a • v = w := by
+  sorry
+```
+
+:::solution
+```lean
+example (n : ℕ) (v w : Fin (n + 1) → ℂ) (hv : v ≠ 0) (hw : w ≠ 0)
+    (h : Projectivization.mk ℂ v hv = Projectivization.mk ℂ w hw) :
+    ∃ a : ℂˣ, a • v = w := by
+  -- Same move as over ℝ: invert the unit the criterion produces.
+  obtain ⟨a, ha⟩ := (Projectivization.mk_eq_mk_iff ℂ v w hv hw).mp h
+  exact ⟨a⁻¹, by rw [← ha, inv_smul_smul]⟩
 ```
 :::

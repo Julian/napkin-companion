@@ -351,20 +351,31 @@ example {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
 ```
 
 The worked example transported contractibility from $`Y` to $`X` along $`X \simeq Y`.
-Since a homotopy equivalence can be reversed with {name}`ContinuousMap.HomotopyEquiv.symm`, the same conclusion holds in the other direction: show that if $`X` is contractible then so is $`Y`.
-Reverse the equivalence and reuse the transport lemma — `e.symm.contractibleSpace`.
+Since a homotopy equivalence can be reversed with {name}`ContinuousMap.HomotopyEquiv.symm`, the same conclusion holds in the other direction: reversing $`e` transports contractibility from $`X` to $`Y`.
+
+```lean
+example {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
+    [ContractibleSpace X] (e : X ≃ₕ Y) : ContractibleSpace Y :=
+  e.symm.contractibleSpace
+```
+
+But contractibility is more than a bare typeclass flag: it *is* the assertion of a homotopy equivalence to a one-point space, which {name}`ContractibleSpace.hequiv_unit` hands back.
+Chain the two facts: from $`X` contractible and $`e \colon X \simeq Y`, exhibit an explicit homotopy equivalence $`Y \simeq \ast`.
+Transport contractibility across `e.symm` into an instance (with `haveI`), then read off the equivalence with `ContractibleSpace.hequiv_unit Y`.
 
 ```lean (name := contractibleSymm)
 example {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
-    [ContractibleSpace X] (e : X ≃ₕ Y) : ContractibleSpace Y := by
+    [ContractibleSpace X] (e : X ≃ₕ Y) : Nonempty (Y ≃ₕ Unit) := by
   sorry
 ```
 
 :::solution
 ```lean
 example {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
-    [ContractibleSpace X] (e : X ≃ₕ Y) : ContractibleSpace Y :=
-  e.symm.contractibleSpace
+    [ContractibleSpace X] (e : X ≃ₕ Y) : Nonempty (Y ≃ₕ Unit) := by
+  -- Transport contractibility X → Y along e.symm, then read off Y ≃ₕ *.
+  haveI : ContractibleSpace Y := e.symm.contractibleSpace
+  exact ContractibleSpace.hequiv_unit Y
 ```
 :::
 
@@ -397,70 +408,114 @@ Bundling three consecutive chain groups with a subcomplex — the data of `RelCh
 When the subspace already carries every $`n`-chain, that middle relative group vanishes, giving `RelChainData.relativeHomology_isZero_of_top` — the algebraic shadow of $`H_n(A, A) = 0`.
 
 Underlying the short exact sequence is the "image lies inside kernel" relation: in the pair's short complex, inclusion into $`C(X)` followed by projection onto $`C(X, A)` is zero, because chains from $`A` project to $`0`.
-Every short complex carries this vanishing as its {name}`CategoryTheory.ShortComplex.zero` field, so `(pairShortComplex N).zero` verifies it.
+Every short complex carries this vanishing as its {name}`CategoryTheory.ShortComplex.zero` field, so `(pairShortComplex N).zero` verifies it at the level of the packaged maps.
 
-```lean (name := pairComposeZero)
-example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
-    (N : Submodule R M) :
-    (pairShortComplex N).f ≫ (pairShortComplex N).g = 0 := by
-  sorry
-```
-
-:::solution
 ```lean
 example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
     (N : Submodule R M) :
     (pairShortComplex N).f ≫ (pairShortComplex N).g = 0 :=
   (pairShortComplex N).zero
 ```
-:::
 
-Every element of $`H_n(X, A)` has a representative in $`C(X)`, because the projection $`C(X) \to C(X, A)` hits every relative chain.
-Show that this projection is surjective; the quotient projection `N.mkQ` is surjective by {name}`Submodule.mkQ_surjective`.
+Unpack what that composite-is-zero really says, pointwise: a chain supported in $`A` — an element of the subgroup $`N` — projects to $`0` in the relative chains $`C(X, A) = C(X)/C(A)`.
+Rewrite the projection with {name}`Submodule.mkQ_apply`, then read the vanishing off membership: $`\bar x = 0` exactly when $`x \in N`, which is {name}`Submodule.Quotient.mk_eq_zero`, and `x.2` supplies that membership.
 
-```lean (name := mkQSurjective)
+```lean (name := pairComposeZero)
 example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
-    (N : Submodule R M) : Function.Surjective N.mkQ := by
+    (N : Submodule R M) (x : N) : N.mkQ (x : M) = 0 := by
   sorry
 ```
 
 :::solution
+```lean
+example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
+    (N : Submodule R M) (x : N) : N.mkQ (x : M) = 0 := by
+  -- A chain living in A projects to zero: mk x = 0 ↔ x ∈ N, and x ∈ N.
+  rw [Submodule.mkQ_apply]
+  exact (Submodule.Quotient.mk_eq_zero N).mpr x.2
+```
+:::
+
+Every element of $`H_n(X, A)` has a representative in $`C(X)`, because the projection $`C(X) \to C(X, A)` hits every relative chain — the quotient projection `N.mkQ` is surjective by {name}`Submodule.mkQ_surjective`.
+
 ```lean
 example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
     (N : Submodule R M) : Function.Surjective N.mkQ :=
   Submodule.mkQ_surjective N
 ```
-:::
 
-Collapsing $`X` onto a subspace that is all of it leaves nothing behind: when $`A = X`, the relative chains $`C(X, X)` have a single element, matching $`H_n(X, X) = 0`.
-Here `RelativeChains N` is by definition the quotient module `M ⧸ N`, and such a quotient is a subsingleton exactly when the subgroup is everything, recorded by {name}`Submodule.Quotient.subsingleton_iff`.
-Prove the relative chains of the full subspace are a subsingleton; feed `rfl` to its `.mpr` direction.
+"Hits every relative chain" has a submodule-level restatement: the range of the projection is all of $`C(X, A)`.
+Prove it, turning surjectivity into the equality of submodules with {name}`LinearMap.range_eq_top` and feeding it the fact above.
 
-```lean (name := relChainsTop)
-example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M] :
-    Subsingleton (RelativeChains (⊤ : Submodule R M)) := by
+```lean (name := mkQSurjective)
+example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
+    (N : Submodule R M) : LinearMap.range N.mkQ = ⊤ := by
   sorry
 ```
 
 :::solution
+```lean
+example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
+    (N : Submodule R M) : LinearMap.range N.mkQ = ⊤ := by
+  -- Surjectivity of the projection is exactly range = ⊤.
+  rw [LinearMap.range_eq_top]
+  exact Submodule.mkQ_surjective N
+```
+:::
+
+Collapsing $`X` onto a subspace that is all of it leaves nothing behind: when $`A = X`, the relative chains $`C(X, X)` have a single element, matching $`H_n(X, X) = 0`.
+Here `RelativeChains N` is by definition the quotient module `M ⧸ N`, and such a quotient is a subsingleton exactly when the subgroup is everything, recorded by {name}`Submodule.Quotient.subsingleton_iff` — feed `rfl` to its `.mpr` direction.
+
 ```lean
 example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M] :
     Subsingleton (RelativeChains (⊤ : Submodule R M)) :=
   Submodule.Quotient.subsingleton_iff.mpr rfl
 ```
-:::
 
-Homotopy equivalence is reflexive: every space is homotopy equivalent to itself.
-Construct this identity homotopy equivalence with {name}`ContinuousMap.HomotopyEquiv.refl`.
+A subsingleton has just one element, and here that element is $`0`, matching $`H_n(X, X) = 0`: every chain of $`C(X, X)` collapses to zero.
+Turn the subsingleton into that statement — establish it as an instance (with `haveI`) so that {name}`Subsingleton.elim` can equate an arbitrary relative chain with $`0`.
 
-```lean (name := hequivRefl)
-example (X : Type) [TopologicalSpace X] : X ≃ₕ X := by
+```lean (name := relChainsTop)
+example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M] :
+    ∀ x : RelativeChains (⊤ : Submodule R M), x = 0 := by
   sorry
 ```
 
 :::solution
 ```lean
+example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M] :
+    ∀ x : RelativeChains (⊤ : Submodule R M), x = 0 := by
+  -- C(X, X) is a subsingleton, so every relative chain equals 0.
+  haveI : Subsingleton (RelativeChains (⊤ : Submodule R M)) :=
+    Submodule.Quotient.subsingleton_iff.mpr rfl
+  exact fun x => Subsingleton.elim x 0
+```
+:::
+
+Homotopy equivalence is reflexive: every space is homotopy equivalent to itself, the identity equivalence built by {name}`ContinuousMap.HomotopyEquiv.refl`.
+
+```lean
 example (X : Type) [TopologicalSpace X] : X ≃ₕ X :=
   ContinuousMap.HomotopyEquiv.refl X
+```
+
+Reflexivity is one clause of "$`\simeq` is an equivalence relation"; transitivity is another, and it lets contractibility travel along a chain of homotopy equivalences.
+Given $`X \simeq Y` and $`Y \simeq Z` with $`Z` contractible, conclude $`X` is contractible.
+Compose the two equivalences into $`X \simeq Z` with {name}`ContinuousMap.HomotopyEquiv.trans`, then transport contractibility back with `.contractibleSpace`.
+
+```lean (name := hequivRefl)
+example {X Y Z : Type} [TopologicalSpace X] [TopologicalSpace Y]
+    [TopologicalSpace Z] (e : X ≃ₕ Y) (f : Y ≃ₕ Z) [ContractibleSpace Z] :
+    ContractibleSpace X := by
+  sorry
+```
+
+:::solution
+```lean
+example {X Y Z : Type} [TopologicalSpace X] [TopologicalSpace Y]
+    [TopologicalSpace Z] (e : X ≃ₕ Y) (f : Y ≃ₕ Z) [ContractibleSpace Z] :
+    ContractibleSpace X :=
+  -- Compose to X ≃ₕ Z with trans, then transport contractibility back.
+  (e.trans f).contractibleSpace
 ```
 :::

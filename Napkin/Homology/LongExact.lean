@@ -429,15 +429,29 @@ Extract from `S.ShortExact` the fact that $`A \to B` is a monomorphism; it is th
 
 ```lean
 example {C : Type*} [Category C] [Abelian C] (S : ShortComplex C)
-    (hS : S.ShortExact) : Mono S.f := by
+    (hS : S.ShortExact) : Mono S.f :=
+  hS.mono_f
+```
+
+Being a monomorphism is not just a label: it is exactly the property of being *left-cancellable*, which is what "injective" means in arrow-theoretic terms.
+Put `hS.mono_f` to work and prove that cancellation directly: if $`a \circ f = b \circ f`, then $`a = b`.
+Install the monomorphism as an instance first (`haveI := hS.mono_f`) so that `cancel_mono` — the lemma packaging left-cancellation for a mono — becomes applicable, then feed it the hypothesis.
+
+```lean
+example {C : Type*} [Category C] [Abelian C] (S : ShortComplex C)
+    (hS : S.ShortExact) {W : C} (a b : W ⟶ S.X₁)
+    (h : a ≫ S.f = b ≫ S.f) : a = b := by
   sorry
 ```
 
 :::solution
 ```lean
 example {C : Type*} [Category C] [Abelian C] (S : ShortComplex C)
-    (hS : S.ShortExact) : Mono S.f :=
-  hS.mono_f
+    (hS : S.ShortExact) {W : C} (a b : W ⟶ S.X₁)
+    (h : a ≫ S.f = b ≫ S.f) : a = b := by
+  -- With `mono_f` in scope, `S.f` is left-cancellable via `cancel_mono`.
+  haveI := hS.mono_f
+  exact (cancel_mono S.f).mp h
 ```
 :::
 
@@ -465,23 +479,37 @@ example {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
 ```
 
 Part of that exactness is that consecutive maps compose to zero.
-Show that going $`H_n(B_\bullet) \xrightarrow{g_\ast} H_n(C_\bullet) \xrightarrow{\partial} H_{n-1}(A_\bullet)` is the zero map; this composite is exactly {name}`CategoryTheory.ShortComplex.ShortExact.comp_δ`, so `hS.comp_δ i j hij` closes it.
+Going $`H_n(B_\bullet) \xrightarrow{g_\ast} H_n(C_\bullet) \xrightarrow{\partial} H_{n-1}(A_\bullet)` is the zero map; this composite is exactly {name}`CategoryTheory.ShortComplex.ShortExact.comp_δ`, so `hS.comp_δ i j hij` is the whole proof.
 
-```lean
-example {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
-    {S : ShortComplex (HomologicalComplex C c)} (hS : S.ShortExact)
-    (i j : ι) (hij : c.Rel i j) :
-    HomologicalComplex.homologyMap S.g i ≫ hS.δ i j hij = 0 := by
-  sorry
-```
-
-:::solution
 ```lean
 example {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
     {S : ShortComplex (HomologicalComplex C c)} (hS : S.ShortExact)
     (i j : ι) (hij : c.Rel i j) :
     HomologicalComplex.homologyMap S.g i ≫ hS.δ i j hij = 0 :=
   hS.comp_δ i j hij
+```
+
+The *other* consecutive composite, $`H_n(A_\bullet) \xrightarrow{f_\ast} H_n(B_\bullet) \xrightarrow{g_\ast} H_n(C_\bullet)`, is zero for a more elementary reason that needs no exactness at all: the induced maps on homology are functorial, and already $`f \circ g = 0` one level up.
+Prove $`f_\ast \circ g_\ast = 0`.
+Fold the composite back through functoriality with `homologyMap_comp` (used right-to-left), rewrite the underlying $`S.f \circ S.g` to $`0` via the short complex's own defining property `S.zero`, and clean up with `homologyMap_zero`.
+
+```lean
+example {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
+    (S : ShortComplex (HomologicalComplex C c)) (i : ι) :
+    HomologicalComplex.homologyMap S.f i ≫
+      HomologicalComplex.homologyMap S.g i = 0 := by
+  sorry
+```
+
+:::solution
+```lean
+example {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
+    (S : ShortComplex (HomologicalComplex C c)) (i : ι) :
+    HomologicalComplex.homologyMap S.f i ≫
+      HomologicalComplex.homologyMap S.g i = 0 := by
+  -- Homology is functorial and `S.f ≫ S.g = 0`, so the composite vanishes.
+  rw [← HomologicalComplex.homologyMap_comp, S.zero,
+    HomologicalComplex.homologyMap_zero]
 ```
 :::
 
@@ -495,18 +523,30 @@ example {C : Type*} [Category C] [Abelian C] (S : ShortComplex C) : Type _ :=
 ```
 
 The section $`s \colon C \to B` of clause (b) is a genuine one-sided inverse to $`g`.
-Show that $`C \xrightarrow{s} B \xrightarrow{g} C` is the identity; the splitting records this as {name}`CategoryTheory.ShortComplex.Splitting.s_g`, so `s.s_g` is the whole proof.
+That $`C \xrightarrow{s} B \xrightarrow{g} C` is the identity is recorded as {name}`CategoryTheory.ShortComplex.Splitting.s_g`, so `s.s_g` is the whole proof.
 
 ```lean
 example {C : Type*} [Category C] [Abelian C] {S : ShortComplex C}
-    (s : S.Splitting) : s.s ≫ S.g = 𝟙 S.X₃ := by
+    (s : S.Splitting) : s.s ≫ S.g = 𝟙 S.X₃ :=
+  s.s_g
+```
+
+That one-sided inverse is enough to force $`g` to be an epimorphism: a section exhibits $`g` as a *split* epi, and every split epi is epi.
+Prove $`g` is epi straight from the splitting.
+Rather than reach for the packaged `Splitting.epi_g`, assemble it: the pair `⟨s.s, s.s_g⟩` is a `SplitEpi` for $`S.g`, so wrapping it as an `IsSplitEpi` witness lets `infer_instance` supply the resulting `Epi`.
+
+```lean
+example {C : Type*} [Category C] [Abelian C] {S : ShortComplex C}
+    (s : S.Splitting) : Epi S.g := by
   sorry
 ```
 
 :::solution
 ```lean
 example {C : Type*} [Category C] [Abelian C] {S : ShortComplex C}
-    (s : S.Splitting) : s.s ≫ S.g = 𝟙 S.X₃ :=
-  s.s_g
+    (s : S.Splitting) : Epi S.g := by
+  -- The section `s.s` makes `S.g` a split epi, and split epis are epi.
+  have : IsSplitEpi S.g := ⟨⟨⟨s.s, s.s_g⟩⟩⟩
+  infer_instance
 ```
 :::
