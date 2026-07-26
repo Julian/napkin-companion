@@ -265,6 +265,7 @@ Then the map $`G \to G` given by $`x \mapsto gx` is a bijection.
 
 :::EXERCISE
 Check this by showing injectivity and surjectivity directly.
+(If you don't know what these words mean, consult [Appendix E](Backmatter/Terminology-on-sets-and-functions/).)
 :::
 
 :::EXAMPLE "Left multiplication by 3 in (ℤ/7)×"

@@ -168,11 +168,9 @@ Chapters not listed deviate only via the book-wide conventions above.
   identity/associativity/inverse axioms, the pedantic-point and
   abelian remarks, the examples and non-examples), modulo the
   book-wide types-not-sets convention. The D₁₀ art is redrawn as SVG
-  with a new caption. Two parenthetical pointers to the sets-and-
-  functions appendix are dropped (the appendix is not yet ported). The
-  forward reference to Lagrange becomes "we'll prove it later in more
-  generality". The trailing "Formalities" section is companion-only
-  content.
+  with a new caption. The forward reference to Lagrange becomes "we'll
+  prove it later in more generality". The trailing "Formalization"
+  section is companion-only content.
 - **Metric spaces.** Prose is verbatim (the point-set-topology
   motivation and the metric-space definition, modulo types-not-sets).
   Four figures redrawn as SVG with new captions.
