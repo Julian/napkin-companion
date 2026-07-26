@@ -33,7 +33,6 @@ roots = [
   "Test.CheckFixture",
   "Test.CheckSorry",
   "Test.CheckPairing",
-  "Test.Chapters",
 ]
 
 [[lean_exe]]

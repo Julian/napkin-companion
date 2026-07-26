@@ -110,6 +110,10 @@ def collectBlocks (text : String) (onlyFormalization : Bool := true) :
       inSol := false
   return out
 
+/-- Does this chapter have a `# Formalization` section at all? -/
+def hasFormalization (text : String) : Bool :=
+  (text.splitOn "\n").any fun line => strip line == "# Formalization"
+
 /-- Everything above the `#doc` line: the chapter's imports, `open`s and
     options. Copied verbatim, so an extracted file has exactly the context
     the chapter had. -/

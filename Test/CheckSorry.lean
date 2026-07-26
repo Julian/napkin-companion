@@ -19,17 +19,14 @@ Regenerate the baseline with `lake test -- check-sorry:--update` (review
 the diff before committing).
 -/
 
-import Test.Chapters
+import Napkin.Meta.Extract
 
 namespace Test.CheckSorry
 
-open Test.Chapters
+open Napkin.Meta.Extract
 
 /-- Committed golden baseline: one `count\tpath` line per chapter. -/
 def baselinePath : System.FilePath := "Test/fixtures/sorry-baseline.txt"
-
-/-- Number of `sorry` substrings in a string. -/
-private def countSorry (s : String) : Nat := (s.splitOn "sorry").length - 1
 
 /-- Per-file tally. -/
 private structure Counts where
@@ -40,30 +37,16 @@ private structure Counts where
   /-- Whether the file has a `# Formalization` section. -/
   hasFormalization : Bool := false
 
-/-- Scan a file's text, counting `sorry` inside fenced ```lean blocks and
-    splitting by whether the block sits inside a `:::solution` directive.
-    Only code blocks are counted, so prose mentions of "`sorry`" don't. -/
+/-- Scan a chapter, splitting `sorry`s by whether they sit inside a
+    `:::solution` directive. Only code blocks are counted, so prose
+    mentions of "`sorry`" don't. -/
 private def analyze (text : String) : Counts := Id.run do
-  let mut c : Counts := {}
-  let mut inCode := false
-  let mut inSol := false
-  for line in text.splitOn "\n" do
-    let t := line.trim
-    if t == "# Formalization" then
-      c := { c with hasFormalization := true }
-    if inCode then
-      if t == "```" then
-        inCode := false
-      else
-        let n := countSorry line
-        if inSol then c := { c with sol := c.sol + n }
-        else c := { c with reader := c.reader + n }
-    else if t.startsWith "```lean" then
-      inCode := true
-    else if t == ":::solution" then
-      inSol := true
-    else if t == ":::" && inSol then
-      inSol := false
+  let mut c : Counts := { hasFormalization := hasFormalization text }
+  for b in collectBlocks text do
+    let n := countSorry b.code
+    match b.kind with
+    | .plain => c := { c with reader := c.reader + n }
+    | .solution => c := { c with sol := c.sol + n }
   return c
 
 /-- Render the per-chapter tally as sorted `count\tpath` lines. -/
@@ -75,7 +58,7 @@ private def render (entries : Array (String × Nat)) : String :=
 private def parseBaseline (s : String) : Array (String × Nat) := Id.run do
   let mut out : Array (String × Nat) := #[]
   for line in s.splitOn "\n" do
-    let t := line.trim
+    let t := strip line
     if t.isEmpty then continue
     match t.splitOn "\t" with
     | [n, p] => out := out.push (p, (n.toNat?).getD 0)
