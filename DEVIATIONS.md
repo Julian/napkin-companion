@@ -120,6 +120,16 @@ lists below.
     contents rather than recalled. Chapters with no genuine counterpart
     deliberately have none.
 
+16. **Extracted exercise files.** `lake exe exercises` (also run as a
+    render step, so the output ships with the site under `exercises/`)
+    writes each chapter's Lean out twice: `<Chapter>-exercises.lean` with
+    the exercises still `sorry`, and `<Chapter>-solutions.lean` with them
+    filled in. Extraction takes *every* code block of the chapter, hidden
+    `lean -show` setup included, and reuses the chapter's header verbatim,
+    so the files compile exactly when the chapter does; the whole set of
+    190 was compiled to confirm it. Substitution is per declaration, not
+    per block, so an exercise block that also defines a helper keeps it.
+
 ## Formalization-forced deviations
 
 Places where Mathlib's design genuinely differs from the chapter's

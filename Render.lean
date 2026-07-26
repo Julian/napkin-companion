@@ -1,6 +1,7 @@
 import Std.Data.HashMap
 import VersoManual
 import Napkin
+import Napkin.Meta.Exercises
 
 open Verso Doc
 open Verso.Genre Manual
@@ -794,5 +795,15 @@ def buildExercisesStep : ExtraStep := fun mode cfg state text => do
   let logger ← read
   buildExercises mode (fun msg => logger.reportError msg) cfg state text
 
+/-- Ship each chapter's Lean as standalone files alongside the site, so a
+    reader can download one and work in it rather than reassembling the
+    imports by hand. See `Napkin.Meta.Exercises`. -/
+def buildExerciseFilesStep : ExtraStep := fun mode cfg _state _text => do
+  let .multi := mode
+    | pure ()
+  let n ← Napkin.Meta.Exercises.writeAll (cfg.destination / "exercises")
+  IO.println s!"Wrote exercise and solution files for {n} chapters."
+
 def main := manualMain (%doc Napkin)
-  (extraSteps := [buildExercisesStep]) (config := {config with})
+  (extraSteps := [buildExercisesStep, buildExerciseFilesStep])
+  (config := {config with})

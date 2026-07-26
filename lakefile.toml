@@ -51,6 +51,12 @@ name = "chaptergraph"
 root = "BuildChapterGraph"
 supportInterpreter = true
 
+# Writes each chapter's Lean out as standalone exercise/solution files.
+[[lean_exe]]
+name = "exercises"
+root = "BuildExercises"
+supportInterpreter = true
+
 # Test runner. Wired up as `testDriver` so `lake test` invokes it.
 # Currently runs the render-diff check; new tests are registered in
 # `Test/Main.lean`.
