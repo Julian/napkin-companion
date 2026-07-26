@@ -157,7 +157,9 @@ Chapters not listed deviate only via the book-wide conventions above.
   adaptation: upstream's "the length of the entire PDF" becomes "the
   length of the entire book" (this rendering is a web book, not a PDF).
   It also replaces the LaTeX dependency digraph with a regenerated
-  clickable SVG chapter graph.
+  clickable SVG chapter graph, and adds one companion-only `:::aside`
+  under Prerequisites flagging the `x : X` notation and pointing at the
+  appendix section that explains it.
 - **Sales pitches** is verbatim (all six section pitches match
   sentence-for-sentence; `g ∈ G` → `g : G` per the types-not-sets
   convention).
@@ -1056,7 +1058,11 @@ Sets are modeled as sets throughout, per the set-theory exception.
   each notion to its Mathlib counterpart: `Set`/`∈`/`⊆`/`𝒫`, the
   `∪`/`∩`/`\` operations, `Function.Injective`/`Surjective`/`Bijective`,
   `Equiv` for bijections, `Set.image`/`Set.preimage`, and
-  `Setoid`/`Quotient` with `Setoid.IsPartition`.
+  `Setoid`/`Quotient` with `Setoid.IsPartition`. A companion-only
+  "Types" section is added ahead of "Sets", explaining the `x : X`
+  notation the rest of the book uses for carriers and why subobjects
+  keep `∈` — the notational prerequisite book-wide convention 1 creates,
+  which upstream has no occasion to supply.
 
 ### Hints and Solutions
 

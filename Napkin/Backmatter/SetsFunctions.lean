@@ -27,6 +27,29 @@ Remark for experts: I am not dealing with foundational issues in this chapter.
 See the set theory chapters if that's what you're interested in.
 Consequently I will not prove most assertions.
 
+# Types
+
+This section is specific to this edition, and it explains a piece of notation used throughout: alongside $`x \in S` you will constantly see $`x : X`.
+
+A *type* is, for our purposes, a collection of things fixed in advance — the integers, the real numbers, the points of a space, the elements of a group.
+We write $`x : X` and read it "$`x` is an $`X`", or "$`x` is a term of type $`X`": $`3 : \mathbb{Z}`, and $`\pi : \mathbb{R}`.
+
+That looks like membership, and informally it is, but the two differ in a way worth naming once.
+Whether $`x \in S` holds is a *question*, with a yes-or-no answer that may take a proof: asking whether $`\sqrt2 \in \mathbb{Q}` is a real mathematical question.
+Whether $`x : X` holds is not a question at all — it is part of what $`x` *is*.
+Every object comes with its type already attached, and an expression that gets a type wrong, like $`\sin(\mathbb{Z})`, is not false but meaningless.
+So types come first: you say what kind of thing you are talking about, and only then start asking questions about it.
+
+The consequence for this book is a division of labour.
+The *carrier* of a structure is a type: a group is a type $`G` with a multiplication, a topological space is a type $`X` with a topology, and an element of either is written $`g : G` or $`x : X`.
+A *sub*object is an honest set living inside such a type, so a subgroup $`H`, an ideal $`I`, or a subspace $`W` keeps its $`\in`: we write $`g \in H` and $`f \in I`.
+The rule of thumb: $`:` for "which kind of thing", $`\in` for "which part of it".
+
+:::aside
+This division is not a stylistic choice but the one Mathlib makes, and it is what makes the code in the Formalization sections read the way it does: `Group G` is a structure *on* a type, while `Subgroup G` is a bundled subset *of* one, so `g : G` and `H : Subgroup G` and `g ∈ H` all coexist.
+None of this requires knowing any type theory, and the set-theory chapters — where sets are the actual subject matter — go back to writing everything with $`\in`.
+:::
+
 # Sets
 
 A *set* for us will just be a collection of elements (whatever they may be).

@@ -24,6 +24,12 @@ This means I expect the reader to know how to read and write a proof, follow log
 I also assume the reader is familiar with basic terminology about sets and functions (e.g. "what is a bijection?").
 If not, one should consult [Appendix E](Backmatter/Terminology-on-sets-and-functions/).
 
+:::aside "Sets, and types"
+One notational prerequisite is specific to this edition.
+Where the carrier of a structure is concerned — the elements of a group, the points of a space — this book writes $`x : X` ("$`x` is an $`X`") rather than $`x \in X`, keeping $`\in` for genuine subobjects like a subgroup or an ideal.
+Nothing about type theory is needed to read it; the [Types](Backmatter/Terminology-on-sets-and-functions/#An-Infinitely-Large-Napkin--Backmatter--Terminology-on-sets-and-functions--Types) section of that same appendix explains the distinction and why the book bothers with it.
+:::
+
 # Deciding what to read
 
 There is no need to read this book in linear order: it covers all sorts of areas in mathematics, and there are many paths you can take.
