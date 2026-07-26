@@ -806,6 +806,10 @@ Prove that there exists an integer $`N` such that $$`V = \ker T^N \oplus \mathrm
 :::LEANCOMPANION
 :::
 
+:::aside "Further Lean reading"
+§§10.1–10.2 of {cite}`ref:mil` build vector spaces, linear maps, subspaces and quotients in Mathlib's own idiom.
+:::
+
 ## Modules and vector spaces
 
 An $`R`-module on an additive abelian group $`M` is the typeclass `Module R M`.

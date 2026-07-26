@@ -245,6 +245,10 @@ nonetheless exists.
 :::LEANCOMPANION
 :::
 
+:::aside "Further Lean reading"
+§13.3, *Integration*, of {cite}`ref:mil` develops the Bochner integral, dominated convergence and Fubini.
+:::
+
 ## The definition
 
 `Set.indicator` is Mathlib's spelling: `Set.indicator A f x` is `f x` when `x ∈ A` and `0` otherwise.

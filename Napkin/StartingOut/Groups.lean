@@ -595,6 +595,10 @@ Show that $`F_{2p(p^2 - 1)}` is divisible by $`p`.
 :::LEANCOMPANION
 :::
 
+:::aside "Further Lean reading"
+The same ground from the Lean side is §9.1, *Monoids and Groups*, of {cite}`ref:mil`; its Chapters 7 and 8, *Structures* and *Hierarchies*, are where the typeclass machinery that makes `Group G` work is explained properly.
+:::
+
 ## Multiplicative and additive notation
 
 `+` and `*` are different notation operators with their own typeclass hierarchies — there is no parent typeclass that lets a single group structure carry either symbol.

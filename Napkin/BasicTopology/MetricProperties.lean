@@ -256,6 +256,10 @@ Prove that $`\mathbb{Q}` is not homeomorphic to any complete metric space.
 :::LEANCOMPANION
 :::
 
+:::aside "Further Lean reading"
+Compactness, completeness and uniform continuity in metric spaces are all subsections of §11.2 of {cite}`ref:mil`.
+:::
+
 ## Boundedness
 
 Mathlib keeps the two notions apart: `Bornology.IsBounded` is the predicate "the set has finite diameter", while `TotallyBounded` demands the stronger finite-cover-by-$`\varepsilon`-balls condition.

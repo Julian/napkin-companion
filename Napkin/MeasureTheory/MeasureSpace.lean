@@ -329,6 +329,10 @@ Prove that $`|\mathcal{A}|` is finite and equals a power of $`2`.
 :::LEANCOMPANION
 :::
 
+:::aside "Further Lean reading"
+σ-algebras, `MeasurableSpace` and measures are §13.2 of {cite}`ref:mil`.
+:::
+
 ## Sigma-algebras and measurable spaces
 
 `MeasurableSpace Ω` is the Mathlib typeclass: a set of subsets of `Ω` (the "measurable sets") closed under empty set, complements, and countable unions.

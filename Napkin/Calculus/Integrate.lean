@@ -288,6 +288,10 @@ $$`\lim_{n \to \infty} \left( \frac{1}{n+1} + \frac{1}{n+2} + \dots + \frac{1}{2
 :::LEANCOMPANION
 :::
 
+:::aside "Further Lean reading"
+§13.1, *Elementary Integration*, of {cite}`ref:mil` covers integration on intervals and the fundamental theorem of calculus.
+:::
+
 ## Uniform continuity
 
 `UniformContinuous f` is Mathlib's predicate, defined slightly more generally — for `f` between *uniform spaces* — but it specializes to the metric definition above on `MetricSpace M` and `MetricSpace N` (`Metric.uniformContinuous_iff`).

@@ -446,6 +446,10 @@ One can show that it's actually possible to write $`U` as the union of _pairwise
 :::LEANCOMPANION
 :::
 
+:::aside "Further Lean reading"
+§11.3, *Topological spaces*, of {cite}`ref:mil` covers the same fundamentals, along with separation and countability.
+:::
+
 ## Forgetting the metric
 
 `TopologicalSpace X` packs the topology into a typeclass on the type `X`; the open-set predicate is `IsOpen`, and the three axioms come out as `isOpen_empty`, `isOpen_univ`, `IsOpen.inter`, `isOpen_iUnion`.

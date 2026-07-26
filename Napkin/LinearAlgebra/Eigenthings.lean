@@ -421,6 +421,10 @@ Which real numbers are eigenvalues of this map?
 :::LEANCOMPANION
 :::
 
+:::aside "Further Lean reading"
+§10.3, *Endomorphisms*, of {cite}`ref:mil` is the Lean-side treatment of operators on a single space.
+:::
+
 ## Eigenvectors and eigenvalues
 
 `Module.End.HasEigenvalue` and `Module.End.eigenspace` are the matching predicate and submodule.

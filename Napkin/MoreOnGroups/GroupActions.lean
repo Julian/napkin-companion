@@ -273,6 +273,10 @@ Show that $`H` is normal in $`G`.
 :::LEANCOMPANION
 :::
 
+:::aside "Further Lean reading"
+Group actions are §9.1.5 of {cite}`ref:mil`.
+:::
+
 ## Definition of a group action
 
 `MulAction G X` is the typeclass; the action is written `g • x`.

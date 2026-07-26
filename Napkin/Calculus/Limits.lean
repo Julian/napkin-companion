@@ -517,6 +517,10 @@ At which points is $`f` continuous?
 :::LEANCOMPANION
 :::
 
+:::aside "Further Lean reading"
+Everything here is phrased with filters, and §11.1 of {cite}`ref:mil` is the extended introduction to them.
+:::
+
 ## Completeness and inf/sup
 
 Mathlib registers completeness as the `CompleteSpace ℝ` instance — every `CauchySeq` in `ℝ` has a limit:

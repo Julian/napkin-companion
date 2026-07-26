@@ -527,6 +527,10 @@ How should you respond?
 :::LEANCOMPANION
 :::
 
+:::aside "Further Lean reading"
+§11.2, *Metric spaces*, of {cite}`ref:mil` covers this ground at greater length, and §11.1, *Filters*, is the place to go if the filter vocabulary below deserves more than the paragraph it gets here.
+:::
+
 ## Definition and examples of metric spaces
 
 We write `[MetricSpace M]`; the distance function is `dist : M → M → ℝ`.

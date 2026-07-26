@@ -423,6 +423,10 @@ Calculate the derivative of the function $`f \colon (0, \infty) \to \mathbb{R}` 
 :::LEANCOMPANION
 :::
 
+:::aside "Further Lean reading"
+Chapter 12 of {cite}`ref:mil`, *Differential Calculus*, is the Lean-side companion to this material.
+:::
+
 ## Definition
 
 Mathlib's name for the assertion "$`f` has derivative $`v` at $`x`" is `HasDerivAt f v x`, defined in terms of the more general Fréchet derivative `HasFDerivAt`.

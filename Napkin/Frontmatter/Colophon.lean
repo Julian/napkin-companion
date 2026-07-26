@@ -63,6 +63,7 @@ Book contents last updated 2026-04-30.
 They assume you can read a Lean theorem statement and are on speaking terms with the basic tactics — `intro`, `exact`, `apply`, `rw`, `simp`, `cases`, `induction`, `obtain`, `refine`.
 Nothing beyond that, and in particular no Mathlib.
 If Lean itself is new, the [Natural Number Game](https://adam.math.hhu.de/#/g/leanprover-community/nng4) is the shortest way in and [Mathematics in Lean](https://leanprover-community.github.io/mathematics_in_lean/) is the standard follow-up; both teach *Lean*, whereas what these sections teach is *Mathlib* — which typeclass holds a given concept, what its lemmas are called, and why they are stated the way they are.
+Where a chapter's material has a counterpart in that book, its Formalization section opens by naming the relevant chapter.
 The math itself is assumed only as far as the chapter above has taken you.
 
 *What is in them.*

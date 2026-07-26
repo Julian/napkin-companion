@@ -279,7 +279,13 @@ def references : Array NapkinRef := #[
    "Burnside's Lemma, post 6",
    "Art of Problem Solving",
    some "https://www.aops.com/Forum/viewtopic.php?p=3089768#p3089768",
-   "Maxima, AoPS"⟩
+   "Maxima, AoPS"⟩,
+  ⟨"ref:mil",
+   "Jeremy Avigad and Patrick Massot", "n.d.",
+   "Mathematics in Lean",
+   "Lean community, online textbook",
+   some "https://leanprover-community.github.io/mathematics_in_lean/",
+   "Avigad–Massot"⟩
 ]
 
 /-- Look up a reference by key. -/

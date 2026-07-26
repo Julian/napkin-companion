@@ -450,6 +450,10 @@ In this problem a "circle" refers to the boundary of a disk with _nonzero_ radiu
 :::LEANCOMPANION
 :::
 
+:::aside "Further Lean reading"
+Compactness appears twice in {cite}`ref:mil`, once for metric spaces (§11.2) and again in the general setting (§11.3).
+:::
+
 ## Definition of sequential compactness
 
 Sequential compactness is `IsSeqCompact`: the predicate saying every sequence taking values in the set has a subsequence converging to a point of the set.

@@ -628,6 +628,10 @@ This problem is more here as a teaser — it looks like it should be easy, becau
 :::LEANCOMPANION
 :::
 
+:::aside "Further Lean reading"
+Ideals and quotient rings are §9.2.2 of {cite}`ref:mil`, inside its *Rings* section.
+:::
+
 ## Definition and examples of rings
 
 Mathlib's `CommRing` typeclass packages addition, multiplication, distributivity, and commutativity.

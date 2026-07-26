@@ -27,6 +27,10 @@ Remark for experts: I am not dealing with foundational issues in this chapter.
 See the set theory chapters if that's what you're interested in.
 Consequently I will not prove most assertions.
 
+:::aside "Further Lean reading"
+Chapter 4 of {cite}`ref:mil`, *Sets and Functions*, covers this same vocabulary as Mathlib expresses it, at much greater length.
+:::
+
 # Types
 
 This section is specific to this edition, and it explains a piece of notation used throughout: alongside $`x \in S` you will constantly see $`x : X`.

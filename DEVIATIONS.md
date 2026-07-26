@@ -112,6 +112,14 @@ lists below.
     companion-only section, "How to read the Formalization sections",
     stating them once.
 
+15. **Pointers to *Mathematics in Lean*.** Chapters whose material has a
+    directly corresponding chapter or section in *Mathematics in Lean*
+    open their Formalization section with a `:::aside "Further Lean
+    reading"` naming it (cited as `ref:mil`). Seventeen chapters carry
+    one; the section numbers were checked against that book's table of
+    contents rather than recalled. Chapters with no genuine counterpart
+    deliberately have none.
+
 ## Formalization-forced deviations
 
 Places where Mathlib's design genuinely differs from the chapter's

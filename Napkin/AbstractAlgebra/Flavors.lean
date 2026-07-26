@@ -570,6 +570,10 @@ Recall that a ring $`R` is *Artinian* if it satisfies the *descending chain cond
 :::LEANCOMPANION
 :::
 
+:::aside "Further Lean reading"
+§9.2, *Rings*, of {cite}`ref:mil` develops this hierarchy from the Lean side.
+:::
+
 ## Fields
 
 A field is `Field K`: a nontrivial commutative ring in which every nonzero element is a unit.
