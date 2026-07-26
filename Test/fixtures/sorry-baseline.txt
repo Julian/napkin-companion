@@ -55,7 +55,7 @@
 5	Napkin/LinearAlgebra/Adjoints.lean
 4	Napkin/LinearAlgebra/Determinant.lean
 6	Napkin/LinearAlgebra/DualTrace.lean
-4	Napkin/LinearAlgebra/Eigenthings.lean
+5	Napkin/LinearAlgebra/Eigenthings.lean
 7	Napkin/LinearAlgebra/Fourier.lean
 4	Napkin/LinearAlgebra/InnerProduct.lean
 6	Napkin/LinearAlgebra/VectorSpaces.lean

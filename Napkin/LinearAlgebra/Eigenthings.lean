@@ -482,6 +482,27 @@ example (k V : Type*) [Field k] [IsAlgClosed k] [AddCommGroup V] [Module k V]
 ```
 :::
 
+## The Jordan form
+
+Mathlib does not have Jordan canonical form as a single theorem, and the reason is worth understanding: the *content* of the theorem is a decomposition of the space, and the block matrix is bookkeeping on top of it.
+The decomposition is there in full.
+`Module.End.maxGenEigenspace T μ` is the generalized $`\mu`-eigenspace — everything killed by *some* power of $`T - \mu` — and over an algebraically closed field, in finite dimensions, these span the whole space (`Module.End.iSup_maxGenEigenspace_eq_top`) and are independent (`Module.End.independent_maxGenEigenspace`), so the sum is direct.
+
+```lean
+example (k V : Type*) [Field k] [IsAlgClosed k] [AddCommGroup V] [Module k V]
+    [FiniteDimensional k V] (T : Module.End k V) :
+    ⨆ μ : k, T.maxGenEigenspace μ = ⊤ :=
+  T.iSup_maxGenEigenspace_eq_top
+
+example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    (T : Module.End k V) : iSupIndep T.maxGenEigenspace :=
+  T.independent_maxGenEigenspace
+```
+
+That is the chapter's reduction, stated exactly: $`V` breaks into pieces indexed by the eigenvalues.
+The other half of the reduction — that on each piece $`T` is $`\mu` plus something nilpotent — is `Module.End.isNilpotent_restrict_maxGenEigenspace_sub_algebraMap`.
+What is left unformalized is only the choice of basis inside each piece that turns the nilpotent part into blocks of $`1`s above the diagonal.
+
 ## Nilpotent maps
 
 Nilpotency is Mathlib's `IsNilpotent`, meaning some power is zero.
@@ -500,6 +521,30 @@ example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
     (hμ : T.HasEigenvalue μ) : μ = 0 :=
   (hμ.isNilpotent_of_isNilpotent hT).eq_zero
 ```
+
+Put that together with the decomposition above and the nilpotent case is exactly the degenerate one: a nilpotent map has $`0` as its only eigenvalue, so the direct sum has a single summand, and the whole space *is* the generalized $`0`-eigenspace.
+Prove that.
+`Module.End.mem_maxGenEigenspace` unfolds membership to "some power of $`T - \mu` kills it"; at $`\mu = 0` that power is just a power of $`T`, so the exponent $`m` from $`T^m = 0` works for every vector at once.
+(Reduce the goal to membership of an arbitrary vector with `eq_top_iff` first.)
+
+```lean
+example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    (T : Module.End k V) (m : ℕ) (hTm : T ^ m = 0) :
+    T.maxGenEigenspace 0 = ⊤ := by
+  sorry
+```
+
+:::solution
+```lean
+example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+    (T : Module.End k V) (m : ℕ) (hTm : T ^ m = 0) :
+    T.maxGenEigenspace 0 = ⊤ := by
+  refine eq_top_iff.mpr fun x _ => ?_
+  rw [Module.End.mem_maxGenEigenspace]
+  -- Subtracting `0` changes nothing, so `Tᵐ = 0` kills every vector.
+  exact ⟨m, by simp [hTm]⟩
+```
+:::
 
 See *why* it holds by running the argument by hand on an actual eigenvector.
 Applying $`T` repeatedly scales it, $`T^m(v) = \mu^m v` (`Module.End.HasEigenvector.pow_apply`); but $`T^m = 0`, so $`\mu^m v = 0`, and since $`v \neq 0` this forces $`\mu^m = 0` (`smul_eq_zero`), hence $`\mu = 0` (`pow_eq_zero_iff`).
