@@ -596,7 +596,7 @@ Show that $`F_{2p(p^2 - 1)}` is divisible by $`p`.
 
 ## Multiplicative and additive notation
 
-In Lean, `+` and `*` are different notation operators with their own typeclass hierarchies — there is no parent typeclass that lets a single group structure carry either symbol.
+`+` and `*` are different notation operators with their own typeclass hierarchies — there is no parent typeclass that lets a single group structure carry either symbol.
 Mathlib accordingly maintains parallel hierarchies for groups: `Group` (with commutative variant `CommGroup`) for groups whose operation is written `*` with identity `1`, and `AddGroup` / `AddCommGroup` for groups written with `+` and `0`.
 Every multiplicative lemma carries a `to_additive` attribute that auto-generates an additive twin under a predictable name — `mul_left_cancel` ↔ `add_left_cancel`, `inv_inv` ↔ `neg_neg`, and so on.
 

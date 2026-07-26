@@ -1,6 +1,6 @@
 7	Napkin/AbstractAlgebra/Flavors.lean
 8	Napkin/AbstractAlgebra/Quotient.lean
-6	Napkin/AbstractAlgebra/Rings.lean
+7	Napkin/AbstractAlgebra/Rings.lean
 5	Napkin/AlgebraicGeometry/AffineVarieties.lean
 7	Napkin/AlgebraicGeometry/Bezout.lean
 5	Napkin/AlgebraicGeometry/Localization.lean
@@ -11,7 +11,7 @@
 4	Napkin/AlgebraicGeometry/SpecExamples.lean
 5	Napkin/AlgebraicGeometry/SpecSheaf.lean
 3	Napkin/AlgebraicGeometry/SpecZariski.lean
-6	Napkin/AlgebraicGeometry/Zariski.lean
+7	Napkin/AlgebraicGeometry/Zariski.lean
 3	Napkin/AlgebraicNT/AlgebraicIntegers.lean
 8	Napkin/AlgebraicNT/ArtinReciprocity.lean
 7	Napkin/AlgebraicNT/ClassGroup.lean
@@ -23,7 +23,7 @@
 3	Napkin/AlgebraicNT/NormTrace.lean
 3	Napkin/AlgebraicNT/Pell.lean
 5	Napkin/AlgebraicNT/Ramification.lean
-6	Napkin/BasicTopology/Compactness.lean
+7	Napkin/BasicTopology/Compactness.lean
 4	Napkin/BasicTopology/MetricProperties.lean
 8	Napkin/BasicTopology/TopologicalSpaces.lean
 5	Napkin/Calculus/Differentiate.lean

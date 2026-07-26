@@ -828,7 +828,8 @@ recall : IsPrincipalIdealRing ℤ
 Concretely, every ideal of $`\mathbb{Z}` is principal — `IsPrincipalIdealRing.principal` hands you the `Submodule.IsPrincipal` witness:
 
 ```lean
-example (I : Ideal ℤ) : Submodule.IsPrincipal I := IsPrincipalIdealRing.principal I
+example (I : Ideal ℤ) : Submodule.IsPrincipal I :=
+  IsPrincipalIdealRing.principal I
 ```
 
 Unpack what "principal" actually gives: a single generator.
@@ -867,3 +868,25 @@ This is worth internalizing early: a surprising number of "prove that…" goals 
 ```lean
 example (K : Type*) [Field K] : IsNoetherianRing K := inferInstance
 ```
+
+One rung up from fields, prove that a principal ideal domain is Noetherian — an implication worth having, since almost every ring named later in the book is reached by way of it.
+"Finitely generated" is a weak enough demand that one generator suffices: unfold with `isNoetherianRing_iff_ideal_fg`, and for an ideal `I` offer the singleton `{Submodule.IsPrincipal.generator I}`.
+Discharging the resulting goal needs `Finset.coe_singleton` (`FG` asks for a `Finset`, while `Ideal.span` consumes a `Set`) and then `Submodule.IsPrincipal.span_singleton_generator`, which says the generator does generate.
+
+```lean
+example (R : Type*) [CommRing R] [IsPrincipalIdealRing R] :
+    IsNoetherianRing R := by
+  sorry
+```
+
+:::solution
+```lean
+example (R : Type*) [CommRing R] [IsPrincipalIdealRing R] :
+    IsNoetherianRing R := by
+  rw [isNoetherianRing_iff_ideal_fg]
+  intro I
+  refine ⟨{Submodule.IsPrincipal.generator I}, ?_⟩
+  rw [Finset.coe_singleton]
+  exact Submodule.IsPrincipal.span_singleton_generator I
+```
+:::

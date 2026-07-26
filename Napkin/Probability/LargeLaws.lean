@@ -436,7 +436,7 @@ example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} {Y : Ω → ℝ} :
     rw [show {ω : Ω | ε ≤ edist ((fun _ : ℕ => Y) i ω) (Y ω)} = ∅ from ?_,
       measure_empty]
     ext ω
-    simp [edist_self, le_zero_iff, hε.ne']
+    simp [edist_self, hε.ne']
   exact (tendsto_congr hz).mpr tendsto_const_nhds
 ```
 :::

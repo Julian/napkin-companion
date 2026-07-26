@@ -593,6 +593,30 @@ example {σ : Type*} (g : MvPolynomial σ ℂ) :
   (PrimeSpectrum.basicOpen g).isOpen
 ```
 
+At the opposite extreme from a denominator that vanishes somewhere is one that vanishes nowhere.
+Show that if $`g` is a unit then $`D(g)` is the whole space, so $`f/g` is a global regular function.
+The content is that a unit belongs to no prime ideal: were it in one, that ideal would contain $`1` and hence be everything (`Ideal.eq_top_of_isUnit_mem`), which a prime is not (`Ideal.IsPrime.ne_top`, reached through `p.isPrime`).
+Reduce the equality of opens to a membership statement with `eq_top_iff`, then unfold with `PrimeSpectrum.mem_basicOpen`.
+
+```lean
+example (R : Type*) [CommRing R] (g : R) (hg : IsUnit g) :
+    PrimeSpectrum.basicOpen g = ⊤ := by
+  sorry
+```
+
+:::solution
+```lean
+example (R : Type*) [CommRing R] (g : R) (hg : IsUnit g) :
+    PrimeSpectrum.basicOpen g = ⊤ := by
+  -- `eq_top_iff` reduces the equality to: every prime lies in `D(g)`.
+  refine eq_top_iff.mpr fun p _ => ?_
+  rw [PrimeSpectrum.mem_basicOpen]
+  intro hmem
+  -- A prime containing a unit would have to be the whole ring.
+  exact p.isPrime.ne_top (Ideal.eq_top_of_isUnit_mem _ hmem hg)
+```
+:::
+
 ## Regular functions on distinguished open sets
 
 The ring $`\left\{ f/g^k \right\}` of regular functions on $`D(g)` is exactly the localization of $`\mathbb{C}[V]` away from $`g`, the property `IsLocalization.Away`; this identification is how the structure sheaf on an affine scheme computes its sections over a basic open.

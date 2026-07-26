@@ -533,6 +533,24 @@ example (α : Type*) [PseudoMetricSpace α] [T2Space α] [ProperSpace α]
   Metric.isCompact_iff_isClosed_bounded
 ```
 
+Use the criterion to certify the compact set you meet most often.
+Show that a closed ball in $`\mathbb{R}` is compact.
+Rewriting with the equivalence splits the goal into the two conditions, and each is a named fact about balls: `Metric.isClosed_closedBall` and `Metric.isBounded_closedBall`.
+The point of doing it this way rather than quoting a packaged lemma is that the proof is the *only* proof available in a general proper space — closed plus bounded is all the information you have.
+
+```lean
+example (c r : ℝ) : IsCompact (Metric.closedBall c r) := by
+  sorry
+```
+
+:::solution
+```lean
+example (c r : ℝ) : IsCompact (Metric.closedBall c r) := by
+  rw [Metric.isCompact_iff_isClosed_bounded]
+  exact ⟨Metric.isClosed_closedBall, Metric.isBounded_closedBall⟩
+```
+:::
+
 Tychonoff's theorem, that a product of two compacts is compact, is `IsCompact.prod` — again one dot-notation term, `hs.prod ht`.
 
 ```lean

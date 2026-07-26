@@ -468,7 +468,8 @@ The torsion part is `⨁ i, ZMod (p i ^ e i)`, where `⨁` is the *direct sum* (
 
 ```lean
 example (G : Type*) [AddCommGroup G] [AddGroup.FG G] :
-    ∃ (n : ℕ) (ι : Type) (_ : Fintype ι) (p : ι → ℕ) (_ : ∀ i, (p i).Prime) (e : ι → ℕ),
+    ∃ (n : ℕ) (ι : Type) (_ : Fintype ι) (p : ι → ℕ)
+      (_ : ∀ i, (p i).Prime) (e : ι → ℕ),
       Nonempty (G ≃+ (Fin n →₀ ℤ) × ⨁ i : ι, ZMod (p i ^ e i)) :=
   AddCommGroup.equiv_free_prod_directSum_zmod G
 ```
@@ -576,7 +577,8 @@ example (R : Type*) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] (d : ℕ)
 Mathlib records the rank of a free module as `Module.finrank R M`, defined without reference to any particular basis; `Module.finrank_eq_card_basis` then says any finite basis has exactly that many elements.
 
 ```lean
-example (R : Type*) [CommRing R] [Nontrivial R] (M : Type*) [AddCommGroup M] [Module R M]
+example (R : Type*) [CommRing R] [Nontrivial R] (M : Type*)
+    [AddCommGroup M] [Module R M]
     {ι : Type*} [Fintype ι] (b : Module.Basis ι R M) :
     Module.finrank R M = Fintype.card ι :=
   Module.finrank_eq_card_basis b
@@ -587,7 +589,8 @@ Prove it for bases indexed by $`\iota` and $`\kappa`.
 Both counts equal the basis-free `Module.finrank R M`: apply `Module.finrank_eq_card_basis` to each of `b` and `c` and chain the two equalities (`rw [← Module.finrank_eq_card_basis b, ← Module.finrank_eq_card_basis c]` closes it).
 
 ```lean
-example (R : Type*) [CommRing R] [Nontrivial R] (M : Type*) [AddCommGroup M] [Module R M]
+example (R : Type*) [CommRing R] [Nontrivial R] (M : Type*)
+    [AddCommGroup M] [Module R M]
     {ι κ : Type*} [Fintype ι] [Fintype κ]
     (b : Module.Basis ι R M) (c : Module.Basis κ R M) :
     Fintype.card ι = Fintype.card κ := by
@@ -596,7 +599,8 @@ example (R : Type*) [CommRing R] [Nontrivial R] (M : Type*) [AddCommGroup M] [Mo
 
 :::solution
 ```lean
-example (R : Type*) [CommRing R] [Nontrivial R] (M : Type*) [AddCommGroup M] [Module R M]
+example (R : Type*) [CommRing R] [Nontrivial R] (M : Type*)
+    [AddCommGroup M] [Module R M]
     {ι κ : Type*} [Fintype ι] [Fintype κ]
     (b : Module.Basis ι R M) (c : Module.Basis κ R M) :
     Fintype.card ι = Fintype.card κ := by
@@ -610,7 +614,8 @@ Mathlib phrases Smith normal form for the inclusion of a submodule $`N` into a f
 Applying this to the image submodule is exactly how the diagonalization is obtained.
 
 ```lean
-noncomputable example (R : Type*) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
+noncomputable example (R : Type*) [CommRing R] [IsDomain R]
+    [IsPrincipalIdealRing R]
     (M : Type*) [AddCommGroup M] [Module R M] {ι : Type*} [Finite ι]
     (b : Module.Basis ι R M) (N : Submodule R M) :
     Σ n : ℕ, Module.Basis.SmithNormalForm N ι n :=

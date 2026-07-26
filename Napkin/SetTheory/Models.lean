@@ -530,9 +530,11 @@ At a high level, none of this is more than the setup of this chapter: a `Languag
 ```lean
 example (L : Language) : Type _ := L.Sentence
 
-example (L : Language) (M : Type*) [L.Structure M] (φ : L.Sentence) : Prop := M ⊨ φ
+example (L : Language) (M : Type*) [L.Structure M] (φ : L.Sentence) :
+    Prop := M ⊨ φ
 
-example (L : Language) (M : Type*) [L.Structure M] (T : L.Theory) : Prop := M ⊨ T
+example (L : Language) (M : Type*) [L.Structure M] (T : L.Theory) :
+    Prop := M ⊨ T
 ```
 
 The "model" of the chapter — a single set $`M` with one binary relation $`E` reading as $`\in` — fixes the language to one membership symbol, which is thin enough that the general framework is overkill.
@@ -651,7 +653,8 @@ Elementary substructures and elementary equivalence *are* general model theory, 
 An elementary substructure is, in particular, elementarily equivalent to the ambient model.
 
 ```lean
-example (L : Language) (M : Type*) [L.Structure M] (S : L.ElementarySubstructure M) :
+example (L : Language) (M : Type*) [L.Structure M]
+    (S : L.ElementarySubstructure M) :
     S ≅[L] M := S.elementarilyEquivalent
 ```
 
@@ -814,7 +817,8 @@ The general engine behind the countable transitive model — the downward Löwen
 Compactness says a theory is satisfiable exactly when every finite subset is, and the empty theory is (vacuously) satisfiable.
 
 ```lean
-example (L : Language) : (∅ : L.Theory).IsSatisfiable := Theory.isSatisfiable_empty L
+example (L : Language) : (∅ : L.Theory).IsSatisfiable :=
+  Theory.isSatisfiable_empty L
 
 example (L : Language) (T : L.Theory) :
     T.IsSatisfiable ↔ T.IsFinitelySatisfiable :=

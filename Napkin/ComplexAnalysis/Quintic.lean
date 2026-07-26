@@ -187,7 +187,9 @@ example (G : Type*) [Group G] (x y : Abelianization G) :
 
 What is worth proving is the *reason* it is commutative: the quotient map $`G \to G/[G,G]` throws away exactly the commutators.
 Show that a commutator $`xyx^{-1}y^{-1}` becomes trivial downstairs.
-`Abelianization.of` is a group homomorphism, so `simp` will push it through the product and the inverses (`map_mul`, `map_inv`) on its own; what it needs supplied is that the resulting product may be reordered, i.e. `mul_comm`.
+`Abelianization.of` is a group homomorphism, so `simp only [map_mul, map_inv]` distributes it over the product and the inverses, leaving a bare word in the images.
+From there commutativity is the whole content: swapping the first two letters with `mul_comm` puts each generator next to its own inverse, and the two cancellations (`mul_inv_cancel_right`, then `mul_inv_cancel`) finish.
+Doing it in that order is worth the effort, because it shows precisely which step needs the target to be abelian.
 
 ```lean
 example (G : Type*) [Group G] (x y : G) :
@@ -199,7 +201,10 @@ example (G : Type*) [Group G] (x y : G) :
 ```lean
 example (G : Type*) [Group G] (x y : G) :
     Abelianization.of (x * y * x⁻¹ * y⁻¹) = 1 := by
-  simp [mul_comm]
+  simp only [map_mul, map_inv]
+  -- Commute, then cancel x against x⁻¹ and y against y⁻¹.
+  rw [mul_comm (Abelianization.of x) (Abelianization.of y),
+    mul_inv_cancel_right, mul_inv_cancel]
 ```
 :::
 
