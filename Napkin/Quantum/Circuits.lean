@@ -654,6 +654,7 @@ example {n : ℕ} (ψ : QubitState n) (h : Normalized ψ) :
 :::
 
 No single outcome can be more likely than certain: for a normalized state, the probability of any one basis string is at most $`1` — it is one term of a sum of nonnegative numbers that totals $`1`.
+"One term is at most the whole sum" is `Finset.single_le_sum`, which asks for nonnegativity of every term; chaining that with the normalization is what `calc` is for.
 
 ```lean
 example {n : ℕ} (ψ : QubitState n) (h : Normalized ψ)
