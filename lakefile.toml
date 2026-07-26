@@ -27,7 +27,14 @@ name = "Napkin"
 # the default `lake build` target; only when `lake test` runs.
 [[lean_lib]]
 name = "Test"
-roots = ["Test.Main", "Test.Fixture", "Test.CheckFixture", "Test.CheckSorry"]
+roots = [
+  "Test.Main",
+  "Test.Fixture",
+  "Test.CheckFixture",
+  "Test.CheckSorry",
+  "Test.CheckPairing",
+  "Test.Chapters",
+]
 
 [[lean_exe]]
 name = "napkin"

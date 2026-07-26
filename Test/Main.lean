@@ -23,6 +23,7 @@ To add a new test:
 
 import Test.CheckFixture
 import Test.CheckSorry
+import Test.CheckPairing
 
 namespace Test
 
@@ -35,7 +36,8 @@ structure Entry where
 /-- The list of registered tests. Order is the run order. -/
 def tests : List Entry := [
   { name := "check-fixture", run := Test.CheckFixture.run },
-  { name := "check-sorry", run := Test.CheckSorry.run }
+  { name := "check-sorry", run := Test.CheckSorry.run },
+  { name := "check-pairing", run := Test.CheckPairing.run }
 ]
 
 /-- Prefixes of args consumed by the dispatcher itself. These are

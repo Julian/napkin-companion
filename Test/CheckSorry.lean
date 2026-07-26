@@ -19,13 +19,14 @@ Regenerate the baseline with `lake test -- check-sorry:--update` (review
 the diff before committing).
 -/
 
+import Test.Chapters
+
 namespace Test.CheckSorry
+
+open Test.Chapters
 
 /-- Committed golden baseline: one `count\tpath` line per chapter. -/
 def baselinePath : System.FilePath := "Test/fixtures/sorry-baseline.txt"
-
-/-- Root of the chapter sources. -/
-def sourceRoot : System.FilePath := "Napkin"
 
 /-- Number of `sorry` substrings in a string. -/
 private def countSorry (s : String) : Nat := (s.splitOn "sorry").length - 1
@@ -64,21 +65,6 @@ private def analyze (text : String) : Counts := Id.run do
     else if t == ":::" && inSol then
       inSol := false
   return c
-
-/-- Collect `.lean` files under `dir`, skipping the `Meta/` and `Missing/`
-    subtrees (helpers and shims carry no reader exercises). Paths are
-    returned relative to the repo root. -/
-private partial def collectLean (dir : System.FilePath) :
-    IO (Array System.FilePath) := do
-  let mut out : Array System.FilePath := #[]
-  for entry in (← dir.readDir) do
-    let name := entry.fileName
-    if (← entry.path.isDir) then
-      if name == "Meta" || name == "Missing" then continue
-      out := out ++ (← collectLean entry.path)
-    else if name.endsWith ".lean" then
-      out := out.push entry.path
-  return out
 
 /-- Render the per-chapter tally as sorted `count\tpath` lines. -/
 private def render (entries : Array (String × Nat)) : String :=
