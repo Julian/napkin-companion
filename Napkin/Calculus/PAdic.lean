@@ -542,6 +542,29 @@ recall PadicInt.isUnit_iff {p : ℕ} [Fact p.Prime] {z : ℤ_[p]} :
     IsUnit z ↔ ‖z‖ = 1
 ```
 
+The one element that had better *not* be invertible is $`p` itself, and the criterion settles it immediately.
+Prove that $`p` is not a unit of $`\mathbb{Z}_p`.
+Rewrite with the criterion and then with `PadicInt.norm_p`, which evaluates $`\|p\|_p` to $`1/p`; the goal becomes the arithmetic claim that $`1/p \neq 1`, false because a prime is at least $`2` (`Nat.Prime.two_le`, cast into $`\mathbb{R}`).
+Note how the hypothesis "$`p` is prime" is reached: it is not an argument but an instance, retrieved from the `Fact` wrapper by `.out`.
+
+```lean
+example (p : ℕ) [hp : Fact p.Prime] : ¬ IsUnit (p : ℤ_[p]) := by
+  sorry
+```
+
+:::solution
+```lean
+example (p : ℕ) [hp : Fact p.Prime] : ¬ IsUnit (p : ℤ_[p]) := by
+  rw [PadicInt.isUnit_iff, PadicInt.norm_p]
+  have h2 : (2 : ℝ) ≤ (p : ℝ) := by exact_mod_cast hp.out.two_le
+  intro h
+  rw [inv_eq_one] at h
+  linarith
+```
+:::
+
+That single non-unit is the whole story of $`\mathbb{Z}_p`: everything of norm $`1` is invertible and everything else is a multiple of $`p`, which is why $`\mathbb{Z}_p` has exactly one maximal ideal.
+
 ## The p-adic valuation and absolute value
 
 Mathlib has both pieces of the valuation/absolute-value story.
@@ -552,6 +575,24 @@ The norm comes from `padicNormE` and is what makes `ℚ_[p]` into a `NormedField
 recall padicValRat (p : ℕ) (q : ℚ) : ℤ
 recall : ∀ (p : ℕ) [Fact p.Prime], NormedField ℚ_[p]
 ```
+
+The single normalization that pins the whole absolute value down is $`\|p\|_p = 1/p`, which is `Padic.norm_p`; everything else follows from multiplicativity of a field norm.
+See that in action: compute $`\|p^n\|_p`, which is the statement that high powers of $`p` are *small*, the fact the entire chapter runs on.
+The norm of a power is the power of the norm (`norm_pow`, available because `ℚ_[p]` is a `NormedField`), and then one rewrite finishes it.
+
+```lean
+example (p : ℕ) [Fact p.Prime] (n : ℕ) :
+    ‖(p : ℚ_[p]) ^ n‖ = ((p : ℝ)⁻¹) ^ n := by
+  sorry
+```
+
+:::solution
+```lean
+example (p : ℕ) [Fact p.Prime] (n : ℕ) :
+    ‖(p : ℚ_[p]) ^ n‖ = ((p : ℝ)⁻¹) ^ n := by
+  rw [norm_pow, Padic.norm_p]
+```
+:::
 
 ## Ultrametric space
 

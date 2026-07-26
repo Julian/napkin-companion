@@ -90,6 +90,28 @@ lists below.
     derivable even though the theorem itself is assumed; this is flagged
     in each such definition's doc-string.
 
+13. **Exercise design in the Formalization sections.** Each section
+    reveals the Mathlib object in prose, shows worked models, and then
+    poses exercises as code blocks proved by `sorry`, each followed by a
+    collapsible `:::solution`. Two rules govern which is which: a fact
+    whose proof is a single citation stays a *worked model* (an exercise
+    whose answer is the lemma named one sentence earlier teaches
+    nothing), and an exercise must assemble at least two moves and teach
+    a technique that transfers. Within a section the exercises escalate,
+    the last usually being a small theorem. The paragraph before each
+    exercise names the pieces to reach for and the shape of the
+    argument, but does not write the proof out. `Test/CheckSorry`
+    enforces that no `:::solution` contains `sorry` and pins the
+    per-chapter reader-`sorry` counts to `Test/fixtures/sorry-baseline.txt`.
+
+14. **Companion onboarding.** Because the assumed Lean background, the
+    `recall` convention, the exercise/solution convention, the
+    `Napkin.Missing` namespace, and Mathlib's naming conventions plus
+    `exact?`/`apply?`/`rw?` are all knowledge the reader needs and
+    upstream has no occasion to supply, the Colophon carries a
+    companion-only section, "How to read the Formalization sections",
+    stating them once.
+
 ## Formalization-forced deviations
 
 Places where Mathlib's design genuinely differs from the chapter's
@@ -122,10 +144,12 @@ Chapters not listed deviate only via the book-wide conventions above.
 ### Frontmatter
 
 - **Colophon** is a reconstruction rather than a verbatim port: the
-  epigraph is relocated, first-person recast, dates pinned, and a new
-  "A Lean companion" section added. The dedication ("For Brian and
-  Lisa, who finally got me to write it.") is now restored in its
-  original position (between the Ko-fi block and the copyright line).
+  epigraph is relocated, first-person recast, dates pinned, and two new
+  companion-only sections added — "A Lean companion" and "How to read
+  the Formalization sections" (the latter per book-wide convention 14).
+  The dedication ("For Brian and Lisa, who finally got me to write
+  it.") is now restored in its original position (between the Ko-fi
+  block and the copyright line).
 - **Preface** is verbatim; it adds one sentence directing
   companion-specific errata to this repository.
 - **Advice** is verbatim (the "ring naming" table, the reading-order

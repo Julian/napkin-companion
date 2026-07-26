@@ -559,6 +559,31 @@ example (X : Type*) [TopologicalSpace X] (s : Set X) {ι : Type}
   hs.elim_finite_subcover U hUo hsU
 ```
 
+Extracting a finite subcover is the one move the definition offers, and almost every use of it looks the same: extract, then collapse the finitely many pieces into one.
+Run that pattern once.
+Suppose a compact set is covered by an *increasing* family $`U_0 \subseteq U_1 \subseteq \cdots`; show that a single $`U_n` already covers it.
+Extract a finite `t : Finset ℕ` with the lemma above, then take `n` to be the largest index appearing in `t` — `t.sup id`, which is available even when `t` is empty.
+Every `U i` with `i ∈ t` is contained in `U (t.sup id)` by monotonicity (`Finset.le_sup` supplies `i ≤ t.sup id`), and `Set.iUnion₂_subset` turns "each piece lands in the target" into "the union does".
+
+```lean
+example {X : Type*} [TopologicalSpace X] {s : Set X} (hs : IsCompact s)
+    (U : ℕ → Set X) (hUo : ∀ n, IsOpen (U n)) (hmono : Monotone U)
+    (hsU : s ⊆ ⋃ n, U n) : ∃ n, s ⊆ U n := by
+  sorry
+```
+
+:::solution
+```lean
+example {X : Type*} [TopologicalSpace X] {s : Set X} (hs : IsCompact s)
+    (U : ℕ → Set X) (hUo : ∀ n, IsOpen (U n)) (hmono : Monotone U)
+    (hsU : s ⊆ ⋃ n, U n) : ∃ n, s ⊆ U n := by
+  obtain ⟨t, ht⟩ := hs.elim_finite_subcover U hUo hsU
+  -- The largest index in `t` swallows all the others.
+  refine ⟨t.sup id, ht.trans (Set.iUnion₂_subset fun i hi => hmono ?_)⟩
+  exact Finset.le_sup (f := id) hi
+```
+:::
+
 The Hausdorff hypothesis the chapter snuck in has teeth: in a Hausdorff space every compact set is closed, which is `IsCompact.isClosed` — the zero-argument dot-notation `hs.isClosed`.
 
 ```lean

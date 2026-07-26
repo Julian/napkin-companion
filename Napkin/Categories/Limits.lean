@@ -150,13 +150,36 @@ example {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y)
 :::
 
 A later problem asks you to show the equalizer map $`E \xrightarrow{e} X` is a monomorphism.
-Mathlib already records this as an instance.
+For the *chosen* equalizer Mathlib already records this as an instance.
 
 ```lean
 example {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y)
     [HasEqualizer f g] : Mono (equalizer.ι f g) :=
   inferInstance
 ```
+
+But it holds for any universal fork, and the proof is a good illustration of what universality buys.
+Prove it.
+Unfold `Mono` with `constructor` and it asks exactly for cancellation: two maps $`u, v \colon W \to E` with $`u e = v e` are equal.
+That is the uniqueness half of the universal property, `CategoryTheory.Limits.Fork.IsLimit.hom_ext`: a map *into* a universal fork is pinned down by its composite with the single leg, so agreeing there is agreeing.
+Notice that nothing about equalizers as such is used — the same argument shows any limit leg is monic in the corresponding sense.
+
+```lean
+example {C : Type*} [Category C] {X Y : C} {f g : X ⟶ Y}
+    (c : Fork f g) (hc : IsLimit c) : Mono (Fork.ι c) := by
+  sorry
+```
+
+:::solution
+```lean
+example {C : Type*} [Category C] {X Y : C} {f g : X ⟶ Y}
+    (c : Fork f g) (hc : IsLimit c) : Mono (Fork.ι c) := by
+  constructor
+  intro W u v h
+  -- Two maps into a universal fork agreeing on the leg are equal.
+  exact Fork.IsLimit.hom_ext hc h
+```
+:::
 
 ## Pullback squares
 
@@ -173,6 +196,28 @@ example {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
   pullback.condition
 ```
 
+Those two facts *are* the pullback, in the following sense: any other commuting square over the same cospan factors through it, uniquely.
+Prove the existence half, which is what earns $`X \times_Z Y` its name.
+Given $`h \colon W \to X` and $`k \colon W \to Y` whose composites into $`Z` agree, `pullback.lift` produces the comparison map, and `pullback.lift_fst` and `pullback.lift_snd` say it really does restrict to $`h` and $`k` — so the proof is one anonymous constructor supplying a witness together with its two properties.
+
+```lean
+example {C : Type*} [Category C] {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
+    [HasPullback f g] (h : W ⟶ X) (k : W ⟶ Y) (w : h ≫ f = k ≫ g) :
+    ∃ u : W ⟶ pullback f g,
+      u ≫ pullback.fst f g = h ∧ u ≫ pullback.snd f g = k := by
+  sorry
+```
+
+:::solution
+```lean
+example {C : Type*} [Category C] {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
+    [HasPullback f g] (h : W ⟶ X) (k : W ⟶ Y) (w : h ≫ f = k ≫ g) :
+    ∃ u : W ⟶ pullback f g,
+      u ≫ pullback.fst f g = h ∧ u ≫ pullback.snd f g = k :=
+  ⟨pullback.lift h k w, pullback.lift_fst h k w, pullback.lift_snd h k w⟩
+```
+:::
+
 ## Limits
 
 A diagram is a functor $`F \colon J \to C` out of an indexing category $`J`, a cone over it is {name}`CategoryTheory.Limits.Cone`, and a universal cone is witnessed by {name}`CategoryTheory.Limits.IsLimit`.
@@ -187,3 +232,24 @@ example {J C : Type*} [Category J] [Category C] (F : J ⥤ C) (c : Cone F)
     (hc : IsLimit c) (c' : Cone F) : c'.pt ⟶ c.pt :=
   hc.lift c'
 ```
+
+Every argument in this section — the equalizer of two forks being unique, the equalizer leg being monic, the pullback comparison map — used the same two moves, existence and uniqueness of a map into a universal cone, and both survive the generalisation.
+Prove the uniqueness move in its general form: two maps into a limit that agree after every leg are equal.
+The single ingredient is {name}`CategoryTheory.Limits.IsLimit.hom_ext`, and the legs of a cone `c` are `c.π.app j`, one for each object `j` of the indexing category.
+Having this, re-read the equalizer proofs above: `Fork.IsLimit.hom_ext` is this lemma specialised to a two-object indexing category, where checking "every leg" collapses to checking one.
+
+```lean
+example {J C : Type*} [Category J] [Category C] (F : J ⥤ C) (c : Cone F)
+    (hc : IsLimit c) {W : C} (u v : W ⟶ c.pt)
+    (h : ∀ j, u ≫ c.π.app j = v ≫ c.π.app j) : u = v := by
+  sorry
+```
+
+:::solution
+```lean
+example {J C : Type*} [Category J] [Category C] (F : J ⥤ C) (c : Cone F)
+    (hc : IsLimit c) {W : C} (u v : W ⟶ c.pt)
+    (h : ∀ j, u ≫ c.π.app j = v ≫ c.π.app j) : u = v :=
+  hc.hom_ext h
+```
+:::

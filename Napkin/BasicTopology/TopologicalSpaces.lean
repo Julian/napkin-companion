@@ -665,6 +665,26 @@ example (X : Type*) [TopologicalSpace X] [PathConnectedSpace X] :
     ConnectedSpace X := inferInstance
 ```
 
+What is worth doing by hand is *building* paths, since that is how path-connectedness is ever established.
+Two constructors do all of it: `Path.trans` walks one path and then the next (reparametrising so the result is still defined on $`[0,1]`), and `Path.symm` walks a path backwards.
+Use them to produce a path from $`z` back to $`x` out of paths $`x \to y` and $`y \to z`.
+The result must be marked `noncomputable`, because the concatenation is defined by a case split on whether the parameter has passed the halfway point — a decision about real numbers, which Lean cannot make by computation.
+
+```lean
+noncomputable example {X : Type*} [TopologicalSpace X] {x y z : X}
+    (p : Path x y) (q : Path y z) : Path z x := by
+  sorry
+```
+
+:::solution
+```lean
+noncomputable example {X : Type*} [TopologicalSpace X] {x y z : X}
+    (p : Path x y) (q : Path y z) : Path z x :=
+  -- Concatenate to reach z, then walk the whole thing backwards.
+  (p.trans q).symm
+```
+:::
+
 ## Homotopy and simply connected spaces
 
 `Path.Homotopic α β` is the relation "there is a path homotopy from `α` to `β`", and `SimplyConnectedSpace X` is the corresponding space-level property.
