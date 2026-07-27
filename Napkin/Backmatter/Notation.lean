@@ -1,4 +1,6 @@
 import VersoManual
+import Mathlib
+import Napkin.Missing
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
@@ -316,3 +318,268 @@ Operations with categories:
 - $`p \Vdash \varphi(\sigma_1, \dots, \sigma_n)`: $`p \in \mathbb{P}` forces the sentence $`\varphi`
 - $`\check x`: the name giving an $`x \in M` when interpreted
 - $`\dot G`: the name giving $`G` when interpreted
+
+# The same notation, in Mathlib
+
+This section is specific to this edition: it is the glossary above read in the other direction, from the notation to the name you would type.
+It is deliberately partial — an entry appears only where Mathlib has a corresponding definition, and the closing list records the notable places where it does not.
+Every name here is checked against the Mathlib the book is built with — the block below is hidden, but it elaborates, so a rename upstream breaks the build rather than silently leaving a wrong name on the page.
+
+```lean -show
+open CategoryTheory MeasureTheory NumberField Napkin.Missing
+open scoped TensorProduct DirectSum Topology
+#check @Set.image
+#check @Set.preimage
+#check @Set.restrict
+#check @Nat.iterate
+#check @Set.prod
+#check @Set.diff
+#check @Nat.card
+#check @Cardinal.mk
+#check @Set.powerset
+#check @Quotient.mk
+#check @Setoid
+#check @ZMod
+#check @Units
+#check @Equiv.Perm
+#check @DihedralGroup
+#check @Subgroup.Normal
+#check @HasQuotient.Quotient
+#check @Subgroup.center
+#check @Subgroup.normalizer
+#check @MulAction.stabilizer
+#check @MulAction.fixedBy
+#check @Abelianization
+#check @commutator
+#check @Ideal.span
+#check @Ideal.radical
+#check @Polynomial
+#check @MvPolynomial
+#check @IntermediateField.adjoin
+#check @LinearMap.id
+#check @DirectSum
+#check @TensorProduct
+#check @Module.Dual
+#check @Module.Dual.transpose
+#check @LinearMap.adjoint
+#check @Matrix.conjTranspose
+#check @LinearMap.BilinForm
+#check @Module.End
+#check @Pi.basisFun
+#check @Module.finrank
+#check @LinearMap.trace
+#check @Matrix.det
+#check @Matrix.charpoly
+#check @Module.End.eigenspace
+#check @Module.End.maxGenEigenspace
+#check @Circle
+#check @Metric.sphere
+#check @Metric.closedBall
+#check @EuclideanSpace
+#check @frontier
+#check @TopologicalSpace.coinduced
+#check @IsCompact
+#check @T2Space
+#check @ConnectedSpace
+#check @PathConnectedSpace
+#check @Homeomorph
+#check @TopologicalSpace.Opens
+#check @Filter.liminf
+#check @Filter.limsup
+#check @sInf
+#check @sSup
+#check @PadicInt
+#check @Padic
+#check @deriv
+#check @intervalIntegral
+#check @Complex.log
+#check @Complex.slitPlane
+#check @MeasureTheory.OuterMeasure.caratheodory
+#check @borel
+#check @MeasureTheory.volume
+#check @Set.indicator
+#check @MeasureTheory.lintegral
+#check @MeasureTheory.integral
+#check @MeasureTheory.Measure
+#check @PontryaginDual
+#check @ProbabilityTheory.variance
+#check @ProbabilityTheory.cdf
+#check @Path
+#check @Path.Homotopic
+#check @Path.trans
+#check @FundamentalGroup
+#check @HomotopyGroup
+#check @HomologicalComplex
+#check @HomologicalComplex.homology
+#check @CategoryTheory.Limits.kernel
+#check @CategoryTheory.Limits.cokernel
+#check @CategoryTheory.Limits.image
+#check @CategoryTheory.Category
+#check @CategoryTheory.Functor
+#check @CategoryTheory.Iso
+#check @GrpCat
+#check @CommRingCat
+#check @TopCat
+#check @ModuleCat
+#check @Opposite
+#check @CategoryTheory.Limits.IsInitial
+#check @CategoryTheory.Limits.IsTerminal
+#check @fderiv
+#check @ContDiff
+#check @IsManifold
+#check @NumberField.RingOfIntegers
+#check @Algebra.norm
+#check @Algebra.trace
+#check @Ideal.absNorm
+#check @ClassGroup
+#check @NumberField.discr
+#check @Polynomial.Gal
+#check @IsDedekindDomain
+#check @Ideal.IsPrime
+#check @MonoidAlgebra
+#check @Representation
+#check @FDRep
+#check @FDRep.character
+#check @ConjClasses
+#check @MvPolynomial.zeroLocus
+#check @MvPolynomial.vanishingIdeal
+#check @PrimeSpectrum
+#check @PrimeSpectrum.basicOpen
+#check @Projectivization
+#check @TopCat.Presheaf.stalk
+#check @AlgebraicGeometry.RingedSpace
+#check @AlgebraicGeometry.Scheme
+#check @IsLocalization.Away
+#check @Localization.AtPrime
+#check @IsLocalRing.ResidueField
+#check @ZFSet
+#check @Ordinal
+#check @Cardinal
+#check @Cardinal.aleph
+#check @Ordinal.omega0
+#check @Ordinal.cof
+#check @ZFSet.powerset
+#check @FirstOrder.Language.Structure
+#check @FirstOrder.Language.ElementarySubstructure
+```
+
+Functions and sets:
+
+- $`f(S)`, $`f^{-1}(T)`: `Set.image`, `Set.preimage`
+- $`f\restriction_S`: `Set.restrict`
+- $`f^n`: `Nat.iterate` (written `f^[n]`)
+- $`S \times T`, $`S \setminus T`: `Set.prod`, `Set.diff`
+- $`\mathcal{P}(S)`: `Set.powerset`
+- $`\left\lvert S \right\rvert`: `Nat.card` when finite, `Cardinal.mk` in general
+- $`S/{\sim}`: `Quotient`, with the relation packaged as a `Setoid`
+
+Groups and rings:
+
+- $`\mathbb{Z}/n\mathbb{Z}`: `ZMod`
+- $`R^\times`, $`(\mathbb{Z}/n\mathbb{Z})^\times`: `Units` (written `Rˣ`) — note this is the units, so it is a group for every $`n`
+- $`S_n`, $`D_{2n}`: `Equiv.Perm`, `DihedralGroup`
+- $`N \trianglelefteq G`: `Subgroup.Normal`
+- $`G/N`, $`R/I`: `HasQuotient.Quotient`, written `G ⧸ N` and `R ⧸ I`
+- $`Z(G)`, $`N_G(H)`: `Subgroup.center`, `Subgroup.normalizer`
+- $`\operatorname{Stab}_G(x)`, $`\operatorname{Fix}(g)`: `MulAction.stabilizer`, `MulAction.fixedBy`
+- $`[G, G]`, $`G/[G,G]`: `commutator`, `Abelianization`
+- $`(a_1, \dots, a_n)`: `Ideal.span`
+- $`\sqrt I`: `Ideal.radical`
+- $`R[x_1, \dots, x_n]`: `Polynomial` for one variable, `MvPolynomial` for several
+- $`F(\alpha)`: `IntermediateField.adjoin`
+
+Linear algebra:
+
+- $`\operatorname{id}`: `LinearMap.id`
+- $`V \oplus W`, $`V \otimes W`: `DirectSum`, `TensorProduct`
+- $`V^\vee`, $`T^\vee`: `Module.Dual`, `Module.Dual.transpose`
+- $`T^\dagger`: `LinearMap.adjoint`, or `Matrix.conjTranspose` in coordinates
+- $`\left< -, - \right>`: `LinearMap.BilinForm`
+- $`\operatorname{Mat}(V)`: `Module.End`
+- $`e_1, \dots, e_n`: `Pi.basisFun`
+- $`\dim V`: `Module.finrank`
+- $`\operatorname{Tr} T`, $`\det T`: `LinearMap.trace`, `Matrix.det`
+- $`p_T(X)`: `Matrix.charpoly`
+- eigenspaces, generalized eigenspaces: `Module.End.eigenspace`, `Module.End.maxGenEigenspace`
+
+Topology and analysis:
+
+- $`S^1`: `Circle`
+- $`S^n`, $`D^{n+1}`: `Metric.sphere` and `Metric.closedBall` in `EuclideanSpace`
+- $`\partial Y`: `frontier`
+- $`X/S`: the quotient topology, `TopologicalSpace.coinduced`
+- compact, Hausdorff, connected, path-connected: `IsCompact`, `T2Space`, `ConnectedSpace`, `PathConnectedSpace`
+- $`X \cong Y` for spaces: `Homeomorph`
+- open sets as a type: `TopologicalSpace.Opens`
+- $`\liminf`, $`\limsup`, $`\inf`, $`\sup`: `Filter.liminf`, `Filter.limsup`, `sInf`, `sSup`
+- $`\mathbb{Z}_p`, $`\mathbb{Q}_p`: `PadicInt`, `Padic` (written `ℤ_[p]`, `ℚ_[p]`)
+- $`f'`, $`\int_a^b f`: `deriv`, `intervalIntegral`
+- $`\log z` and its branch cut: `Complex.log`, `Complex.slitPlane`
+
+Measure theory and probability:
+
+- $`\mathcal{A}^\ast`: `MeasureTheory.OuterMeasure.caratheodory`
+- $`\mathcal{B}(X)`: `borel`
+- $`\lambda`: `MeasureTheory.volume`
+- $`\mathbf{1}_A`: `Set.indicator`
+- $`\int_\Omega f \, d\mu`: `MeasureTheory.lintegral` for $`[0,\infty]`-valued $`f`, `MeasureTheory.integral` in a Banach space
+- $`\mu`: `MeasureTheory.Measure`
+- $`\widehat G`: `PontryaginDual`
+- variance, distribution function: `ProbabilityTheory.variance`, `ProbabilityTheory.cdf`
+
+Algebraic topology and category theory:
+
+- paths and path homotopy: `Path`, `Path.Homotopic`, with $`\ast` as `Path.trans`
+- $`\pi_1(X)`, $`\pi_n(X)`: `FundamentalGroup`, `HomotopyGroup`
+- chain complexes and their homology: `HomologicalComplex`, `HomologicalComplex.homology`
+- $`\ker`, $`\operatorname{coker}`, $`\operatorname{img}`: `CategoryTheory.Limits.kernel`, `.cokernel`, `.image`
+- a category, a functor, an isomorphism: `CategoryTheory.Category`, `CategoryTheory.Functor`, `CategoryTheory.Iso`
+- $`\mathbf{Grp}`, $`\mathbf{CRing}`, $`\mathbf{Top}`, $`\mathbf{Vect}_k`: `GrpCat`, `CommRingCat`, `TopCat`, `ModuleCat`
+- $`\mathcal{A}^{\operatorname{op}}`: `Opposite`, written `Cᵒᵖ`
+- initial and terminal objects: `CategoryTheory.Limits.IsInitial`, `IsTerminal`
+
+Differential geometry:
+
+- $`Df`, $`(Df)_p`: `fderiv`
+- smoothness: `ContDiff`, and `IsManifold` for the manifold setting
+
+Algebraic number theory:
+
+- $`\mathcal{O}_K`: `NumberField.RingOfIntegers`, written `𝓞 K`
+- $`N_{K/\mathbb{Q}}`, $`\operatorname{Tr}_{K/\mathbb{Q}}`: `Algebra.norm`, `Algebra.trace`
+- $`\operatorname{Norm}(I)`: `Ideal.absNorm`
+- $`\operatorname{Cl}_K`, $`\Delta_K`: `ClassGroup`, `NumberField.discr`
+- $`[K : F]`: `Module.finrank`, viewing $`K` as an $`F`-vector space
+- $`\operatorname{Gal}(K/F)`: the type `K ≃ₐ[F] K`; for the Galois group of a polynomial, `Polynomial.Gal`
+- Dedekind domains, prime ideals: `IsDedekindDomain`, `Ideal.IsPrime`
+
+Representation theory:
+
+- $`k[G]`: `MonoidAlgebra`
+- a representation: `Representation`, or `FDRep` in the finite-dimensional packaging
+- $`\chi_V`: `FDRep.character`
+- $`\operatorname{Classes}(G)`: `ConjClasses`
+
+Algebraic geometry:
+
+- $`\mathbb{V}(-)`, $`\mathbb{I}(-)`: `MvPolynomial.zeroLocus`, `MvPolynomial.vanishingIdeal`
+- $`\operatorname{Spec} A`: `PrimeSpectrum`
+- $`D(f)`: `PrimeSpectrum.basicOpen`
+- $`\mathbb{CP}^n`: `Projectivization`
+- $`\mathcal{F}_p`: `TopCat.Presheaf.stalk`
+- a ringed space, a scheme: `AlgebraicGeometry.RingedSpace`, `AlgebraicGeometry.Scheme`
+- $`A[1/f]`, $`A_\mathfrak{p}`: `IsLocalization.Away`, `Localization.AtPrime`
+- $`\kappa(\mathfrak{p})`: `IsLocalRing.ResidueField`
+
+Set theory:
+
+- $`V`: `ZFSet`
+- $`\operatorname{On}`, $`\aleph_\alpha`: `Ordinal`, `Cardinal.aleph`
+- $`\omega`: `Ordinal.omega0`
+- $`\operatorname{cof} \lambda`: `Ordinal.cof`
+- $`2^S` inside the theory: `ZFSet.powerset`
+- $`\mathcal{M} \vDash \phi`: `FirstOrder.Language.Structure` and its satisfaction relation
+- $`\mathcal{M}_1 \prec \mathcal{M}_2`: `FirstOrder.Language.ElementarySubstructure`
+
+What has no Mathlib counterpart, and is therefore defined in this book's `Napkin.Missing` namespace or simply flagged as absent: the bra-ket notation of quantum computation, residues and winding numbers, relative and cellular homology together with the cup product, differential forms and their exterior derivative and pullback, the Artin symbol and the decomposition and inertia groups, holomorphic line bundles and divisors on Riemann surfaces, and the whole forcing vocabulary ($`\mathbb{P}`-names, $`\Vdash`, $`M[G]`).
+Each is introduced where the chapter needs it.

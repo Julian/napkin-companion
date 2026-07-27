@@ -1060,7 +1060,17 @@ Sets are modeled as sets throughout, per the set-theory exception.
   Yang/Dartmouth, Miquel, Munkres, Maxim, Oggier, Lenstra, Miranda,
   Hildebrand) were added to `Bibliography.lean` from the upstream
   `references.bib`.
-- **Glossary of notations** is ported verbatim as a reference list.
+- **Glossary of notations** is ported verbatim as a reference list, and
+  gains a companion-only closing section, "The same notation, in
+  Mathlib", reading the glossary in the other direction: notation to the
+  name you would type. Partial by design — an entry appears only where
+  Mathlib has a counterpart, and the section closes by listing what does
+  not have one (bra-ket notation, residues and winding numbers, relative
+  and cellular homology and the cup product, differential forms,
+  the Artin symbol with decomposition and inertia groups, line bundles
+  and divisors, and the forcing vocabulary). All 133 names sit in a
+  hidden `#check` block, so an upstream rename breaks the build instead
+  of leaving a wrong name on the page.
   Custom upstream macros are rewritten into KaTeX-safe forms: bra–ket
   notation becomes `\langle`/`\rangle` (the `\ket`/`\bra` macros are
   not available), spin states are spelled with arrows, cyclic groups
