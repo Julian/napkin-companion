@@ -130,6 +130,17 @@ lists below.
     190 was compiled to confirm it. Substitution is per declaration, not
     per block, so an exercise block that also defines a helper keeps it.
 
+17. **Hoverable notation.** The body writes $\mathbb{Z}$, not `Int`, so
+    Verso's hover documentation — which attaches to code spans — never
+    reached the math. `Napkin.Meta.MathName` adds a `{mathname Foo}`
+    role that renders math as usual but registers `Foo`'s signature and
+    doc-string with Verso's `addHover` and attaches the resulting id to
+    it, wrapped in the `.hl.lean` container the tooltip script binds
+    (with CSS undoing the code styling that brings). Names resolve
+    during elaboration, so a stale one is a build error. Used on the
+    glossary's Mathlib section and in Groups; a dotted underline marks
+    which symbols are live.
+
 ## Formalization-forced deviations
 
 Places where Mathlib's design genuinely differs from the chapter's

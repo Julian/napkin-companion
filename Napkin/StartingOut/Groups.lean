@@ -606,7 +606,7 @@ Mathlib accordingly maintains parallel hierarchies for groups: `Group` (with com
 Every multiplicative lemma carries a `to_additive` attribute that auto-generates an additive twin under a predictable name — `mul_left_cancel` ↔ `add_left_cancel`, `inv_inv` ↔ `neg_neg`, and so on.
 
 So the choice of which typeclass our two prototypical groups get registered under isn't about which abstract operation $`\star` is "really" attached.
-Both $`\mathbb{Z}` and $`\mathbb{Q}^\times` are mathematically valid groups in our sense; the choice is about which notation reads more naturally.
+Both {mathname Int}`\mathbb{Z}` and {mathname Units}`\mathbb{Q}^\times` are mathematically valid groups in our sense; the choice is about which notation reads more naturally.
 `ℤ` carries an `AddCommGroup` so that `1 + 2 = 3` parses, and `ℚˣ` carries a `CommGroup` because $`\mathbb{Q}^\times` is multiplicative.
 
 ```lean

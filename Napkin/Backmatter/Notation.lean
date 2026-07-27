@@ -2,6 +2,7 @@ import VersoManual
 import Mathlib
 import Napkin.Missing
 import Napkin.Meta.Lean
+import Napkin.Meta.MathName
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 
@@ -323,6 +324,7 @@ Operations with categories:
 
 This section is specific to this edition: it is the glossary above read in the other direction, from the notation to the name you would type.
 It is deliberately partial — an entry appears only where Mathlib has a corresponding definition, and the closing list records the notable places where it does not.
+Where the whole of an entry is a single definition, the notation itself is live: hover it and you get that definition's signature and doc-string.
 Every name here is checked against the Mathlib the book is built with — the block below is hidden, but it elaborates, so a rename upstream breaks the build rather than silently leaving a wrong name on the page.
 
 ```lean -show
@@ -466,47 +468,47 @@ open scoped TensorProduct DirectSum Topology
 Functions and sets:
 
 - $`f(S)`, $`f^{-1}(T)`: `Set.image`, `Set.preimage`
-- $`f\restriction_S`: `Set.restrict`
+- {mathname Set.restrict}`f\restriction_S`: `Set.restrict`
 - $`f^n`: `Nat.iterate` (written `f^[n]`)
 - $`S \times T`, $`S \setminus T`: `Set.prod`, `Set.diff`
-- $`\mathcal{P}(S)`: `Set.powerset`
+- {mathname Set.powerset}`\mathcal{P}(S)`: `Set.powerset`
 - $`\left\lvert S \right\rvert`: `Nat.card` when finite, `Cardinal.mk` in general
 - $`S/{\sim}`: `Quotient`, with the relation packaged as a `Setoid`
 
 Groups and rings:
 
-- $`\mathbb{Z}/n\mathbb{Z}`: `ZMod`
+- {mathname ZMod}`\mathbb{Z}/n\mathbb{Z}`: `ZMod`
 - $`R^\times`, $`(\mathbb{Z}/n\mathbb{Z})^\times`: `Units` (written `Rˣ`) — note this is the units, so it is a group for every $`n`
 - $`S_n`, $`D_{2n}`: `Equiv.Perm`, `DihedralGroup`
-- $`N \trianglelefteq G`: `Subgroup.Normal`
+- {mathname Subgroup.Normal}`N \trianglelefteq G`: `Subgroup.Normal`
 - $`G/N`, $`R/I`: `HasQuotient.Quotient`, written `G ⧸ N` and `R ⧸ I`
 - $`Z(G)`, $`N_G(H)`: `Subgroup.center`, `Subgroup.normalizer`
 - $`\operatorname{Stab}_G(x)`, $`\operatorname{Fix}(g)`: `MulAction.stabilizer`, `MulAction.fixedBy`
 - $`[G, G]`, $`G/[G,G]`: `commutator`, `Abelianization`
-- $`(a_1, \dots, a_n)`: `Ideal.span`
-- $`\sqrt I`: `Ideal.radical`
+- {mathname Ideal.span}`(a_1, \dots, a_n)`: `Ideal.span`
+- {mathname Ideal.radical}`\sqrt I`: `Ideal.radical`
 - $`R[x_1, \dots, x_n]`: `Polynomial` for one variable, `MvPolynomial` for several
-- $`F(\alpha)`: `IntermediateField.adjoin`
+- {mathname IntermediateField.adjoin}`F(\alpha)`: `IntermediateField.adjoin`
 
 Linear algebra:
 
-- $`\operatorname{id}`: `LinearMap.id`
+- {mathname LinearMap.id}`\operatorname{id}`: `LinearMap.id`
 - $`V \oplus W`, $`V \otimes W`: `DirectSum`, `TensorProduct`
 - $`V^\vee`, $`T^\vee`: `Module.Dual`, `Module.Dual.transpose`
 - $`T^\dagger`: `LinearMap.adjoint`, or `Matrix.conjTranspose` in coordinates
-- $`\left< -, - \right>`: `LinearMap.BilinForm`
-- $`\operatorname{Mat}(V)`: `Module.End`
-- $`e_1, \dots, e_n`: `Pi.basisFun`
-- $`\dim V`: `Module.finrank`
+- {mathname LinearMap.BilinForm}`\left< -, - \right>`: `LinearMap.BilinForm`
+- {mathname Module.End}`\operatorname{Mat}(V)`: `Module.End`
+- {mathname Pi.basisFun}`e_1, \dots, e_n`: `Pi.basisFun`
+- {mathname Module.finrank}`\dim V`: `Module.finrank`
 - $`\operatorname{Tr} T`, $`\det T`: `LinearMap.trace`, `Matrix.det`
-- $`p_T(X)`: `Matrix.charpoly`
+- {mathname Matrix.charpoly}`p_T(X)`: `Matrix.charpoly`
 - eigenspaces, generalized eigenspaces: `Module.End.eigenspace`, `Module.End.maxGenEigenspace`
 
 Topology and analysis:
 
-- $`S^1`: `Circle`
+- {mathname Circle}`S^1`: `Circle`
 - $`S^n`, $`D^{n+1}`: `Metric.sphere` and `Metric.closedBall` in `EuclideanSpace`
-- $`\partial Y`: `frontier`
+- {mathname frontier}`\partial Y`: `frontier`
 - $`X/S`: the quotient topology, `TopologicalSpace.coinduced`
 - compact, Hausdorff, connected, path-connected: `IsCompact`, `T2Space`, `ConnectedSpace`, `PathConnectedSpace`
 - $`X \cong Y` for spaces: `Homeomorph`
@@ -518,13 +520,13 @@ Topology and analysis:
 
 Measure theory and probability:
 
-- $`\mathcal{A}^\ast`: `MeasureTheory.OuterMeasure.caratheodory`
-- $`\mathcal{B}(X)`: `borel`
-- $`\lambda`: `MeasureTheory.volume`
-- $`\mathbf{1}_A`: `Set.indicator`
+- {mathname MeasureTheory.OuterMeasure.caratheodory}`\mathcal{A}^\ast`: `MeasureTheory.OuterMeasure.caratheodory`
+- {mathname borel}`\mathcal{B}(X)`: `borel`
+- {mathname MeasureTheory.volume}`\lambda`: `MeasureTheory.volume`
+- {mathname Set.indicator}`\mathbf{1}_A`: `Set.indicator`
 - $`\int_\Omega f \, d\mu`: `MeasureTheory.lintegral` for $`[0,\infty]`-valued $`f`, `MeasureTheory.integral` in a Banach space
-- $`\mu`: `MeasureTheory.Measure`
-- $`\widehat G`: `PontryaginDual`
+- {mathname MeasureTheory.Measure}`\mu`: `MeasureTheory.Measure`
+- {mathname PontryaginDual}`\widehat G`: `PontryaginDual`
 - variance, distribution function: `ProbabilityTheory.variance`, `ProbabilityTheory.cdf`
 
 Algebraic topology and category theory:
@@ -547,7 +549,7 @@ Algebraic number theory:
 
 - $`\mathcal{O}_K`: `NumberField.RingOfIntegers`, written `𝓞 K`
 - $`N_{K/\mathbb{Q}}`, $`\operatorname{Tr}_{K/\mathbb{Q}}`: `Algebra.norm`, `Algebra.trace`
-- $`\operatorname{Norm}(I)`: `Ideal.absNorm`
+- {mathname Ideal.absNorm}`\operatorname{Norm}(I)`: `Ideal.absNorm`
 - $`\operatorname{Cl}_K`, $`\Delta_K`: `ClassGroup`, `NumberField.discr`
 - $`[K : F]`: `Module.finrank`, viewing $`K` as an $`F`-vector space
 - $`\operatorname{Gal}(K/F)`: the type `K ≃ₐ[F] K`; for the Galois group of a polynomial, `Polynomial.Gal`
@@ -555,31 +557,31 @@ Algebraic number theory:
 
 Representation theory:
 
-- $`k[G]`: `MonoidAlgebra`
+- {mathname MonoidAlgebra}`k[G]`: `MonoidAlgebra`
 - a representation: `Representation`, or `FDRep` in the finite-dimensional packaging
-- $`\chi_V`: `FDRep.character`
-- $`\operatorname{Classes}(G)`: `ConjClasses`
+- {mathname FDRep.character}`\chi_V`: `FDRep.character`
+- {mathname ConjClasses}`\operatorname{Classes}(G)`: `ConjClasses`
 
 Algebraic geometry:
 
 - $`\mathbb{V}(-)`, $`\mathbb{I}(-)`: `MvPolynomial.zeroLocus`, `MvPolynomial.vanishingIdeal`
-- $`\operatorname{Spec} A`: `PrimeSpectrum`
-- $`D(f)`: `PrimeSpectrum.basicOpen`
-- $`\mathbb{CP}^n`: `Projectivization`
-- $`\mathcal{F}_p`: `TopCat.Presheaf.stalk`
+- {mathname PrimeSpectrum}`\operatorname{Spec} A`: `PrimeSpectrum`
+- {mathname PrimeSpectrum.basicOpen}`D(f)`: `PrimeSpectrum.basicOpen`
+- {mathname Projectivization}`\mathbb{CP}^n`: `Projectivization`
+- {mathname TopCat.Presheaf.stalk}`\mathcal{F}_p`: `TopCat.Presheaf.stalk`
 - a ringed space, a scheme: `AlgebraicGeometry.RingedSpace`, `AlgebraicGeometry.Scheme`
 - $`A[1/f]`, $`A_\mathfrak{p}`: `IsLocalization.Away`, `Localization.AtPrime`
-- $`\kappa(\mathfrak{p})`: `IsLocalRing.ResidueField`
+- {mathname IsLocalRing.ResidueField}`\kappa(\mathfrak{p})`: `IsLocalRing.ResidueField`
 
 Set theory:
 
-- $`V`: `ZFSet`
+- {mathname ZFSet}`V`: `ZFSet`
 - $`\operatorname{On}`, $`\aleph_\alpha`: `Ordinal`, `Cardinal.aleph`
-- $`\omega`: `Ordinal.omega0`
-- $`\operatorname{cof} \lambda`: `Ordinal.cof`
+- {mathname Ordinal.omega0}`\omega`: `Ordinal.omega0`
+- {mathname Ordinal.cof}`\operatorname{cof} \lambda`: `Ordinal.cof`
 - $`2^S` inside the theory: `ZFSet.powerset`
 - $`\mathcal{M} \vDash \phi`: `FirstOrder.Language.Structure` and its satisfaction relation
-- $`\mathcal{M}_1 \prec \mathcal{M}_2`: `FirstOrder.Language.ElementarySubstructure`
+- {mathname FirstOrder.Language.ElementarySubstructure}`\mathcal{M}_1 \prec \mathcal{M}_2`: `FirstOrder.Language.ElementarySubstructure`
 
 What has no Mathlib counterpart, and is therefore defined in this book's `Napkin.Missing` namespace or simply flagged as absent: the bra-ket notation of quantum computation, residues and winding numbers, relative and cellular homology together with the cup product, differential forms and their exterior derivative and pullback, the Artin symbol and the decomposition and inertia groups, holomorphic line bundles and divisors on Riemann surfaces, and the whole forcing vocabulary ($`\mathbb{P}`-names, $`\Vdash`, $`M[G]`).
 Each is introduced where the chapter needs it.
