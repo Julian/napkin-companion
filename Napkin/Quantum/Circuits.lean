@@ -369,10 +369,12 @@ So gates are reasoned about as functions, and (below) quantum gates as linear ma
 The remark that AND can be dispensed with is the de Morgan identity $`x \text{ and } y = \text{not}((\text{not } x) \text{ or } (\text{not } y))`.
 Prove it as an equation of `Bool`.
 
+:::exercise
 ```lean
 example (a b : Bool) : (a && b) = !(!a || !b) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -383,10 +385,12 @@ example (a b : Bool) : (a && b) = !(!a || !b) := by
 
 The NOT gate is its own inverse — the first hint that it is reversible.
 
+:::exercise
 ```lean
 example (a : Bool) : !(!a) = a := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -410,10 +414,12 @@ example : Function.Involutive cnot := by
 Being an involution, CNOT is in particular a bijection — exactly the reversibility condition.
 Prove that CNOT is bijective.
 
+:::exercise
 ```lean
 example : Function.Bijective cnot := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -426,6 +432,7 @@ example : Function.Bijective cnot :=
 The Toffoli gate flips its last bit exactly when both controls are $`1`, i.e. $`(x, y, z) \mapsto (x, y, (x \wedge y) \oplus z)`.
 Show that it, too, is its own inverse.
 
+:::exercise
 ```lean
 def toffoli (p : Bool × Bool × Bool) : Bool × Bool × Bool :=
   (p.1, p.2.1, xor (p.1 && p.2.1) p.2.2)
@@ -433,6 +440,7 @@ def toffoli (p : Bool × Bool × Bool) : Bool × Bool × Bool :=
 example : Function.Involutive toffoli := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -495,10 +503,12 @@ example : pauliZ * pauliZ = 1 := by
 But the Pauli matrices satisfy more than "each squares to $`I`": they multiply into one another, and it is these products that make them a basis for the single-qubit rotations.
 Verify the relation $`\sigma_x \sigma_y = i \sigma_z` — the same `fin_cases`/`Matrix.mul_apply` bash as above, except the right-hand side is now a scalar multiple, so unfold `Matrix.smul_apply` (and `smul_eq_mul`) and watch the $`i` land on $`\sigma_z`'s diagonal.
 
+:::exercise
 ```lean
 example : pauliX * pauliY = Complex.I • pauliZ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -513,10 +523,12 @@ example : pauliX * pauliY = Complex.I • pauliZ := by
 
 Because $`\sigma_y` is real-antisymmetric with the $`\pm i` off the diagonal, its square uses $`i^2 = -1`; show $`\sigma_y^2 = I` as well.
 
+:::exercise
 ```lean
 example : pauliY * pauliY = 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -531,10 +543,12 @@ example : pauliY * pauliY = 1 := by
 The Hadamard gate is self-adjoint: its conjugate transpose $`H^\dagger` (written `Hᴴ`) equals $`H`, because every entry is real.
 Prove this.
 
+:::exercise
 ```lean
 example : hadamardᴴ = hadamard := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -548,10 +562,12 @@ example : hadamardᴴ = hadamard := by
 Finally, a Pauli matrix really is a quantum gate: it lies in `Matrix.unitaryGroup (Fin 2) ℂ`.
 Since $`\sigma_x` is self-adjoint, its unitarity reduces to $`\sigma_x^2 = I`.
 
+:::exercise (chili := 1)
 ```lean
 example : pauliX ∈ Matrix.unitaryGroup (Fin 2) ℂ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -584,12 +600,14 @@ example (n : ℕ) :
 The content of that count is that *adjoining one qubit doubles the dimension*: the extra tensor factor $`\mathbb{C}^{\oplus 2}` doubles the number of basis strings.
 Prove it directly by rewriting both dimensions with `finrank_euclideanSpace_fin`, splitting off the new qubit with `pow_succ`, and finishing with `ring`.
 
+:::exercise
 ```lean
 example (n : ℕ) :
     Module.finrank ℂ (EuclideanSpace ℂ (Fin (2 ^ (n + 1))))
       = 2 * Module.finrank ℂ (EuclideanSpace ℂ (Fin (2 ^ n))) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -632,11 +650,13 @@ example {n : ℕ} (ψ : QubitState n) (i : Fin (2 ^ n)) :
 Nonnegativity has teeth once the state is normalized: the probabilities then sum to $`1`, so they cannot *all* vanish — some outcome must carry positive probability.
 Argue by contradiction — `by_contra` then `push_neg` leaves every `bornProb ψ i ≤ 0`, which with `bornProb_nonneg` forces each term to $`0` (`le_antisymm`); then `sum_bornProb_normalized` turns the total into the false $`1 = 0`.
 
+:::exercise
 ```lean
 example {n : ℕ} (ψ : QubitState n) (h : Normalized ψ) :
     ∃ i, 0 < bornProb ψ i := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -656,11 +676,13 @@ example {n : ℕ} (ψ : QubitState n) (h : Normalized ψ) :
 No single outcome can be more likely than certain: for a normalized state, the probability of any one basis string is at most $`1` — it is one term of a sum of nonnegative numbers that totals $`1`.
 "One term is at most the whole sum" is `Finset.single_le_sum`, which asks for nonnegativity of every term; chaining that with the normalization is what `calc` is for.
 
+:::exercise (chili := 1)
 ```lean
 example {n : ℕ} (ψ : QubitState n) (h : Normalized ψ)
     (i : Fin (2 ^ n)) : bornProb ψ i ≤ 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

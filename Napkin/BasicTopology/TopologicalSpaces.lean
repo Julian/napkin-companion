@@ -470,11 +470,13 @@ Here is what that buys you.
 Show that *every* map out of a discrete space is continuous.
 Continuity means "the pre-image of every open set is open" (`continuous_def`); feed that any open `U`, and the pre-image is open for free because *everything* is open in a discrete space.
 
+:::exercise
 ```lean
 example (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
     [DiscreteTopology X] (f : X → Y) : Continuous f := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -508,11 +510,13 @@ The reason homeomorphisms matter is that they transport *topological* properties
 Prove one instance: a homeomorphism sends compact sets to compact sets.
 There is no bespoke lemma — combine the general fact that a continuous image of a compact set is compact (`IsCompact.image`) with the forward continuity you just extracted.
 
+:::exercise
 ```lean
 example (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
     (h : X ≃ₜ Y) (s : Set X) (hs : IsCompact s) : IsCompact (h '' s) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -543,11 +547,13 @@ example (X : Type*) [TopologicalSpace X] (S T : Set X)
 But the point of the section is that "closed" is just "open complement", so prove it that way — the translation the QUESTION is really about.
 Rewrite the goal through `isOpen_compl_iff`, push the complement across the union with De Morgan (`Set.compl_union`), and you are left with an *intersection of two open sets* — each complement is open because `S` and `T` are closed.
 
+:::exercise
 ```lean
 example (X : Type*) [TopologicalSpace X] (S T : Set X)
     (hS : IsClosed S) (hT : IsClosed T) : IsClosed (S ∪ T) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -561,10 +567,12 @@ example (X : Type*) [TopologicalSpace X] (S T : Set X)
 
 The EXERCISE that a function is continuous if and only if the pre-image of every closed set is closed is `continuous_iff_isClosed`.
 
+:::exercise
 ```lean
 example (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) :
     Continuous f ↔ ∀ S : Set Y, IsClosed S → IsClosed (f ⁻¹' S) := by sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -601,11 +609,13 @@ example (X : Type*) [TopologicalSpace X] [T2Space X] (p : X) :
 Build on that: prove a *two-point* set `{p, q}` is closed.
 The move is to see `{p, q}` as a union of two singletons — `Set.insert_eq` rewrites `{p, q}` to `{p} ∪ {q}` — and then combine "each singleton is closed" with "a union of two closed sets is closed" (`IsClosed.union`), reusing both facts from above.
 
+:::exercise
 ```lean
 example (X : Type*) [TopologicalSpace X] [T2Space X] (p q : X) :
     IsClosed ({p, q} : Set X) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -640,10 +650,12 @@ example (X : Type*) [TopologicalSpace X] (S : Set X) : Prop :=
 The two "stupid" clopen sets $`\varnothing` and $`X` are `isClopen_empty` and `isClopen_univ`.
 Show the whole space is clopen.
 
+:::exercise
 ```lean
 example (X : Type*) [TopologicalSpace X] :
     IsClopen (Set.univ : Set X) := by sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -674,11 +686,13 @@ Two constructors do all of it: `Path.trans` walks one path and then the next (re
 Use them to produce a path from $`z` back to $`x` out of paths $`x \to y` and $`y \to z`.
 The result must be marked `noncomputable`, because the concatenation is defined by a case split on whether the parameter has passed the halfway point — a decision about real numbers, which Lean cannot make by computation.
 
+:::exercise
 ```lean
 noncomputable example {X : Type*} [TopologicalSpace X] {x y z : X}
     (p : Path x y) (q : Path y z) : Path z x := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -694,10 +708,12 @@ noncomputable example {X : Type*} [TopologicalSpace X] {x y z : X}
 `Path.Homotopic α β` is the relation "there is a path homotopy from `α` to `β`", and `SimplyConnectedSpace X` is the corresponding space-level property.
 As remarked, $`\simeq` is an equivalence relation; its reflexivity is `Path.Homotopic.refl`.
 
+:::exercise
 ```lean
 example (X : Type*) [TopologicalSpace X] (x y : X) (γ : Path x y) :
     γ.Homotopic γ := by sorry
 ```
+:::
 
 :::solution
 ```lean

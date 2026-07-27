@@ -313,12 +313,14 @@ But the defining feature of the minimal polynomial is that its degree is *as sma
 Turn this into the minimality statement itself — if a nonzero $`p` also vanishes at $`\alpha`, then `minpoly ℚ α` has degree at most that of $`p`.
 Get the divisibility from `minpoly.dvd`, then pass it to degrees with `Polynomial.natDegree_le_of_dvd` (which is why we need $`p \neq 0`).
 
+:::exercise
 ```lean
 example (α : ℂ) (p : Polynomial ℚ) (hp : Polynomial.aeval α p = 0)
     (hp0 : p ≠ 0) :
     (minpoly ℚ α).natDegree ≤ p.natDegree := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -355,11 +357,13 @@ example (x y : ℂ) (hx : IsIntegral ℤ x) (hy : IsIntegral ℤ y) :
 Because both closure lemmas are on hand, *any* polynomial expression in algebraic integers is one too.
 Chain them to show $`xy + x` is an algebraic integer: form the product with `IsIntegral.mul`, then add $`x` back on with `IsIntegral.add`.
 
+:::exercise
 ```lean
 example (x y : ℂ) (hx : IsIntegral ℤ x) (hy : IsIntegral ℤ y) :
     IsIntegral ℤ (x * y + x) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -410,11 +414,13 @@ The force of "$`F⟮α⟯ = ⊤`" is that *every* element of $`K` is reachable f
 Unpack it into that concrete form: there is an $`\alpha` such that every $`x : K` lies in `ℚ⟮α⟯`.
 Name the primitive element with `obtain`, then rewrite its generating property to `⊤` and finish each membership with `IntermediateField.mem_top`.
 
+:::exercise (chili := 1)
 ```lean
 example (K : Type*) [Field K] [NumberField K] :
     ∃ α : K, ∀ x : K, x ∈ IntermediateField.adjoin ℚ {α} := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

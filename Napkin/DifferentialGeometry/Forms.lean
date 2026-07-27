@@ -541,11 +541,13 @@ Prove this for a $`2`-form: feeding the same vector twice returns zero.
 The tuple of tangent vectors is written with Lean's vector-literal notation `![v, w]`, which builds the map `Fin 2 → V` sending `0 ↦ v` and `1 ↦ w`; here `![v, v]` puts $`v` in both slots.
 The finishing lemma is `AlternatingMap.map_eq_zero_of_eq`: give it the two coinciding slots `0` and `1`, the proof that they agree, and the proof `0 ≠ 1`.
 
+:::exercise
 ```lean
 example (V : Type*) [AddCommGroup V] [Module ℝ V]
     (ω : V [⋀^Fin 2]→ₗ[ℝ] ℝ) (v : V) : ω ![v, v] = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -575,6 +577,7 @@ example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
 Because the read-back is this transparent, the scalar-function structure crosses over intact: the $`0`-form built from a sum of functions evaluates to the sum of their values.
 Prove it by reading each of the three $`0`-forms back with `DiffForm.ofScalar_eval`; the two sides then agree definitionally.
 
+:::exercise
 ```lean
 example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
     (f g : E → ℝ) (p : E) :
@@ -583,6 +586,7 @@ example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
         + DiffForm.eval (DiffForm.ofScalar g) p ![] := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -601,12 +605,14 @@ The doubled-vector vanishing just above is only the degenerate case of the full 
 Prove the swap law itself for a pointwise $`2`-form: exchanging the two tangent vectors negates the value.
 `DiffForm.eval_swap` states this for a composition with `Equiv.swap i j`, so instantiate it at `i = 0`, `j = 1` on `![w, v]` — then `simpa` reduces `![w, v] ∘ Equiv.swap 0 1` back to `![v, w]`.
 
+:::exercise
 ```lean
 example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
     (α : DiffForm E 2) (p : E) (v w : E) :
     DiffForm.eval α p ![v, w] = - DiffForm.eval α p ![w, v] := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -645,12 +651,14 @@ example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
 Prove the analogue for a scalar multiple, mirroring the proof with the homogeneity field `D.map_smul` and `smul_zero` in place of `D.map_add` and `add_zero`.
 The bundled form of the result is `D.closed_smul`.
 
+:::exercise
 ```lean
 example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
     (D : ExteriorDerivative E) (c : ℝ) {α : DiffForm E 2}
     (h : D.Closed α) : D.Closed (c • α) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -672,12 +680,14 @@ recall ExteriorAlgebra.ι_sq_zero {R : Type*} [CommRing R]
 The same relation forces the anticommutativity of the wedge, the sign convention $`dx \wedge dy = -\,dy \wedge dx` on $`1`-forms that makes a repeated wedge $`dx \wedge dx` vanish and orients every signed volume in the theory.
 Reading $`dx`, $`dy` as $`\iota(x)`, $`\iota(y)`, prove it from `ExteriorAlgebra.ι_add_mul_swap`, which records $`\iota(x)\iota(y) + \iota(y)\iota(x) = 0`; the step from that vanishing sum to the negation is `eq_neg_of_add_eq_zero_left`.
 
+:::exercise
 ```lean
 example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (x y : M) :
     ExteriorAlgebra.ι R x * ExteriorAlgebra.ι R y
       = -(ExteriorAlgebra.ι R y * ExteriorAlgebra.ι R x) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -713,6 +723,7 @@ example (V : Type*) [AddCommGroup V] [Module ℝ V]
 Additivity is a *tool*, not just a slogan: it lets you undo an alternatization sitting inside a difference.
 Recover `alternatization m` from `alternatization (m + m') - alternatization m'` — open the sum with `map_add`, then cancel the shared summand with `add_sub_cancel_right`.
 
+:::exercise
 ```lean
 example (V : Type*) [AddCommGroup V] [Module ℝ V]
     (m m' : MultilinearMap ℝ (fun _ : Fin 2 => V) ℝ) :
@@ -721,6 +732,7 @@ example (V : Type*) [AddCommGroup V] [Module ℝ V]
         - MultilinearMap.alternatization m' := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -740,12 +752,14 @@ De Rham cohomology of smooth manifolds — and with it a literal "exact implies 
 Still, the crux of "exact forms are closed" is that applying the derivative twice yields zero, and the exterior algebra models this exactly: multiplying by $`\iota(m)` twice annihilates everything, since $`\iota(m)` squares to zero.
 Reassociate the product with `← mul_assoc` so the two $`\iota(m)` factors meet, then kill them with `ExteriorAlgebra.ι_sq_zero`, leaving `0 * x`.
 
+:::exercise
 ```lean
 example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
     (m : M) (x : ExteriorAlgebra R M) :
     ExteriorAlgebra.ι R m * (ExteriorAlgebra.ι R m * x) = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

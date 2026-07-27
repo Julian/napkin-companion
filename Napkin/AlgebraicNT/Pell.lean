@@ -239,11 +239,13 @@ The question offered a second route through the characterization $`\operatorname
 Derive the norm side from the unit side: show that if $`x` is a unit, then the norm of every power $`x^n` has absolute value $`1`.
 The norm is multiplicative, so `map_pow` turns the norm of a power into a power of the norm; `push_cast` moves the coercion inward, after which `abs_pow` and the hypothesis (via `isUnit_iff_norm`) collapse everything to $`1^n`.
 
+:::exercise
 ```lean
 example {K : Type*} [Field K] [NumberField K] (x : 𝓞 K) (h : IsUnit x)
     (n : ℕ) : |(RingOfIntegers.norm ℚ (x ^ n) : ℚ)| = 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -304,11 +306,13 @@ example {d : ℤ} {a b : Pell.Solution₁ d} (ha : Pell.IsFundamental a)
 Existence and uniqueness together say that a positive nonsquare $`d` has a _unique_ fundamental solution.
 Assemble the two facts into one statement: `obtain` the witness from the existence lemma, then supply it along with a proof that any other fundamental solution equals it, feeding both to `subsingleton`.
 
+:::exercise
 ```lean
 example {d : ℤ} (h₀ : 0 < d) (hd : ¬ IsSquare d) :
     ∃! a : Pell.Solution₁ d, Pell.IsFundamental a := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -336,9 +340,11 @@ Note the fine print: Mathlib's `Solution₁` is the norm $`+1` equation only, so
 The example tabulated the powers of the fundamental unit for $`d = 5`, whose first solution with norm $`+1` was $`(9, 4)`.
 Build the corresponding element of `Pell.Solution₁ 5` by checking that $`9^2 - 5 \cdot 4^2 = 1`.
 
+:::exercise
 ```lean
 example : Pell.Solution₁ 5 := Pell.Solution₁.mk 9 4 (by sorry)
 ```
+:::
 
 :::solution
 ```lean

@@ -292,11 +292,13 @@ example (f g : ℂ → ℂ) (p : ℂ) (hf : AnalyticAt ℂ f (g p))
 Put that closure to work on the running example $`z \mapsto z^3`: its composite with itself, $`z \mapsto (z^3)^3`, is again holomorphic everywhere.
 The cube map is analytic at every point (`AnalyticAt.pow` fed `analyticAt_id`, the worked model above), so hand that same fact to `AnalyticAt.comp` as both the outer and the inner map.
 
+:::exercise
 ```lean
 example (p : ℂ) :
     AnalyticAt ℂ ((fun w : ℂ => w ^ 3) ∘ fun z : ℂ => z ^ 3) p := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -338,10 +340,12 @@ example : MeromorphicAt (fun z : ℂ => z⁻¹) 0 := by
 
 Show the same for a pole placed at an arbitrary point $`x`.
 
+:::exercise
 ```lean
 example (x : ℂ) : MeromorphicAt (fun z : ℂ => (z - x)⁻¹) x := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -390,10 +394,12 @@ example (f : ℂ → ℂ) (x : ℂ) (hf : AnalyticAt ℂ f x)
 Turn that criterion on a concrete map: $`z \mapsto z^2 + 1` has order $`0` at the origin, since it takes the nonzero value $`1` there.
 First assemble its analyticity from `AnalyticAt.pow`, `analyticAt_id`, and `analyticAt_const` through `AnalyticAt.add`; then rewrite along `analyticOrderAt_eq_zero` and settle the value $`0^2 + 1 \neq 0` by computation.
 
+:::exercise
 ```lean
 example : analyticOrderAt (fun z : ℂ => z ^ 2 + 1) 0 = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -429,10 +435,12 @@ The multiplicity is designed to be blind to a reparametrization of the target, t
 Show that adding a constant $`c` to the cube map leaves its ramification index at the origin equal to $`3`: recentering on the value cancels the shift, since $`(z^3 + c) - (0^3 + c) = z^3`.
 Unfold the definition (a `show` that recenters on the value), rewrite the recentered map to the plain cube by `ring` and then to the centered cube `(\cdot - 0)^3`, and finish with `analyticOrderAt_centeredMonomial` — the same monomial-order fact behind the $`z^5` worked model above.
 
+:::exercise (chili := 1)
 ```lean
 example (c : ℂ) : ramificationIndex (fun z : ℂ => z ^ 3 + c) 0 = 3 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -466,11 +474,13 @@ example : meromorphicOrderAt (fun z : ℂ => z⁻¹) 0 = (-1 : ℤ) := by
 
 Conversely, a function analytic and nonvanishing at $`x` contributes order $`0` to such a sum.
 
+:::exercise
 ```lean
 example (f : ℂ → ℂ) (x : ℂ) (hf : AnalyticAt ℂ f x)
     (h : f x ≠ 0) : meromorphicOrderAt f x = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -511,12 +521,14 @@ example {X : Type} (H : RiemannHurwitzData X) (g : ℕ)
 As a reader exercise, derive the Hurwitz monotonicity bound directly from the solved identity `two_gX_eq` above, rather than quoting a packaged lemma: a nonconstant map ($`d \geq 1`) onto a target of positive genus ($`g_Y \geq 1`) can only raise the genus, $`g_Y \leq g_X`, because $`2 g_Y - 2 \geq 0` makes the degree factor and the nonnegative ramification term only add.
 Cast the natural-number hypotheses into $`\mathbb{Z}`, establish $`2 g_Y - 2 \geq 0`, and let `nlinarith` combine the identity with the product bound $`d (2 g_Y - 2) \geq 1 \cdot (2 g_Y - 2)`.
 
+:::exercise (chili := 1)
 ```lean
 example {X : Type} (H : RiemannHurwitzData X)
     (hpos : 0 ≤ H.totalRamification) (hd : 1 ≤ H.d)
     (hY : 1 ≤ H.gY) : (H.gY : ℤ) ≤ H.gX := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -548,12 +560,14 @@ example {f g : ℂ → ℂ} {U : Set ℂ} (hf : AnalyticOnNhd ℂ f U)
 
 On all of $`\mathbb{C}`, which is connected, this specializes to rigidity: two entire functions that agree near a point agree everywhere.
 
+:::exercise (chili := 1)
 ```lean
 example {f g : ℂ → ℂ} (hf : AnalyticOnNhd ℂ f Set.univ)
     (hg : AnalyticOnNhd ℂ g Set.univ) {z₀ : ℂ}
     (hfg : f =ᶠ[𝓝 z₀] g) : f = g := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

@@ -474,10 +474,12 @@ example (K : Type) [Field K] : Unique (PrimeSpectrum K) := inferInstance
 That single point is the zero ideal $`(0)`, the only proper ideal of a field.
 Show that every point of $`\operatorname{Spec} K` has underlying ideal `⊥`.
 
+:::exercise
 ```lean
 example (K : Type) [Field K] (x : PrimeSpectrum K) : x.asIdeal = ⊥ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -510,6 +512,7 @@ A point $`\mathfrak{p}` lies in $`D(r)` exactly when $`r` does *not* vanish ther
 Combine this with primality to see the distinguished opens are closed under products: if $`r` and $`s` both fail to vanish at $`\mathfrak{p}`, then neither does $`rs`.
 Rewrite all three memberships through `mem_basicOpen`, then read off the goal from `IsPrime.mem_or_mem`, which turns $`rs \in \mathfrak{p}` into $`r \in \mathfrak{p} \vee s \in \mathfrak{p}`.
 
+:::exercise
 ```lean
 example (R : Type) [CommRing R] (r s : R) (p : PrimeSpectrum R)
     (hr : p ∈ PrimeSpectrum.basicOpen r)
@@ -517,6 +520,7 @@ example (R : Type) [CommRing R] (r s : R) (p : PrimeSpectrum R)
     p ∈ PrimeSpectrum.basicOpen (r * s) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -555,11 +559,13 @@ example (A : Type) [CommRing A] (I : Ideal A) :
 The image lands in $`\mathbb{V}(I)`: a pulled-back prime always *contains* $`I`, which is what "points of $`\operatorname{Spec} A/I` are the primes containing $`I`" means.
 Rewrite the pulled-back ideal with `PrimeSpectrum.comap_asIdeal` into an `Ideal.comap`, then note $`I` is the kernel of the quotient map (`Ideal.mk_ker`), which always sits inside a `comap` (`Ideal.ker_le_comap`).
 
+:::exercise
 ```lean
 example (A : Type) [CommRing A] (I : Ideal A) (q : PrimeSpectrum (A ⧸ I)) :
     I ≤ (comap (Ideal.Quotient.mk I) q).asIdeal := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -600,12 +606,14 @@ Dually to the quotient case, the image is the distinguished open $`D(r)`: a pull
 The reason is that $`r` becomes a unit in $`A[1/r]` (`IsLocalization.Away.algebraMap_isUnit`), and a prime ideal contains no unit.
 Assume $`r` were in the pulled-back ideal; rewrite with `comap_asIdeal` and `Ideal.mem_comap` to reach $`\operatorname{algebraMap} r \in \mathfrak{q}`, then derive $`\mathfrak{q} = \top` via `Ideal.eq_top_of_isUnit_mem`, contradicting `q.isPrime.ne_top`.
 
+:::exercise (chili := 1)
 ```lean
 example (A : Type) [CommRing A] (r : A) (S : Type) [CommRing S] [Algebra A S]
     [IsLocalization.Away r S] (q : PrimeSpectrum S) :
     r ∉ (comap (algebraMap A S) q).asIdeal := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

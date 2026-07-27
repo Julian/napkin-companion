@@ -405,10 +405,12 @@ example (K : Type*) [Field K] (x y : PrimeSpectrum K) : x = y :=
 Prove that *directly* from the ideal theory, exposing why the spectrum collapses.
 Two points are equal once their underlying ideals are (`PrimeSpectrum.ext`), and every prime ideal of a field is $`(0)`: a field has only $`\bot` and $`\top` (`Ideal.eq_bot_or_top`), while a prime ideal is never $`\top` (`Ideal.IsPrime.ne_top`), so `Or.resolve_right` pins each ideal to $`\bot`.
 
+:::exercise
 ```lean
 example (K : Type*) [Field K] (x y : PrimeSpectrum K) : x = y := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -486,11 +488,13 @@ example (K : Type*) [Field K] : ringKrullDim K = 0 :=
 Now read that dimension off the *topology* instead.
 Prove the topological Krull dimension of $`\operatorname{Spec} k` is $`0` by chaining the two facts above: rewrite along `PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim` to pass to the ring, then collapse it with `ringKrullDim_eq_zero_of_field`.
 
+:::exercise
 ```lean
 example (K : Type*) [Field K] :
     topologicalKrullDim (PrimeSpectrum K) = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -534,6 +538,7 @@ example (A : Type*) [CommRing A] (I J : Ideal A) :
 This is exactly what makes the correspondence *injective*: a radical ideal is pinned down by its closed set.
 Prove that two radical ideals (each equal to its own radical) with the same vanishing locus are equal — feed the equal loci through the forward direction of `zeroLocus_eq_iff` to match their radicals, then rewrite by the two radical hypotheses.
 
+:::exercise
 ```lean
 example (A : Type*) [CommRing A] (I J : Ideal A)
     (hI : I.radical = I) (hJ : J.radical = J)
@@ -541,6 +546,7 @@ example (A : Type*) [CommRing A] (I J : Ideal A)
       = PrimeSpectrum.zeroLocus (J : Set A)) : I = J := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

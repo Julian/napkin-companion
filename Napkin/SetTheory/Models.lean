@@ -564,11 +564,13 @@ Extensionality's real force is its *backward* direction — sharing every member
 Package both into an iff: in any extensional model, two elements are equal exactly when they have the same `E`-members.
 Split with `constructor`; the forward direction is `rintro rfl` followed by `Iff.rfl` at each `c`, and the backward direction is the extensionality hypothesis applied to the two elements, `h a b`.
 
+:::exercise
 ```lean
 example {𝓜 : SetModel} (h : Extensional 𝓜) (a b : 𝓜.carrier) :
     a = b ↔ ∀ c, 𝓜.mem c a ↔ 𝓜.mem c b := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -586,10 +588,12 @@ example {𝓜 : SetModel} (h : Extensional 𝓜) (a b : 𝓜.carrier) :
 As a first taste of the general first-order framework alongside, show that every structure satisfies the trivially true sentence $`\top`.
 The named lemma is `Sentence.realize_top` (supply the structure `M`), and `simp` finds it unaided.
 
+:::exercise
 ```lean
 example (L : Language) (M : Type*) [L.Structure M] : M ⊨ (⊤ : L.Sentence) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -622,11 +626,13 @@ example (L : Language) (M : Type*) [L.Structure M] (φ ψ : L.Sentence) :
 Now witness that $`\land` really *is* recoverable from $`\neg` and $`\lor`, exactly the chapter's point: reading $`\phi \land \psi` as $`\neg(\neg\phi \lor \neg\psi)` picks out the same models.
 Rewrite the left-hand side down to negations and a disjunction with `Sentence.realize_not` and `Sentence.realize_sup`, then let `tauto` discharge the propositional tautology that remains.
 
+:::exercise
 ```lean
 example (L : Language) (M : Type*) [L.Structure M] (φ ψ : L.Sentence) :
     M ⊨ (φ.not ⊔ ψ.not).not ↔ M ⊨ φ ∧ M ⊨ ψ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -670,12 +676,14 @@ Put that agreement to work: whatever the ambient model satisfies, the substructu
 Show that if $`M \vDash \phi \land \psi` then $`S` satisfies each conjunct.
 Split the ambient satisfaction with `Sentence.realize_inf`, then push each half down through the `.mpr` direction of the sentence agreement above.
 
+:::exercise
 ```lean
 example (L : Language) (M : Type*) [L.Structure M]
     (S : L.ElementarySubstructure M) (φ ψ : L.Sentence)
     (h : M ⊨ φ ⊓ ψ) : S ⊨ φ ∧ S ⊨ ψ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -716,11 +724,13 @@ The content of `ZFSet.mem_powerset` is that membership in the power set *is* the
 Read off the defining property of a power-set element: if $`y \in \mathcal{P}(x)` and $`z \in y`, then $`z \in x`.
 Turn `hy` into `y ⊆ x` with the `.mp` direction of `ZFSet.mem_powerset`, then apply that subset to `hz`.
 
+:::exercise
 ```lean
 example (x y z : ZFSet) (hy : y ∈ x.powerset) (hz : z ∈ y) :
     z ∈ x := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -777,11 +787,13 @@ Build that derivation yourself, to see *why* the collapse forces Foundation.
 The relation `𝓜.mem` is the pullback of the real `∈` along `π.toFun`, which is exactly what `π.mem_iff` says.
 Well-foundedness pulls back along any map, so `InvImage.wf π.toFun ZFSet.mem_wf` well-founds that pullback; since `𝓜.mem` sits inside it, `Subrelation.wf` fed `π.mem_iff` in the forward direction transfers the well-foundedness across.
 
+:::exercise
 ```lean
 example {𝓜 : SetModel} (π : MostowskiCollapse 𝓜) :
     Foundation 𝓜 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -797,11 +809,13 @@ example {𝓜 : SetModel} (π : MostowskiCollapse 𝓜) :
 One step further: no element of a collapsible model is a member of itself, since Foundation forbids $`a \mathrel{E} a`.
 Well-foundedness gives asymmetry — `π.foundation.asymmetric a a` turns a proof of `𝓜.mem a a` into a proof of `¬ 𝓜.mem a a`, so applying it to the hypothesis twice closes the goal.
 
+:::exercise
 ```lean
 example {𝓜 : SetModel} (π : MostowskiCollapse 𝓜)
     (a : 𝓜.carrier) : ¬ 𝓜.mem a a := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -835,10 +849,12 @@ example (L : Language) (T : L.Theory) (h : T.IsSatisfiable) :
 Chain that with the fact that the empty theory is satisfiable (`Theory.isSatisfiable_empty`, shown above) to conclude that the empty theory is finitely satisfiable.
 Compose the two: start from `Theory.isSatisfiable_empty L`, then hand it to `.isFinitelySatisfiable`.
 
+:::exercise
 ```lean
 example (L : Language) : (∅ : L.Theory).IsFinitelySatisfiable := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

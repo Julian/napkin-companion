@@ -378,6 +378,7 @@ The smoothness criterion itself asks for less than this: not that this particula
 Prove that weaker disjunction at $`(1, 0)`, which is what actually certifies the circle is smooth there.
 Only one partial does the work, so `left` selects the $`\partial f / \partial z` branch and the same `simp [pderiv_X]` closes it.
 
+:::exercise
 ```lean
 example :
     MvPolynomial.eval ![1, 0]
@@ -386,6 +387,7 @@ example :
         (pderiv 1 (X 0 ^ 2 + X 1 ^ 2 - 1 : MvPolynomial (Fin 2) ℂ)) ≠ 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -433,12 +435,14 @@ example (v w : Fin 2 → ℂ) (hv : v ≠ 0) (hw : w ≠ 0) (a : ℂ) (ha : a �
 The equivalence $`(x, y) \sim (\lambda x, \lambda y)` is the substance behind $`\mathbb{CP}^1`, so prove it in the form that has to *produce* the scalar rather than receive it: for $`\lambda \neq 0`, the vector $`\lambda v` names the same point as $`v`.
 The witness that carries $`\lambda v` back to $`v` is the inverse scalar $`\lambda^{-1}`, so hand `mk_eq_mk_iff'` the witness $`\lambda^{-1}` and check the identity $`\lambda^{-1} \cdot (\lambda v) = v` with `smul_smul`, `inv_mul_cancel₀`, and `one_smul`.
 
+:::exercise
 ```lean
 example (v : Fin 2 → ℂ) (hv : v ≠ 0) (a : ℂ) (ha : a ≠ 0)
     (hav : a • v ≠ 0) :
     Projectivization.mk ℂ v hv = Projectivization.mk ℂ (a • v) hav := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -480,10 +484,12 @@ example : (X 0 ^ 3 - X 0 * X 2 ^ 2 - X 1 ^ 2 * X 2 :
 
 As a reader exercise, show that the single monomial $`x^2 y` is homogeneous of degree $`3`.
 
+:::exercise
 ```lean
 example : (X 0 ^ 2 * X 1 : MvPolynomial (Fin 3) ℂ).IsHomogeneous 3 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -546,10 +552,12 @@ example : IsNode (X 1 ^ 2 - X 0 ^ 2 : MvPolynomial (Fin 2) ℚ) ![0, 0] := by
 The single monomial $`f = x y` is a node at the origin as well, but a subtler one: both pure second partials $`f_{xx}, f_{yy}` vanish, so its determinant $`-1` comes entirely from the mixed partial in the Hessian $`\begin{psmallmatrix} 0 & 1 \\ 1 & 0 \end{psmallmatrix}`.
 Prove it with the same recipe: split with `refine ⟨⟨?_, ?_, ?_⟩, ?_⟩`, close the three singular-point goals with `simp [pderiv_X]`, and finish the Hessian with `rw [hessianDet_eq]` then `simp [pderiv_X]`.
 
+:::exercise
 ```lean
 example : IsNode (X 0 * X 1 : MvPolynomial (Fin 2) ℚ) ![0, 0] := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -566,11 +574,13 @@ example : IsNode (X 0 * X 1 : MvPolynomial (Fin 2) ℚ) ![0, 0] := by
 By contrast, the point $`(1, 0)` on the circle is a smooth point: its partial $`\partial f / \partial x = 2x` is nonzero there, so it is not singular.
 Smoothness is the *negation* of singularity, so the proof runs the other way: `intro h` assumes the point were singular, and the $`\partial f / \partial x`-vanishing component `h.2.1` then claims $`2 = 0`, so `simpa [pderiv_X] using h.2.1` computes that and derives the contradiction.
 
+:::exercise
 ```lean
 example :
     IsSmoothPoint (X 0 ^ 2 + X 1 ^ 2 - 1 : MvPolynomial (Fin 2) ℚ) ![1, 0] := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -585,11 +595,13 @@ As a final exercise, show the origin is a singular point of the cuspidal cubic $
 Its partials $`-3x^2`, $`2y` both vanish at the origin, so this is exactly the singular-point half of the node recipe: `refine ⟨?_, ?_, ?_⟩ <;> simp [pderiv_X]`.
 (It is not a node: there $`f_{xx} = -6x`, $`f_{yy} = 2`, and $`f_{xy} = 0`, so the Hessian determinant vanishes.)
 
+:::exercise
 ```lean
 example :
     IsSingularPoint (X 1 ^ 2 - X 0 ^ 3 : MvPolynomial (Fin 2) ℚ) ![0, 0] := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

@@ -506,6 +506,7 @@ noncomputable example (k G : Type*) [CommRing k] [CommGroup G] :
 See *why* that commutativity holds, one basis element at a time.
 Two basis elements multiply by `MonoidAlgebra.single_mul_single`, which multiplies the group labels and the coefficients separately; commuting each of those two products (`mul_comm` in $`G` and in $`k`) then swaps the factors back.
 
+:::exercise
 ```lean
 example (k G : Type*) [CommRing k] [CommGroup G] (a b : G) (r s : k) :
     (MonoidAlgebra.single a r * MonoidAlgebra.single b s
@@ -513,6 +514,7 @@ example (k G : Type*) [CommRing k] [CommGroup G] (a b : G) (r s : k) :
       = MonoidAlgebra.single b s * MonoidAlgebra.single a r := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -557,11 +559,13 @@ example (A V : Type*) [Ring A] [AddCommGroup V] [Module A V] (v : V) :
 Assemble a small consequence that leans on this axiom.
 Show $`(1_A - a) \cdot v = v - a \cdot v`: distributing the action over the difference is `sub_smul`, after which the leading term collapses by `one_smul` above.
 
+:::exercise
 ```lean
 example (A V : Type*) [Ring A] [AddCommGroup V] [Module A V]
     (a : A) (v : V) : (1 - a) • v = v - a • v := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -601,11 +605,13 @@ Then the matrix `Matrix.single i j (w i * (v j)⁻¹)` applied to $`v` equals $`
 Summing over $`i` (via `Submodule.sum_mem`) shows every vector lies in the submodule.
 The `[NeZero d]` hypothesis is what keeps the space nonzero, so the submodule lattice is genuinely nontrivial.
 
+:::exercise (chili := 1)
 ```lean
 example (k : Type*) [Field k] (d : ℕ) [NeZero d] :
     IsSimpleModule (Matrix (Fin d) (Fin d) k) (Fin d → k) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -684,12 +690,14 @@ example (A V W : Type*) [Ring A] [AddCommGroup V] [Module A V]
 Run the argument behind that lemma yourself, to see where irreducibility enters.
 Injectivity is $`\ker T = \{0\}` (`LinearMap.ker_eq_bot`), and $`\ker T` is a subrepresentation of the simple module $`V`, so by `eq_bot_or_eq_top` it is either $`\{0\}` or all of $`V`; the latter would force $`T = 0` (`LinearMap.ker_eq_top`), contradicting `hT`.
 
+:::exercise (chili := 1)
 ```lean
 example (A V W : Type*) [Ring A] [AddCommGroup V] [Module A V]
     [AddCommGroup W] [Module A W] [IsSimpleModule A V]
     (T : V →ₗ[A] W) (hT : T ≠ 0) : Function.Injective T := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

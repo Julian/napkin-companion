@@ -477,11 +477,13 @@ Now put that fact to work rather than restating it.
 Attaching finitely many stray points to a compact set cannot spoil compactness: given `s` compact and `t` finite, show `s ∪ t` is compact.
 Turn the finite piece into a compact one with the worked model above (`ht.isCompact`), then glue the two compacts together with `IsCompact.union`.
 
+:::exercise
 ```lean
 example (X : Type*) [TopologicalSpace X] (s t : Set X)
     (hs : IsCompact s) (ht : t.Finite) : IsCompact (s ∪ t) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -504,11 +506,13 @@ example (X : Type*) [TopologicalSpace X] (s t : Set X)
 In a Hausdorff space this pairs with another fact into a clean statement: the intersection of two compact sets is again compact.
 The key is that a compact set in a Hausdorff space is closed (`IsCompact.isClosed`), so `s ∩ t` is a closed subset of the compact `t` (assembled from `IsClosed.inter` and `Set.inter_subset_right`); the worked model then finishes it.
 
+:::exercise
 ```lean
 example (X : Type*) [TopologicalSpace X] [T2Space X] (s t : Set X)
     (hs : IsCompact s) (ht : IsCompact t) : IsCompact (s ∩ t) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -542,10 +546,12 @@ Show that a closed ball in $`\mathbb{R}` is compact.
 Rewriting with the equivalence splits the goal into the two conditions, and each is a named fact about balls: `Metric.isClosed_closedBall` and `Metric.isBounded_closedBall`.
 The point of doing it this way rather than quoting a packaged lemma is that the proof is the *only* proof available in a general proper space — closed plus bounded is all the information you have.
 
+:::exercise
 ```lean
 example (c r : ℝ) : IsCompact (Metric.closedBall c r) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -587,12 +593,14 @@ Suppose a compact set is covered by an *increasing* family $`U_0 \subseteq U_1 \
 Extract a finite `t : Finset ℕ` with the lemma above, then take `n` to be the largest index appearing in `t` — `t.sup id`, which is available even when `t` is empty.
 Every `U i` with `i ∈ t` is contained in `U (t.sup id)` by monotonicity (`Finset.le_sup` supplies `i ≤ t.sup id`), and `Set.iUnion₂_subset` turns "each piece lands in the target" into "the union does".
 
+:::exercise
 ```lean
 example {X : Type*} [TopologicalSpace X] {s : Set X} (hs : IsCompact s)
     (U : ℕ → Set X) (hUo : ∀ n, IsOpen (U n)) (hmono : Monotone U)
     (hsU : s ⊆ ⋃ n, U n) : ∃ n, s ⊆ U n := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -644,12 +652,14 @@ The conclusion is packaged as `IsMaxOn`; unpack it into the concrete bound it st
 Prove that the function attains a value dominating every other: `∃ x ∈ s, ∀ y ∈ s, f y ≤ f x`.
 Pull the maximizer out of the worked model with `obtain`, then read off the pointwise inequality using `isMaxOn_iff`.
 
+:::exercise
 ```lean
 example (X : Type*) [TopologicalSpace X] (s : Set X) (hs : IsCompact s)
     (hne : s.Nonempty) (f : X → ℝ) (hf : ContinuousOn f s) :
     ∃ x ∈ s, ∀ y ∈ s, f y ≤ f x := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -686,12 +696,14 @@ Chain that with the fact that uniformly continuous maps compose.
 Given `f : M → N` merely continuous out of the compact `M`, and `g : N → P` already uniformly continuous, show `g ∘ f` is uniformly continuous.
 Heine-Cantor upgrades `f` to uniformly continuous, and `UniformContinuous.comp` stitches the two together.
 
+:::exercise
 ```lean
 example (M N P : Type*) [UniformSpace M] [UniformSpace N] [UniformSpace P]
     [CompactSpace M] (f : M → N) (g : N → P) (hf : Continuous f)
     (hg : UniformContinuous g) : UniformContinuous (g ∘ f) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -726,11 +738,13 @@ Total boundedness is the stronger notion; chase it down to ordinary boundedness.
 Show that a sequentially compact set is bounded (`Bornology.IsBounded`).
 The worked model supplies total boundedness, and `TotallyBounded.isBounded` weakens that to boundedness.
 
+:::exercise
 ```lean
 example (M : Type*) [PseudoMetricSpace M] (s : Set M)
     (hs : IsSeqCompact s) : Bornology.IsBounded s := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

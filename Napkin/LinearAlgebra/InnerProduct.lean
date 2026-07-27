@@ -383,12 +383,14 @@ The payoff of conjugate symmetry is that it forces certain quantities to be *rea
 Prove that $`\langle v, w \rangle + \langle w, v \rangle` is self-conjugate.
 Conjugation is a ring homomorphism, so `map_add` splits the conjugate of the sum; rewrite each summand with `inner_conj_symm`, and the two terms come back swapped, agreeing after `ring`.
 
+:::exercise
 ```lean
 example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] (v w : V) :
     starRingEnd ℂ (inner ℂ v w + inner ℂ w v)
       = inner ℂ v w + inner ℂ w v := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -422,11 +424,13 @@ recall norm_inner_le_norm {𝕜 E : Type*} [RCLike 𝕜]
 The Pythagorean theorem (one of the chapter's problems) drops out of the expansion of $`\|v + w\|^2` once the cross term $`\langle v, w \rangle` vanishes.
 Prove it for a real inner product space.
 
+:::exercise
 ```lean
 example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℝ V] (v w : V)
     (h : inner ℝ v w = 0) : ‖v‖ ^ 2 + ‖w‖ ^ 2 = ‖v + w‖ ^ 2 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -464,12 +468,14 @@ example (𝕜 E : Type*) [RCLike 𝕜] [NormedAddCommGroup E]
 Turn that into the *inner-product* form of a unit vector: show $`\langle v_i, v_i \rangle = 1`.
 Rewrite with `inner_self_eq_norm_sq_to_K` — the identity $`\langle x, x \rangle = \|x\|^2` valid over any `RCLike` field — and then `h.1 i`, leaving a cast of $`1^2` that `norm_num` settles.
 
+:::exercise
 ```lean
 example (𝕜 E : Type*) [RCLike 𝕜] [NormedAddCommGroup E]
     [InnerProductSpace 𝕜 E] {ι : Type*} (v : ι → E)
     (h : Orthonormal 𝕜 v) (i : ι) : inner 𝕜 (v i) (v i) = 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -499,12 +505,14 @@ But completeness is not an end in itself — its whole content is that *every Ca
 Make that concrete: in a finite-dimensional inner product space, show any Cauchy sequence has a limit.
 Install the instance from the worked model with `haveI`, then hand your Cauchy sequence to `cauchySeq_tendsto_of_complete`, which produces the limit point.
 
+:::exercise
 ```lean
 example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℝ V]
     [FiniteDimensional ℝ V] (u : ℕ → V) (hu : CauchySeq u) :
     ∃ p, Filter.Tendsto u Filter.atTop (nhds p) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

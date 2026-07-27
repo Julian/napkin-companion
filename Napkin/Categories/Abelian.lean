@@ -413,11 +413,13 @@ The point of that vanishing is stronger than it looks: not just $`f`, but *anyth
 Prove that for any $`h \colon D \to A`, the composite $`(h \circ f) \circ \mathrm{coker}\, f` is zero.
 Reassociate with `Category.assoc` so the inner $`f \circ \mathrm{coker}\, f` appears, rewrite it away with `cokernel.condition`, and finish with `comp_zero`.
 
+:::exercise
 ```lean
 example (C : Type*) [Category C] [HasZeroMorphisms C] {A B D : C} (f : A ⟶ B)
     (h : D ⟶ A) [HasCokernel f] : (h ≫ f) ≫ cokernel.π f = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -453,11 +455,13 @@ The other half is free — an isomorphism is always monic and epic — so in an 
 Prove the full characterization: $`f` is an isomorphism $`\iff` $`f` is monic and epic.
 Split with `constructor`; the forward direction turns the `IsIso` hypothesis into an instance (`haveI`) and reads off both conditions by `inferInstance`, while the backward direction unpacks the pair and applies the worked model above.
 
+:::exercise (chili := 1)
 ```lean
 example (C : Type*) [Category C] [Abelian C] {A B : C} (f : A ⟶ B) :
     IsIso f ↔ (Mono f ∧ Epi f) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -498,12 +502,14 @@ Put that monicity to work.
 When such a complex is exact, its second map is monic, and monics are closed under composition — so postcomposing $`S.g` with any monic stays monic.
 From `hf` and exactness extract `Mono S.g` (the forward direction of the equivalence above), register it with `haveI`, and let `mono_comp` combine it with the given monic.
 
+:::exercise
 ```lean
 example (C : Type*) [Category C] [Abelian C] (S : ShortComplex C)
     (hf : S.f = 0) (he : S.Exact) {D : C} (g' : S.X₃ ⟶ D) [Mono g'] :
     Mono (S.g ≫ g') := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -589,6 +595,7 @@ Chasing zero along a *composite* is the same principle applied twice.
 Prove that $`f` then $`g` sends the zero pseudoelement to zero.
 Rewrite the composite with `comp_apply` (the worked model further up) to split it into $`g` applied to $`f` applied to $`0`, then collapse each map in turn with `apply_zero`.
 
+:::exercise
 ```lean
 open CategoryTheory.Abelian.Pseudoelement in
 example (C : Type*) [Category C] [Abelian C] {A B D : C} (f : A ⟶ B)
@@ -596,6 +603,7 @@ example (C : Type*) [Category C] [Abelian C] {A B D : C} (f : A ⟶ B)
     pseudoApply (f ≫ g) (0 : Abelian.Pseudoelement A) = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -629,12 +637,14 @@ example (C : Type*) [Category C] [Preadditive C] {S : ShortComplex C}
 Being epic is exactly *right-cancellability*: because $`S.g` is epic, any two maps out of its target that agree after precomposition with $`S.g` are already equal.
 Register `hS.epi_g` as an instance with `haveI`, then apply the forward direction of `cancel_epi`.
 
+:::exercise
 ```lean
 example (C : Type*) [Category C] [Preadditive C] {S : ShortComplex C}
     (hS : S.ShortExact) {D : C} (h h' : S.X₃ ⟶ D)
     (w : S.g ≫ h = S.g ≫ h') : h = h' := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

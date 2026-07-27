@@ -384,11 +384,13 @@ Radicality is exactly what lets multiplicities collapse: it says a power lying i
 Make that concrete for a square, over a prime ideal.
 Turn `I.IsRadical` into its pointwise form with `Ideal.isRadical_iff_pow_one_lt` (at exponent $`2`, whose `1 < 2` is `one_lt_two`), then feed it the hypothesis.
 
+:::exercise
 ```lean
 example (R : Type*) [CommRing R] (I : Ideal R) (hI : I.IsPrime)
     (x : R) (hx : x ^ 2 ∈ I) : x ∈ I := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -415,11 +417,13 @@ example (F : Type*) [Field F] (p q : F[X]) (h : p * q ≠ 0) :
 The two distinct points $`a \neq b` of the union example above cut out the polynomial $`(x - a)(x - b)`, whose root set has exactly two elements.
 Show that its set of roots has size $`2`.
 
+:::exercise (chili := 1)
 ```lean
 example (a b : ℂ) (h : a ≠ b) :
     (((X - C a) * (X - C b)).roots).toFinset.card = 2 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -453,12 +457,14 @@ example (F : Type*) [Field F] (d : ℕ) : hilbertPoly (0 : F[X]) d = 0 :=
 The additivity $`h_{I \cap J} + h_{I + J} = h_I + h_J` of the earlier proposition reflects a structural fact: for a fixed degree $`d`, the assignment $`p \mapsto \chi_p(d)` is linear in the numerator series.
 Prove its two-term form, that it sends $`a \cdot p + q` to $`a \cdot \chi_p(d) + \chi_q(d)`, by rewriting with `hilbertPoly_add_left` and then `hilbertPoly_smul`.
 
+:::exercise
 ```lean
 example (F : Type*) [Field F] (p q : F[X]) (a : F) (d : ℕ) :
     hilbertPoly (a • p + q) d
       = a • hilbertPoly p d + hilbertPoly q d := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -536,11 +542,13 @@ Counting with multiplicity dominates counting without, so this pins the number o
 Prove that bound.
 Rewrite the cardinality as a sum of $`1`s (`Finset.card_eq_sum_ones`), replace $`\deg g` by the multiplicity sum just above, and compare termwise (`Finset.sum_le_sum`), using that every listed point has positive multiplicity (`mult_pos`).
 
+:::exercise
 ```lean
 example (B : BezoutData ℂ) (h : B.f.totalDegree = 1) :
     B.points.card ≤ B.g.totalDegree := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -555,11 +563,13 @@ example (B : BezoutData ℂ) (h : B.f.totalDegree = 1) :
 Hence a line and a conic meet in at most two points.
 Show it.
 
+:::exercise
 ```lean
 example (B : BezoutData ℂ) (hf : B.f.totalDegree = 1)
     (hg : B.g.totalDegree = 2) : B.points.card ≤ 2 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -583,11 +593,13 @@ Two curves meeting a line at once should meet it in at most the sum of the two d
 Prove the univariate form for a product $`p \cdot q`.
 The roots of a product are the union of the roots of the factors (`roots_mul`, the worked model further above, needing $`p q \neq 0`); `Multiset.card_add` splits the count, and `card_roots'` bounds each half.
 
+:::exercise
 ```lean
 example (F : Type*) [Field F] (p q : F[X]) (hpq : p * q ≠ 0) :
     Multiset.card (p * q).roots ≤ p.natDegree + q.natDegree := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -620,10 +632,12 @@ That equality has teeth: a nonconstant polynomial must then have an actual root,
 Prove that a polynomial of degree at least $`1` has a root.
 From the equality the root multiset has positive cardinality, hence is nonempty (`Multiset.card_pos`, then `Multiset.exists_mem_of_ne_zero`); membership in `p.roots` unpacks to a root via `mem_roots'`.
 
+:::exercise (chili := 1)
 ```lean
 example (p : ℂ[X]) (h : 1 ≤ p.natDegree) : ∃ z, IsRoot p z := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

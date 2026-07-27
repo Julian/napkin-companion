@@ -563,10 +563,12 @@ example : sSup (Set.Icc (0 : ℝ) 1) = 1 :=
 That value is forced by the two defining halves of "least upper bound", which the `IsLUB` predicate bundles as `IsLeast (upperBounds s) x`.
 Prove directly that $`1` *is* the least upper bound of $`[0,1]`: split with `constructor` into the two obligations, showing $`1` is an upper bound (every $`x \in [0,1]` has $`x \leq 1`) and then the least one (any upper bound $`b` must dominate $`1`, since $`1 \in [0,1]`).
 
+:::exercise (chili := 1)
 ```lean
 example : IsLUB (Set.Icc (0 : ℝ) 1) 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -606,11 +608,13 @@ Put the two halves to work together.
 If a set actually *contains* an upper bound of itself, that element is its maximum, and the supremum lands exactly there.
 Prove $`\sup s = b` whenever $`b \in s` is an upper bound: squeeze by `le_antisymm`, bounding $`\sup s \leq b` with `csSup_le` (the set is nonempty because $`b` is in it) and $`b \leq \sup s` with `le_csSup` (the set is bounded above because $`b` bounds it).
 
+:::exercise
 ```lean
 example (s : Set ℝ) (b : ℝ) (hb : b ∈ s) (hub : b ∈ upperBounds s) :
     sSup s = b := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -639,11 +643,13 @@ The output lives in `ℝ` only when the sequence is bounded both above and below
 The mandatory exercise was that a weakly decreasing sequence of nonnegatives converges.
 Show that an antitone sequence bounded below by $`0` has a limit, using `tendsto_atTop_ciInf`.
 
+:::exercise
 ```lean
 example (a : ℕ → ℝ) (hanti : Antitone a) (hnonneg : ∀ n, 0 ≤ a n) :
     ∃ L, Filter.Tendsto a Filter.atTop (nhds L) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -684,10 +690,12 @@ The harmonic series is the cautionary tale for the *converse* of a basic fact: t
 Use the necessary direction as a divergence test: prove the constant series $`\sum 1` diverges.
 Assume it were summable, extract the terms-tend-to-zero conclusion, and collide it with `tendsto_const_nhds` (the constant sequence tends to $`1`) via uniqueness of limits, `tendsto_nhds_unique`.
 
+:::exercise (chili := 1)
 ```lean
 example : ¬ Summable (fun _ : ℕ => (1 : ℝ)) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -725,11 +733,13 @@ example (f : ℕ → ℝ) (h : Summable (fun k => |f k|)) : Summable f :=
 With that bridge, absolutely convergent series are closed under addition.
 Prove that if $`\sum |f_k|` and $`\sum |g_k|` both converge, then $`\sum (f_k + g_k)` converges: turn each absolute-convergence hypothesis into plain summability with `.of_abs`, then combine the two with `Summable.add`.
 
+:::exercise
 ```lean
 example (f g : ℕ → ℝ) (hf : Summable (fun k => |f k|))
     (hg : Summable (fun k => |g k|)) : Summable (fun k => f k + g k) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -768,11 +778,13 @@ Prove the forward direction from a more elementary principle: convergence along 
 Since the punctured neighborhood is coarser than the full one, `nhdsWithin p {p}ᶜ ≤ nhds p` (which is `nhdsWithin_le_nhds`), a continuous function — which by definition tends to $`f(p)` along the *full* neighborhood — still tends to $`f(p)` along the punctured one.
 Chase this with `Filter.Tendsto.mono_left`, feeding it the containment of filters.
 
+:::exercise
 ```lean
 example (f : ℝ → ℝ) (p : ℝ) (h : ContinuousAt f p) :
     Filter.Tendsto f (nhdsWithin p {p}ᶜ) (nhds (f p)) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -803,10 +815,12 @@ example : Filter.Tendsto (fun x : ℝ => 1 / x) Filter.atTop (nhds 0) := by
 The arithmetic of limits lets you scale this.
 Prove $`\lim_{x \to \infty} \frac{2}{x} = 0`: rewrite $`\frac{2}{x} = 2 \cdot \frac1x`, recall the base limit above, and scale it by the constant $`2` with `Filter.Tendsto.const_mul` (whose limit $`2 \cdot 0` simplifies back to $`0`).
 
+:::exercise
 ```lean
 example : Filter.Tendsto (fun x : ℝ => 2 / x) Filter.atTop (nhds 0) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -837,10 +851,12 @@ example (r : ℝ) (h : |r| < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
 Turn the closed form into a concrete number.
 Compute $`\sum_{n \geq 0} (1/2)^n = 2`: since $`0 \leq \frac12 < 1`, `tsum_geometric_of_lt_one` rewrites the sum as $`(1 - \frac12)^{-1}`, after which `norm_num` finishes the arithmetic.
 
+:::exercise
 ```lean
 example : ∑' n : ℕ, (1 / 2 : ℝ) ^ n = 2 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -853,11 +869,13 @@ example : ∑' n : ℕ, (1 / 2 : ℝ) ^ n = 2 := by
 
 For the comparison test, use `Summable.of_nonneg_of_le`: a nonnegative series dominated term-by-term by a summable one is itself summable.
 
+:::exercise
 ```lean
 example (a b : ℕ → ℝ) (hb : Summable (fun n => |b n|))
     (hle : ∀ n, |a n| ≤ |b n|) : Summable (fun n => |a n|) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

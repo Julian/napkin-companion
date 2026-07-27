@@ -679,12 +679,14 @@ example (K : Type*) [Field K] [NumberField K]
 Put the dichotomy to work: a place that is *not* real must be complex.
 Case-split on `w.isReal_or_isComplex` with `rcases`; the real branch contradicts the hypothesis (discharge it with `absurd`), leaving the complex one.
 
+:::exercise
 ```lean
 example (K : Type*) [Field K] [NumberField K]
     (w : NumberField.InfinitePlace K) (h : ¬ w.IsReal) :
     w.IsComplex := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -726,10 +728,12 @@ example : Fintype.card (ClassGroup ℤ) = 1 :=
 Prove that any `x : ClassGroup ℤ` equals `1`.
 A cardinality of one forces the type to be a subsingleton (`Fintype.card_le_one_iff_subsingleton`, fed `card_classGroup_eq_one.le`), and in a subsingleton any two elements coincide (`Subsingleton.elim`).
 
+:::exercise
 ```lean
 example (x : ClassGroup ℤ) : x = 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -765,6 +769,7 @@ Class field theory only becomes this clean for *abelian* extensions, where each 
 The cyclotomic case is abelian; show it, by transporting the commutativity of $`(\mathbb Z/n\mathbb Z)^\times` across the isomorphism above.
 Concretely, let `e := IsCyclotomicExtension.autEquivPow L h` and `apply e.injective`; then `rw [map_mul, map_mul, mul_comm]` reduces the goal to commutativity in $`(\mathbb Z/n\mathbb Z)^\times`.
 
+:::exercise
 ```lean
 example (n : ℕ) [NeZero n] (K L : Type*) [Field K] [Field L] [Algebra K L]
     [IsCyclotomicExtension {n} K L]
@@ -772,6 +777,7 @@ example (n : ℕ) [NeZero n] (K L : Type*) [Field K] [Field L] [Algebra K L]
     (f g : L ≃ₐ[K] L) : f * g = g * f := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -829,11 +835,13 @@ example (I G : Type*) [CommGroup I] [CommGroup G] (D : ArtinMapData I G) :
 The identity of $`\operatorname{Gal}(L/K)` collects the principal ideals of the ray: the Artin symbol depends only on the ray class, so multiplying an ideal by something in $`P_K(\mathfrak m)` leaves the symbol unchanged.
 Prove it, from `artin_eq_one_of_mem_ray` and multiplicativity.
 
+:::exercise
 ```lean
 example (I G : Type*) [CommGroup I] [CommGroup G] (D : ArtinMapData I G)
     (x y : I) (hx : x ∈ D.ray) : D.artin (x * y) = D.artin y := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -847,11 +855,13 @@ The lower-bound case $`H(L/K, \mathfrak m) = P_K(\mathfrak m)` — the cyclotomi
 When it happens, the ray class number is exactly $`|\operatorname{Gal}(L/K)|`.
 Feed the bijection of `D.rayClassEquiv h` to `Nat.card_eq_of_bijective` to move the cardinalities across.
 
+:::exercise
 ```lean
 example (I G : Type*) [CommGroup I] [CommGroup G] (D : ArtinMapData I G)
     (h : D.artin.ker = D.ray) : Nat.card (I ⧸ D.ray) = Nat.card G := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -877,11 +887,13 @@ example (M : Type*) [CommMonoid M] (C : ConductorData M) (m : M) :
 So $`\mathfrak f` is the smallest such modulus, and admissibility is upward closed: any multiple of the conductor is again admissible.
 Combine `C.isAdmissible_conductor` with `C.isAdmissible_of_dvd`, the divisibility witness being $`\mathfrak f \mid \mathfrak f \cdot m`.
 
+:::exercise
 ```lean
 example (M : Type*) [CommMonoid M] (C : ConductorData M) (m : M) :
     C.IsAdmissible (C.conductor * m) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -904,12 +916,14 @@ When $`p \equiv 1 \pmod 4` the sign on the right disappears and the symbol becom
 Rather than cite the bundled `legendreSym.quadratic_reciprocity_one_mod_four`, derive it from the general law above, for distinct $`p \ne q`.
 Feed `legendreSym.quadratic_reciprocity` your hypotheses; then $`p \equiv 1 \pmod 4` makes $`p/2` even (`Nat.even_iff`, from an `omega` fact), so `Even.neg_one_pow` collapses the sign to $`1`, and a product of two integers equal to $`1` forces them equal (`Int.eq_of_mul_eq_one`).
 
+:::exercise (chili := 1)
 ```lean
 example (p q : ℕ) [Fact p.Prime] [Fact q.Prime]
     (hp : p % 4 = 1) (hq : q ≠ 2) (hpq : p ≠ q) :
     legendreSym q p = legendreSym p q := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -938,11 +952,13 @@ example (p : ℕ) [Fact p.Prime] (hp : p % 4 ≠ 3) :
 Specialize to the interesting direction: an odd prime $`p \equiv 1 \pmod 4` is a sum of two squares.
 Reuse `Nat.Prime.sq_add_sq`; its hypothesis $`p \not\equiv 3 \pmod 4` follows from $`p \equiv 1 \pmod 4` by `omega`.
 
+:::exercise
 ```lean
 example (p : ℕ) [Fact p.Prime] (hp : p % 4 = 1) :
     ∃ a b : ℕ, a ^ 2 + b ^ 2 = p := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

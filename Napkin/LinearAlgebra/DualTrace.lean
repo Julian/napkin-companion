@@ -352,12 +352,14 @@ Those relations really are *all* you get: every other identity between pure tens
 Squeeze out the first one, that $`0 \otimes w = 0`.
 The trick is the usual one for showing something is an additive identity: use distributivity on $`0 = 0 + 0` to get $`0 \otimes w = 0 \otimes w + 0 \otimes w`, then cancel (`add_eq_left` turns `a + b = a` into `b = 0`).
 
+:::exercise
 ```lean
 example (k V W : Type*) [CommRing k]
     [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
     (w : W) : (0 : V) ⊗ₜ[k] w = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -377,12 +379,14 @@ Prove it.
 The statement is that the span of $`\{v \otimes w\}` is everything, and the proof is the recursion principle `TensorProduct.induction_on`, which builds an arbitrary tensor out of `zero`, `tmul`, and `add` — exactly the three cases you must supply.
 (Start from `Submodule.eq_top_iff'`, which reduces `= ⊤` to membership of an arbitrary element.)
 
+:::exercise (chili := 1)
 ```lean
 example (k V W : Type*) [CommRing k]
     [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W] :
     Submodule.span k {t : V ⊗[k] W | ∃ v w, v ⊗ₜ[k] w = t} = ⊤ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -439,12 +443,14 @@ Prove that expansion, $`f = \sum_i f(e_i) \, e_i^\vee`.
 Any basis expansion starts from `Module.Basis.sum_repr`, which rebuilds a vector — here the vector is $`f` and the basis is `b.dualBasis` — from its coordinates; rewriting *backwards* with it turns the bare `f` on the left into a sum.
 What identifies those coordinates as the values $`f(e_i)` is `Module.Basis.dualBasis_repr`.
 
+:::exercise
 ```lean
 example (k V ι : Type*) [Field k] [AddCommGroup V] [Module k V]
     [DecidableEq ι] [Fintype ι] (b : Module.Basis ι k V) (f : Module.Dual k V) :
     f = ∑ i, f (b i) • b.dualBasis i := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -494,6 +500,7 @@ So a pure tensor corresponds to a matrix of rank at most one, which is why the p
 Make that precise: show the image of $`\Psi(f \otimes w)` lies in the line spanned by $`w`.
 Take an arbitrary element of the range apart with `rintro _ ⟨v, rfl⟩` — a range membership is a witness $`v` together with the equation naming the output — then rewrite with the formula above and note that a span is closed under scaling (`Submodule.smul_mem`, applied to `Submodule.mem_span_singleton_self`).
 
+:::exercise
 ```lean
 example (k V W : Type*) [CommRing k]
     [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
@@ -502,6 +509,7 @@ example (k V W : Type*) [CommRing k]
       ≤ Submodule.span k {w} := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -550,6 +558,7 @@ That innocuous-looking commutation is the workhorse of the whole theory, because
 Prove that invariance.
 Reassociate first — `LinearMap.comp_assoc` regroups $`u \circ (T \circ u^{-1})` as $`(u \circ T) \circ u^{-1}` — and then a single application of the commutation above moves $`u^{-1}` to the front, where `simp` can cancel it against $`u`.
 
+:::exercise
 ```lean
 example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
     [FiniteDimensional k V] (f : V →ₗ[k] V) (u : V ≃ₗ[k] V) :
@@ -557,6 +566,7 @@ example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
       = LinearMap.trace k V f := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -577,12 +587,14 @@ On a finite-dimensional space there is *no* pair of operators with $`AB - BA = 1
 The argument is three lines of trace bookkeeping: the trace of the left side is $`0` because the trace is linear (`map_sub`) and cycles, while the trace of the identity is $`\dim V` (`LinearMap.trace_one`), which is nonzero in characteristic $`0` whenever $`V \neq 0`.
 Finish it: from `(finrank k V : k) = 0` get `finrank k V = 0` by `Nat.cast_eq_zero` (this is where `CharZero k` is used), and contradict `Module.finrank_pos`.
 
+:::exercise (chili := 1)
 ```lean
 example (k V : Type*) [Field k] [CharZero k] [AddCommGroup V] [Module k V]
     [FiniteDimensional k V] [Nontrivial V] (A B : V →ₗ[k] V) :
     A ∘ₗ B - B ∘ₗ A ≠ 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

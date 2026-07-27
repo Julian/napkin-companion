@@ -535,11 +535,13 @@ example (C D : Type*) [Category C] [Category D] (F : C ⥤ D) : Prop := F.Faithf
 The theorem was that functors preserve isomorphism.
 Given an isomorphism $`A_1 \cong A_2` in $`\mathcal{A}` and a functor $`F`, construct the isomorphism $`F(A_1) \cong F(A_2)` (you will need both `map_id` and `map_comp`).
 
+:::exercise (chili := 1)
 ```lean
 example (C D : Type*) [Category C] [Category D] (F : C ⥤ D)
     (A₁ A₂ : C) (e : A₁ ≅ A₂) : F.obj A₁ ≅ F.obj A₂ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -567,10 +569,12 @@ example (C D : Type*) [Category C] [Category D] : C × D ⥤ C :=
 Dually, from a single category there is the diagonal functor $`\mathcal{A} \to \mathcal{A}^2` sending each object to the pair with itself.
 Construct it.
 
+:::exercise
 ```lean
 example (C : Type*) [Category C] : C ⥤ C × C := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -604,10 +608,12 @@ Rather than take that packaging on faith, build the opposite functor by hand, so
 On objects there is no choice: send `op X` to `op (F.obj X)`.
 On arrows, a morphism of `Cᵒᵖ` is `f.unop` running the other way in `C`; apply `F` to it and reverse again with `.op` (the identity and composition conditions are then routine, dispatched by `aesop_cat`).
 
+:::exercise
 ```lean
 example (C D : Type*) [Category C] [Category D] (F : C ⥤ D) : Cᵒᵖ ⥤ Dᵒᵖ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -642,11 +648,13 @@ The cleaner criterion said an equivalence is in particular *essentially surjecti
 Prove this directly from `e`.
 The witness is forced — the inverse's value $`G(Y)` is the only reasonable candidate — and the isomorphism $`F(G(Y)) \cong Y` is exactly a component of the counit natural isomorphism, `e.counitIso.app Y`.
 
+:::exercise
 ```lean
 example (C D : Type*) [Category C] [Category D] (e : C ≌ D) (Y : D) :
     ∃ X, Nonempty (e.functor.obj X ≅ Y) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -680,6 +688,7 @@ Two natural transformations $`\alpha \colon F \to G` and $`\beta \colon G \to H`
 Prove it for a single arrow `f`.
 Reassociate so the inner square is $`\alpha`'s, rewrite it with `α.naturality`, reassociate the other way to expose $`\beta`'s, and finish with `β.naturality` (`Category.assoc` does the regrouping).
 
+:::exercise
 ```lean
 example (C D : Type*) [Category C] [Category D] (F G H : C ⥤ D)
     (α : F ⟶ G) (β : G ⟶ H) {A₁ A₂ : C} (f : A₁ ⟶ A₂) :
@@ -687,6 +696,7 @@ example (C D : Type*) [Category C] [Category D] (F G H : C ⥤ D)
       (α.app A₁ ≫ β.app A₁) ≫ H.map f := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -722,12 +732,14 @@ noncomputable example (C : Type*) [Category C] (X Y : C)
 Prove that `yoneda.map` applied to the reflected iso's `hom` recovers `h.hom`.
 Rewrite `(yoneda.preimageIso h).hom` into a `yoneda.preimage` with `Functor.preimageIso_hom`, then collapse `yoneda.map (yoneda.preimage _)` with `Functor.map_preimage`.
 
+:::exercise
 ```lean
 example (C : Type*) [Category C] (X Y : C)
     (h : yoneda.obj X ≅ yoneda.obj Y) :
     yoneda.map (yoneda.preimageIso h).hom = h.hom := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

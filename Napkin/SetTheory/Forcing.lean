@@ -475,11 +475,13 @@ example (P : Type*) [Preorder P] (p : P) :
 The chapter noted that any downward "slice" — indeed the whole $`\mathbb{P}` — is dense, and more generally any superset of a dense set stays dense.
 Prove it: unfold `Forcing.Dense` and relocate the witness.
 
+:::exercise
 ```lean
 example (P : Type*) [Preorder P] {D E : Set P} (hDE : D ⊆ E)
     (hD : Forcing.Dense D) : Forcing.Dense E := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -507,11 +509,13 @@ A forcing notion is `Forcing.Splitting` when two incompatible conditions sit bel
 The first question of the chapter asked you to show that a filter always contains the maximum condition $`1_\mathbb{P}`.
 With $`1_\mathbb{P} = ⊤`, prove it: pick any element of the filter and push it up.
 
+:::exercise
 ```lean
 example (P : Type*) [Preorder P] [OrderTop P] {G : Set P}
     (h : Forcing.IsForcingFilter G) : ⊤ ∈ G := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -545,12 +549,14 @@ Genericity has two independent parts — being a filter, and meeting every dense
 Prove it.
 Split the goal with `refine ⟨h.isFilter, ?_⟩` to reuse the filter half untouched, then route each dense set of $`ℰ` into $`𝒟` through the inclusion before `IsGeneric.meets` closes it.
 
+:::exercise
 ```lean
 example (P : Type*) [Preorder P] {𝒟 ℰ : Set (Set P)} {G : Set P}
     (h : Forcing.IsGeneric 𝒟 G) (hsub : ℰ ⊆ 𝒟) :
     Forcing.IsGeneric ℰ G := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -587,11 +593,13 @@ Accessibility is not merely a certificate; it _is_ the induction principle.
 Derive rank induction itself: to prove a predicate `C` holds everywhere, it is enough to prove `C x` from the assumption that `C y` holds for every `y < x`.
 Recurse on the accessibility proof of `a` with `induction … with | intro x _ IH`; the `intro` case hands you exactly the "for every smaller `y`" hypothesis the step consumes.
 
+:::exercise
 ```lean
 example (α : Type*) [Preorder α] [WellFoundedLT α] {C : α → Prop}
     (ih : ∀ x, (∀ y, y < x → C y) → C x) (a : α) : C a := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

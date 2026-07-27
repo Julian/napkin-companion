@@ -275,10 +275,12 @@ example : ℵ₁ ≤ 𝔠 := aleph_one_le_continuum
 Cantor's theorem lurks underneath: the continuum is not merely $`\ge \aleph_1` but strictly larger than $`\aleph_0` itself.
 Prove $`\aleph_0 < \mathfrak{c}` by chaining the strict step $`\aleph_0 < \aleph_1` (`aleph0_lt_aleph_one`) through the worked bound above with `LT.lt.trans_le`.
 
+:::exercise
 ```lean
 example : ℵ₀ < 𝔠 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -301,10 +303,12 @@ The branches themselves are the functions $`\omega \to 2`, of which there are ag
 Show that the type of binary branches has size continuum.
 Rewriting with `mk_arrow` turns the goal into a cardinal power that `simp` closes.
 
+:::exercise
 ```lean
 example : #(ℕ → Bool) = 𝔠 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -325,10 +329,12 @@ example (c : Cardinal) : c < ℵ₁ ↔ c ≤ ℵ₀ := lt_aleph_one_iff
 Rephrase this as the statement that a set is countable exactly when its cardinality is below $`\aleph_1`.
 Rewriting by `lt_aleph_one_iff` and then `le_aleph0_iff_set_countable` finishes it.
 
+:::exercise
 ```lean
 example {α : Type} (s : Set α) : s.Countable ↔ #s < ℵ₁ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -352,10 +358,12 @@ The forcing above adds $`\aleph_2` many reals and needs $`\aleph_2` to survive a
 Since $`\aleph_2 = \aleph_{1+1}` is a successor aleph, show that it is regular.
 Rewriting `2` as `1 + 1` (with `one_add_one_eq_two`) lets `isRegular_aleph_add_one` apply.
 
+:::exercise
 ```lean
 example : Cardinal.IsRegular (aleph 2) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -435,10 +443,12 @@ Below the cardinal level, the argument uses only that the antichain $`\{ p_\alph
 Show that any cardinal which is not at most $`\aleph_0` is at least $`\aleph_1`.
 Turning `¬ c ≤ ℵ₀` around with `not_lt` and `lt_aleph_one_iff` gives exactly this.
 
+:::exercise
 ```lean
 example (c : Cardinal) (h : ¬ c ≤ ℵ₀) : ℵ₁ ≤ c := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -457,10 +467,12 @@ example {κ : Type} (p : CohenAdd κ) : p ≤ ⊤ := le_top
 One consequence is that the top condition is compatible with *everything*: it commits to nothing, so it can never conflict.
 Prove `Forcing.Compatible p ⊤` for any condition `p` by unfolding compatibility (`∃ r, r ≤ p ∧ r ≤ ⊤`) and offering `p` itself as the common refinement — `le_refl p` on one side and the `le_top` above on the other.
 
+:::exercise
 ```lean
 example {κ : Type} (p : CohenAdd κ) : Forcing.Compatible p ⊤ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -482,11 +494,13 @@ example {α : Type} [DecidableEq α] (S : DeltaSystem α Bool) :
 "Inside *every* set" means inside both at once for a `Bool`-indexed system.
 Prove the conjunction `S.root ⊆ S.sets true ∧ S.root ⊆ S.sets false` by supplying the pair, invoking `root_subset` a second time with the opposite inequality `false ≠ true`.
 
+:::exercise
 ```lean
 example {α : Type} [DecidableEq α] (S : DeltaSystem α Bool) :
     S.root ⊆ S.sets true ∧ S.root ⊆ S.sets false := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

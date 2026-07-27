@@ -330,6 +330,7 @@ example {α : Type*} [MeasurableSpace α] (f : ℕ → α → ℝ)
 These two facts together settle the earlier claim that a pointwise *limit* of measurable functions is again measurable: a convergent sequence has its limit equal to its own $`\liminf` (`Filter.Tendsto.liminf_eq`), so measurability transfers along that equation.
 Prove that if $`f_n \to g` pointwise then $`g` is measurable — rewrite $`g` as the pointwise $`\liminf` (`funext` together with `Filter.Tendsto.liminf_eq`), then close with `Measurable.liminf`.
 
+:::exercise (chili := 1)
 ```lean
 example {α : Type*} [MeasurableSpace α] (f : ℕ → α → ℝ) (g : α → ℝ)
     (hf : ∀ n, Measurable (f n))
@@ -337,6 +338,7 @@ example {α : Type*} [MeasurableSpace α] (f : ℕ → α → ℝ) (g : α → �
     Measurable g := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -368,6 +370,7 @@ The preliminary version of Fatou's lemma is the special case where the sequence 
 Given nonnegative measurable $`F_n` converging pointwise to $`f`, derive $`\int f \; d\mu \leq \liminf_n \int F_n \; d\mu` from the $`\liminf` form above.
 (Rewrite $`f` as the pointwise $`\liminf` using `Filter.Tendsto.liminf_eq`.)
 
+:::exercise (chili := 1)
 ```lean
 example {α : Type*} [MeasurableSpace α] (μ : MeasureTheory.Measure α)
     (f : α → ENNReal) (F : ℕ → α → ENNReal) (hF : ∀ n, Measurable (F n))
@@ -375,6 +378,7 @@ example {α : Type*} [MeasurableSpace α] (μ : MeasureTheory.Measure α)
     ∫⁻ x, f x ∂μ ≤ Filter.liminf (fun n => ∫⁻ x, F n x ∂μ) Filter.atTop := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -416,11 +420,13 @@ example {α : Type*} [MeasurableSpace α] (μ : MeasureTheory.Measure α)
 The problems ask you to inspect the sequence $`f_n = n \cdot \mathbf{1}_{(0, 1/n)}`, whose integrals stay equal to $`1` even as $`f_n \to 0` pointwise — so the interchange fails.
 Compute the offending integral: over the interval $`(0, 1/n)`, the integral of the constant $`n` is $`1`.
 
+:::exercise (chili := 1)
 ```lean
 example (n : ℕ) (hn : 0 < n) :
     ∫⁻ _x in Set.Ioo (0 : ℝ) (1 / n), (n : ENNReal) ∂volume = 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -462,6 +468,7 @@ But the swap is not magic: it routes through the single joint integral over the 
 Prove the two iterated orders agree by assembling that route yourself, without reaching for the packaged swap lemma.
 `MeasureTheory.lintegral_lintegral` rewrites the first order as the joint integral $`\int f \; d(\mu \times \nu)`, and `MeasureTheory.lintegral_prod_symm` re-expresses that same joint integral as the *reversed* iterated order.
 
+:::exercise
 ```lean
 example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
     {μ : MeasureTheory.Measure α} {ν : MeasureTheory.Measure β}
@@ -470,6 +477,7 @@ example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
     ∫⁻ x, ∫⁻ y, f x y ∂ν ∂μ = ∫⁻ y, ∫⁻ x, f x y ∂μ ∂ν := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

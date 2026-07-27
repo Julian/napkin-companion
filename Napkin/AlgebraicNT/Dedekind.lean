@@ -586,10 +586,12 @@ Addition is the other half of the story: it is the join, and it behaves like a $
 Since $`\gcd(2, 3) = 1`, the sum $`(2) + (3)` should be all of $`\mathbb{Z}`.
 Prove it by exhibiting $`1`: rewrite the goal to $`1 \in (2) + (3)` (`Ideal.eq_top_iff_one`), pass to the join (`Ideal.add_eq_sup`), and note $`1 = 3 - 2` is a difference of two generators (`Ideal.mem_sup_left`, `Ideal.mem_sup_right`, `Ideal.mem_span_singleton_self`, `sub_mem`).
 
+:::exercise
 ```lean
 example : Ideal.span {(2 : ℤ)} + Ideal.span {(3 : ℤ)} = ⊤ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -631,12 +633,14 @@ It is worth seeing what has moved: in the flavors-of-rings chapter the same stat
 That coincidence is precisely what fails in a ring of integers, and the Dedekind condition buys it back one level up — for ideals rather than elements.
 Given a nonzero `IsPrime` ideal dividing a product, deduce it divides a factor: convert to the divisibility-sense `Prime` (the `.mpr` of the equivalence above), whose defining property is exactly `Prime.dvd_or_dvd`.
 
+:::exercise
 ```lean
 example (A : Type*) [CommRing A] [IsDedekindDomain A] {p a b : Ideal A}
     (hp : p ≠ ⊥) (hpp : p.IsPrime) (h : p ∣ a * b) :
     p ∣ a ∨ p ∣ b := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -697,11 +701,13 @@ example (A : Type*) [CommRing A] [IsDedekindDomain A] {I : Ideal A} :
 Chaining this with the earlier `Ideal.prime_iff_isPrime` closes a small loop: an irreducible ideal is automatically `IsPrime`.
 Prove it by walking the two equivalences in turn — `irreducible_iff_prime` gives a divisibility-sense `Prime`, which is nonzero (`Prime.ne_zero`), and `prime_iff_isPrime` then converts it to `IsPrime`.
 
+:::exercise
 ```lean
 example (A : Type*) [CommRing A] [IsDedekindDomain A] {I : Ideal A}
     (h : Irreducible I) : I.IsPrime := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -721,12 +727,14 @@ The algorithm asked you to factor $`(29)` in $`\mathbb{Z}[i]`.
 Since $`29 = (5+2i)(5-2i)` and both factors are prime, this is the splitting $`(29) = (5+2i)(5-2i)`.
 Verify the ideal identity, writing $`5 + 2i` as `⟨5, 2⟩` in Mathlib's `GaussianInt`.
 
+:::exercise
 ```lean
 example :
     Ideal.span {(⟨5, 2⟩ : GaussianInt)} * Ideal.span {(⟨5, -2⟩ : GaussianInt)}
       = Ideal.span {(29 : GaussianInt)} := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -756,6 +764,7 @@ Having inverses is exactly what lets you cancel a common nonzero factor.
 Prove the left-cancellation law: if $`J X = J Y` with $`J \neq 0`, then $`X = Y`.
 Multiply the hypothesis on the left by $`J^{-1}`, reassociate, and collapse $`J^{-1} J` to $`1` with `inv_mul_cancel₀`.
 
+:::exercise
 ```lean
 example (A : Type*) [CommRing A] [IsDedekindDomain A]
     (K : Type*) [Field K] [Algebra A K] [IsFractionRing A K]
@@ -763,6 +772,7 @@ example (A : Type*) [CommRing A] [IsDedekindDomain A]
     (h : J * X = J * Y) : X = Y := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -800,11 +810,13 @@ example (S : Type*) [CommRing S] [IsDedekindDomain S] [Module.Free ℤ S]
 Combine that with multiplicativity to see how norm one propagates through a product.
 Show that if $`\operatorname{N}(\mathfrak{a}\mathfrak{b}) = 1` then $`\mathfrak{a} = \top`: push the norm through the product (`map_mul`), so $`\operatorname{N}(\mathfrak{a})` divides $`1` in $`\mathbb{N}` (`Nat.dvd_one`), hence is $`1`, and feed that back through the characterization above.
 
+:::exercise
 ```lean
 example (S : Type*) [CommRing S] [IsDedekindDomain S] [Module.Free ℤ S]
     {I J : Ideal S} (h : Ideal.absNorm (I * J) = 1) : I = ⊤ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

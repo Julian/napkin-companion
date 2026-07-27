@@ -458,12 +458,14 @@ To see the shape of a real argument, combine that with the sum rule.
 If $`f` and $`g` are each differentiable at $`p`, then their sum is continuous at $`p`.
 Glue the two derivatives with `HasDerivAt.add`, which reports that the sum is again differentiable, then read off continuity with `HasDerivAt.continuousAt`.
 
+:::exercise
 ```lean
 example (f g : ℝ → ℝ) (f' g' p : ℝ) (hf : HasDerivAt f f' p)
     (hg : HasDerivAt g g' p) :
     ContinuousAt (fun x => f x + g x) p := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -521,11 +523,13 @@ example (x : ℝ) :
 
 Now do the cubic the same way.
 
+:::exercise (chili := 1)
 ```lean
 example (x : ℝ) :
     HasDerivAt (fun x : ℝ => x^3 + 10*x^2 + 2019) (3*x^2 + 20*x) x := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -565,11 +569,13 @@ Fermat's theorem on stationary points is itself worth assembling in the chapter'
 Given `HasDerivAt f f' p` and that $`p` is a local maximum, show the recorded slope $`f'` vanishes.
 The bridge is `HasDerivAt.deriv`, which pins `deriv f p = f'`; rewrite the goal along it to turn $`f'` into `deriv f p`, and then `IsLocalMax.deriv_eq_zero` closes it.
 
+:::exercise
 ```lean
 example (f : ℝ → ℝ) (f' p : ℝ) (h : IsLocalMax f p)
     (hd : HasDerivAt f f' p) : f' = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -605,6 +611,7 @@ That Rolle is genuinely the flat special case of the mean value theorem is worth
 Feed the pointwise-derivative hypotheses to `exists_hasDerivAt_eq_slope`, which hands you a $`c` where $`f'(c)` equals the secant slope $`\frac{f(b) - f(a)}{b - a}`; then use $`f(a) = f(b)` to collapse that slope to $`0`.
 After `obtain`ing the point, the rewrite `rw [hslope, hfI, sub_self, zero_div]` walks the numerator down to zero.
 
+:::exercise
 ```lean
 example (f f' : ℝ → ℝ) (a b : ℝ) (hab : a < b)
     (hfc : ContinuousOn f (Set.Icc a b))
@@ -612,6 +619,7 @@ example (f f' : ℝ → ℝ) (a b : ℝ) (hab : a < b)
     (hfI : f a = f b) : ∃ c ∈ Set.Ioo a b, f' c = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -652,11 +660,13 @@ example : ¬ DifferentiableAt ℝ (fun x : ℝ => |x|) 0 :=
 Now upgrade that single-point failure into the full claim that $`|x|` is not smooth.
 Assume `ContDiff ℝ ∞`, extract differentiability everywhere with `ContDiff.differentiable` (whose side goal $`\infty \neq 0` is arithmetic), specialize it at $`0` via `Differentiable.differentiableAt`, and feed the result to the model fact above for the contradiction.
 
+:::exercise
 ```lean
 open scoped ContDiff in
 example : ¬ ContDiff ℝ ∞ (fun x : ℝ => |x|) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

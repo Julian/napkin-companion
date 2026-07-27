@@ -494,10 +494,12 @@ recall intervalIntegral.integral_eq_sub_of_hasDerivAt
 As a concrete instance, integrating $`x` (the derivative of $`\tfrac12 x^2`) over $`[0, 1]` gives $`\tfrac12`.
 Reach for `integral_id`, which evaluates $`\int_a^b x \; dx = \tfrac{b^2 - a^2}{2}`, and let a `norm_num` mop up the arithmetic.
 
+:::exercise
 ```lean
 example : ∫ x in (0:ℝ)..1, x = 1/2 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -526,12 +528,14 @@ recall AlternatingMap.compLinearMap_apply
 The pullback along the identity map does nothing to a form — the degenerate case of naturality $`\phi_1^\ast (\phi_2^\ast \alpha) = (\phi_2 \circ \phi_1)^\ast \alpha`.
 Prove it: composing an alternating form with the identity linear map returns the same form.
 
+:::exercise
 ```lean
 example {R M N ι : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     [AddCommMonoid N] [Module R N] (f : M [⋀^ι]→ₗ[R] N) :
     f.compLinearMap LinearMap.id = f := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -552,11 +556,13 @@ The "Area of a circle" example computed $`\int_c \alpha = \int_0^{2\pi} \int_0^R
 Verify that iterated integral.
 The inner $`\int_0^R r \; dr` is `integral_id` again (giving $`\tfrac{R^2}{2}`), and the outer integral of that constant in $`\theta` is `intervalIntegral.integral_const`; `simp only` with those two lemmas plus `smul_eq_mul` leaves a `ring` identity.
 
+:::exercise
 ```lean
 example (R : ℝ) : ∫ _θ in (0:ℝ)..(2*Real.pi), ∫ r in (0:ℝ)..R, r
     = Real.pi * R^2 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -594,11 +600,13 @@ example {X : Type*} {n : ℕ} (c : Chain X (n + 2)) :
 Read the other way, $`\partial^2 = 0` says *every boundary is a cycle*: anything of the shape $`\partial d` is killed by a further $`\partial`.
 Prove it — given a chain $`c` that is itself a boundary, $`c = \partial d`, show $`\partial c = 0` — by rewriting along the hypothesis and closing with $`\partial^2 = 0` above.
 
+:::exercise
 ```lean
 example {X : Type*} {n : ℕ} (d : Chain X (n + 3)) (c : Chain X (n + 2))
     (hc : c = boundary d) : boundary c = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -621,11 +629,13 @@ example {X : Type*} {n : ℕ} (c₁ c₂ : Chain X (n + 1)) :
 The text's full rule $`\partial(\sum a_i c_i) = \sum a_i \partial c_i` bundles that additivity with compatibility with integer scaling.
 Prove the two-term case, $`\partial(a c_1 + c_2) = a \partial c_1 + \partial c_2`, by distributing over the sum (`map_add`) and pulling the scalar out (`map_zsmul`), the two properties of a $`\mathbb{Z}`-linear map.
 
+:::exercise
 ```lean
 example {X : Type*} {n : ℕ} (a : ℤ) (c₁ c₂ : Chain X (n + 1)) :
     boundary (a • c₁ + c₂) = a • boundary c₁ + boundary c₂ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -648,11 +658,13 @@ example (g : ℕ → ℝ) (n : ℕ) :
 Put it to work on a concrete sum: with $`g(i) = i^2` every interior term cancels and only the endpoints $`g(n) - g(0) = n^2 - 0` survive.
 Prove $`\sum_{i<n} \left((i+1)^2 - i^2\right) = n^2` by instantiating the telescoping identity at $`g(i) = i^2` and letting `simp` clear the vanishing $`g(0)` term.
 
+:::exercise
 ```lean
 example (n : ℕ) : ∑ i ∈ Finset.range n,
     (((i + 1 : ℕ) : ℝ) ^ 2 - ((i : ℕ) : ℝ) ^ 2) = (n : ℝ) ^ 2 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -674,10 +686,12 @@ The prototype case is the fundamental theorem of calculus on $`[a, b]`, where $`
 Confirm that integrating the constant $`1`-form (i.e. $`dx`) over $`[a, b]` gives $`b - a`.
 The finisher is `intervalIntegral.integral_const`, which gives $`\int_a^b c \; dx = (b - a) \cdot c`; here $`c = 1`, so `smul_eq_mul` and `mul_one` finish it.
 
+:::exercise
 ```lean
 example (a b : ℝ) : ∫ _x in a..b, (1:ℝ) = b - a := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -693,10 +707,12 @@ The flux hack identifies $`\mathbf{F}` with a $`2`-form using the star map $`\ma
 Verify that instance of the cross product.
 Since both sides are functions `Fin 3 → ℝ`, take an `ext i`, split the three coordinates with `fin_cases i`, and let `simp [crossProduct]` unfold the definition and compute each entry.
 
+:::exercise
 ```lean
 example : crossProduct (![1,0,0] : Fin 3 → ℝ) ![0,1,0] = ![0,0,1] := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

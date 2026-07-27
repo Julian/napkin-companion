@@ -128,11 +128,13 @@ That one-liner hides the actual reason the isomorphism exists, so build it by ha
 Lift each apex through the other's universality (`hc'.lift c` and `hc.lift c`, using {name}`CategoryTheory.Limits.IsLimit.lift`) to get the two comparison maps.
 Each round-trip is a map from a universal fork to itself, and a map into a limit is pinned down by its composites with the legs: {name}`CategoryTheory.Limits.IsLimit.hom_ext` reduces the two `id` goals leg-by-leg, where {name}`CategoryTheory.Limits.IsLimit.fac` (a `simp` lemma) recovers each leg from the lift that built it.
 
+:::exercise
 ```lean
 example {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y)
     (c c' : Fork f g) (hc : IsLimit c) (hc' : IsLimit c') : c.pt ≅ c'.pt := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -164,11 +166,13 @@ Unfold `Mono` with `constructor` and it asks exactly for cancellation: two maps 
 That is the uniqueness half of the universal property, `CategoryTheory.Limits.Fork.IsLimit.hom_ext`: a map *into* a universal fork is pinned down by its composite with the single leg, so agreeing there is agreeing.
 Notice that nothing about equalizers as such is used — the same argument shows any limit leg is monic in the corresponding sense.
 
+:::exercise
 ```lean
 example {C : Type*} [Category C] {X Y : C} {f g : X ⟶ Y}
     (c : Fork f g) (hc : IsLimit c) : Mono (Fork.ι c) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -200,6 +204,7 @@ Those two facts *are* the pullback, in the following sense: any other commuting 
 Prove the existence half, which is what earns $`X \times_Z Y` its name.
 Given $`h \colon W \to X` and $`k \colon W \to Y` whose composites into $`Z` agree, `pullback.lift` produces the comparison map, and `pullback.lift_fst` and `pullback.lift_snd` say it really does restrict to $`h` and $`k` — so the proof is one anonymous constructor supplying a witness together with its two properties.
 
+:::exercise
 ```lean
 example {C : Type*} [Category C] {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
     [HasPullback f g] (h : W ⟶ X) (k : W ⟶ Y) (w : h ≫ f = k ≫ g) :
@@ -207,6 +212,7 @@ example {C : Type*} [Category C] {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
       u ≫ pullback.fst f g = h ∧ u ≫ pullback.snd f g = k := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -238,12 +244,14 @@ Prove the uniqueness move in its general form: two maps into a limit that agree 
 The single ingredient is {name}`CategoryTheory.Limits.IsLimit.hom_ext`, and the legs of a cone `c` are `c.π.app j`, one for each object `j` of the indexing category.
 Having this, re-read the equalizer proofs above: `Fork.IsLimit.hom_ext` is this lemma specialised to a two-object indexing category, where checking "every leg" collapses to checking one.
 
+:::exercise
 ```lean
 example {J C : Type*} [Category J] [Category C] (F : J ⥤ C) (c : Cone F)
     (hc : IsLimit c) {W : C} (u v : W ⟶ c.pt)
     (h : ∀ j, u ≫ c.π.app j = v ≫ c.π.app j) : u = v := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

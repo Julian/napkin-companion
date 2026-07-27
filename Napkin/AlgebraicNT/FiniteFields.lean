@@ -313,10 +313,12 @@ Put that count to work.
 A prime is at least $`2`, so the base field has more than one element — enough to know it is not the trivial one-element ring.
 Prove `Nontrivial (ZMod p)` by first upgrading `ZMod.card` and the primality hypothesis into `1 < Fintype.card (ZMod p)`, then reading off `Fintype.one_lt_card_iff_nontrivial`.
 
+:::exercise
 ```lean
 example (p : ℕ) [Fact p.Prime] : Nontrivial (ZMod p) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -353,11 +355,13 @@ example (F : Type*) [CommRing F] (p : ℕ) [Fact p.Prime] [CharP F p]
 The dream is worth more once you iterate it.
 Convince yourself the proof really goes through by extending it to three summands: the outer sum $`(a+b)+c` splits first, then the inner $`a+b`, so *two* applications of `add_pow_char` — rewriting left to right — reach $`a^p + b^p + c^p`.
 
+:::exercise
 ```lean
 example (F : Type*) [CommRing F] (p : ℕ) [Fact p.Prime] [CharP F p]
     (a b c : F) : (a + b + c) ^ p = a ^ p + b ^ p + c ^ p := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -398,10 +402,12 @@ That statement is not magic — it is the proof from the text, which splits on w
 Reconstruct it from the group-theoretic core `ZMod.pow_card_sub_one_eq_one` (the nonzero case, "$`x^{p-1}=1`").
 Case-split with `rcases eq_or_ne x 0`; the zero branch is `zero_pow` (a prime exponent is nonzero), and the nonzero branch factors $`x^p = x^{p-1} \cdot x` — that is `pow_succ` after rewriting $`p = (p-1)+1` with `Nat.sub_add_cancel`.
 
+:::exercise (chili := 1)
 ```lean
 example (p : ℕ) [Fact p.Prime] (x : ZMod p) : x ^ p = x := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -436,11 +442,13 @@ Additivity is what powers the real work of this section: the injectivity argumen
 Reproduce it over a domain of characteristic $`p`.
 The freshman's dream in subtraction form is `sub_pow_char`, which turns the hypothesis into $`(x-y)^p = 0`; then `pow_eq_zero_iff` (a prime exponent is nonzero) collapses it to $`x - y = 0`, and `sub_eq_zero` finishes.
 
+:::exercise
 ```lean
 example (F : Type*) [CommRing F] [IsDomain F] (p : ℕ) [Fact p.Prime]
     [CharP F p] (x y : F) (h : x ^ p = y ^ p) : x = y := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -470,11 +478,13 @@ The proposition itself is the instance `IsCyclic Kˣ`, and cyclic means a single
 Make that concrete: produce a generator whose order is $`\left\lvert F \right\rvert - 1`, the full size of $`F^\times`.
 Pull a generator from `IsCyclic.exists_generator`, turn "generates" into an order equality with `orderOf_eq_card_of_forall_mem_zpowers`, and rewrite the unit count with `Fintype.card_units`.
 
+:::exercise (chili := 1)
 ```lean
 example (K : Type*) [Field K] [Fintype K] :
     ∃ g : Kˣ, orderOf g = Fintype.card K - 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

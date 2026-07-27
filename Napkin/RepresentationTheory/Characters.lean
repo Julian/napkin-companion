@@ -320,11 +320,13 @@ example {k G : Type*} [Field k] [Monoid G] (V W : FDRep k G) (i : V ≅ W) :
 One invariant falls straight out of this: isomorphic representations have the same dimension, read as a scalar in `k`.
 Prove it by reading the dimension off the character — `FDRep.char_one` rewrites `(Module.finrank k V : k)` back into `V.character 1`, on each side — and then collapsing the two characters against one another with `FDRep.char_iso i`.
 
+:::exercise
 ```lean
 example {k G : Type*} [Field k] [Monoid G] (V W : FDRep k G) (i : V ≅ W) :
     (Module.finrank k V : k) = (Module.finrank k W : k) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -353,11 +355,13 @@ The question asked you to deduce that a character takes the same value on conjug
 Mathlib's `IsConj g h` is exactly the statement that $`g` and $`h` are conjugate; show that the character then agrees on them.
 Unpack `IsConj g h` with `isConj_iff` to obtain a conjugator `c` with `c * g * c⁻¹ = h`, then finish with `FDRep.char_conj`.
 
+:::exercise
 ```lean
 example {k G : Type*} [Field k] [Group G] (V : FDRep k G) (g h : G)
     (hc : IsConj g h) : V.character g = V.character h := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -402,6 +406,7 @@ example {k G : Type*} [Field k] [IsAlgClosed k] [Group G] [Fintype G]
 The orthogonality relation gives a mechanical irreducibility test: an irrep has norm $`1`, i.e. $`\langle \chi_V, \chi_V \rangle = 1`.
 Specialize `FDRep.char_orthonormal` to $`W = V`, then discharge the resulting `if` with `if_pos ⟨Iso.refl V⟩` — since $`V ≅ V` — to confirm it.
 
+:::exercise
 ```lean
 example {k G : Type*} [Field k] [IsAlgClosed k] [Group G] [Fintype G]
     [Invertible (Fintype.card G : k)] (V : FDRep k G) [Simple V] :
@@ -409,6 +414,7 @@ example {k G : Type*} [Field k] [IsAlgClosed k] [Group G] [Fintype G]
       (1 : k) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

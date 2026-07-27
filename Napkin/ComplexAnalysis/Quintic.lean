@@ -191,11 +191,13 @@ Show that a commutator $`xyx^{-1}y^{-1}` becomes trivial downstairs.
 From there commutativity is the whole content: swapping the first two letters with `mul_comm` puts each generator next to its own inverse, and the two cancellations (`mul_inv_cancel_right`, then `mul_inv_cancel`) finish.
 Doing it in that order is worth the effort, because it shows precisely which step needs the target to be abelian.
 
+:::exercise
 ```lean
 example (G : Type*) [Group G] (x y : G) :
     Abelianization.of (x * y * x⁻¹ * y⁻¹) = 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -214,10 +216,12 @@ Abelian groups are the base case: their derived series dies immediately, at step
 Prove that version of the statement.
 Unfold with `isSolvable_def` and supply the witness `n = 1`; what makes `n = 1` work is `derivedSeries_one`, which says the first step of the derived series is the commutator subgroup.
 
+:::exercise
 ```lean
 example (G : Type*) [Group G] (h : commutator G = ⊥) : IsSolvable G := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -236,11 +240,13 @@ That dichotomy is `IsSimpleGroup.comm_iff_isSolvable` (in `Mathlib.GroupTheory.S
 Turn it into an unsolvability criterion: a simple group with even one pair of non-commuting elements cannot be solvable.
 The contrapositive is the whole proof — assume solvability, feed it to the equivalence to learn that $`x` and $`y` commute, and contradict the hypothesis.
 
+:::exercise
 ```lean
 example (G : Type*) [Group G] [IsSimpleGroup G] (x y : G)
     (hxy : x * y ≠ y * x) : ¬ IsSolvable G := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -255,10 +261,12 @@ The corresponding Mathlib statement for the *alternating* group is `alternatingG
 Register that as an instance with `haveI` — it takes the hypothesis $`5 \geq 5`, which `simp` discharges — and then, rather than exhibiting a non-commuting pair by hand, rewrite backwards along the equivalence above and let `decide` search the (finite!) group for one.
 Show that $`A_5` is not solvable.
 
+:::exercise (chili := 1)
 ```lean
 example : ¬ IsSolvable (alternatingGroup (Fin 5)) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

@@ -543,10 +543,12 @@ example (C D : Type*) [Category C] [Category D] :
 The question asked you to check that no two distinct objects of a poset are isomorphic.
 An isomorphism supplies arrows both ways, hence `x ≤ y` and `y ≤ x`; antisymmetry then forces equality.
 
+:::exercise
 ```lean
 example (P : Type*) [PartialOrder P] (x y : P) (f : x ≅ y) : x = y := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -585,11 +587,13 @@ But `uniqueUpToIso` is not magic; assemble the isomorphism yourself to see why i
 An initial object supplies a canonical arrow to every object — `IsInitial.to` — and `IsInitial.hom_ext` records that any two arrows *out of* an initial object coincide.
 Build `I₁ ≅ I₂` by hand: the crossing arrows `h₁.to I₂` and `h₂.to I₁` serve as `hom` and `inv`, and each round-trip is an arrow out of an initial object, hence forced to be the identity by `hom_ext`.
 
+:::exercise (chili := 1)
 ```lean
 example (C : Type*) [Category C] {I₁ I₂ : C}
     (h₁ : IsInitial I₁) (h₂ : IsInitial I₂) : I₁ ≅ I₂ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -628,12 +632,14 @@ noncomputable example (C : Type*) [Category C] [HasBinaryProducts C]
 Underneath such constructions is the universal property: a pair of arrows $`A \xrightarrow{f} X` and $`A \xrightarrow{g} Y` assembles into a single arrow $`A \to X \times Y`, namely `prod.lift f g`, and composing it back with the projections recovers the two pieces.
 Prove that defining property — `prod.lift_fst` and `prod.lift_snd` are the two halves — and hand back the conjunction.
 
+:::exercise
 ```lean
 noncomputable example (C : Type*) [Category C] {X Y A : C}
     [HasBinaryProduct X Y] (f : A ⟶ X) (g : A ⟶ Y) :
     prod.lift f g ≫ prod.fst = f ∧ prod.lift f g ≫ prod.snd = g := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -661,11 +667,13 @@ The question asked you to show that the composition of two monic maps is monic �
 Prove it from the cancellation property instead, exercising the worked model above.
 To see `f ≫ g` is mono, take `p ≫ (f ≫ g) = q ≫ (f ≫ g)`, reassociate (`Category.assoc`) to expose the outer `g`, cancel it (`cancel_mono g`), then cancel the exposed `f` (`cancel_mono f`).
 
+:::exercise (chili := 1)
 ```lean
 example (C : Type*) [Category C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
     [Mono f] [Mono g] : Mono (f ≫ g) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

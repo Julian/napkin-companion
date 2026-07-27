@@ -356,10 +356,12 @@ example {X : Type*} (f : X → Set X) : ¬ Function.Surjective f :=
 Now reconstruct the injective statement from the surjective one, following the proof's "just invert $`\iota`" step.
 A left inverse of an injection is a surjection (`Function.invFun_surjective`), so `Function.invFun ι` surjects $`X` onto $`\mathcal{P}(X)` — which `Function.cantor_surjective` forbids.
 
+:::exercise
 ```lean
 example {X : Type*} (ι : Set X → X) : ¬ Function.Injective ι := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -389,10 +391,12 @@ example (x y : ZFSet) (h : ∀ z : ZFSet, z ∈ x ↔ z ∈ y) : x = y :=
 Put extensionality to work on a concrete equality: the pair $`\{x, x\}` collapses to the singleton $`\{x\}`.
 Apply `ZFSet.ext`, then reduce each side with its membership lemma — `ZFSet.mem_pair` turns $`z \in \{x, x\}` into $`z = x \lor z = x`, `ZFSet.mem_singleton` turns $`z \in \{x\}` into $`z = x`, and `or_self` closes the gap between them.
 
+:::exercise
 ```lean
 example (x : ZFSet) : ({x, x} : ZFSet) = {x} := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -437,10 +441,12 @@ Foundation forbids more than a set literally being its own element: it also rule
 Suppose $`x = \{x\}`.
 Then $`x \in \{x\}` (by `ZFSet.mem_singleton`), and rewriting $`\{x\}` back to $`x` puts $`x \in x`, which `ZFSet.mem_irrefl` refutes.
 
+:::exercise
 ```lean
 example (x : ZFSet) (h : x = {x}) : False := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -472,10 +478,12 @@ example (x y a b : ZFSet) :
 A consequence worth extracting: a pair equals its own reversal only when both slots already agree.
 Rewrite with `ZFSet.pair_inj` to turn the goal into $`(x = y \land y = x) \iff x = y`, then supply each direction — forward is the first component, backward pairs $`x = y` with its `symm`.
 
+:::exercise
 ```lean
 example (x y : ZFSet) : ZFSet.pair x y = ZFSet.pair y x ↔ x = y := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -507,11 +515,13 @@ Well-foundedness is exactly what lets us "pick minimal elements", the property t
 Deduce it: every nonempty subset $`s` has an element $`m` with nothing in $`s` strictly below it.
 The `WellFounded` proof above carries the method `WellFounded.has_min`, which takes the set and a proof it is nonempty and hands back such a minimal $`m`.
 
+:::exercise
 ```lean
 example (α : Type*) (s : Set α) (hs : s.Nonempty) :
     ∃ m ∈ s, ∀ y ∈ s, ¬ WellOrderingRel y m := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -543,10 +553,12 @@ The proof of this is that a set of all sets would contain itself, contradicting 
 Run that argument directly at the `ZFSet` level: show no set $`u` has *every* set as a member.
 Assume one did (`rintro ⟨u, hu⟩`); then $`u` is among its own members (`hu u`), and `ZFSet.mem_irrefl` closes it out.
 
+:::exercise
 ```lean
 example : ¬ ∃ u : ZFSet, ∀ x : ZFSet, x ∈ u := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

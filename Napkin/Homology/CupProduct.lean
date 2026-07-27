@@ -615,12 +615,14 @@ example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (m : M) :
 
 Show that two degree-one generators anticommute, i.e. $`\iota(x) \wedge \iota(y) = -\iota(y) \wedge \iota(x)`.
 
+:::exercise
 ```lean
 example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (x y : M) :
     ExteriorAlgebra.ι R x * ExteriorAlgebra.ι R y
       = -(ExteriorAlgebra.ι R y * ExteriorAlgebra.ι R x) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -688,6 +690,7 @@ example {X R : Type*} [CommRing R] {p q : ℕ}
 With both one-sided laws in hand the cup product is fully bilinear, so a sum in each argument expands like a product of two binomials into four terms.
 Prove that expansion: `cup_add_left` splits the left argument, `cup_add_right` splits each of the two resulting right arguments, and `abel` reassociates the four cups.
 
+:::exercise
 ```lean
 example {X R : Type*} [CommRing R] {p q : ℕ}
     (a₁ a₂ : Cochain X R p) (b₁ b₂ : Cochain X R q) :
@@ -695,6 +698,7 @@ example {X R : Type*} [CommRing R] {p q : ℕ}
       = cup a₁ b₁ + cup a₁ b₂ + cup a₂ b₁ + cup a₂ b₂ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -719,11 +723,13 @@ example {X R : Type*} [CommRing R] {p q : ℕ} (a : Cochain X R p) :
 But this already follows from additivity alone, for the same reason $`r \cdot 0 = 0` holds in any ring.
 Prove it without invoking `cup_zero_right`: rewrite one `0` as `0 + 0` and apply `cup_add_right` to reach `cup a 0 = cup a 0 + cup a 0`, an equation forcing `cup a 0 = 0`, since only `0` equals its own double.
 
+:::exercise
 ```lean
 example {X R : Type*} [CommRing R] {p q : ℕ} (a : Cochain X R p) :
     cup a (0 : Cochain X R q) = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -757,11 +763,13 @@ example (R S : Type*) [CommRing R] [CommRing S] :
 That pair earns the name "identity" only if it fixes every element under multiplication.
 Prove $`(1, 1) \cdot p = p` for an arbitrary $`p`, comparing the two coordinates with `Prod.ext`; each coordinate is then `one_mul`.
 
+:::exercise
 ```lean
 example (R S : Type*) [CommRing R] [CommRing S] (p : R × S) :
     (1, 1) * p = p := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -796,6 +804,7 @@ example (R M N : Type*) [CommRing R] [AddCommGroup M] [AddCommGroup N]
 With both one-sided laws the tensor is bilinear, so a sum in each slot expands into four elementary tensors.
 Prove that expansion: `TensorProduct.add_tmul` splits the left slot, `TensorProduct.tmul_add` splits each right slot, and `abel` reassembles the four terms.
 
+:::exercise
 ```lean
 example (R M N : Type*) [CommRing R] [AddCommGroup M] [AddCommGroup N]
     [Module R M] [Module R N] (a a' : M) (b b' : N) :
@@ -803,6 +812,7 @@ example (R M N : Type*) [CommRing R] [AddCommGroup M] [AddCommGroup N]
       = a ⊗ₜ[R] b + a ⊗ₜ[R] b' + a' ⊗ₜ[R] b + a' ⊗ₜ[R] b' := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -839,12 +849,14 @@ example (R A B : Type*) [CommRing R] [CommRing A] [CommRing B]
 This is precisely the rule behind the computation separating $`\mathbb{CP}^3` from $`S^2 \times S^4`: there the degree-$`2` generator $`\beta \otimes 1` squares to zero because $`\beta^2 = 0`.
 Prove that instance — if $`\beta \cdot \beta = 0` in $`A`, then $`(\beta \otimes 1)^2 = 0` in $`A \otimes_R B` — by multiplying with the rule above, substituting $`\beta^2 = 0`, and collapsing $`0 \otimes 1` with `TensorProduct.zero_tmul`.
 
+:::exercise
 ```lean
 example (R A B : Type*) [CommRing R] [CommRing A] [CommRing B]
     [Algebra R A] [Algebra R B] (β : A) (hβ : β * β = 0) :
     (β ⊗ₜ[R] (1 : B)) * (β ⊗ₜ[R] (1 : B)) = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

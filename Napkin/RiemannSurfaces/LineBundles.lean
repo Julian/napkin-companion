@@ -354,12 +354,14 @@ example (B : Type*) [TopologicalSpace B] (x : B) :
 What makes the zero section a *section* at all is the defining property that projecting it back down recovers the identity, $`\pi \circ f = \mathrm{id}`.
 Prove it: the pointwise fact that it lands back over the point it came from is `Bundle.zeroSection_proj`, so `funext` reduces the goal to that accessor at each base point.
 
+:::exercise
 ```lean
 example (B : Type*) [TopologicalSpace B] :
     Bundle.TotalSpace.proj ∘ Bundle.zeroSection ℂ (Bundle.Trivial B ℂ)
       = id := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -385,6 +387,7 @@ example (B F Z : Type*) [TopologicalSpace B] [TopologicalSpace F]
 Put that accessor to work: two source points whose charts share a base coordinate must sit over the same base point.
 Rewrite the goal $`p z = p w` backwards through `coe_fst` at each point (`rw [← e.coe_fst hz, ← e.coe_fst hw]`), turning it into the hypothesis on the chart coordinates.
 
+:::exercise
 ```lean
 example (B F Z : Type*) [TopologicalSpace B] [TopologicalSpace F]
     [TopologicalSpace Z] (p : Z → B) (e : Bundle.Trivialization F p)
@@ -392,6 +395,7 @@ example (B F Z : Type*) [TopologicalSpace B] [TopologicalSpace F]
     (h : (e z).1 = (e w).1) : p z = p w := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -449,11 +453,13 @@ example (z : ℂˣ) : (O 1).g 1 0 z = z⁻¹ := by rw [O_one_zero]; simp
 A chart welds to itself without any twist: the self-transition $`g_{ii}` is not assumed to be $`1`, but forced to be by the cocycle law (feed it $`i = j = k`).
 Feeding those indices to `C.cocycle` gives $`g_{ii} \cdot g_{ii} = g_{ii}`, and `mul_eq_left` — the group fact $`a \cdot b = a \iff b = 1` — reads off $`g_{ii} = 1`.
 
+:::exercise
 ```lean
 example {I B : Type*} (C : LineBundleCocycle I B) (i : I) (b : B) :
     C.g i i b = 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -503,10 +509,12 @@ The prose example's fiber map multiplies by $`x^2`, and it degenerates exactly a
 Confirm that from the equivalence above: the scalar $`x^2` is a unit iff $`x \neq 0`.
 Rewrite with `isUnit_iff_ne_zero` to reduce to $`x^2 \neq 0`, then `pow_ne_zero_iff` (which needs the exponent nonzero) strips the square.
 
+:::exercise
 ```lean
 example (x : ℂ) : IsUnit (x ^ 2) ↔ x ≠ 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -551,11 +559,13 @@ example (m n : ℤ) : O m * O n = O (m + n) := O_mul_O m n
 Reversing a weld everywhere gives the inverse bundle; in the group this is the identity $`g_{ij} = g_{ji}^{-1}` once more.
 Chain the previous result: `C.cocycle j i j b` gives $`g_{ji} \cdot g_{ij} = g_{jj}`, the self-weld `C.g_self` (the fact you just proved) collapses $`g_{jj}` to $`1`, and `eq_inv_of_mul_eq_one_right` turns $`g_{ji} \cdot g_{ij} = 1` into $`g_{ij} = g_{ji}^{-1}`.
 
+:::exercise
 ```lean
 example {I B : Type*} (C : LineBundleCocycle I B) (i j : I) (b : B) :
     C.g i j b = (C.g j i b)⁻¹ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -570,10 +580,12 @@ The route is through the class group of the previous section.
 Since $`\mathbb{Z}` is a principal ideal domain, every ideal is principal, so its class group is trivial — one ideal class — and Mathlib records this as `Subsingleton (ClassGroup ℤ)`.
 Transport that triviality across `ClassGroup.equivPic ℤ`, whose underlying equivalence is `(ClassGroup.equivPic ℤ).toEquiv`: `Equiv.subsingleton` carries a `Subsingleton` backward along an equivalence, so feed it the reversed equivalence `.symm` to land the `Subsingleton` on the Picard group.
 
+:::exercise
 ```lean
 example : Subsingleton (CommRing.Pic ℤ) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

@@ -565,11 +565,13 @@ example (R : Type*) [CommRing R] (p : ℕ) [Fact p.Prime] [CharP R p]
 Additivity is not confined to two terms; it propagates to any sum.
 Prove the three-term case by applying the freshman's dream twice: `add_pow_char` first rewrites $`(x+y+z)^p` as $`(x+y)^p + z^p`, and a second rewrite breaks up the remaining $`(x+y)^p`.
 
+:::exercise
 ```lean
 example (R : Type*) [CommRing R] (p : ℕ) [Fact p.Prime] [CharP R p]
     (x y z : R) : (x + y + z) ^ p = x ^ p + y ^ p + z ^ p := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -601,11 +603,13 @@ Prove that conjugation preserves the order of a group element.
 The efficient route is to stop thinking of $`\tau \sigma \tau^{-1}` as a product and start thinking of it as the *image of $`\sigma` under an automorphism*: conjugation by $`\tau` is bundled as `MulAut.conj τ`, whose action on an element is `MulAut.conj_apply`, and any group isomorphism preserves orders (`MulEquiv.orderOf_eq`).
 Rewriting *backwards* with `MulAut.conj_apply` is what turns the goal into that shape.
 
+:::exercise
 ```lean
 example {G : Type*} [Group G] (σ τ : G) :
     orderOf (τ * σ * τ⁻¹) = orderOf σ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -654,11 +658,13 @@ example {G : Type*} [Group G] [Fintype G] (D : ChebotarevData G) :
 Because $`\left\lvert G \right\rvert > 0`, that density is *strictly positive*: totally-split primes really do occur, and so occur infinitely often.
 Prove $`0 < D.\!\operatorname{density} 1` by rewriting through `density_one` and observing $`1 / \left\lvert G \right\rvert > 0` (`div_pos`, with `Nat.card_pos` supplying the positive denominator).
 
+:::exercise
 ```lean
 example {G : Type*} [Group G] [Fintype G] (D : ChebotarevData G) :
     0 < D.density 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -676,11 +682,13 @@ Show that each density is at most $`1`.
 Rewrite with `chebotarev` to expose the quotient, and `div_le_one` (fed the positive denominator, as above) reduces the goal to a comparison of cardinalities.
 That comparison is where the mathematical content sits: a class is carried into $`G` by an injection — the coercion `Subtype.val` out of the subtype of class members — and `Nat.card_le_card_of_injective` turns an injection into an inequality of cardinalities.
 
+:::exercise
 ```lean
 example {G : Type*} [Group G] [Fintype G] (D : ChebotarevData G)
     (C : ConjClasses G) : D.density C ≤ 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -730,6 +738,7 @@ noncomputable example (A K L B : Type*) [CommRing A] [CommRing B]
 That $`\operatorname{Frob}_{\mathfrak{P}} \restriction_K` is even well-defined uses the surjectivity of the restriction map onto $`\operatorname{Gal}(K/\mathbb{Q})` when $`K/\mathbb{Q}` is normal.
 Prove that restriction to a normal intermediate field is surjective.
 
+:::exercise
 ```lean
 example (F K₁ E : Type*) [Field F] [Field K₁] [Field E] [Algebra F K₁]
     [Algebra F E] [Algebra K₁ E] [IsScalarTower F K₁ E] [Normal F K₁]
@@ -738,6 +747,7 @@ example (F K₁ E : Type*) [Field F] [Field K₁] [Field E] [Algebra F K₁]
       (AlgEquiv.restrictNormalHom K₁ : (E ≃ₐ[F] E) → (K₁ ≃ₐ[F] K₁)) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -774,10 +784,12 @@ Put the classification to work on a concrete prime.
 Since $`5 \equiv 1 \pmod 4`, the criterion predicts that $`-1` is a square mod $`5` (indeed $`2^2 = -1`).
 Prove it by supplying the `Fact` that $`5` is prime, rewriting through the classification, and discharging the residue arithmetic.
 
+:::exercise
 ```lean
 example : IsSquare (-1 : ZMod 5) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -797,12 +809,14 @@ The three patterns are three faces of that single permutation `galActionHom f K 
 The word *faithful* is itself a theorem: over a splitting field, the permutation action on the roots is injective.
 Prove it.
 
+:::exercise
 ```lean
 example (F : Type*) [Field F] (f : Polynomial F) (E : Type*) [Field E]
     [Algebra F E] [Fact ((f.map (algebraMap F E)).Splits)] :
     Function.Injective (Polynomial.Gal.galActionHom f E) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -818,11 +832,13 @@ example (F : Type*) [Field F] (f : Polynomial F) (E : Type*) [Field E]
 The solution's one non-elementary group-theoretic input — used to produce an element $`\sigma \in G` of order $`p` once $`p \mid \left\lvert G \right\rvert` — is Cauchy's theorem, `exists_prime_orderOf_dvd_card`.
 State it as an exercise.
 
+:::exercise
 ```lean
 example {G : Type*} [Group G] [Fintype G] (p : ℕ) [Fact p.Prime]
     (hdvd : p ∣ Fintype.card G) : ∃ g : G, orderOf g = p := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -845,11 +861,13 @@ example (p : ℕ) [Fact p.Prime] (hp : p ≠ 2) :
 Read the other way, the classification tells you when $`2` is a *non*-residue.
 Show that if $`p \equiv 3` or $`5 \pmod 8`, then $`2` is not a square mod $`p`: rewrite through the criterion and let `omega` see that neither residue is $`1` or $`7`.
 
+:::exercise
 ```lean
 example (p : ℕ) [Fact p.Prime] (hp : p ≠ 2)
     (h : p % 8 = 3 ∨ p % 8 = 5) : ¬ IsSquare (2 : ZMod p) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

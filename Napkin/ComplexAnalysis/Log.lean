@@ -242,10 +242,12 @@ Nothing about the argument cares that the exponent is $`2`, so prove the general
 Two `∃`s are in play and they are *not* stated the same way around: membership in `Set.range f` gives a `k` with `f k = m`, while `n ∣ m` unfolds to a `k` with `m = n * k`.
 So each direction is the other's witness with the equation flipped; `ext m` splits the set equality into that `↔`, and `rintro ⟨k, rfl⟩` opens each side.
 
+:::exercise (chili := 1)
 ```lean
 example (n : ℤ) : Set.range (fun k : ℤ => n * k) = {m : ℤ | n ∣ m} := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -282,11 +284,13 @@ Since $`\exp` is never zero, a $`g` with $`\exp(g(z)) = f(z)` forces $`f` to be 
 Prove exactly that, in the positive form: a function admitting a logarithm never vanishes.
 It is one rewrite plus one lemma — replace the goal's `f z₀` by `Complex.exp (g z₀)` by rewriting *backwards* along `hfg z₀`, and then the goal is literally `Complex.exp_ne_zero`.
 
+:::exercise
 ```lean
 example (f g : ℂ → ℂ) (hfg : ∀ z, Complex.exp (g z) = f z) (z₀ : ℂ) :
     f z₀ ≠ 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -312,11 +316,13 @@ What survives is the identity one exponential away from it.
 Prove that $`\exp(\log z + \log w) = zw` for nonzero $`z` and $`w`, which says the two sides of the false identity differ by an integer multiple of $`2\pi i` and no more.
 Split the exponential of a sum with `Complex.exp_add`, then round-trip each factor with the lemma above.
 
+:::exercise
 ```lean
 example (z w : ℂ) (hz : z ≠ 0) (hw : w ≠ 0) :
     Complex.exp (Complex.log z + Complex.log w) = z * w := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -349,11 +355,13 @@ Try the pattern on $`(\log z)^2`.
 The rule you need is `HasDerivAt.pow`, which turns a `HasDerivAt f f' z` into a statement about `fun w => f w ^ n` with derivative `n * f z ^ (n - 1) * f'`.
 Note that the derivative it produces is *not syntactically* the one asked for — it carries an exponent `2 - 1` and an inverse rather than a division — so state the intermediate `HasDerivAt` with `have` in the shape the lemma yields, and let `ring` reconcile the two afterwards.
 
+:::exercise (chili := 1)
 ```lean
 example (z : ℂ) (hz : z ∈ Complex.slitPlane) :
     deriv (fun w => Complex.log w ^ 2) z = 2 * Complex.log z / z := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

@@ -323,12 +323,14 @@ Normality is not just a label — it is the concrete closure condition that $`P`
 Extract that condition: with a unique Sylow subgroup in hand, show that for any $`x \in P` and any $`g`, the conjugate $`g x g^{-1}` again lies in $`P`.
 First get normality from `Sylow.normal_of_subsingleton`, then feed $`x`, its membership, and $`g` to the `.conj_mem` field that *is* the definition of `Normal`.
 
+:::exercise
 ```lean
 example (G : Type*) [Group G] (p : ℕ) [Subsingleton (Sylow p G)]
     (P : Sylow p G) (x : G) (hx : x ∈ (P : Subgroup G)) (g : G) :
     g * x * g⁻¹ ∈ (P : Subgroup G) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -372,11 +374,13 @@ The point of an isomorphism is that it transports invariants, and the most basic
 Use `Sylow.equiv` to prove that any two Sylow $`p`-subgroups have the same number of elements.
 Forget the multiplicative structure with `.toEquiv` to get a plain bijection, then turn that bijection into an equality of cardinalities with `Nat.card_congr`.
 
+:::exercise
 ```lean
 example (G : Type*) [Group G] (p : ℕ) [Fact p.Prime] [Finite (Sylow p G)]
     (P Q : Sylow p G) : Nat.card P = Nat.card Q := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -406,10 +410,12 @@ recall AddCommGroup.is_simple_iff_prime_card {α : Type*} [AddCommGroup α] :
 
 Rewrite along this equivalence with `rw`, then close the remaining $`|\mathbb{Z}/p\mathbb{Z}|` is prime goal with `simpa using hp.out` (which reduces the cardinality to $`p` and uses its primality).
 
+:::exercise
 ```lean
 example (p : ℕ) [hp : Fact p.Prime] : IsSimpleAddGroup (ZMod p) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -434,11 +440,13 @@ What Cauchy really buys you is a *nontrivial* element killed by $`p`.
 Extract it: produce a $`g \neq 1` with $`g^p = 1`.
 Name Cauchy's element with `obtain`, then split the goal — it cannot be the identity (else its order would be $`1`, not the prime $`p`), and raising it to $`p =` `orderOf g` gives `1` by `pow_orderOf_eq_one`.
 
+:::exercise (chili := 1)
 ```lean
 example (G : Type*) [Group G] [Fintype G] (p : ℕ) [hp : Fact p.Prime]
     (h : p ∣ Fintype.card G) : ∃ g : G, g ≠ 1 ∧ g ^ p = 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

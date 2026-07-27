@@ -702,12 +702,14 @@ Monotonicity is exactly what lets information *accumulate*: a set already decide
 Show that if $`s` is $`\mathcal{F}_i`-measurable and $`t` is $`\mathcal{F}_j`-measurable with $`i \le j`, then $`s \cap t` is $`\mathcal{F}_j`-measurable.
 Promote $`s` up to time $`j` by feeding the set to the inclusion `ℱ.mono h` (an inclusion of $`\sigma`-algebras *is* a function on measurable sets), then close under intersection with `MeasurableSet.inter`.
 
+:::exercise
 ```lean
 example {Ω : Type*} {m : MeasurableSpace Ω} (ℱ : Filtration ℕ m) (i j : ℕ)
     (h : i ≤ j) {s t : Set Ω} (hs : MeasurableSet[ℱ i] s)
     (ht : MeasurableSet[ℱ j] t) : MeasurableSet[ℱ j] (s ∩ t) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -767,6 +769,7 @@ example {α E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace
 One clean consequence is that conditioning twice on the same $`\mathcal{F}` is no different from conditioning once, $`\mathbb{E}\left( \mathbb{E}(X \mid \mathcal{F}) \mid \mathcal{F} \right) = \mathbb{E}(X \mid \mathcal{F})`.
 This needs no hypotheses on $`X` at all: whatever $`X` is, `condExp` hands back something that is *already* $`\mathcal{F}`-measurable (`stronglyMeasurable_condExp`) and integrable (`integrable_condExp`), so the worked model above applies to it verbatim.
 
+:::exercise
 ```lean
 example {α E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
     {m m₀ : MeasurableSpace α} {μ : Measure α} (hm : m ≤ m₀)
@@ -774,6 +777,7 @@ example {α E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace
     μ[μ[f | m] | m] = μ[f | m] := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -819,6 +823,7 @@ Put that characterization to work on the "$`X_n` is a martingale iff $`-X_n` is 
 Prove that the negation of a martingale is again a martingale.
 Split $`X_n` into its super- and sub-martingale halves with `martingale_iff`; negation *swaps* the two roles — a supermartingale becomes a submartingale under $`X \mapsto -X` (`Supermartingale.neg`) and vice versa (`Submartingale.neg`) — so reassemble the swapped pair back through `martingale_iff`.
 
+:::exercise
 ```lean
 example {Ω E ι : Type*} [Preorder ι] {m0 : MeasurableSpace Ω} {μ : Measure Ω}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] [PartialOrder E]
@@ -826,6 +831,7 @@ example {Ω E ι : Type*} [Preorder ι] {m0 : MeasurableSpace Ω} {μ : Measure 
     (h : Martingale f ℱ μ) : Martingale (-f) ℱ μ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -871,6 +877,7 @@ That constant is exactly what turns a stopping time $`\tau` into the *capped* ti
 Prove that the minimum of a stopping time with a fixed time $`i` is again a stopping time.
 `IsStoppingTime.min` combines two stopping times into their pointwise minimum; feed it $`\tau` together with the constant stopping time from the worked model above.
 
+:::exercise
 ```lean
 example {Ω ι : Type*} {m : MeasurableSpace Ω} [LinearOrder ι]
     (ℱ : Filtration ι m) (τ : Ω → WithTop ι) (hτ : IsStoppingTime ℱ τ)
@@ -878,6 +885,7 @@ example {Ω ι : Type*} {m : MeasurableSpace Ω} [LinearOrder ι]
     IsStoppingTime ℱ (fun ω => min (τ ω) (i : WithTop ι)) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

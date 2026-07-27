@@ -448,11 +448,13 @@ Rather than cite that lemma, prove the emptiness directly, exposing *why* it hol
 A point of the locus would make every polynomial of the ideal vanish, in particular the constant $`1`, forcing $`1 = 0` in $`\mathbb{C}`.
 Reduce to a single point with `Set.eq_empty_iff_forall_notMem`, feed the membership the polynomial $`1` (which lies in $`\top` by `Submodule.mem_top`), rewrite the evaluation with `map_one`, and close with `one_ne_zero`.
 
+:::exercise (chili := 1)
 ```lean
 example {σ : Type*} :
     MvPolynomial.zeroLocus ℂ (⊤ : Ideal (MvPolynomial σ ℂ)) = ∅ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -490,11 +492,13 @@ example {σ : Type*} [Finite σ] (I : Ideal (MvPolynomial σ ℂ)) : I.FG :=
 Being finitely generated *is* the existence of a finite generating set, so unpack it into one.
 Produce, for an arbitrary ideal, a finite set of polynomials whose span is the whole ideal — the witness is exactly what `Ideal.FG` provides, reached by `obtain`ing on the fact above.
 
+:::exercise
 ```lean
 example {σ : Type*} [Finite σ] (I : Ideal (MvPolynomial σ ℂ)) :
     ∃ S : Finset (MvPolynomial σ ℂ), Ideal.span (S : Set _) = I := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -545,11 +549,13 @@ The reverse containment is exactly what it means for an ideal to be radical: `Id
 Combine the two directions to show that a radical ideal equals its own radical, $`\sqrt I = I`.
 The forward containment is the model above, the reverse is the hypothesis itself, and `le_antisymm` glues them.
 
+:::exercise
 ```lean
 example {R : Type*} [CommRing R] (I : Ideal R) (h : I.IsRadical) :
     I.radical = I := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -575,12 +581,14 @@ Put inclusion-reversal to work on the sum $`I + J`, which is the smallest ideal 
 Since $`I` and $`J` each sit inside $`I + J`, its variety must sit inside both of theirs — this is one half of the fact that $`\mathbb{V}(I + J) = \mathbb{V}(I) \cap \mathbb{V}(J)`.
 Prove the containment by applying `zeroLocus_anti_mono` to each of `le_sup_left` and `le_sup_right`, then combining the two with `Set.subset_inter`.
 
+:::exercise
 ```lean
 example {σ k : Type*} [Field k] (K : Type*) [Field K] [Algebra k K]
     (I J : Ideal (MvPolynomial σ k)) :
     zeroLocus K (I ⊔ J) ⊆ zeroLocus K I ∩ zeroLocus K J := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -615,11 +623,13 @@ example {R : Type*} [CommRing R] (I : Ideal R) (h : I.IsMaximal) :
 Chaining this with the section's first fact — a prime ideal is radical — shows that a single point is a bona fide variety.
 Show that a maximal ideal is radical, first extracting primality (the model above) and then applying `Ideal.IsPrime.isRadical` to it.
 
+:::exercise
 ```lean
 example {R : Type*} [CommRing R] (I : Ideal R) (h : I.IsMaximal) :
     I.IsRadical := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

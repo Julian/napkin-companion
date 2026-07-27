@@ -493,10 +493,12 @@ First, show the level-$`0` projection is trivial: there is only one residue modu
 The residues here live in `ZMod (p ^ 0)`, which is `ZMod 1`, and Mathlib knows `Subsingleton (ZMod 1)` — a type with at most one element — so *any* two of its terms are equal by `Subsingleton.elim`.
 So it suffices to get that instance in hand: establish `Subsingleton (ZMod (p ^ 0))` by rewriting $`p^0` to $`1` with `pow_zero` and then `infer_instance`, after which `Subsingleton.elim _ _` closes the goal.
 
+:::exercise
 ```lean
 example (p : ℕ) (x : PadicIntLim p) : proj p 0 x = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -509,10 +511,12 @@ example (p : ℕ) (x : PadicIntLim p) : proj p 0 x = 0 := by
 Second, show the comparison map `ofPadicInt` is injective: two $`p`-adic integers with the same residues modulo every $`p^e` are equal (this is `PadicInt.ext_of_toZModPow`).
 After `intro x y h`, apply `PadicInt.ext_of_toZModPow.mp` and fix a level `n`; then `congrArg (proj p n) h` says the two compatible families agree at `n`, and the simp lemma `proj_ofPadicInt` rewrites each `proj p n (ofPadicInt p ·)` back to `PadicInt.toZModPow n ·`.
 
+:::exercise (chili := 1)
 ```lean
 example (p : ℕ) [Fact p.Prime] : Function.Injective (ofPadicInt p) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -547,10 +551,12 @@ Prove that $`p` is not a unit of $`\mathbb{Z}_p`.
 Rewrite with the criterion and then with `PadicInt.norm_p`, which evaluates $`\|p\|_p` to $`1/p`; the goal becomes the arithmetic claim that $`1/p \neq 1`, false because a prime is at least $`2` (`Nat.Prime.two_le`, cast into $`\mathbb{R}`).
 Note how the hypothesis "$`p` is prime" is reached: it is not an argument but an instance, retrieved from the `Fact` wrapper by `.out`.
 
+:::exercise (chili := 1)
 ```lean
 example (p : ℕ) [hp : Fact p.Prime] : ¬ IsUnit (p : ℤ_[p]) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -580,11 +586,13 @@ The single normalization that pins the whole absolute value down is $`\|p\|_p = 
 See that in action: compute $`\|p^n\|_p`, which is the statement that high powers of $`p` are *small*, the fact the entire chapter runs on.
 The norm of a power is the power of the norm (`norm_pow`, available because `ℚ_[p]` is a `NormedField`), and then one rewrite finishes it.
 
+:::exercise
 ```lean
 example (p : ℕ) [Fact p.Prime] (n : ℕ) :
     ‖(p : ℚ_[p]) ^ n‖ = ((p : ℝ)⁻¹) ^ n := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -617,11 +625,13 @@ example (p : ℕ) [Fact p.Prime] (q r : ℚ_[p]) (h : ‖q‖ ≠ ‖r‖) :
 Put the isosceles principle to work: when one term is *strictly* smaller in norm it drops out entirely, and $`\|q + r\|_p = \|r\|_p`.
 Prove it by feeding the equality above the inequality `ne_of_lt h`, which rewrites the goal to `max ‖q‖ ‖r‖ = ‖r‖`; since $`\|q\|_p \leq \|r\|_p`, `max_eq_right` then collapses the maximum to the larger norm.
 
+:::exercise
 ```lean
 example (p : ℕ) [Fact p.Prime] (q r : ℚ_[p]) (h : ‖q‖ < ‖r‖) :
     ‖q + r‖ = ‖r‖ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -651,12 +661,14 @@ Put the criterion to work.
 Over $`\mathbb{R}` you would reach for a comparison test, but here it is enough that the terms shrink: prove that $`\sum_n x^n` is summable whenever $`\|x\|_p < 1`.
 Rewrite the goal with the criterion, then `Nat.cofinite_eq_atTop` turns the cofinite filter on `ℕ` into `atTop`, leaving exactly `tendsto_pow_atTop_nhds_zero_of_norm_lt_one`.
 
+:::exercise
 ```lean
 open Filter Topology in
 example (p : ℕ) [Fact p.Prime] (x : ℚ_[p]) (h : ‖x‖ < 1) :
     Summable (fun n : ℕ => x ^ n) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -684,11 +696,13 @@ example (p : ℕ) [Fact p.Prime] (x : ℚ_[p]) (h : ‖x‖ < 1) :
 The formula says the sum *is* the inverse of $`1 - x`; verify it directly by clearing the denominator, proving $`(1 - x)\sum_n x^n = 1`.
 Rewrite the sum with the formula above, then observe that $`\|x\|_p < 1` forces $`x \neq 1` (otherwise $`\|x\|_p = \|1\|_p = 1`), so $`1 - x` is nonzero and `mul_inv_cancel₀` cancels it against its inverse.
 
+:::exercise (chili := 1)
 ```lean
 example (p : ℕ) [Fact p.Prime] (x : ℚ_[p]) (h : ‖x‖ < 1) :
     (1 - x) * ∑' n : ℕ, x ^ n = 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

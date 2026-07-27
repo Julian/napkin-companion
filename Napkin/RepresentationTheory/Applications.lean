@@ -221,11 +221,13 @@ example {k : Type*} [Field k] [IsAlgClosed k] {G : Type*} [Group G]
 The final line of the proof used that the algebraic integers are closed under addition and multiplication, so that a sum of products of them is again an algebraic integer.
 Prove this closure fact from `IsIntegral.add` and `IsIntegral.mul`.
 
+:::exercise
 ```lean
 example (a b c : ℂ) (ha : IsIntegral ℤ a) (hb : IsIntegral ℤ b)
     (hc : IsIntegral ℤ c) : IsIntegral ℤ (a * b + c) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -238,10 +240,12 @@ example (a b c : ℂ) (ha : IsIntegral ℤ a) (hb : IsIntegral ℤ b)
 The reason $`\frac{|G|}{\dim V}`, once shown to be an algebraic integer, must actually be an integer is that $`\overline{\mathbb{Z}} \cap \mathbb{Q} = \mathbb{Z}`.
 Using `IsIntegrallyClosed.isIntegral_iff`, show that a rational number which is integral over $`\mathbb{Z}` comes from an integer.
 
+:::exercise
 ```lean
 example (q : ℚ) (h : IsIntegral ℤ q) : ∃ n : ℤ, (n : ℚ) = q := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -281,11 +285,13 @@ example (G : Type*) [Group G] [IsSimpleGroup G] (H : Subgroup G)
 That dichotomy is exactly what a *proper* normal subgroup — one that is not all of $`G`, such as $`Z(G)` in the final contradiction — rules out: it forces the subgroup to be trivial.
 Prove this by feeding the hypothesis $`H \neq \top` to `Or.resolve_right`, which discards the impossible branch of the dichotomy.
 
+:::exercise
 ```lean
 example (G : Type*) [Group G] [IsSimpleGroup G] (H : Subgroup G)
     (hH : H.Normal) (hne : H ≠ ⊤) : H = ⊥ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -337,12 +343,14 @@ example {R : Type*} [CommRing R] {G : Type*} [Group G] [Fintype G]
 The upshot is that the whole diagonal is *constant*: any two diagonal entries agree.
 Prove this straight from the entry formula, without invoking `groupMatrix_diag`: unfold both entries with `groupMatrix_apply`, then collapse each $`g g^{-1}` with `mul_inv_cancel`.
 
+:::exercise
 ```lean
 example {R : Type*} [CommRing R] {G : Type*} [Group G] [Fintype G]
     [DecidableEq G] (x : G → R) (g h : G) :
     groupMatrix x g g = groupMatrix x h h := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -365,11 +373,13 @@ example {R : Type*} [CommRing R] {n : Type*} [Unique n] [DecidableEq n]
 Use it to compute the group determinant of the one-element group.
 Unfold `groupDeterminant`, read the $`1 \times 1` determinant off its single entry with `Matrix.det_unique`, and recognize that entry as a diagonal one via `groupMatrix_diag`.
 
+:::exercise
 ```lean
 example {R : Type*} [CommRing R] {G : Type*} [Group G] [Fintype G]
     [DecidableEq G] [Unique G] (x : G → R) : groupDeterminant x = x 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -402,12 +412,14 @@ The exponents $`\dim V_i` come from each block $`T|_{V_i}` recurring with that m
 Model that with a block-diagonal built from many copies of a *single* block $`N`: its determinant is $`(\det N)^{\#\text{copies}}`.
 Prove it by rewriting with `Matrix.det_blockDiagonal` and then reducing the now-constant product with `Finset.prod_const`.
 
+:::exercise
 ```lean
 example {n o : Type*} [Fintype n] [DecidableEq n] [Fintype o] [DecidableEq o]
     {R : Type*} [CommRing R] (N : Matrix n n R) :
     (Matrix.blockDiagonal (fun _ : o => N)).det = N.det ^ Fintype.card o := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

@@ -373,10 +373,12 @@ Now handle the other half of the question, the interval $`[0, 1)` in $`\mathbb{R
 No single interval lemma is allowed here; instead *build it from pieces you already understand*.
 Write $`[0, 1) = [0, \infty) \cap (-\infty, 1)` (the rewrite `Set.Ici_inter_Iio`, run backwards): the first factor is closed (`isClosed_Ici`) hence measurable, the second is open (`isOpen_Iio`) hence measurable, and a measurable set meets a measurable set measurably (`MeasurableSet.inter`).
 
+:::exercise
 ```lean
 example : MeasurableSet (Set.Ico (0 : ℝ) 1) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -410,6 +412,7 @@ noncomputable example {α : Type*} [MeasurableSpace α] :
 One problem asks you to show, in a probability space, that the intersection of countably many sets of measure $`1` again has measure $`1`.
 Each complement is null, so their countable union is null, and only the intersection is left.
 
+:::exercise
 ```lean
 example {Ω : Type*} [MeasurableSpace Ω] (μ : MeasureTheory.Measure Ω)
     [MeasureTheory.IsProbabilityMeasure μ] (A : ℕ → Set Ω)
@@ -417,6 +420,7 @@ example {Ω : Type*} [MeasurableSpace Ω] (μ : MeasureTheory.Measure Ω)
     μ (⋂ n, A n) = 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -462,12 +466,14 @@ example {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β]
 But the whole reason composition works is that preimages compose, so derive it yourself without reaching for `Measurable.comp`.
 Unfold the goal to the preimage condition with `intro s hs`; rewrite the preimage of the composite as the nested preimage `f⁻¹'(g⁻¹' s)` using `Set.preimage_comp`; then peel the layers, applying `hg` to `hs` and `hf` to the result (recall that a proof of `Measurable f` is exactly a function taking a measurable set to the measurability of its preimage).
 
+:::exercise
 ```lean
 example {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β]
     [MeasurableSpace γ] {f : α → β} {g : β → γ}
     (hf : Measurable f) (hg : Measurable g) : Measurable (g ∘ f) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -503,12 +509,14 @@ The payoff of packaging "almost everywhere" as a filter is that it inherits the 
 Assemble that here.
 Given that $`P` holds *everywhere* and $`Q` holds only *almost* everywhere, show $`P \land Q` holds almost everywhere: promote $`P` to an almost-everywhere statement with `ae_of_all` (the fact above), then conjoin it with the hypothesis on $`Q` using `Filter.Eventually.and`.
 
+:::exercise
 ```lean
 example {Ω : Type*} [MeasurableSpace Ω] (μ : MeasureTheory.Measure Ω)
     (P Q : Ω → Prop) (hP : ∀ ω, P ω) (hQ : ∀ᵐ ω ∂μ, Q ω) :
     ∀ᵐ ω ∂μ, P ω ∧ Q ω := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

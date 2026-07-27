@@ -10,6 +10,10 @@ gap with two invariants over every chapter's `# Formalization` section:
   1. **Every exercise has a solution.** A ```lean block containing
      `sorry` must be immediately followed by a `:::solution` block.
 
+  1b. **Every exercise is wrapped in `:::exercise`,** so that it renders
+     labelled and numbered rather than looking like one more worked
+     model.
+
   2. **The statements agree.** The signature of the `sorry`-bearing
      declaration — everything up to the proof, i.e. up to the first
      top-level `:=` or `where` — must appear verbatim (modulo line
@@ -29,12 +33,49 @@ namespace Test.CheckPairing
 
 open Napkin.Meta.Extract
 
+/-- Line numbers of ```lean fences that open a `sorry`-bearing block not
+    preceded by a `:::exercise` opener, i.e. unwrapped exercises. -/
+private def unwrappedExercises (text : String) : Array Nat := Id.run do
+  let lines := (text.splitOn "\n").toArray
+  let mut out : Array Nat := #[]
+  let mut started := false
+  let mut inCode := false
+  let mut inSol := false
+  let mut fence := 0
+  let mut cur : Array String := #[]
+  for i in [0:lines.size] do
+    let some raw := lines[i]? | continue
+    let t := strip raw
+    if !started then
+      if t == "# Formalization" then started := true
+    else if inCode then
+      if t == "```" then
+        inCode := false
+        if !inSol && hasSorry (String.intercalate "\n" cur.toList) then
+          -- The opener must sit on the line just above the fence.
+          let prev := (lines[fence - 1]?).map strip |>.getD ""
+          if !prev.startsWith ":::exercise" then out := out.push (fence + 1)
+        cur := #[]
+      else
+        cur := cur.push raw
+    else if t.startsWith "```lean" then
+      inCode := true; fence := i; cur := #[]
+    else if t == ":::solution" then
+      inSol := true
+    else if t == ":::" && inSol then
+      inSol := false
+  return out
+
 def run (_args : List String) : IO UInt32 := do
   let files ← collectLean sourceRoot
   let mut pairs : Nat := 0
   let mut problems : Array String := #[]
   for f in files do
-    let blocks := collectBlocks (← IO.FS.readFile f)
+    let text ← IO.FS.readFile f
+    for line in unwrappedExercises text do
+      problems := problems.push
+        s!"  {f}:{line}: exercise is not wrapped in `:::exercise`"
+    let blocks := collectBlocks text
     for i in [0:blocks.size] do
       let some b := blocks[i]? | continue
       if b.kind != Kind.plain then continue

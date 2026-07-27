@@ -212,6 +212,7 @@ Now assemble the two blocks into a genuine form $`f \, d\operatorname{Re} + g \,
 Taking $`f \equiv 1`, $`g \equiv i` reconstructs the change in $`z`, and $`f \equiv 1`, $`g \equiv -i` the change in $`\overline{z}`.
 Each `comp` reduces to a coordinate by the facts above; then `Complex.re_add_im` closes the first, and `Complex.ext` splits the second into equal real and imaginary parts.
 
+:::exercise (chili := 1)
 ```lean
 example (z : ℂ) :
     (Complex.ofRealCLM.comp Complex.reCLM) z
@@ -224,6 +225,7 @@ example (z : ℂ) :
         = starRingEnd ℂ z := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -278,10 +280,12 @@ example (f : ℂ → ℂ) (x : ℂ) (hf : DifferentiableAt ℂ f x) :
 Read against `differentiableAt_iff_restrictScalars`, this says a holomorphic $`f` has no $`d\overline{z}` component: its real derivative lies in the image of `restrictScalars ℝ`.
 Prove that half of the equivalence directly — supply the complex derivative as the witness, and close with the identity just proved (reversed).
 
+:::exercise
 ```lean
 example (f : ℂ → ℂ) (x : ℂ) (hf : DifferentiableAt ℂ f x) :
     ∃ g : ℂ →L[ℂ] ℂ, g.restrictScalars ℝ = fderiv ℝ f x := by sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -317,11 +321,13 @@ example : dz ≠ dzbar := dz_ne_dzbar
 
 Confirm that disagreement directly: evaluate $`d\overline{z}` at $`i`, then check the two forms really do differ there.
 
+:::exercise
 ```lean
 example : dzbar Complex.I = -Complex.I := by sorry
 
 example : dz Complex.I ≠ dzbar Complex.I := by sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -364,10 +370,12 @@ example (ω : OneForm) (h : Type10 ω) (p : ℂ) :
 That extraction is what makes the moral precise: rotating a tangent vector by $`90^\circ` — multiplying it by $`i` — multiplies the value by $`i`, because the value is $`\mathbb{C}`-linear.
 Pull out the $`\mathbb{C}`-linear map with `value_clinear`, rewrite both sides through it, and let its `map_smul` turn $`i \cdot 1` into $`i`.
 
+:::exercise (chili := 1)
 ```lean
 example (ω : OneForm) (h : Type10 ω) (p : ℂ) :
     ω p Complex.I = Complex.I * ω p 1 := by sorry
 ```
+:::
 
 :::solution
 ```lean

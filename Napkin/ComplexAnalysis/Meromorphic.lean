@@ -460,6 +460,7 @@ example (f g : ℂ → ℂ) (z : ℂ)
 Now chain additivity across three factors.
 The order of $`f g g` is $`\operatorname{ord} f + \operatorname{ord} g + \operatorname{ord} g`; peel one factor at a time with `meromorphicOrderAt_mul`, whose meromorphy hypothesis for the partial product $`f g` is `hf.mul hg` — a product of meromorphic functions is again meromorphic.
 
+:::exercise
 ```lean
 example (f g : ℂ → ℂ) (z : ℂ)
     (hf : MeromorphicAt f z) (hg : MeromorphicAt g z) :
@@ -468,6 +469,7 @@ example (f g : ℂ → ℂ) (z : ℂ)
         + meromorphicOrderAt g z := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -526,11 +528,13 @@ example (D : ResidueTheoremData) (h : ∀ p ∈ D.poles, D.wind p = 1) :
 A simple pole $`\frac{a}{z - z_0}` has residue exactly its numerator $`a` — the text's $`100 z^{-1}` with residue $`100`.
 Prove it; `residue_const_mul` peels off the constant and the prototype finishes the job.
 
+:::exercise
 ```lean
 example (a z₀ : ℂ) :
     residue (fun z => a * (z - z₀)⁻¹) z₀ 1 = a := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -550,11 +554,13 @@ recall residue_sub_zpow_of_ne {n : ℤ} (hn : n ≠ -1) (w z₀ : ℂ)
 Combine that vanishing with linearity: a *scaled* monomial $`a (z - w)^2` still has residue $`0`.
 Pull the constant out with `residue_const_mul`, hand the bare monomial to `residue_sub_zpow_of_ne` (its side condition $`(2 : \mathbb{Z}) \neq -1` discharged by `decide`), and clean up with `mul_zero`.
 
+:::exercise
 ```lean
 example (a w z₀ : ℂ) (r : ℝ) :
     residue (fun z => a * (z - w) ^ (2 : ℤ)) z₀ r = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -583,6 +589,7 @@ example (f g : ℂ → ℂ) (x : ℂ) (hf : f x ≠ 0) (hg : g x ≠ 0)
 Iterate it across three factors, mirroring $`P'/P = \sum_i \frac{e_i}{x - a_i}` for more roots.
 Group $`f g h` as $`(f g) h` and peel the outer product first, then the inner; each peel feeds `logDeriv_mul` the partial product's nonvanishing (`mul_ne_zero`) and differentiability (`DifferentiableAt.mul`, written `hdf.mul hdg`).
 
+:::exercise
 ```lean
 example (f g h : ℂ → ℂ) (x : ℂ) (hf : f x ≠ 0) (hg : g x ≠ 0)
     (hh : h x ≠ 0) (hdf : DifferentiableAt ℂ f x)
@@ -591,6 +598,7 @@ example (f g h : ℂ → ℂ) (x : ℂ) (hf : f x ≠ 0) (hg : g x ≠ 0)
       = logDeriv f x + logDeriv g x + logDeriv h x := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -609,12 +617,14 @@ example (f g h : ℂ → ℂ) (x : ℂ) (hf : f x ≠ 0) (hg : g x ≠ 0)
 The principle itself — $`\frac{1}{2\pi i} \oint_\gamma \frac{f'}{f} = Z - P` — is out of reach, so `ArgumentPrincipleData` bundles it as a hypothesis, carrying the zero count $`Z` and pole count $`P` inside the contour.
 When $`f` has no poles, the contour integral counts the zeros outright; prove this, `zeros_eq_contour` doing the arithmetic.
 
+:::exercise
 ```lean
 example (D : ArgumentPrincipleData) (h : D.P = 0) :
     (D.Z : ℂ) = (2 * Real.pi * Complex.I)⁻¹ •
       (∮ z in C(D.c, D.r), logDeriv D.f z) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -657,10 +667,12 @@ example (f : ℂ[X]) : f.roots.card = f.natDegree :=
 Read existence off that count: a polynomial of positive degree really does have a root, since its root multiset is then nonempty.
 Rewrite the cardinality via the count, after which the positive-degree hypothesis finishes.
 
+:::exercise
 ```lean
 example (f : ℂ[X]) (hf : 0 < f.natDegree) : 0 < f.roots.card := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

@@ -435,12 +435,14 @@ Now put multiplicativity to work alongside the corrective factor.
 For a rational scalar $`r` and any $`\alpha`, the norm of $`r\alpha` picks up a factor of $`r^n`, where $`n = \deg K`.
 Split the product with `map_mul`, then rewrite the scalar's norm with `Algebra.norm_algebraMap`.
 
+:::exercise
 ```lean
 example (K : Type*) [Field K] [NumberField K] (r : ℚ) (α : K) :
     Algebra.norm ℚ (algebraMap ℚ K r * α)
       = r ^ Module.finrank ℚ K * Algebra.norm ℚ α := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -490,12 +492,14 @@ Use that classification.
 A unit's norm is $`\pm 1`, so its square is $`1`.
 Extract $`|\operatorname{N}(x)| = 1` from the iff with `.mp`, then trade the absolute value for a square with `sq_abs`.
 
+:::exercise
 ```lean
 example (K : Type*) [Field K] [NumberField K]
     (x : NumberField.RingOfIntegers K) (hx : IsUnit x) :
     (RingOfIntegers.norm ℚ x : ℚ) ^ 2 = 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -525,12 +529,14 @@ example (K : Type*) [Field K] [NumberField K]
 Consequently the dimension cannot depend on which generator $`\theta` you picked.
 Given two power bases of $`\mathcal{O}_K`, prove they have the same dimension, by rewriting each back to that common rank with `pb.finrank`.
 
+:::exercise
 ```lean
 example (K : Type*) [Field K] [NumberField K]
     (pb pb' : PowerBasis ℤ (NumberField.RingOfIntegers K)) :
     pb.dim = pb'.dim := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

@@ -300,6 +300,7 @@ Since Mathlib folds measurability into `Integrable`, phrase it directly on a rea
 Forwards, the two halves are `Integrable.pos_part` and `Integrable.neg_part`.
 Backwards, $`f = f^+ - f^-`, so `Integrable.sub` gives integrability of *a* function and `Integrable.congr` transports it to $`f` — but only up to an almost-everywhere equality, which is where `filter_upwards` comes in: it opens a goal of the form "$`P` holds almost everywhere" by handing you a single point `x` to check, discarding the null set along the way.
 
+:::exercise (chili := 1)
 ```lean
 example {α : Type*} [MeasurableSpace α] (μ : Measure α) (f : α → ℝ) :
     Integrable f μ ↔
@@ -307,6 +308,7 @@ example {α : Type*} [MeasurableSpace α] (μ : Measure α) (f : α → ℝ) :
         Integrable (fun x => max (-f x) 0) μ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -341,6 +343,7 @@ example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
 Push that rectangle formula one step further to see the product measure is *symmetric*: swapping the two factors merely swaps the sides of the rectangle.
 Apply `Measure.prod_prod` on each side to reduce both to a product of the same two measures, then close the gap with `mul_comm` (this now needs *both* factors to be `SFinite`).
 
+:::exercise
 ```lean
 example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
     (μ : Measure α) (ν : Measure β) [SFinite μ] [SFinite ν]
@@ -348,6 +351,7 @@ example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
     μ.prod ν (s ×ˢ t) = ν.prod μ (t ×ˢ s) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -377,11 +381,13 @@ That single interval hides a structural fact: an integral splits over adjacent s
 Prove that integrating $`x^2` over $`[1, 2]` and then $`[2, 4]` recovers the integral over $`[1, 4]`, using `intervalIntegral.integral_add_adjacent_intervals`.
 It demands an integrability witness on each piece, and continuity supplies them — `Continuous.intervalIntegrable` turns the continuity of $`x \mapsto x^2` (`continuous_pow`) into interval-integrability on any bounds.
 
+:::exercise
 ```lean
 example : (∫ x in (1 : ℝ)..2, x ^ 2) + (∫ x in (2 : ℝ)..4, x ^ 2)
     = ∫ x in (1 : ℝ)..4, x ^ 2 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -400,10 +406,12 @@ In Mathlib, the second part of "The indicator of the rationals" is essentially `
 
 Carry that out: the indicator of the range of $`\mathbb{Q} \hookrightarrow \mathbb{R}` integrates to $`0`.
 
+:::exercise (chili := 1)
 ```lean
 example : ∫ x, (Set.range ((↑) : ℚ → ℝ)).indicator (1 : ℝ → ℝ) x = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

@@ -415,11 +415,13 @@ But the chart's source is more than a set containing $`x`: it is *open*, so it i
 Show that the source is a neighborhood of $`x`.
 Combine that the source is open (`OpenPartialHomeomorph.open_source`) with the membership above, fed to `IsOpen.mem_nhds`.
 
+:::exercise
 ```lean
 example {H : Type*} [TopologicalSpace H] {M : Type*} [TopologicalSpace M]
     [ChartedSpace H M] (x : M) : (chartAt H x).source ∈ nhds x := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -474,6 +476,7 @@ The real workhorse is that smoothness survives composition, `ContMDiff.comp`.
 Use it together with the identity above: given a smooth self-map $`f`, show $`f \circ \mathrm{id}` is smooth.
 Feed `contMDiff_id` as the inner map to `hf.comp`.
 
+:::exercise
 ```lean
 example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -482,6 +485,7 @@ example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     (f : M → M) (hf : ContMDiff I I n f) : ContMDiff I I n (f ∘ id) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -519,6 +523,7 @@ example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 Smoothness at a point is stronger than mere continuity there, so the local diffeomorphism is in particular continuous at $`x`.
 Draw the smoothness out of the hypothesis as above, then weaken it with `ContMDiffAt.continuousAt`.
 
+:::exercise
 ```lean
 example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -531,6 +536,7 @@ example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     (hf : IsLocalDiffeomorphAt I J n f x) : ContinuousAt f x := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -584,6 +590,7 @@ An orientation is only defined up to rescaling: multiplying a volume form by a n
 Prove that if $`\omega` is a volume form and $`c \neq 0`, then $`c \cdot \omega` witnesses orientability too.
 The scaling acts pointwise (`ManifoldForm.smul_apply`), and a nonzero scalar times a nonzero vector is nonzero (`smul_ne_zero`); feed the resulting nonvanishing form to `of_volumeForm`.
 
+:::exercise
 ```lean
 example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
@@ -593,6 +600,7 @@ example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     ManifoldForm.Orientable (I := I) (M := M) n := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -626,6 +634,7 @@ With this description in hand, differentials behave like the derivatives they pa
 Prove that the differential of a constant $`0`-form vanishes on every tangent vector.
 Rewrite the evaluation with `ManifoldForm.differential_eval`, then use that the derivative of a constant is zero (`mfderiv_const`) and that the zero map sends $`v_0` to $`0` (`ContinuousLinearMap.zero_apply`).
 
+:::exercise
 ```lean
 example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
@@ -635,6 +644,7 @@ example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
       = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -655,6 +665,7 @@ The exterior derivative $`d` and the pullbacks that phrase the chart-compatibili
 From that bundled data alone, the fact underlying Stokes' theorem — every exact form is closed — is derivable.
 Unfold `D.Exact α` to a witness $`\alpha = d\beta`, then the $`d^2 = 0` field `D.dd` closes it.
 
+:::exercise (chili := 1)
 ```lean
 example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
@@ -663,6 +674,7 @@ example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {α : ManifoldForm I M (k + 1)} (h : D.Exact α) : D.Closed α := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -717,6 +729,7 @@ Unwind what that means on an actual tangent vector: the induced map fixes every 
 Show that `mfderiv I I id x v = v`.
 Rewrite with `mfderiv_id` to replace the derivative by the identity linear map, which then sends $`v` to itself (`ContinuousLinearMap.id_apply`).
 
+:::exercise
 ```lean
 example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -726,6 +739,7 @@ example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     mfderiv I I (id : M → M) x v = v := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -765,11 +779,13 @@ example (K : Type*) [Field K] :
 Draw that concrete consequence out — for a field $`K`, show any two elements of the cotangent space are equal.
 Establish the `Subsingleton` instance as above, then any two of its elements coincide by `Subsingleton.elim`.
 
+:::exercise
 ```lean
 example (K : Type*) [Field K]
     (x y : IsLocalRing.CotangentSpace K) : x = y := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

@@ -495,12 +495,14 @@ The chapter's exercise — that the open ball is homeomorphic to $`\mathbb{R}^n`
 Show that the sphere sits inside the closed ball.
 Take a point of the sphere, unfold membership in the closed ball to a distance bound with `Metric.mem_closedBall`, rewrite the distance to a norm with `dist_zero_right`, and finish with the norm-one fact above.
 
+:::exercise
 ```lean
 example (n : ℕ) :
     Metric.sphere (0 : EuclideanSpace ℝ (Fin (n + 1))) 1 ⊆
       Metric.closedBall (0 : EuclideanSpace ℝ (Fin (n + 1))) 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -538,12 +540,14 @@ Continuity of the projection is exactly what lets any continuous map *out* of th
 Show that if $`f : X/{\sim} \to Z` is continuous, then so is $`x \mapsto f([x])`.
 Continuity composes: `Continuous.comp` glues $`f` onto the projection above.
 
+:::exercise
 ```lean
 example {X Z : Type*} [TopologicalSpace X] [TopologicalSpace Z]
     (s : Setoid X) (f : Quotient s → Z) (hf : Continuous f) :
     Continuous (fun x => f (Quotient.mk s x)) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -577,12 +581,14 @@ That a rectangle is open is not an extra axiom; it falls out of the projections 
 Reprove it that way.
 Rewrite $`U \times V` as the intersection $`\pi_1^{-1}(U) \cap \pi_2^{-1}(V)` with `Set.prod_eq`, note each factor is an open set pulled back along a continuous projection (`IsOpen.preimage` with `continuous_fst`, `continuous_snd`), and combine them with `IsOpen.inter`.
 
+:::exercise
 ```lean
 example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     (U : Set X) (V : Set Y) (hU : IsOpen U) (hV : IsOpen V) :
     IsOpen (U ×ˢ V) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -618,11 +624,13 @@ The copy of $`Y` is the other piece, and it is clopen for a free reason: it is t
 Show it without re-running the argument.
 Rewrite the range of $`\mathrm{inr}` as the complement of the range of $`\mathrm{inl}` (`Set.compl_range_inl`), then use that a complement of a clopen set is clopen (`IsClopen.compl`).
 
+:::exercise
 ```lean
 example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] :
     IsClopen (Set.range (Sum.inr : Y → X ⊕ Y)) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -658,12 +666,14 @@ But this identification is not magic; it is forced by the gluing relation.
 Reprove it straight from the quotient.
 Two representatives of $`X \oplus Y` name the same point as soon as they are related, which is `Quotient.sound`; here the relation's basepoint clause relates $`\mathrm{inl}\,x_0` and $`\mathrm{inr}\,y_0` via a pair of `rfl`s.
 
+:::exercise
 ```lean
 example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     (x₀ : X) (y₀ : Y) :
     WedgeSum.inl x₀ y₀ x₀ = WedgeSum.inr x₀ y₀ y₀ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -687,11 +697,13 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 The same recipe gives continuity of the *other* inclusion, and it is worth running once by hand rather than quoting the packaged lemma.
 Show that $`Y \hookrightarrow X \vee Y` is continuous by composing the continuity of the quotient projection (`continuous_quotient_mk'`) with that of the sum inclusion (`continuous_inr`).
 
+:::exercise
 ```lean
 example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     (x₀ : X) (y₀ : Y) : Continuous (WedgeSum.inr x₀ y₀) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -715,12 +727,14 @@ Prove that injectivity from the quotient directly, to see where the gluing could
 Equality of two classes unpacks, via `Quotient.exact`, into the relation `WedgeRel`, whose three disjuncts `rcases` splits.
 The genuine case is closed by `Sum.inl_injective`; the other two would force $`\mathrm{inl}` and $`\mathrm{inr}` values to coincide, which `simp` refutes.
 
+:::exercise (chili := 1)
 ```lean
 example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     (x₀ : X) (y₀ : Y) {x x' : X}
     (h : WedgeSum.inl x₀ y₀ x = WedgeSum.inl x₀ y₀ x') : x = x' := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -780,12 +794,14 @@ example (n : ℕ) (v w : Fin (n + 1) → ℝ) (hv : v ≠ 0) (hw : w ≠ 0) :
 Read off that criterion, "names the same point" is visibly symmetric: if $`v` and $`w` agree as points, then $`w` is *also* a scalar multiple of $`v`.
 Extract the scalar with `obtain`, then invert the unit — `inv_smul_smul` cancels it — to hand back the witness the other way around.
 
+:::exercise
 ```lean
 example (n : ℕ) (v w : Fin (n + 1) → ℝ) (hv : v ≠ 0) (hw : w ≠ 0)
     (h : Projectivization.mk ℝ v hv = Projectivization.mk ℝ w hw) :
     ∃ a : ℝˣ, a • v = w := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -817,12 +833,14 @@ example (n : ℕ) (v w : Fin (n + 1) → ℂ) (hv : v ≠ 0) (hw : w ≠ 0) :
 
 The same symmetry holds over $`\mathbb{C}`; run the argument again with complex units.
 
+:::exercise
 ```lean
 example (n : ℕ) (v w : Fin (n + 1) → ℂ) (hv : v ≠ 0) (hw : w ≠ 0)
     (h : Projectivization.mk ℂ v hv = Projectivization.mk ℂ w hw) :
     ∃ a : ℂˣ, a • v = w := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

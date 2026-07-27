@@ -292,12 +292,14 @@ example (X : Type*) [TopologicalSpace X] [ChartedSpace ℂ X]
 Read off a single point from that containment: the chart `chartAt ℂ p` at any `p` lies in the maximal atlas.
 Rather than cite the packaged `IsManifold.chart_mem_maximalAtlas`, assemble it — `chart_mem_atlas ℂ p` witnesses that `chartAt ℂ p` is one of the concrete charts, and feeding that membership through the containment `IsManifold.subset_maximalAtlas` lands it in the maximal atlas.
 
+:::exercise
 ```lean
 example (X : Type*) [TopologicalSpace X] [ChartedSpace ℂ X]
     [IsManifold (𝓘(ℂ, ℂ)) ω X] (p : X) :
     chartAt ℂ p ∈ IsManifold.maximalAtlas (𝓘(ℂ, ℂ)) ω X := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -367,10 +369,12 @@ example : AnalyticOnNhd ℂ sphereTransition {z : ℂ | z ≠ 0} :=
 Being analytic on a neighborhood means, unfolded, being analytic *at* each point of the overlap, and analyticity at a point is a strong enough condition to imply mere continuity there.
 Combine the two: at any $`z \neq 0`, feed the point and the hypothesis to `sphereTransition_analyticOnNhd` to extract `AnalyticAt` at $`z`, then hand that to `AnalyticAt.continuousAt`.
 
+:::exercise
 ```lean
 example (z : ℂ) (hz : z ≠ 0) : ContinuousAt sphereTransition z := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -384,6 +388,7 @@ The two chart domains cover the sphere: the only point outside `sphereChart0Dom`
 The shim records the cover as `sphere_charts_cover`, but prove it directly to see the mechanism at work: split on whether $`p = \infty` with `by_cases`, then in each branch unfold the relevant domain with `simp` — `sphereChart1Dom` (which excludes $`\uparrow 0`) catches $`\infty`, while every other point, being different from $`\infty`, stays in `sphereChart0Dom`.
 For $`\infty` itself, assemble the two shim facts `infty_mem_sphereChart1Dom` and `infty_notMem_sphereChart0Dom` into the conjunction that it lands in the second chart but not the first.
 
+:::exercise
 ```lean
 example (p : OnePoint ℂ) :
     p ∈ sphereChart0Dom ∨ p ∈ sphereChart1Dom := by
@@ -393,6 +398,7 @@ example : (∞ : OnePoint ℂ) ∈ sphereChart1Dom ∧
     (∞ : OnePoint ℂ) ∉ sphereChart0Dom := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -432,6 +438,7 @@ example {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
 Deduce the "takes equal values" form: a holomorphic function on a compact connected complex manifold agrees at any two points.
 Extract the constant `v` with `hf.exists_eq_const_of_compactSpace`, then both values are `v`.
 
+:::exercise
 ```lean
 example {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
     {M : Type*} [TopologicalSpace M] [ChartedSpace ℂ M]
@@ -440,6 +447,7 @@ example {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
     f a = f b := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -478,12 +486,14 @@ example {f : ℂ → ℂ} {s : Set ℂ} {c : ℂ} (hs : s ∈ 𝓝 c) :
 Now put that equivalence to work in the direction that "fills in the hole".
 Given a function differentiable on the punctured neighborhood $`s \setminus \{c\}` and merely continuous at $`c`, extend the differentiability across the puncture to all of $`s`: pair the two hypotheses into the left-hand side of the iff and push them through its forward direction (`.mp`).
 
+:::exercise
 ```lean
 example {f : ℂ → ℂ} {s : Set ℂ} {c : ℂ} (hs : s ∈ 𝓝 c)
     (hd : DifferentiableOn ℂ f (s \ {c})) (hc : ContinuousAt f c) :
     DifferentiableOn ℂ f s := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

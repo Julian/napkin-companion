@@ -224,6 +224,7 @@ example {Ω : Type*} [MeasurableSpace Ω] {A : Set Ω} (hA : MeasurableSet A) :
 The prose observed that sums of random variables are again random variables; concretely that is closure of measurability under addition, `Measurable.add`.
 Prove that the indicator of one measurable set plus the indicator of another is measurable, by producing each indicator as in the model above and combining the two with `.add`.
 
+:::exercise
 ```lean
 example {Ω : Type*} [MeasurableSpace Ω] {A B : Set Ω}
     (hA : MeasurableSet A) (hB : MeasurableSet B) :
@@ -231,6 +232,7 @@ example {Ω : Type*} [MeasurableSpace Ω] {A B : Set Ω}
       + Set.indicator B (1 : Ω → ℝ)) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -285,11 +287,13 @@ example (μ : Measure ℝ) : Monotone ⇑(cdf μ) :=
 Monotonicity is exactly what makes the CDF assign nonnegative probability to every interval $`(x, y]`: the increment $`F_X(y) - F_X(x)` is $`\ge 0`.
 Prove it by feeding the ordering `x ≤ y` through the monotonicity above (`(cdf μ).mono`) and repackaging the resulting inequality as a nonnegative difference with `sub_nonneg`.
 
+:::exercise
 ```lean
 example (μ : Measure ℝ) (x y : ℝ) (h : x ≤ y) :
     0 ≤ cdf μ y - cdf μ x := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -341,11 +345,13 @@ example (μ : Measure ℝ) [IsProbabilityMeasure μ] : charFun μ 0 = 1 := by
 A subtler structural fact is that the characteristic function is *Hermitian*: evaluating at $`-t` conjugates the value (`charFun_neg`), so $`\varphi_X(t) + \varphi_X(-t)` collapses to twice the real part.
 Prove it by rewriting the second summand with `charFun_neg` and then `Complex.add_conj`, which says $`z + \overline{z} = 2\operatorname{Re} z`.
 
+:::exercise
 ```lean
 example (μ : Measure ℝ) (t : ℝ) :
     charFun μ t + charFun μ (-t) = (2 * (charFun μ t).re : ℝ) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -384,12 +390,14 @@ Independence is also stable under measurable post-processing: any measurable fun
 This is `IndepFun.comp`, which transforms *both* coordinates at once; leave the second one untouched by feeding it the identity (`measurable_id`).
 Prove that $`\varphi \circ X` and $`Y` are independent.
 
+:::exercise
 ```lean
 example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} {X Y : Ω → ℝ}
     {φ : ℝ → ℝ} (h : IndepFun X Y μ) (hφ : Measurable φ) :
     IndepFun (φ ∘ X) Y μ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

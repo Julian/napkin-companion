@@ -450,10 +450,12 @@ The defining feature of a limit is that nothing sits *immediately* below it: the
 Prove this for $`\omega` — if $`b < \omega` then $`b + 1 < \omega`.
 Rewrite the successor $`b + 1` back to `Order.succ b` (with `Order.succ_eq_add_one`), then feed the limit fact above to `Order.IsSuccLimit.succ_lt`.
 
+:::exercise
 ```lean
 example (b : Ordinal) (h : b < Ordinal.omega0) : b + 1 < Ordinal.omega0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -478,10 +480,12 @@ Unboundedness upgrades to something stronger: the ordinals are *directed*, so an
 Prove that for any $`\alpha, \beta` there is a $`\gamma` with $`\alpha < \gamma` and $`\beta < \gamma`.
 Take $`\gamma = \max(\alpha, \beta) + 1`; each of $`\alpha, \beta` is $`\le \max(\alpha, \beta)` (`le_max_left`, `le_max_right`), which is in turn $`< \gamma` (`lt_add_one`), so chain the two with `lt_of_le_of_lt`.
 
+:::exercise
 ```lean
 example (α β : Ordinal) : ∃ γ, α < γ ∧ β < γ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -515,10 +519,12 @@ example (p : Ordinal → Prop) (i : Ordinal)
 The important exercise was to convince yourself there are no infinite descending chains of ordinals.
 That is exactly this well-foundedness: no sequence can strictly decrease forever.
 
+:::exercise
 ```lean
 example : ¬ ∃ f : ℕ → Ordinal, ∀ n, f (n + 1) < f n := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -567,10 +573,12 @@ So the exponential lands back on the limit $`\omega`, which — like every limit
 Put the two facts together: show $`2^\omega \neq \omega + 1`.
 Rewrite $`2^\omega` to $`\omega` using the collapse above, then $`\omega \neq \omega + 1` is `lt_add_one` read as an inequality (`.ne`).
 
+:::exercise
 ```lean
 example : (2 : Ordinal) ^ Ordinal.omega0 ≠ Ordinal.omega0 + 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -608,10 +616,12 @@ That strict increase is exactly what rules out a $`\in`-minimal counterexample �
 Prove $`x \notin x`.
 Assume $`x \in x` (`intro`); the fact above then gives $`\operatorname{rank}(x) < \operatorname{rank}(x)`, which `lt_irrefl` rejects.
 
+:::exercise
 ```lean
 example (x : ZFSet) : x ∉ x := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

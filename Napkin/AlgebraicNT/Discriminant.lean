@@ -95,10 +95,12 @@ example : NumberField.discr ℚ = 1 := NumberField.discr_rat
 That value already says something structural: the discriminant of $`\mathbb{Q}` is a *unit* of $`\mathbb{Z}`.
 Deduce it from the computation above — substitute the value with `discr_rat`, after which $`1` is a unit (`isUnit_one`).
 
+:::exercise
 ```lean
 example : IsUnit (NumberField.discr ℚ) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -135,12 +137,14 @@ This is the fact that makes the discriminant a meaningful invariant: a nonzero d
 Mathlib records only the contrapositive, `Algebra.discr_zero_of_not_linearIndependent` — a dependent family has discriminant $`0`.
 Prove the version you want from it: assume the family is dependent (`by_contra`), and feed that to the named lemma to contradict the hypothesis `h`.
 
+:::exercise
 ```lean
 example (R B : Type*) [CommRing R] [IsDomain R] [CommRing B] [Algebra R B]
     {ι : Type*} [Fintype ι] [DecidableEq ι] (b : ι → B)
     (h : Algebra.discr R b ≠ 0) : LinearIndependent R b := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -158,6 +162,7 @@ example (R B : Type*) [CommRing R] [IsDomain R] [CommRing B] [Algebra R B]
 The cyclotomic computation asked for in the first problem is `IsCyclotomicExtension.discr_odd_prime`: for an odd prime $`p`, the discriminant of the power basis of a $`p`th cyclotomic extension is $`(-1)^{\frac{p-1}{2}} p^{p-2}`.
 This is a single named result — find it and apply it.
 
+:::exercise
 ```lean
 example {p : ℕ} {K : Type*} {L : Type*} {ζ : L}
     [Field K] [Field L] [Algebra K L]
@@ -168,6 +173,7 @@ example {p : ℕ} {K : Type*} {L : Type*} {ζ : L}
       = (-1) ^ ((p - 1) / 2) * p ^ (p - 2) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -195,11 +201,13 @@ recall NumberField.abs_discr_gt_two {K : Type*} [Field K] [NumberField K]
 The problem itself only asks for $`\left\lvert \Delta_K \right\rvert > 1` when $`K \neq \mathbb{Q}`.
 Deduce it from the sharper bound above.
 
+:::exercise
 ```lean
 example (K : Type*) [Field K] [NumberField K] (h : 1 < Module.finrank ℚ K) :
     1 < |NumberField.discr K| := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

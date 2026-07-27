@@ -383,10 +383,12 @@ Knowing the series converges lets us read off the *value* of the sum.
 Evaluate a concrete instance: $`\sum_n (1/2)^n = 2`.
 The `HasSum` above pins the sum down, and `HasSum.tsum_eq` turns it into the `tsum`, leaving only an arithmetic check.
 
+:::exercise
 ```lean
 example : ∑' n : ℕ, (1 / 2 : ℝ) ^ n = 2 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -417,12 +419,14 @@ example (n : ℕ) (x : ℝ) :
 Prove the two-monomial case: $`x \mapsto x^n + x^m` has derivative $`n x^{n-1} + m x^{m-1}`.
 Differentiate each power with `hasDerivAt_pow`, then combine them with `HasDerivAt.add`.
 
+:::exercise
 ```lean
 example (n m : ℕ) (x : ℝ) :
     HasDerivAt (fun x : ℝ => x ^ n + x ^ m)
       (n * x ^ (n - 1) + m * x ^ (m - 1)) x := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -466,12 +470,14 @@ Combine that with a closure property.
 Prove that a *sum* of two functions analytic at $`p` is $`C^n` at $`p`.
 Analyticity is closed under addition (`AnalyticAt.add`), and analytic-at implies $`C^n`-at (`AnalyticAt.contDiffAt`); chain the two.
 
+:::exercise
 ```lean
 example (f g : ℝ → ℝ) (p : ℝ) (n : WithTop ℕ∞)
     (hf : AnalyticAt ℝ f p) (hg : AnalyticAt ℝ g p) :
     ContDiffAt ℝ n (fun x => f x + g x) p := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -508,10 +514,12 @@ Because $`\exp` is its own derivative, *every* derivative of $`\exp` is again $`
 Prove it for the second derivative: $`\exp'' = \exp`.
 Rewrite with `Real.deriv_exp` twice — the inner `deriv Real.exp` becomes `Real.exp`, and then the outer one does too.
 
+:::exercise
 ```lean
 example : deriv (deriv Real.exp) = Real.exp := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -540,10 +548,12 @@ Analyticity is also closed under composition.
 Prove that $`z \mapsto \exp(\exp z)` is analytic at every point.
 The composite is `Complex.exp ∘ Complex.exp`; feed the analyticity of the outer and inner copies to `AnalyticAt.comp` (the outer one is analytic at the intermediate point $`\exp z` precisely because $`\exp` is analytic *everywhere*).
 
+:::exercise
 ```lean
 example (z : ℂ) : AnalyticAt ℂ (Complex.exp ∘ Complex.exp) z := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -571,12 +581,14 @@ Euler's formula is what turns the angle-addition laws for $`\sin` and $`\cos` in
 Prove that underlying identity: $`\exp(i(\theta + \varphi)) = \exp(i\theta)\exp(i\varphi)`.
 Distribute the $`i` across the sum with `add_mul`, then split the exponential of a sum with `Complex.exp_add`.
 
+:::exercise
 ```lean
 example (θ φ : ℝ) :
     Complex.exp (((θ : ℂ) + φ) * Complex.I) =
       Complex.exp (θ * Complex.I) * Complex.exp (φ * Complex.I) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

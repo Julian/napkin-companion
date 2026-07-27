@@ -411,10 +411,12 @@ Antisymmetry is really one direction of an equivalence: two cardinals are equal 
 Prove that packaging, splitting the iff with `constructor`.
 The forward direction turns an equality into two inequalities with `le_of_eq` (applied to `h` and to `h.symm`), and the backward direction is the antisymmetry above.
 
+:::exercise (chili := 1)
 ```lean
 example (α β : Type u) : #α = #β ↔ #α ≤ #β ∧ #β ≤ #α := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -445,10 +447,12 @@ example : Cardinal.aleph 0 = Cardinal.aleph0 := Cardinal.aleph_zero
 Cantor's theorem is what lets cardinals grow without bound: the power set of any type is strictly larger than the type itself.
 Prove it, using that the cardinality of $`\mathcal{P}(X)` is $`2^{\left\lvert X \right\rvert}`.
 
+:::exercise
 ```lean
 example (α : Type*) : #α < #(Set α) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -476,10 +480,12 @@ example (a b : Cardinal) (ha : ℵ₀ ≤ a) : a + b = max a b :=
 Since addition collapses to `max`, an infinite cardinal added to itself is unchanged.
 Show that $`\kappa + \kappa = \kappa` for every infinite $`\kappa`.
 
+:::exercise
 ```lean
 example (κ : Cardinal) (h : ℵ₀ ≤ κ) : κ + κ = κ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -505,10 +511,12 @@ example : ℵ₀ < 2 ^ ℵ₀ := Cardinal.cantor ℵ₀
 Cantor's theorem also shows there is no largest cardinal: applying it twice climbs past $`2^{\aleph_0}` as well.
 Prove $`\aleph_0 < 2^{2^{\aleph_0}}` by feeding `Cardinal.cantor` the two cardinals $`\aleph_0` and $`2^{\aleph_0}` and chaining the strict inequalities with `lt_trans`.
 
+:::exercise
 ```lean
 example : ℵ₀ < 2 ^ (2 ^ ℵ₀ : Cardinal) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -540,11 +548,13 @@ Being regular bundles two facts: the cardinal is infinite, and it is equal to it
 Unpack both for $`\kappa^+`, showing $`\aleph_0 \le \kappa^+` and $`\operatorname{cof}(\kappa^+) = \kappa^+` together.
 Regularity comes from the worked model, and then its two components are `.aleph0_le` and `.cof_ord`.
 
+:::exercise
 ```lean
 example (κ : Cardinal) (h : ℵ₀ ≤ κ) :
     ℵ₀ ≤ Order.succ κ ∧ (Order.succ κ).ord.cof = Order.succ κ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -574,11 +584,13 @@ Regularity is only one of the three properties folded into inaccessibility: unco
 Recover all three at once.
 The projections are `.aleph0_lt` for uncountability, the worked model `.isRegular`, and `.isStrongLimit`.
 
+:::exercise
 ```lean
 example (κ : Cardinal) (h : κ.IsInaccessible) :
     ℵ₀ < κ ∧ κ.IsRegular ∧ IsStrongLimit κ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

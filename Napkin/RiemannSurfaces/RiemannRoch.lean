@@ -331,12 +331,14 @@ each analytic factor has nonnegative order, a product of two analytic functions
 again has nonnegative order.
 Rewrite with the product identity, then add the two bounds with `add_nonneg`.
 
+:::exercise
 ```lean
 example (f g : ℂ → ℂ) (x : ℂ) (hf : AnalyticAt ℂ f x)
     (hg : AnalyticAt ℂ g x) :
     0 ≤ meromorphicOrderAt (f * g) x := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -407,11 +409,13 @@ Unfold `Divisor.single`, split the sum pointwise with `Finsupp.add_apply`, then
 evaluate each single — `Finsupp.single_eq_same` at the matching point and
 `Finsupp.single_eq_of_ne'` at the mismatched one.
 
+:::exercise
 ```lean
 example (X : Type*) (p q : X) (a b : ℤ) (h : q ≠ p) :
     (Divisor.single p a + Divisor.single q b) p = a := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -453,12 +457,14 @@ example (X : Type*) (D₁ D₂ : Divisor X) :
 Modelling the points $`i` and $`\infty` as `0, 1 : ℕ`, the prototype
 $`\deg((-3) \cdot i + (-4) \cdot \infty) = -7` becomes a computation.
 
+:::exercise
 ```lean
 example :
     Divisor.degree (Divisor.single 0 (-3) + Divisor.single 1 (-4)
       : Divisor ℕ) = -7 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -486,12 +492,14 @@ hypothesis collapses it, and `sub_self` finishes.
 (This degree-$`0` difference is precisely the relation behind the earlier
 proposition that principal divisors have degree $`0`.)
 
+:::exercise
 ```lean
 example (X : Type*) (D₁ D₂ : Divisor X)
     (h : Divisor.degree D₁ = Divisor.degree D₂) :
     Divisor.degree (D₁ - D₂) = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -574,11 +582,13 @@ $`\deg 0 = 0` (that is `map_zero`) and $`K - 0 = K` (`sub_zero`) — and let
 The upshot: the two linear systems at the ends differ in dimension by
 $`1 - g`, i.e. $`\dim L(0) - \dim L(K) = 1 - g`.
 
+:::exercise
 ```lean
 example {X : Type*} (R : Divisor.RiemannRochData X) :
     (R.l 0 : ℤ) - R.l R.K = 1 - R.genus := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

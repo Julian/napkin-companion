@@ -314,12 +314,14 @@ Away from the compact case one proves uniform continuity by hand, and the tool i
 A *nonexpansive* map — one with $`d(f(x), f(y)) \le d(x, y)` — is the cleanest instance: $`\delta = \varepsilon` works verbatim, exactly as $`\delta = \varepsilon^2` did for $`\sqrt{x}` in the chapter.
 Rewrite with the characterization, then offer $`\varepsilon` back as the $`\delta` (`refine fun ε hε => ⟨ε, hε, ?_⟩`) and chain the nonexpansive bound past `dist x y < ε` with `lt_of_le_of_lt`.
 
+:::exercise
 ```lean
 example {M N : Type*} [MetricSpace M] [MetricSpace N] (f : M → N)
     (hf : ∀ x y, dist (f x) (f y) ≤ dist x y) :
     UniformContinuous f := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -346,11 +348,13 @@ The uniqueness half of that story is the exercise below: there is *at most one* 
 That is exactly `Continuous.ext_on`, whose density hypothesis wants a `Dense` set — and `Rat.denseRange_cast` supplies one directly, since `DenseRange` *is* `Dense (Set.range _)`.
 Applying it leaves a `Set.EqOn f g (Set.range ((↑) : ℚ → ℝ))` goal; peel a point of that range back to some $`q : \mathbb{Q}` (via `rintro _ ⟨q, rfl⟩`) and the hypothesis `h q` closes it.
 
+:::exercise
 ```lean
 example (f g : ℝ → ℝ) (hf : Continuous f) (hg : Continuous g)
     (h : ∀ q : ℚ, f q = g q) : f = g := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -386,11 +390,13 @@ What makes $`\Sigma` — and the integral extending it — a genuine *linear* fu
 Prove the additive half on constants: the integral of $`c + d` splits as the sum of the two integrals.
 Rewrite all three integrals to their areas with `intervalIntegral.integral_const`; the leftover goal — the area of $`c + d` equals the sum of the areas of $`c` and $`d` — is `smul_add`.
 
+:::exercise
 ```lean
 example (a b c d : ℝ) :
     ∫ _ in a..b, (c + d) = (∫ _ in a..b, c) + ∫ _ in a..b, d := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -418,10 +424,12 @@ example (f F : ℝ → ℝ) (a b : ℝ)
 The AP-calculus example computed $`\int_1^4 x^2 \; dx = 21` from the antiderivative $`F(x) = \tfrac13 x^3`.
 Check that concrete value; `integral_pow` gives $`\int_a^b x^n \; dx = \frac{b^{n+1} - a^{n+1}}{n + 1}`, and `norm_num` finishes.
 
+:::exercise
 ```lean
 example : ∫ x in (1 : ℝ)..4, x ^ 2 = 21 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -446,6 +454,7 @@ example {M N : Type*} [PseudoMetricSpace M] [PseudoMetricSpace N]
 The Lipschitz maps are closed under composition — with constant the product $`K_f K_g` — so a composite of Lipschitz maps is again uniformly continuous.
 Chain the two hypotheses with `LipschitzWith.comp` into a single `LipschitzWith` fact for `f ∘ g`, then discharge the goal with `uniformContinuous` as above.
 
+:::exercise
 ```lean
 example {M N P : Type*} [PseudoMetricSpace M] [PseudoMetricSpace N]
     [PseudoMetricSpace P] (f : N → P) (g : M → N) (Kf Kg : NNReal)
@@ -453,6 +462,7 @@ example {M N P : Type*} [PseudoMetricSpace M] [PseudoMetricSpace N]
     UniformContinuous (f ∘ g) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

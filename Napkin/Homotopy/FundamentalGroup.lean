@@ -550,6 +550,7 @@ example {X : Type*} [TopologicalSpace X] {x y z : X}
 The same lemma handles the triple fusion $`\gamma_1 \ast \gamma_2 \ast \gamma_3` once you apply it twice, replacing all three factors at once.
 Prove it by fusing the first two homotopies with `hcomp`, then fusing that result against the third.
 
+:::exercise
 ```lean
 example {X : Type*} [TopologicalSpace X] {w x y z : X}
     {p₀ p₁ : Path w x} {q₀ q₁ : Path x y} {r₀ r₁ : Path y z}
@@ -558,6 +559,7 @@ example {X : Type*} [TopologicalSpace X] {w x y z : X}
     ((p₀.trans q₀).trans r₀).Homotopic ((p₁.trans q₁).trans r₁) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -601,12 +603,14 @@ example {X : Type*} [TopologicalSpace X] [SimplyConnectedSpace X] (x : X)
 The basepoint-independence isomorphism lets that triviality *travel*: because {name}`FundamentalGroup.fundamentalGroupMulEquivOfPathConnected` identifies the groups at any two basepoints, what holds at one holds at all.
 Show that if $`\pi_1(X, x_0)` is trivial then so is $`\pi_1(X, x_1)`, by pushing the two loops over to $`x_0` through the isomorphism and pulling the resulting equality back with its injectivity.
 
+:::exercise
 ```lean
 example {X : Type*} [TopologicalSpace X] [PathConnectedSpace X] (x₀ x₁ : X)
     (h : ∀ p q : FundamentalGroup X x₀, p = q)
     (p q : FundamentalGroup X x₁) : p = q := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -641,11 +645,13 @@ example {X : Type*} [TopologicalSpace X] (x : X) (n : ℕ)
 Commutativity is exactly what collapses conjugation: in an abelian group $`a b a^{-1}` is just $`b`.
 Prove it inside $`\pi_n` for $`n \ge 2` by commuting $`a` past $`b` with `mul_comm`, then cancelling $`a` against $`a^{-1}`.
 
+:::exercise
 ```lean
 example {X : Type*} [TopologicalSpace X] (x : X) (n : ℕ)
     (a b : π_ (n + 2) X x) : a * b * a⁻¹ = b := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -679,11 +685,13 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 Homotopy equivalences also compose, via {name}`ContinuousMap.HomotopyEquiv.trans`, so a homeomorphism placed in front of a homotopy equivalence still yields one.
 Given a homeomorphism $`X \cong Y` and a homotopy equivalence $`Y \simeq Z`, build $`X \simeq Z` by converting the homeomorphism and chaining.
 
+:::exercise
 ```lean
 example {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     [TopologicalSpace Z] (h : X ≃ₜ Y) (e : Y ≃ₕ Z) : X ≃ₕ Z := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -707,11 +715,13 @@ noncomputable example : TopCat ⥤ Grpd :=
 A contractible space is simply connected, so its fundamental group is trivial.
 Prove that any two loops there are the same class.
 
+:::exercise
 ```lean
 example {X : Type*} [TopologicalSpace X] [ContractibleSpace X] (x : X)
     (p q : FundamentalGroup X x) : p = q := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

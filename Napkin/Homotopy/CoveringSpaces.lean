@@ -488,11 +488,13 @@ Now put that to work.
 Every covering map is a local homeomorphism ({name}`IsCoveringMap.isLocalHomeomorph`), and a local homeomorphism is an open map ({name}`IsLocalHomeomorph.isOpenMap`).
 Chain those two facts off `Complex.isCoveringMap_exp` to show the complex exponential is an *open* map — it carries open sets to open sets.
 
+:::exercise
 ```lean
 example :
     IsOpenMap fun z : ℂ ↦ (⟨_, z.exp_ne_zero⟩ : {z : ℂ // z ≠ 0}) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -547,6 +549,7 @@ example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
 That two lifts agreeing at the start agree *entirely* is exactly what makes the endpoint $`\tilde\gamma(1)` a well-defined function of the starting data — the value the lifting correspondence reads off next.
 Conclude it: the two lifts are equal as functions, so they agree in particular at the endpoint $`1`.
 
+:::exercise
 ```lean
 example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
     {p : E → B} (cov : IsCoveringMap p) (g₁ g₂ : I → E)
@@ -554,6 +557,7 @@ example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
     (he : p ∘ g₁ = p ∘ g₂) (h0 : g₁ 0 = g₂ 0) : g₁ 1 = g₂ 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -593,12 +597,14 @@ example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
 Reading off the endpoint makes the slogan precise: $`\Phi` sends the identity class to $`e_0`.
 Show that the lifted constant path ends where it started, at $`e` — rewrite by the identity above, then evaluate the constant path at $`1` (that is {name}`ContinuousMap.const_apply`).
 
+:::exercise
 ```lean
 example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
     {p : E → B} (cov : IsCoveringMap p) (e : E) :
     cov.liftPath (.const I (p e)) e rfl 1 = e := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -623,12 +629,14 @@ example {E X G : Type*} [TopologicalSpace E] [TopologicalSpace X] [Group G]
 
 Confirm that a regular projection really is a covering projection: extract {name}`IsCoveringMap` from an {name}`IsQuotientCoveringMap` via its {name}`IsQuotientCoveringMap.isCoveringMap` field applied to `hf`.
 
+:::exercise
 ```lean
 example {E X G : Type*} [TopologicalSpace E] [TopologicalSpace X] [Group G]
     [MulAction G E] {f : E → X} (hf : IsQuotientCoveringMap f G) :
     IsCoveringMap f := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -667,6 +675,7 @@ example {E₁ E₂ B : Type*} [TopologicalSpace E₁] [TopologicalSpace E₂]
 The sharpest consequence is for a self-map of a single connected cover: a continuous $`f \colon E \to E` lying over $`p` (so $`p \circ f = p`) that fixes even one point must be the identity everywhere — a cover admits no nontrivial deck transformation pinned down at a point.
 Prove it by comparing $`f` against `id`: the shared composite is $`p \circ f = p = p \circ \operatorname{id}`, and $`f` agrees with `id` at $`x`, so {name}`IsCoveringMap.eq_of_comp_eq` finishes.
 
+:::exercise
 ```lean
 example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
     [PreconnectedSpace E] {p : E → B} (cov : IsCoveringMap p)
@@ -674,6 +683,7 @@ example {E B : Type*} [TopologicalSpace E] [TopologicalSpace B]
     (x : E) (hx : f x = x) : f = id := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -734,11 +744,13 @@ Injectivity pins down the extremes of the correspondence.
 The universal cover is by definition the cover of the trivial subgroup, `D.corr ⊥`, so a subgroup whose cover *is* the universal cover can only be `⊥`.
 Show that if `D.corr H` is the universal cover then `H = ⊥` — `apply` injectivity to reduce to an equality of covers, then close it with the hypothesis (the definition of `universalCover` does the rest).
 
+:::exercise
 ```lean
 example {G : Type*} [Group G] (D : CoveringClassificationData G)
     (H : Subgroup G) (h : D.corr H = D.universalCover) : H = ⊥ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -764,11 +776,13 @@ Run the equivalence backwards to see a concrete regular cover.
 The base itself, `D.baseCover`, is the cover of the whole group `⊤`, which is always normal ({name}`Subgroup.normal_top`), so the base is a regular cover.
 Prove it: rewrite the goal to `⊤`'s cover with `show`, then feed normality of `⊤` through the *backward* direction `.mpr` of the equivalence.
 
+:::exercise
 ```lean
 example {G : Type*} [Group G] (D : CoveringClassificationData G) :
     D.Regular D.baseCover := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

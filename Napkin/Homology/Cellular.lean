@@ -344,12 +344,14 @@ The induced map $`f_\ast \colon H_n(S^n) \to H_n(S^n)` is, after the identificat
 
 Modelling $`f_\ast` and $`g_\ast` as the multiplication maps $`x \mapsto (\deg f) x` and $`x \mapsto (\deg g) x` on $`\mathbb{Z}`, show that their composite is multiplication by $`(\deg f)(\deg g)` — which is exactly the multiplicativity $`\deg(f \circ g) = \deg(f)\deg(g)`.
 
+:::exercise
 ```lean
 example (df dg : ℤ) :
     (fun x : ℤ => df * x) ∘ (fun x : ℤ => dg * x)
       = fun x : ℤ => df * dg * x := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -382,11 +384,13 @@ A constant self-map wraps around $`S^n` zero times, so it has degree $`0`; this 
 Multiplicativity then makes degree $`0` *absorbing*: composing any map with a constant one again has degree $`0`.
 Prove it, by splitting the composite with `map_mul`, rewriting the constant factor's degree with {name}`MapDegreeData.deg_const`, and finishing with `mul_zero`.
 
+:::exercise
 ```lean
 example (D : MapDegreeData) (f : D.SelfMap) :
     D.deg (f * D.const) = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -400,11 +404,13 @@ example (D : MapDegreeData) (f : D.SelfMap) :
 Multiplicativity forces the degree of a map composed with itself to be a perfect square, $`\deg(f \circ f) = (\deg f)^2`.
 Prove it.
 
+:::exercise
 ```lean
 example (D : MapDegreeData) (f : D.SelfMap) :
     D.deg (f * f) = (D.deg f) ^ 2 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -417,11 +423,13 @@ example (D : MapDegreeData) (f : D.SelfMap) :
 This is the engine behind the hairy ball theorem: the antipodal map on an even sphere has degree $`-1`, so composing it with itself gives degree $`(-1)^2 = 1`, the same as $`\operatorname{id}`.
 Show that any self-map of degree $`-1` squares to one of degree $`1`.
 
+:::exercise
 ```lean
 example (D : MapDegreeData) (f : D.SelfMap) (h : D.deg f = -1) :
     D.deg (f * f) = 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -468,12 +476,14 @@ example (K : ChainComplex (ModuleCat ℤ) ℕ) (i j k : ℕ) :
 This vanishing is stable under precomposition: anything that first passes through two consecutive boundaries composes to zero as well.
 Prove that for any morphism $`\varphi` into $`K_i` the composite $`\varphi \circ d \circ d` vanishes, by rewriting the inner {name}`HomologicalComplex.d_comp_d` to $`0` and then collapsing $`\varphi \circ 0` with `Limits.comp_zero`.
 
+:::exercise
 ```lean
 example (K : ChainComplex (ModuleCat ℤ) ℕ) (i j k : ℕ)
     {M : ModuleCat ℤ} (φ : M ⟶ K.X i) :
     φ ≫ K.d i j ≫ K.d j k = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -497,12 +507,14 @@ example : (1 : ℤ) - 2 + 1 = 0 := by ring
 
 Reading the ranks of $`H_0, H_1, H_2 \cong \mathbb{Z}, \mathbb{Z}^2, \mathbb{Z}` straight off the free modules, compute the alternating sum $`b_0 - b_1 + b_2` and confirm the torus has Euler characteristic $`0`.
 
+:::exercise
 ```lean
 example :
     (Module.finrank ℤ (Fin 1 → ℤ) : ℤ) - Module.finrank ℤ (Fin 2 → ℤ)
       + Module.finrank ℤ (Fin 1 → ℤ) = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -528,10 +540,12 @@ example : CellStructure.torus.eulerChar = 0 :=
 That value is worth recomputing from first principles rather than quoting.
 Unfold the alternating sum {name}`CellStructure.eulerChar` and the cell counts of {name}`CellStructure.torus`, then expand the finite `Finset.range` sum with `Finset.sum_range_succ`; the three surviving terms $`1`, $`-2`, $`1` collapse to $`0`.
 
+:::exercise
 ```lean
 example : CellStructure.torus.eulerChar = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -544,6 +558,7 @@ example : CellStructure.torus.eulerChar = 0 := by
 The sphere formula makes the even/odd split visible: an even sphere has $`\chi = 2` and an odd sphere has $`\chi = 0`.
 Confirm both endpoints — $`\chi(S^2) = 2`, then $`\chi(S^1) = 0` — from {name}`CellStructure.eulerChar_sphere`.
 
+:::exercise
 ```lean
 example : (CellStructure.sphere 2).eulerChar = 2 := by
   sorry
@@ -551,6 +566,7 @@ example : (CellStructure.sphere 2).eulerChar = 2 := by
 example : (CellStructure.sphere 1).eulerChar = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -572,10 +588,12 @@ example : (2 : ℕ) • ((0, 1) : ℤ × ZMod 2) = 0 := by decide
 
 Make the torsion precise: show that this class is nonzero and yet is killed by $`2`.
 
+:::exercise
 ```lean
 example : ((0, 1) : ℤ × ZMod 2) ≠ 0 ∧ (2 : ℕ) • ((0, 1) : ℤ × ZMod 2) = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

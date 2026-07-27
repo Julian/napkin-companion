@@ -541,11 +541,13 @@ The same principle governs every degree, not just the bottom: since $`\partial` 
 Prove the general vanishing whenever $`i \le j`.
 Hand the goal to `C.shape`, unfold the shape relation to the arithmetic statement $`j + 1 = i` with `ComplexShape.down_Rel`, and let `omega` derive the contradiction with $`i \le j`.
 
+:::exercise (chili := 1)
 ```lean
 example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
     (C : ChainComplex V ℕ) (i j : ℕ) (h : i ≤ j) : C.d i j = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -585,6 +587,7 @@ That functoriality is exactly why homology cannot tell isomorphic complexes apar
 Prove one half of that: if a chain map $`g` undoes $`f`, in the sense that the composite $`C \xrightarrow{f} D \xrightarrow{g} C` is the identity, then $`f_\ast` and $`g_\ast` compose to the identity on homology too.
 Fold the two induced maps back into one with `homologyMap_comp` run backwards, rewrite along the hypothesis, and collapse the result with `homologyMap_id`.
 
+:::exercise
 ```lean
 example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
     [CategoryWithHomology V] {C D : ChainComplex V ℕ} (f : C ⟶ D) (g : D ⟶ C)
@@ -593,6 +596,7 @@ example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
       𝟙 (C.homology i) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -643,12 +647,14 @@ example {V : Type*} [Category V] [Preadditive V] [CategoryWithHomology V]
 The most useful special case is a *nullhomotopic* map — one chain homotopic to the zero map: it must induce the *zero* map on homology.
 Prove this by combining the invariance above (with $`g = 0`) with the fact that the zero chain map induces zero on homology, `HomologicalComplex.homologyMap_zero`.
 
+:::exercise
 ```lean
 example {V : Type*} [Category V] [Preadditive V] [CategoryWithHomology V]
     {C D : ChainComplex V ℕ} (f : C ⟶ D) (h : Homotopy f 0) (i : ℕ) :
     HomologicalComplex.homologyMap f i = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -684,12 +690,14 @@ The hypothesis $`w` was not decoration: it is precisely what makes $`\varepsilon
 Concretely, the boundary $`C_1(X) \to C_0(X)` followed by the augmentation $`\varepsilon` is zero.
 Prove it by rewriting the augmentation differential to $`f` with the worked model above, which leaves exactly the hypothesis $`w`.
 
+:::exercise
 ```lean
 example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
     (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0) :
     C.d 1 0 ≫ (ChainComplex.augment C f w).d 1 0 = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

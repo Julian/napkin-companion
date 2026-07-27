@@ -855,11 +855,13 @@ The prototype says that a principal ideal domain has trivial class group.
 Prove it: every element of the class group of a PID equals the identity.
 The lemma `ClassGroup.mk_eq_one_iff` says a fractional ideal class is trivial exactly when the ideal is principal, and `ClassGroup.induction` reduces an arbitrary class to one of the form `ClassGroup.mk _ I`.
 
+:::exercise
 ```lean
 example (R : Type*) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
     (C : ClassGroup R) : C = 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -892,10 +894,12 @@ example : NumberField.discr ℚ = 1 :=
 The general nonvanishing lemma `NumberField.discr_ne_zero` only promises $`\Delta_K \neq 0`, but the computed value for $`\mathbb{Q}` says strictly more: its discriminant is *positive*.
 Rewrite the goal with the value above, then close the numeric inequality by arithmetic.
 
+:::exercise
 ```lean
 example : 0 < NumberField.discr ℚ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -929,11 +933,13 @@ example (K : Type*) [Field K] [NumberField K] :
 Read one consequence off that identity: since $`2r_2 \ge 0`, there can be at most $`n` real places.
 Prove $`r_1 \le n` by pulling the counting relation into context with `have`, then handing the linear arithmetic to `omega`.
 
+:::exercise
 ```lean
 example (K : Type*) [Field K] [NumberField K] :
     InfinitePlace.nrRealPlaces K ≤ Module.finrank ℚ K := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -968,12 +974,14 @@ The equality-plus-compactness variant (b) is `exists_ne_zero_mem_lattice_of_meas
 The question above claimed that the hypothesis $`0 \in S` is extraneous: any nonempty, convex, centrally symmetric set already contains the origin.
 Prove it, taking any point $`x`, its reflection $`-x`, and their midpoint.
 
+:::exercise (chili := 1)
 ```lean
 example {E : Type*} [AddCommGroup E] [Module ℝ E] (s : Set E)
     (hne : s.Nonempty) (hconv : Convex ℝ s) (hsymm : ∀ x ∈ s, -x ∈ s) :
     (0 : E) ∈ s := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -1003,6 +1011,7 @@ example (K : Type*) [Field K] [NumberField K]
 Feeding the trap box to Minkowski's theorem needs more than positivity: the bound must also be *finite*, which is `NumberField.mixedEmbedding.minkowskiBound_lt_top`.
 Package both halves into the statement that the bound is neither $`0` nor $`\infty`, converting each strict inequality into an inequation with `.ne'` and `.ne`.
 
+:::exercise
 ```lean
 example (K : Type*) [Field K] [NumberField K]
     (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
@@ -1010,6 +1019,7 @@ example (K : Type*) [Field K] [NumberField K]
       NumberField.mixedEmbedding.minkowskiBound K I ≠ ⊤ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -1046,12 +1056,14 @@ example (K : Type*) [Field K] [NumberField K] :
 Push this to the case the chapter cares about: when the class group is *trivial* — a subsingleton — the class number is exactly $`1`.
 Combine the positivity above with the fact that a subsingleton has at most one element (`Fintype.card_le_one_iff_subsingleton`), unfolding the class number to a `Fintype.card` with `show`, then let `omega` pin the value.
 
+:::exercise (chili := 1)
 ```lean
 example (K : Type*) [Field K] [NumberField K]
     [Subsingleton (ClassGroup (𝓞 K))] :
     NumberField.classNumber K = 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -1093,11 +1105,13 @@ example (K : Type*) [Field K] [NumberField K] (I : Ideal (𝓞 K)) :
 That membership is exactly what powers the lemma above that an ideal *divides its norm*.
 Assemble it: divisibility of ideals is reverse containment (`Ideal.dvd_iff_le`), a singleton span sits inside `I` precisely when its generator is a member (`Ideal.span_singleton_le_iff_mem`), and that member is the norm by the fact above.
 
+:::exercise
 ```lean
 example (K : Type*) [Field K] [NumberField K] (I : Ideal (𝓞 K)) :
     I ∣ Ideal.span {(Ideal.absNorm I : 𝓞 K)} := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

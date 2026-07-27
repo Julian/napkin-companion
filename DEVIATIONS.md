@@ -141,6 +141,16 @@ lists below.
     glossary's Mathlib section and in Groups; a dotted underline marks
     which symbols are live.
 
+18. **Labelled exercises.** Each reader exercise is wrapped in a
+    companion-only `:::exercise` directive, rendering as a numbered
+    "Lean exercise" callout — distinguished from upstream's `:::EXERCISE`,
+    which claims the plain "Exercise" label — so an exercise is
+    distinguishable at a glance from the worked models around it.
+    `(chili := 1)` marks a section's closing exercise when the intended
+    solution runs to four or more steps, reusing the difficulty glyph of
+    upstream's problem sections; 71 exercises carry one.
+    `Test.CheckPairing` enforces that every reader exercise is wrapped.
+
 ## Formalization-forced deviations
 
 Places where Mathlib's design genuinely differs from the chapter's

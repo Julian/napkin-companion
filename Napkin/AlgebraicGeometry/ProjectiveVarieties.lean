@@ -374,11 +374,13 @@ example {σ : Type*} (i j : σ) :
 The same degree-additivity, applied to a polynomial with itself, shows that squaring doubles the degree.
 Prove that if $`f` is homogeneous of degree $`d` then $`f^2` is homogeneous of degree $`2d`: rewrite $`f^2` as $`f \cdot f` with `pow_two` and $`2d` as $`d + d` with `two_mul`, then close with `MvPolynomial.IsHomogeneous.mul`.
 
+:::exercise
 ```lean
 example {σ : Type*} (f : MvPolynomial σ ℂ) (d : ℕ)
     (hf : f.IsHomogeneous d) : (f ^ 2).IsHomogeneous (2 * d) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -436,6 +438,7 @@ example (K : Type*) [Field K] [DecidableEq K] :
 The prototypical fact is that a point is unchanged under rescaling, so that $`(x_0 : \dots : x_n) = (5x_0 : \dots : 5x_n)`.
 Show that scaling a nonzero vector by a nonzero scalar names the same point of projective space.
 
+:::exercise
 ```lean
 example {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
     (v : V) (hv : v ≠ 0) (c : K) (hc : c ≠ 0) :
@@ -443,6 +446,7 @@ example {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
       = Projectivization.mk K v hv := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -480,6 +484,7 @@ example {A σ : Type*} [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]
 Together with the Galois connection this makes $`\mathbb{V}_+` a closure operator: reapplying it to the vanishing ideal of $`\mathbb{V}_+(I)` recovers exactly $`\mathbb{V}_+(I)`.
 Prove this idempotence by `Set.Subset.antisymm`; one inclusion is the antitone law above applied to `ProjectiveSpectrum.homogeneousIdeal_le_vanishingIdeal_zeroLocus`, the other is the Galois-connection unit `ProjectiveSpectrum.subset_zeroLocus_vanishingIdeal`.
 
+:::exercise (chili := 1)
 ```lean
 example {A σ : Type*} [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]
     (𝒜 : ℕ → σ) [GradedRing 𝒜] (I : HomogeneousIdeal 𝒜) :
@@ -489,6 +494,7 @@ example {A σ : Type*} [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]
       = ProjectiveSpectrum.zeroLocus 𝒜 (I : Set A) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -537,6 +543,7 @@ example {ι A σ : Type*} [AddCommMonoid ι] [DecidableEq ι]
 Taking the value respects multiplication too (`HomogeneousLocalization.val_mul`), so it is a ring homomorphism and commutes with any combination of fractions.
 Confirm this on a mixed expression: show the value of $`ab + c` is $`a\cdot b + c`, by rewriting first with `val_add` and then with `val_mul`.
 
+:::exercise
 ```lean
 example {ι A σ : Type*} [AddCommMonoid ι] [DecidableEq ι]
     [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
@@ -545,6 +552,7 @@ example {ι A σ : Type*} [AddCommMonoid ι] [DecidableEq ι]
     (a * b + c).val = a.val * b.val + c.val := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -574,12 +582,14 @@ This works because the degree-$`n` polynomials are closed under both scaling by 
 Prove the general closure: if $`f` and $`g` are homogeneous of degree $`n` then so is $`f + c\,g` for any constant $`c`.
 A constant $`\mathbb{C}\,c` is homogeneous of degree $`0` (`MvPolynomial.isHomogeneous_C`), so $`c\,g` stays in degree $`0 + n = n` after `MvPolynomial.IsHomogeneous.mul`; then combine with `MvPolynomial.IsHomogeneous.add`.
 
+:::exercise
 ```lean
 example {σ : Type*} (f g : MvPolynomial σ ℂ) (c : ℂ) (n : ℕ)
     (hf : f.IsHomogeneous n) (hg : g.IsHomogeneous n) :
     (f + MvPolynomial.C c * g).IsHomogeneous n := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

@@ -666,10 +666,12 @@ recall (R σ : Type*) [CommRing R] : CommRing (MvPolynomial σ R)
 The comedic exercise asked you to show a ring is nontrivial exactly when $`0_R \neq 1_R`.
 Mathlib's `Nontrivial` predicate says a type has two distinct elements; unfold it into the concrete inequality.
 
+:::exercise
 ```lean
 example (R : Type*) [CommRing R] : Nontrivial R ↔ (0 : R) ≠ 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -701,10 +703,12 @@ example (u : ℤ) (h : IsUnit u) : u = 1 ∨ u = -1 := Int.isUnit_iff.mp h
 Put that classification to work.
 Since a unit of $`\mathbb{Z}` is $`\pm 1`, its square is $`1` — prove $`u \cdot u = 1` by case-splitting on the classification (`rcases … with rfl | rfl`, which substitutes each value of $`u`) and computing each branch.
 
+:::exercise
 ```lean
 example (u : ℤ) (h : IsUnit u) : u * u = 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -732,10 +736,12 @@ example (R S : Type*) [CommRing R] [CommRing S] (φ : R →+* S) :
 Because a ring homomorphism must fix $`1`, there is exactly one homomorphism $`\mathbb{Z} \to R`; Mathlib packages that uniqueness as `RingHom.ext_int`.
 Prove it from scratch instead, exposing *why* it holds: any `f : ℤ →+* R` sends `n` to the canonical image `(n : R)` (that is `eq_intCast`), so two such maps agree at every `n` — reduce the goal to pointwise equality with `RingHom.ext`.
 
+:::exercise
 ```lean
 example (R : Type*) [CommRing R] (f g : ℤ →+* R) : f = g := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -769,10 +775,12 @@ The mandatory exercise was that a field has exactly two ideals; Mathlib's one-li
 Prove it from the definitions, reusing the fact just above.
 If `I` is not the zero ideal it contains a nonzero element (`Submodule.exists_mem_ne_zero_of_ne_bot`); in a field that element is a unit (`isUnit_iff_ne_zero`); and an ideal containing a unit is the whole ring (`Ideal.eq_top_of_isUnit_mem`, the worked model above).
 
+:::exercise (chili := 1)
 ```lean
 example (K : Type*) [Field K] (I : Ideal K) : I = ⊥ ∨ I = ⊤ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -802,10 +810,12 @@ example (R : Type*) [CommRing R] (x y : R) :
 Since $`\gcd(2, 3) = 1`, the ideal $`(2, 3)` in $`\mathbb{Z}` is all of $`\mathbb{Z}`.
 Show that this span is the top ideal.
 
+:::exercise (chili := 1)
 ```lean
 example : Ideal.span ({2, 3} : Set ℤ) = ⊤ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -839,10 +849,12 @@ example (I : Ideal ℤ) : Submodule.IsPrincipal I :=
 Unpack what "principal" actually gives: a single generator.
 Produce, for any ideal `I` of `ℤ`, an integer `g` with `I = (g)` — the witness lives inside `Submodule.IsPrincipal`, reachable through its `.principal` field.
 
+:::exercise
 ```lean
 example (I : Ideal ℤ) : ∃ g : ℤ, I = Ideal.span {g} := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -877,11 +889,13 @@ One rung up from fields, prove that a principal ideal domain is Noetherian — a
 "Finitely generated" is a weak enough demand that one generator suffices: unfold with `isNoetherianRing_iff_ideal_fg`, and for an ideal `I` offer the singleton `{Submodule.IsPrincipal.generator I}`.
 Discharging the resulting goal needs `Finset.coe_singleton` (`FG` asks for a `Finset`, while `Ideal.span` consumes a `Set`) and then `Submodule.IsPrincipal.span_singleton_generator`, which says the generator does generate.
 
+:::exercise (chili := 1)
 ```lean
 example (R : Type*) [CommRing R] [IsPrincipalIdealRing R] :
     IsNoetherianRing R := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

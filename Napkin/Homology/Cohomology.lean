@@ -426,12 +426,14 @@ example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
 Two differentials in a row therefore annihilate anything to their right.
 Show that `A.d i j ≫ A.d j k ≫ φ = 0` for any following map `φ`: reassociate with `← Category.assoc` so the two differentials meet, collapse them with `A.d_comp_d`, and finish with `Limits.zero_comp` (`0 ≫ φ = 0`).
 
+:::exercise
 ```lean
 example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
     {W : V} (A : CochainComplex V ℕ) (i j k : ℕ) (φ : A.X k ⟶ W) :
     A.d i j ≫ A.d j k ≫ φ = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -489,6 +491,7 @@ example {X : Type*} {G : Type*} [AddCommGroup G] {n : ℕ}
 Additivity is exactly what makes the *cocycles* — the cochains with $`\delta c = 0` — closed under addition, hence a subgroup.
 Prove that if $`c_1` and $`c_2` are both cocycles then so is $`c_1 + c_2`: rewrite the sum's coboundary with `coboundary_add`, then discharge each summand with its hypothesis.
 
+:::exercise
 ```lean
 example {X : Type*} {G : Type*} [AddCommGroup G] {n : ℕ}
     (c₁ c₂ : Cochain X G n)
@@ -496,6 +499,7 @@ example {X : Type*} {G : Type*} [AddCommGroup G] {n : ℕ}
     coboundary (c₁ + c₂) = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -538,6 +542,7 @@ example {X : Type*} {G : Type*} [AddCommGroup G] {c : Cochain X G 0}
 Agreeing across every edge, the value then propagates along a path: two edges $`v \colon v_0 \to v_1` and $`w \colon w_0 \to w_1` that share the vertex $`v_1 = w_0` force the same value at the far endpoints $`v_0` and $`w_1`.
 Prove it by invoking the single-edge fact on each of $`v` and $`w`, then splicing the two equalities together through the shared vertex (rewrite with the hypothesis $`v_1 = w_0`).
 
+:::exercise
 ```lean
 example {X : Type*} {G : Type*} [AddCommGroup G] {c : Cochain X G 0}
     (h : coboundary c = 0) (v w : Simplex X 1) (hvw : v 1 = w 0) :
@@ -545,6 +550,7 @@ example {X : Type*} {G : Type*} [AddCommGroup G] {c : Cochain X G 0}
       = c (Chain.ofSimplex fun _ => w 1) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -590,6 +596,7 @@ example (R M N P : Type*) [CommRing R] [AddCommGroup M] [Module R M]
 But contravariance is forced by nothing more than how evaluation composes, so prove it by hand rather than quoting the lemma.
 Reduce to a pointwise statement with `ext φ x`, then rewrite each dualized evaluation via `LinearMap.dualMap_apply` (with `LinearMap.comp_apply`): both sides send $`\varphi` to the functional $`x \mapsto \varphi(g(f\,x))`.
 
+:::exercise
 ```lean
 example (R M N P : Type*) [CommRing R] [AddCommGroup M] [Module R M]
     [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
@@ -597,6 +604,7 @@ example (R M N P : Type*) [CommRing R] [AddCommGroup M] [Module R M]
     (g.comp f).dualMap = f.dualMap.comp g.dualMap := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -634,6 +642,7 @@ example (F V : Type*) [Field F] [AddCommGroup V] [Module F V]
 Iterating this recovers the double dual: $`V`, its dual, and its double dual all share one dimension.
 Prove $`\dim V^{\vee\vee} = \dim V` by applying the dual-dimension equality twice — once to peel off the outer dual (on the space $`V^\vee`, itself finite-dimensional), once to peel off the inner one.
 
+:::exercise
 ```lean
 example (F V : Type*) [Field F] [AddCommGroup V] [Module F V]
     [FiniteDimensional F V] :
@@ -641,6 +650,7 @@ example (F V : Type*) [Field F] [AddCommGroup V] [Module F V]
       = Module.finrank F V := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

@@ -857,11 +857,13 @@ But the whole point is that the sign rule *follows* from the module axioms, so d
 The idea: $`(-r) \cdot m` is an additive inverse of $`r \cdot m`.
 Show $`(-r) \cdot m + r \cdot m = 0` — that is `add_smul` run backwards, then `neg_add_cancel` and `zero_smul` — and conclude with `eq_neg_of_add_eq_zero_left`.
 
+:::exercise
 ```lean
 example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
     (r : R) (m : M) : (-r) • m = -(r • m) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -902,12 +904,14 @@ What makes it a *direct sum* is that every element splits uniquely into a piece 
 Prove the existence half: any $`p : M \times N` is the sum of its two components, embedded, $`p = (p_1, 0) + (0, p_2)`.
 Compare the two coordinates separately — `Prod.ext` reduces the goal to one equation per component, each of which `simp` settles from the additive identities.
 
+:::exercise
 ```lean
 example (R M N : Type*) [CommRing R]
     [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
     (p : M × N) : p = ((p.1, 0) + (0, p.2) : M × N) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -963,12 +967,14 @@ But what does linear independence actually *give* you?
 For two vectors it says: the only way a combination $`a v + b w` can vanish is with $`a = b = 0`.
 Prove that, unpacking the definition with `LinearIndependent.pair_iff` (which states exactly this equivalence) and feeding it your combination.
 
+:::exercise
 ```lean
 example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
     (v w : M) (h : LinearIndependent R ![v, w]) (a b : R)
     (hab : a • v + b • w = 0) : a = 0 ∧ b = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -1005,6 +1011,7 @@ example (k V W : Type*) [Field k]
 Combining the two conditions, a linear map respects any two-term linear combination.
 Prove $`T(a v + b w) = a\, T(v) + b\, T(w)`.
 
+:::exercise
 ```lean
 example (k V W : Type*) [Field k]
     [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
@@ -1012,6 +1019,7 @@ example (k V W : Type*) [Field k]
     T (a • v + b • w) = a • T v + b • T w := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -1067,6 +1075,7 @@ The matrix depends on the chosen bases, but the assignment $`T \mapsto \operator
 Prove that it respects a linear combination: it takes $`a S + T` to $`a \cdot \operatorname{toMatrix}(S) + \operatorname{toMatrix}(T)`.
 This is the same two-step move you used for a linear map — `map_add` then `map_smul` — but now applied to `toMatrix` itself, exploiting that it *is* a linear map.
 
+:::exercise
 ```lean
 example (k V W : Type*) [Field k]
     [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
@@ -1076,6 +1085,7 @@ example (k V W : Type*) [Field k]
       a • LinearMap.toMatrix bV bW S + LinearMap.toMatrix bV bW T := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -1131,12 +1141,14 @@ example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
 Zero membership, closure under addition, and closure under scaling combine into the single slogan a subspace really stands for: *closed under linear combinations*.
 Prove it — given $`x, y \in N` and scalars $`a, b`, show $`a x + b y \in N` — by scaling each vector into `N` (`Submodule.smul_mem`) and adding the results (`Submodule.add_mem`).
 
+:::exercise
 ```lean
 example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
     (N : Submodule k V) (x y : V) (hx : x ∈ N) (hy : y ∈ N) (a b : k) :
     a • x + b • y ∈ N := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

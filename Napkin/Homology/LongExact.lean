@@ -437,12 +437,14 @@ Being a monomorphism is not just a label: it is exactly the property of being *l
 Put `hS.mono_f` to work and prove that cancellation directly: if $`a \circ f = b \circ f`, then $`a = b`.
 Install the monomorphism as an instance first (`haveI := hS.mono_f`) so that `cancel_mono` — the lemma packaging left-cancellation for a mono — becomes applicable, then feed it the hypothesis.
 
+:::exercise
 ```lean
 example {C : Type*} [Category C] [Abelian C] (S : ShortComplex C)
     (hS : S.ShortExact) {W : C} (a b : W ⟶ S.X₁)
     (h : a ≫ S.f = b ≫ S.f) : a = b := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -493,6 +495,7 @@ The *other* consecutive composite, $`H_n(A_\bullet) \xrightarrow{f_\ast} H_n(B_\
 Prove $`f_\ast \circ g_\ast = 0`.
 Fold the composite back through functoriality with `homologyMap_comp` (used right-to-left), rewrite the underlying $`S.f \circ S.g` to $`0` via the short complex's own defining property `S.zero`, and clean up with `homologyMap_zero`.
 
+:::exercise
 ```lean
 example {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
     (S : ShortComplex (HomologicalComplex C c)) (i : ι) :
@@ -500,6 +503,7 @@ example {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
       HomologicalComplex.homologyMap S.g i = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -535,11 +539,13 @@ That one-sided inverse is enough to force $`g` to be an epimorphism: a section e
 Prove $`g` is epi straight from the splitting.
 Rather than reach for the packaged `Splitting.epi_g`, assemble it: the pair `⟨s.s, s.s_g⟩` is a `SplitEpi` for $`S.g`, so wrapping it as an `IsSplitEpi` witness lets `infer_instance` supply the resulting `Epi`.
 
+:::exercise
 ```lean
 example {C : Type*} [Category C] [Abelian C] {S : ShortComplex C}
     (s : S.Splitting) : Epi S.g := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

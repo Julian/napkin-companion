@@ -363,11 +363,13 @@ But contractibility is more than a bare typeclass flag: it *is* the assertion of
 Chain the two facts: from $`X` contractible and $`e \colon X \simeq Y`, exhibit an explicit homotopy equivalence $`Y \simeq \ast`.
 Transport contractibility across `e.symm` into an instance (with `haveI`), then read off the equivalence with `ContractibleSpace.hequiv_unit Y`.
 
+:::exercise
 ```lean (name := contractibleSymm)
 example {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
     [ContractibleSpace X] (e : X ≃ₕ Y) : Nonempty (Y ≃ₕ Unit) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -420,11 +422,13 @@ example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
 Unpack what that composite-is-zero really says, pointwise: a chain supported in $`A` — an element of the subgroup $`N` — projects to $`0` in the relative chains $`C(X, A) = C(X)/C(A)`.
 Rewrite the projection with {name}`Submodule.mkQ_apply`, then read the vanishing off membership: $`\bar x = 0` exactly when $`x \in N`, which is {name}`Submodule.Quotient.mk_eq_zero`, and `x.2` supplies that membership.
 
+:::exercise
 ```lean (name := pairComposeZero)
 example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
     (N : Submodule R M) (x : N) : N.mkQ (x : M) = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -447,11 +451,13 @@ example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
 "Hits every relative chain" has a submodule-level restatement: the range of the projection is all of $`C(X, A)`.
 Prove it, turning surjectivity into the equality of submodules with {name}`LinearMap.range_eq_top` and feeding it the fact above.
 
+:::exercise
 ```lean (name := mkQSurjective)
 example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M]
     (N : Submodule R M) : LinearMap.range N.mkQ = ⊤ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -475,11 +481,13 @@ example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M] :
 A subsingleton has just one element, and here that element is $`0`, matching $`H_n(X, X) = 0`: every chain of $`C(X, X)` collapses to zero.
 Turn the subsingleton into that statement — establish it as an instance (with `haveI`) so that {name}`Subsingleton.elim` can equate an arbitrary relative chain with $`0`.
 
+:::exercise
 ```lean (name := relChainsTop)
 example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M] :
     ∀ x : RelativeChains (⊤ : Submodule R M), x = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -503,12 +511,14 @@ Reflexivity is one clause of "$`\simeq` is an equivalence relation"; transitivit
 Given $`X \simeq Y` and $`Y \simeq Z` with $`Z` contractible, conclude $`X` is contractible.
 Compose the two equivalences into $`X \simeq Z` with {name}`ContinuousMap.HomotopyEquiv.trans`, then transport contractibility back with `.contractibleSpace`.
 
+:::exercise
 ```lean (name := hequivRefl)
 example {X Y Z : Type} [TopologicalSpace X] [TopologicalSpace Y]
     [TopologicalSpace Z] (e : X ≃ₕ Y) (f : Y ≃ₕ Z) [ContractibleSpace Z] :
     ContractibleSpace X := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

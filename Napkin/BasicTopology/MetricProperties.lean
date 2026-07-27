@@ -285,11 +285,13 @@ Boundedness itself is best read as "fits inside a ball", and proving it usually 
 Show that if every point of `s` lies within distance `1` of a fixed centre `c`, then `s` is bounded.
 No single lemma does this — you assemble it: build the containment `s ⊆ closedBall c 1` by hand (a point of `s` satisfies `dist x c ≤ 1`, which is exactly `Metric.mem_closedBall`), observe a closed ball is bounded (`Metric.isBounded_closedBall`), and transport that along the containment with `Bornology.IsBounded.subset`.
 
+:::exercise
 ```lean
 example (M : Type*) [PseudoMetricSpace M] (s : Set M) (c : M)
     (h : ∀ x ∈ s, dist x c ≤ 1) : Bornology.IsBounded s := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -330,11 +332,13 @@ Completeness is exactly the *converse* holding, so the two notions become equiva
 Prove that in a `CompleteSpace`, a sequence converges iff it is Cauchy.
 Split the iff with `constructor`; the forward direction reuses the fact above once you unpack the limit (`rintro ⟨p, hp⟩`), and the backward direction is the one place completeness is used — it hands you a limit through `cauchySeq_tendsto_of_complete`.
 
+:::exercise (chili := 1)
 ```lean
 example (M : Type*) [PseudoMetricSpace M] [CompleteSpace M] (x : ℕ → M) :
     (∃ p, Filter.Tendsto x Filter.atTop (𝓝 p)) ↔ CauchySeq x := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -364,10 +368,12 @@ It is even totally bounded, witnessing the claim that $`(0, 1)` is totally bound
 There is a lemma `totallyBounded_Ioo` that closes this in one shot, but prove it instead by *shrinking to a set you already understand* — the technique that generalises.
 The closed interval $`[0,1]` is compact (`isCompact_Icc`), hence totally bounded (`IsCompact.totallyBounded`); since $`(0,1) \subseteq [0,1]` (`Set.Ioo_subset_Icc_self`), total boundedness restricts to the subset (`TotallyBounded.subset`).
 
+:::exercise
 ```lean
 example : TotallyBounded (Set.Ioo (0 : ℝ) 1) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -391,11 +397,13 @@ The other half — inside a complete ambient space, a closed subset is complete 
 Rather than invoke it bare, package *both* halves into one statement: in a complete space, a subset is complete iff it is closed.
 Split with `constructor` (or give the pair directly with `⟨_, _⟩`); each direction is one of the two named facts, and it is worth noticing that only the `⟸` direction actually uses completeness of the ambient space.
 
+:::exercise
 ```lean
 example (M : Type*) [MetricSpace M] [CompleteSpace M] (s : Set M) :
     IsComplete s ↔ IsClosed s := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

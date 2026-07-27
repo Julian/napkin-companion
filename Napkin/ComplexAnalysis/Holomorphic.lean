@@ -599,11 +599,13 @@ example : Differentiable ℂ (fun z : ℂ => z ^ 3 + 2 * z + 1) := by
 The point of the closure properties is that they *compose* by hand, without any automation.
 Given two holomorphic functions $`f` and $`g`, assemble the holomorphicity of $`z \mapsto f(z) g(z) + f(z)` from `Differentiable.mul` and `Differentiable.add` directly.
 
+:::exercise
 ```lean
 example (f g : ℂ → ℂ) (hf : Differentiable ℂ f) (hg : Differentiable ℂ g) :
     Differentiable ℂ (fun z => f z * g z + f z) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -639,11 +641,13 @@ example : (∮ z in C((0 : ℂ), 1), (z - (0 : ℂ))⁻¹) = 2 * Real.pi * Compl
 The contour integral is *linear*, so a constant multiple of the integrand pulls straight out — that is `circleIntegral.integral_const_mul`.
 Combine it with the headline computation above to evaluate $`\oint_\gamma \frac{3}{z} \; dz` around the unit circle: pull the `3` out first, then finish with `integral_sub_center_inv`.
 
+:::exercise
 ```lean
 example : (∮ z in C((0 : ℂ), 1), 3 * (z - (0 : ℂ))⁻¹) =
     3 * (2 * Real.pi * Complex.I) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -670,10 +674,12 @@ example (f : ℂ → ℂ) (hf : Differentiable ℂ f) (c : ℂ) (R : ℝ) (hR : 
 The theorem says $`\oint_\gamma z^m \; dz = 0` for $`m \geq 0`, undoing all our hard work from earlier.
 Recover the case $`m = 2` around the unit circle: first establish that $`z \mapsto z^2` is holomorphic (`fun_prop` chains the closure properties), then feed that to the theorem above.
 
+:::exercise
 ```lean
 example : (∮ z in C((0 : ℂ), 1), z ^ 2) = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -703,12 +709,14 @@ example (f : ℂ → ℂ) (c : ℂ) (R C : ℝ) (hR : 0 ≤ R)
 Specialize the estimate to the unit circle, where $`R = 1` collapses the arclength $`2\pi R` to $`2\pi`.
 Feed the radius `1` to the lemma above, then clean up the leftover `* 1` factor (`mul_one` does it, e.g. via `simpa only [mul_one]`).
 
+:::exercise
 ```lean
 example (f : ℂ → ℂ) (C : ℝ)
     (hf : ∀ z ∈ Metric.sphere (0 : ℂ) 1, ‖f z‖ ≤ C) :
     ‖∮ z in C((0 : ℂ), 1), f z‖ ≤ 2 * Real.pi * C := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -744,10 +752,12 @@ example (f : ℂ → ℂ) (hf : Differentiable ℂ f) : AnalyticOnNhd ℂ f Set.
 That packaged equivalence is convenient, but derive the entire case from the general open-set version instead, seeing how it factors.
 Weaken `hf` to differentiability on the *set* `univ` (`Differentiable.differentiableOn`), note `univ` is open (`isOpen_univ`), and hand both to `DifferentiableOn.analyticOnNhd`.
 
+:::exercise
 ```lean
 example (f : ℂ → ℂ) (hf : Differentiable ℂ f) : AnalyticOnNhd ℂ f Set.univ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -772,11 +782,13 @@ example (f : ℂ → ℂ) (hf : Differentiable ℂ f)
 Prove the first problem in that form: a bounded entire function equals a single constant everywhere.
 Exhibit the constant — the value $`f(0)` is the natural choice — and then close each `f z = f 0` with the two-point equality above.
 
+:::exercise
 ```lean
 example (f : ℂ → ℂ) (hf : Differentiable ℂ f)
     (hb : Bornology.IsBounded (Set.range f)) : ∃ c, ∀ z, f z = c := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

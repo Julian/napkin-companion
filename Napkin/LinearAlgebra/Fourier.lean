@@ -390,12 +390,14 @@ The obstacle is that a point of `AddCircle T` is an equivalence class, so there 
 After that `AddCircle.coe_add` pushes the sum inside the class, `AddCircle.toCircle_apply_mk` evaluates each side, and `Circle.exp_add` finishes — modulo distributing the factor $`2\pi/T` over the sum with `mul_add`.
 This "reduce to representatives" move is how essentially every statement about a quotient gets proved.
 
+:::exercise (chili := 1)
 ```lean
 example {T : ℝ} (x y : AddCircle T) :
     AddCircle.toCircle (x + y)
       = AddCircle.toCircle x * AddCircle.toCircle y := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -446,11 +448,13 @@ The first fact — that the coefficients determine the vector — is where the *
 Prove the sharpest form: a vector all of whose Fourier coefficients vanish is zero.
 No computation is needed, only the observation that `repr` is not merely a linear map but a bundled isometric *equivalence*, so it is injective; `map_eq_zero_iff` converts injectivity of a map into the statement that only zero is sent to zero.
 
+:::exercise
 ```lean
 example {ι : Type*} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E]
     (b : HilbertBasis ι ℂ E) (x : E) : b.repr x = 0 ↔ x = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -482,10 +486,12 @@ At the other extreme, a one-element set gives back a single coordinate, $`\chi_{
 Prove it by unfolding the definition and letting `simp` collapse the one-term product (`Finset.prod_singleton`).
 This is the base case of the slogan that the $`\chi_S` are the *square-free monomials* in the coordinates.
 
+:::exercise
 ```lean
 example {n : ℕ} (i : Fin n) (x : BoolCube n) : chi {i} x = pm (x i) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -498,11 +504,13 @@ Each character takes values in $`\{\pm1\}` — that is `chi_eq_one_or` — becau
 Prove that, which is where the $`\pm1`-valued model earns its keep (over $`\{0,1\}` nothing like it is true).
 The single-coordinate version is `pm_mul_self`, so the work is getting from one coordinate to the whole product: after unfolding `chi` you have a product times a product, and `Finset.prod_mul_distrib` (used right-to-left) merges them into a single product of $`x_i \cdot x_i`.
 
+:::exercise
 ```lean
 example {n : ℕ} (S : Finset (Fin n)) (x : BoolCube n) :
     chi S x * chi S x = 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -560,11 +568,13 @@ Prove it.
 Split on whether $`\psi` is trivial with `by_cases`; in the trivial branch `subst` and let `simp` observe that the character is constantly $`1`, so the sum counts the group, and the other branch is the lemma above.
 Note that additive notation makes the *trivial* character `0` even though its values are all `1`, since `AddChar A ℂ` records a map from $`(A, +)` to $`(\mathbb{C}, \times)`.
 
+:::exercise (chili := 1)
 ```lean
 example {A : Type*} [AddGroup A] [Fintype A] (ψ : AddChar A ℂ) :
     ∑ x, ψ x = if ψ = 0 then (Fintype.card A : ℂ) else 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -635,11 +645,13 @@ Now put the normalization to work on the simplest possible input.
 Show that a constant function has that constant as its zeroth Fourier coefficient — the statement that the "average" really is an average, and the sanity check that would fail if `haarAddCircle` had total mass $`2\pi` instead of $`1`.
 Unfolding `fourierCoeff` leaves the integral of a constant, which `simp` evaluates to (total mass) $`\cdot\, c`; the mass is $`1` because Mathlib registers `AddCircle.haarAddCircle` as a probability measure, and that instance is what makes the constant come back unchanged.
 
+:::exercise
 ```lean
 example {T : ℝ} [hT : Fact (0 < T)] (c : ℂ) :
     fourierCoeff (fun _ : AddCircle T => c) 0 = c := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -713,10 +725,12 @@ Every result above is phrased with `HasSum`, not with an equation between a `∑
 Converting the honest statement into the convenient equation is `HasSum.tsum_eq`, and it only goes that way.
 Write the $`\zeta(4)` evaluation as an equation between sums.
 
+:::exercise
 ```lean
 example : ∑' n : ℕ, (1 : ℝ) / (n : ℝ) ^ 4 = Real.pi ^ 4 / 90 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

@@ -242,10 +242,12 @@ example (N : ℕ) : (qft N).transpose = qft N := qft_transpose N
 
 By that symmetry the left column repeats the top row; supply the proof.
 
+:::exercise
 ```lean
 example (N : ℕ) [NeZero N] (j : Fin N) : qft N j 0 = qft N 0 j := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -256,10 +258,12 @@ example (N : ℕ) [NeZero N] (j : Fin N) : qft N j 0 = qft N 0 j := by
 
 On a single basis state the transform does nothing: $`\mathrm{qft}\ 1` is the $`1 \times 1` identity.
 
+:::exercise
 ```lean
 example : qft 1 = 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -272,10 +276,12 @@ example : qft 1 = 1 := by
 
 For $`N = 2` the root of unity is $`\omega_2 = -1`, so the bottom-right entry is $`-\frac{1}{\sqrt{2}}`; this $`U_{\text{QFT}}` is exactly the Hadamard gate.
 
+:::exercise
 ```lean
 example : qft 2 1 1 = (-1 / Real.sqrt 2 : ℂ) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -302,11 +308,13 @@ example (N : ℕ) (hN : N ≠ 0) :
 More is true, and it is exactly the periodicity that drives the interference: *every* multiple of $`N` in the exponent returns $`\omega_N` to $`1`, since $`\omega_N^{Nk} = (\omega_N^N)^k = 1`.
 Prove it by splitting the exponent with `pow_mul` and feeding in the fact just above.
 
+:::exercise
 ```lean
 example (N : ℕ) (hN : N ≠ 0) (k : ℕ) :
     Complex.exp (2 * Real.pi * Complex.I / N) ^ (N * k) = 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -320,12 +328,14 @@ example (N : ℕ) (hN : N ≠ 0) (k : ℕ) :
 The interference that makes the transform detect periodicity comes from the identity $`\sum_{j=0}^{N-1} \omega_N^{\,j} = 0` when $`N > 1`: the powers of a primitive root sum to zero.
 Prove it with the geometric-sum lemma for primitive roots.
 
+:::exercise
 ```lean
 example (N : ℕ) (hN : 1 < N) :
     ∑ j ∈ Finset.range N,
       Complex.exp (2 * Real.pi * Complex.I / N) ^ j = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -358,11 +368,13 @@ example (ζ : ℂ) : (Matrix.diagonal ![(1 : ℂ), ζ]).det = ζ := by
 A quantum gate must be invertible, which for a matrix means its determinant is a unit.
 Show that $`R_k` is invertible whenever $`\zeta \neq 0`: reduce the determinant to $`\zeta` as above, then read invertibility off $`\zeta \neq 0` with `isUnit_iff_ne_zero`.
 
+:::exercise
 ```lean
 example (ζ : ℂ) (hζ : ζ ≠ 0) :
     IsUnit (Matrix.diagonal ![(1 : ℂ), ζ]).det := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -384,11 +396,13 @@ example (ζ : ℂ) : (Matrix.diagonal ![(1 : ℂ), ζ]).trace = 1 + ζ := by
 Applying $`R_k` twice squares the phase: $`R_k^2` is again diagonal, now carrying entries $`1` and $`\zeta^2`.
 Compute its trace by first rewriting the power of a diagonal matrix as a diagonal of powers (`Matrix.diagonal_pow`), then reading off the two entries as before.
 
+:::exercise
 ```lean
 example (ζ : ℂ) :
     (Matrix.diagonal ![(1 : ℂ), ζ] ^ 2).trace = 1 + ζ ^ 2 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -427,10 +441,12 @@ example (M : ℕ) (x : (ZMod M)ˣ) : x ^ Nat.totient M = 1 :=
 
 The order of $`x` therefore divides $`\varphi(M)`; deduce it from Euler's theorem.
 
+:::exercise
 ```lean
 example (M : ℕ) (x : (ZMod M)ˣ) : orderOf x ∣ Nat.totient M := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -448,10 +464,12 @@ example : (4 : ZMod 15) ^ 2 = 1 := by decide
 
 Recover the factor $`3` as $`\gcd(4 - 1, 15)`.
 
+:::exercise
 ```lean
 example : Nat.gcd (4 - 1) 15 = 3 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

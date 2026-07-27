@@ -712,6 +712,7 @@ end
 Now try it yourself.
 Fill in each `sorry` — the right-multiplication bijection is the mirror image of the worked proof above, and the second asks you to pin down the inverse.
 
+:::exercise
 ```lean
 example (G : Type*) [Group G] (g : G) :
     Function.Bijective (fun x : G => x * g) := by
@@ -721,6 +722,7 @@ example (G : Type*) [Group G] (g : G) :
 example (G : Type*) [Group G] (g h : G) (hh : g * h = 1) : h = g⁻¹ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -774,6 +776,7 @@ Here's one where they do.
 On a *commutative* group, the inversion map $`g \mapsto g^{-1}` is itself an isomorphism $`G \simeq^* G`; supply the three proof fields.
 (The `map_mul'` field is where commutativity is doing the work — think about why $`(ab)^{-1} = a^{-1} b^{-1}` needs it.)
 
+:::exercise (chili := 1)
 ```lean
 example (G : Type*) [CommGroup G] : G ≃* G where
   toFun := fun g => g⁻¹
@@ -782,6 +785,7 @@ example (G : Type*) [CommGroup G] : G ≃* G where
   right_inv := by sorry
   map_mul' := by sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -840,11 +844,13 @@ Your turn: compute two element orders in the cyclic group $`\mathbb{Z}/6\mathbb{
 Here `addOrderOf` is the additive analogue of `orderOf` (the group is written with `+`).
 The lemmas `ZMod.addOrderOf_one` and `ZMod.addOrderOf_coe` do the work.
 
+:::exercise (chili := 1)
 ```lean
 example : addOrderOf (1 : ZMod 6) = 6 := by sorry
 
 example : addOrderOf (3 : ZMod 6) = 2 := by sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -910,10 +916,12 @@ The identity is special for a more basic reason, one that leans on the group *ax
 Prove that the identity is the only *idempotent*: if $`g \star g = g`, then $`g = 1`.
 The trick is cancellation — rewrite $`g` as $`g \star 1`, so the hypothesis reads $`g \star g = g \star 1`, and cancel the leading $`g` on the left (`mul_left_cancel`).
 
+:::exercise
 ```lean
 example (G : Type*) [Group G] (g : G) (h : g * g = g) : g = 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

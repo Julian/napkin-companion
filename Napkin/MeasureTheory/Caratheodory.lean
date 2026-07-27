@@ -413,11 +413,13 @@ example {Ω : Type*} (𝒜 : Set (Set Ω)) (h : IsSetAlgebra 𝒜)
 But the whole point is that intersection closure *follows* from the two axioms, so derive it yourself without reaching for `inter_mem`.
 The only fields you have are `h.compl_mem` and `h.union_mem`; rewrite the goal with `← compl_compl (s ∩ t)` then `Set.compl_inter` to turn it into `(sᶜ ∪ tᶜ)ᶜ ∈ 𝒜`, which is exactly the shape those two fields close.
 
+:::exercise
 ```lean
 example {Ω : Type*} (𝒜 : Set (Set Ω)) (h : IsSetAlgebra 𝒜)
     (s t : Set Ω) (hs : s ∈ 𝒜) (ht : t ∈ 𝒜) : s ∩ t ∈ 𝒜 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -453,11 +455,13 @@ Monotonicity is the workhorse for bounding an outer measure: you cheaply bound $
 Show that an intersection is measured no larger than either of its parts, $`\mu^*(s \cap t) \le \mu^*(s)` and $`\mu^*(s \cap t) \le \mu^*(t)`.
 Each conjunct is `μ.mono` applied to one of `Set.inter_subset_left` / `Set.inter_subset_right`; pair them with `⟨_, _⟩`.
 
+:::exercise
 ```lean
 example {Ω : Type*} (μ : OuterMeasure Ω) (s t : Set Ω) :
     μ (s ∩ t) ≤ μ s ∧ μ (s ∩ t) ≤ μ t := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -501,12 +505,14 @@ A $`\sigma`-algebra is also closed under set difference, and you can build that 
 Show that if $`s` and $`t` are both $`\mu^*`-measurable, then so is $`s \setminus t`.
 Rewrite with `Set.diff_eq` to expose $`s \setminus t = s \cap t^c`, then combine `OuterMeasure.isCaratheodory_inter` with the complement fact above (applied to $`t`).
 
+:::exercise
 ```lean
 example {Ω : Type*} (μ : OuterMeasure Ω) (s t : Set Ω)
     (hs : μ.IsCaratheodory s) (ht : μ.IsCaratheodory t) :
     μ.IsCaratheodory (s \ t) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -544,10 +550,12 @@ If one point is null, so is any finite handful of them, because a union of null 
 Show that a two-point set $`\{a, b\} \subseteq \mathbb{R}` has measure zero.
 Rewrite $`\{a, b\}` as $`\{a\} \cup \{b\}` with `Set.insert_eq`, then close with `measure_union_null` fed two copies of `Real.volume_singleton`.
 
+:::exercise
 ```lean
 example (a b : ℝ) : volume ({a, b} : Set ℝ) = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -567,10 +575,12 @@ The Lebesgue measure is $`\sigma`-finite because the line is a countable union o
 The load-bearing fact is that each such piece really does have finite measure; prove it.
 Rewriting with `Real.volume_Ioo` turns the goal into `ENNReal.ofReal (n - -n) ≠ ⊤`, which is `ENNReal.ofReal_ne_top` (every `ENNReal.ofReal` is finite).
 
+:::exercise
 ```lean
 example (n : ℕ) : volume (Set.Ioo (-(n : ℝ)) n) ≠ ⊤ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

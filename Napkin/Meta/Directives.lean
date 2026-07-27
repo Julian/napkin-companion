@@ -558,6 +558,82 @@ block_extension Block.solution where
     details.solution > .solution-body > *:last-child { margin-bottom: 0; }
   "#]
 
+-- A reader exercise: the `sorry`-bearing code block, labelled and
+-- numbered so it is distinguishable at a glance from the worked models
+-- around it. `(chili := 1)` marks a section's harder closing exercise,
+-- reusing the difficulty glyph the problem sections use.
+block_extension Block.leanExercise (chili : Nat) where
+  data := .num (.fromNat chili)
+  traverse blockId _ _ := do assignCalloutNumber blockId; return none
+  toTeX :=
+    some <| fun _ goB _ _ content => do
+      content.mapM goB
+  toHtml :=
+    open Verso.Output.Html in
+    some <| fun _ goB blockId data content => do
+      let chiliN : Nat :=
+        match data with
+        | .num n => n.toFloat.toUInt32.toNat
+        | _ => 0
+      -- "Lean exercise", not "Exercise": the body's `:::EXERCISE` callouts
+      -- already claim that label, and these are the companion's.
+      let label := numberedKindLabel "Lean exercise"
+        ((← lookupCalloutNumber blockId).getD "")
+      let marker : Verso.Output.Html :=
+        if chiliN == 0 then .empty
+        else
+          .tag "span" #[("class", "lean-exercise-chili"),
+                        ("title", s!"Difficulty: {chiliN}/3")]
+            (.text true (chiliPeppers chiliN))
+      pure {{
+        <div class="lean-exercise">
+          <div class="lean-exercise-label">{{.text true label}}{{marker}}</div>
+          {{← content.mapM goB}}
+        </div>
+      }}
+  extraCss := [r#"
+    div.lean-exercise {
+      margin: 1.25em 0;
+      border-left: 3px solid #b9a7f0;
+      padding-left: 0.9em;
+    }
+    div.lean-exercise > div.lean-exercise-label {
+      font-variant-caps: all-small-caps;
+      letter-spacing: 0.04em;
+      font-weight: 700;
+      font-size: 0.95em;
+      color: #4a2fb0;
+    }
+    div.lean-exercise > div.lean-exercise-label > .lean-exercise-chili {
+      margin-left: 0.4em;
+      font-size: 0.85em;
+    }
+    div.lean-exercise > div.lean-exercise-label + * { margin-top: 0.35em; }
+  "#]
+
+/-- Configuration for `:::exercise`: an optional chili count, `0` when
+    the exercise carries no difficulty marker. -/
+structure LeanExerciseConfig where
+  /-- Difficulty marker, 0 for none. -/
+  chili : Nat
+
+section
+variable [Monad m] [MonadInfoTree m] [MonadLiftT CoreM m] [MonadEnv m]
+  [MonadError m] [MonadFileMap m]
+
+def LeanExerciseConfig.parse : ArgParse m LeanExerciseConfig :=
+  LeanExerciseConfig.mk <$> .namedD `chili .nat 0
+
+instance : FromArgs LeanExerciseConfig m := ⟨LeanExerciseConfig.parse⟩
+
+end
+
+@[directive]
+def exercise : DirectiveExpanderOf LeanExerciseConfig
+  | cfg, contents => do
+    ``(Verso.Doc.Block.other (Block.leanExercise $(quote cfg.chili))
+        #[$[$(← contents.mapM elabBlock)],*])
+
 @[directive]
 def solution : DirectiveExpanderOf Unit
   | (), contents => do

@@ -371,6 +371,7 @@ Almost sure convergence is just the almost-everywhere filter wrapped around ordi
 Show that it is closed under sums: if $`X_n \to A` and $`Y_n \to B` almost surely, then $`X_n + Y_n \to A + B` almost surely.
 Land in the worlds where *both* hypotheses hold at once with `filter_upwards`, and there the goal is the ordinary `Tendsto.add`.
 
+:::exercise
 ```lean
 example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
     {X Y : ℕ → Ω → ℝ} {A B : Ω → ℝ}
@@ -379,6 +380,7 @@ example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
     ∀ᵐ ω ∂μ, Tendsto (fun n => X n ω + Y n ω) atTop (nhds (A ω + B ω)) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -418,11 +420,13 @@ example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
 To see the definition from the inside, prove the simplest instance straight from it: a sequence that never leaves its limit — the constant $`X_n = Y` — converges in probability to $`Y`.
 After `intro ε hε`, the anomaly set $`\{\omega \mid \varepsilon \le \operatorname{edist}(Y\,\omega,\, Y\,\omega)\}` is empty, since `edist_self` collapses the distance to $`0` and $`\varepsilon \le 0` is impossible; so each of its measures is $`0` and the constant-$`0` sequence tends to $`0` by `tendsto_const_nhds`.
 
+:::exercise (chili := 1)
 ```lean
 example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} {Y : Ω → ℝ} :
     TendstoInMeasure μ (fun _ : ℕ => Y) atTop Y := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -459,6 +463,7 @@ example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasur
 Chaining both implications gives the full hierarchy at a stroke: almost sure convergence implies convergence in law.
 Route the almost-everywhere hypothesis through `tendstoInMeasure_of_tendsto_ae` to reach convergence in measure first — a probability measure is finite, so that side condition is automatic — and then apply `.tendstoInDistribution`, whose a.e.-measurability input is `AEStronglyMeasurable.aemeasurable`.
 
+:::exercise
 ```lean
 example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasure μ]
     {X : ℕ → Ω → ℝ} {Y : Ω → ℝ} (hX : ∀ n, AEStronglyMeasurable (X n) μ)
@@ -466,6 +471,7 @@ example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasur
     TendstoInDistribution X atTop Y (fun _ => μ) μ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -499,12 +505,14 @@ $`\Pr[|X| \ge a] \le \operatorname{Var}[X]/a^2` with nothing to recenter.
 Recover that form: feed the recentered `recall` above the extra hypothesis
 $`\mathbb{E}[X] = 0` and collapse $`|X - \mathbb{E}[X]|` back to $`|X|`.
 
+:::exercise
 ```lean
 example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
     {X : Ω → ℝ} (hX : MemLp X 2 μ) (hmean : μ[X] = 0) {c : ℝ} (hc : 0 < c) :
     μ {ω | c ≤ |X ω|} ≤ ENNReal.ofReal (variance X μ / c ^ 2) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -529,11 +537,13 @@ The fact that these probabilities sum to $`1` is `bernstein.probability`, and
 Combine the two to bound a single probability: no one term can exceed the sum, so
 $`\Pr[S_n = k] \le 1`.
 
+:::exercise (chili := 1)
 ```lean
 example (n : ℕ) (k : Fin (n + 1)) (x : unitInterval) :
     bernstein n k x ≤ 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -566,6 +576,7 @@ recall ProbabilityTheory.strong_law_ae {Ω : Type*}
 (Note how "i.i.d. with mean $`0`" decomposes: integrability of one variable, pairwise independence, identical distribution, and the limit is stated as $`\mathbb{E}[X_0]` rather than normalizing to zero.)
 Recover the mean-zero statement from the chapter: when $`\mathbb{E}[X_0] = 0`, the partial means converge almost surely to $`0`.
 
+:::exercise
 ```lean
 example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
     (X : ℕ → Ω → ℝ) (hint : Integrable (X 0) μ)
@@ -575,6 +586,7 @@ example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
       atTop (nhds 0) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -608,12 +620,14 @@ This is the engine behind the proposition relating $`T_n` to $`M_n`: since $`M_n
 Prove that proposition: if $`T_n \to L`, then $`T_n - \frac{1}{n}\sum_{i < n} T_i \to 0`.
 Build the Cesàro limit exactly as above, then subtract the two convergent sequences with `Tendsto.sub`, whose limit $`L - L` simplifies to $`0`.
 
+:::exercise
 ```lean
 example {T : ℕ → ℝ} {L : ℝ} (h : Tendsto T atTop (nhds L)) :
     Tendsto (fun n : ℕ => T n - (n⁻¹ : ℝ) * ∑ i ∈ Finset.range n, T i)
       atTop (nhds 0) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -638,11 +652,13 @@ Turn that null set into the statement the truncation step actually uses — almo
 every point lies in only finitely many $`s_i`, i.e. eventually lands outside the
 `limsup` — by trading measure zero for an almost-everywhere claim via `ae_iff`.
 
+:::exercise
 ```lean
 example {α : Type*} [MeasurableSpace α] {μ : Measure α} {s : ℕ → Set α}
     (hs : ∑' i, μ (s i) ≠ ∞) : ∀ᵐ x ∂μ, x ∉ limsup s atTop := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

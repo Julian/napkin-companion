@@ -376,6 +376,7 @@ The characteristic feature of the dual map is that it is *contravariant*: it rev
 Prove $`(T \circ S)^\vee = S^\vee \circ T^\vee`.
 Peel off a functional and a vector with `ext f v`, then evaluate each side with `Module.Dual.transpose_apply` and `LinearMap.comp_apply`.
 
+:::exercise
 ```lean
 example (k U V W : Type*) [Field k]
     [AddCommGroup U] [Module k U]
@@ -386,6 +387,7 @@ example (k U V W : Type*) [Field k]
       = (Module.Dual.transpose S).comp (Module.Dual.transpose T) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -416,12 +418,14 @@ example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
 The injectivity half of the isomorphism $`V \cong V^\vee` is the fact used in the proof: if $`\langle v, w \rangle = 0` for every $`v`, then $`w = 0` by positive definiteness (take $`v = w`).
 Instantiating the hypothesis at $`v = w` gives $`\langle w, w \rangle = 0`, and `inner_self_eq_zero` rewrites that into $`w = 0`.
 
+:::exercise
 ```lean
 example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
     [InnerProductSpace 𝕜 V]
     (w : V) (h : ∀ v, inner 𝕜 v w = 0) : w = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -460,6 +464,7 @@ example {𝕜 V W : Type*} [RCLike 𝕜]
 That identity has a mirror image on the other side, $`\langle T^\dagger(w), v \rangle_V = \langle w, T(v) \rangle_W`, and deriving it exposes the sesquilinearity at the heart of this chapter.
 Conjugate symmetry of the inner product is `inner_conj_symm`, which swaps the two arguments at the cost of a complex conjugate; rewriting with it, then the defining property above, then it once more, conjugates twice and lands on the goal.
 
+:::exercise
 ```lean
 example {𝕜 V W : Type*} [RCLike 𝕜]
     [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
@@ -469,6 +474,7 @@ example {𝕜 V W : Type*} [RCLike 𝕜]
     inner 𝕜 (T.adjoint w) v = inner 𝕜 w (T v) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -508,6 +514,7 @@ example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
 Even before eigenvalues enter, symmetry already forces the "diagonal" values $`\langle T v, v \rangle` to equal their own conjugates — this self-conjugacy is exactly the computation that makes the eigenvalues real.
 Flip the conjugate with `inner_conj_symm`, which moves $`T` across to the other argument, then finish with the symmetry hypothesis $`\langle T v, v \rangle = \langle v, T v \rangle` supplied by `hT v v`.
 
+:::exercise
 ```lean
 example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
     [InnerProductSpace 𝕜 V]
@@ -515,6 +522,7 @@ example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
     starRingEnd 𝕜 (inner 𝕜 (T v) v) = inner 𝕜 (T v) v := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -536,6 +544,7 @@ Rewriting with `hv` and `hw` and pulling the scalars out with `inner_smul_left` 
 Assuming $`v \neq 0`, the scalar $`\mu` is an eigenvalue, so `conj_eigenvalue_eq_self` makes $`\overline{\mu} = \mu`; then $`(\mu - \nu)\langle v, w \rangle = 0` and `mul_eq_zero` with $`\mu \neq \nu` forces $`\langle v, w \rangle = 0`.
 Handle $`v = 0` separately (there `simp` closes it), and bridge the hypothesis `hv` to the eigenvalue witness with `Module.End.mem_eigenspace_iff` and `Module.End.hasEigenvalue_of_hasEigenvector`.
 
+:::exercise (chili := 1)
 ```lean
 example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
     [InnerProductSpace 𝕜 V]
@@ -544,6 +553,7 @@ example {𝕜 V : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
     inner 𝕜 v w = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

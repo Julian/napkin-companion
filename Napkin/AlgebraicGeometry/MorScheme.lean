@@ -466,11 +466,13 @@ Put functoriality to work: a ring isomorphism ought to become a scheme isomorphi
 Suppose `f : R ⟶ S` and `g : S ⟶ R` compose to the identity one way, `f ≫ g = 𝟙 R`; show their `Spec` images cancel the _other_ way, `Spec.map g ≫ Spec.map f = 𝟙 (Spec R)`.
 Fold the composite back up with `Spec.map_comp` run backwards, rewrite along the hypothesis, and finish with `Spec.map_id`.
 
+:::exercise
 ```lean
 example {R S : CommRingCat} (f : R ⟶ S) (g : S ⟶ R) (h : f ≫ g = 𝟙 R) :
     Spec.map g ≫ Spec.map f = 𝟙 (Spec R) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -494,12 +496,14 @@ Sections and stalks are tied together by a single naturality square: taking the 
 This is exactly the "compatible germs go to compatible germs" compatibility described in the section, recorded as `Scheme.Hom.germ_stalkMap`.
 Prove it; the composition `≫` reads left to right, and the inverse-image open $`\pi^{-1}(U)` appears as `f ⁻¹ᵁ U`.
 
+:::exercise
 ```lean
 example {X Y : Scheme} (f : X ⟶ Y) (U : Y.Opens) (x : X) (hx : f.base x ∈ U) :
     Y.presheaf.germ U (f.base x) hx ≫ f.stalkMap x =
       f.app U ≫ X.presheaf.germ (f ⁻¹ᵁ U) x hx := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -572,11 +576,13 @@ example {R S : CommRingCat} :
 The injective half carries real geometric content: a scheme map determines its ring homomorphism, and you _recover_ the homomorphism by taking global sections — precisely `Spec.preimage`, the inverse direction.
 Prove directly that `Spec.map f = Spec.map g` forces `f = g`, by applying `Spec.preimage` to both sides with `congrArg` and simplifying the two round-trips `Spec.preimage (Spec.map _)` away.
 
+:::exercise
 ```lean
 example {R S : CommRingCat} (f g : R ⟶ S) (h : Spec.map f = Spec.map g) :
     f = g := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -606,10 +612,12 @@ example (X : Scheme) (f g : X ⟶ Spec (.of ℤ)) : f = g :=
 Terminality bundles both halves — existence _and_ uniqueness — into one slogan: there is exactly one such morphism.
 Assemble that `Unique` structure by hand: the canonical morphism is `specZIsTerminal.from X`, and any other morphism equals it again by `hom_ext`.
 
+:::exercise
 ```lean
 noncomputable example (X : Scheme) : Unique (X ⟶ Spec (.of ℤ)) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -633,11 +641,13 @@ example {X : Scheme} {U : X.Opens} (hU : IsAffineOpen U) (f : Γ(X, U)) :
 Specialize this to a full affine scheme: the ring of functions on $`D(f) \subseteq \operatorname{Spec} R` is $`R` localized away from $`f`.
 Take `U = ⊤`, whose affineness is `isAffineOpen_top`, and hand it to the same lemma.
 
+:::exercise
 ```lean
 example (R : CommRingCat) (f : Γ(Spec R, ⊤)) :
     IsLocalization.Away f Γ(Spec R, (Spec R).basicOpen f) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

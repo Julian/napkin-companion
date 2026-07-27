@@ -350,11 +350,13 @@ example (X : Scheme) (U : X.Opens) :
 Injectivity is exactly the statement that the inclusion reflects equality of points, so package it as an equivalence: two points of `U` have the same image in `X` if and only if they are already equal.
 Split with `constructor`; the forward direction feeds the hypothesis to the injectivity above, and the backward direction is immediate once you rewrite along the equality.
 
+:::exercise
 ```lean
 example (X : Scheme) (U : X.Opens) (x y : U) :
     U.ι.base x = U.ι.base y ↔ x = y := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -381,11 +383,13 @@ example (X : Scheme) (U : X.Opens) :
 Read that range description as a surjectivity statement onto `U`: every point of `X` lying in `U` is the image of some point of the open subscheme.
 Rewrite the membership backwards along `Scheme.Opens.range_ι` to turn it into membership in the range, then `obtain` the preimage witness.
 
+:::exercise
 ```lean
 example (X : Scheme) (U : X.Opens) (x : X) (hx : x ∈ (U : Set X)) :
     ∃ y : U, U.ι.base y = x := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -419,11 +423,13 @@ example (R : CommRingCat) :
 Now run the hyperbola effect on $`\operatorname{Spec} R` itself: a basic open $`D(f)` cut out by a global function `f` is again affine.
 Chain the two facts — feed the affineness of the top open (`isAffineOpen_top`) into `IsAffineOpen.basicOpen` at the section `f`.
 
+:::exercise
 ```lean
 example (R : CommRingCat) (f : Γ(Spec R, ⊤)) :
     IsAffineOpen ((Spec R).basicOpen f) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

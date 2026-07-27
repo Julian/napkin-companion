@@ -430,12 +430,14 @@ Put that injectivity to work: an injective ring map has trivial kernel.
 Show that when $`S` avoids the zero divisors, only $`0` maps to $`0` in the localization.
 Apply the injectivity above (`Function.Injective` reduces the goal $`a = 0` to $`\iota(a) = \iota(0)`), then close it by rewriting with the hypothesis and `map_zero`.
 
+:::exercise
 ```lean
 example (A : Type*) [CommRing A] (S : Submonoid A) (B : Type*) [CommRing B]
     [Algebra A B] [IsLocalization S B] (hS : S ≤ nonZeroDivisors A)
     (a : A) (h : algebraMap A B a = 0) : a = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -471,11 +473,13 @@ Once $`f` is invertible, so is every power $`f^n`.
 Prove that the image of $`f^n` in $`A[f^{-1}]` is a unit.
 Push the ring map through the power with `map_pow` so the goal becomes $`\iota(f)^n`, then raise the unit above to the $`n`th power with `IsUnit.pow`.
 
+:::exercise
 ```lean
 example (A : Type*) [CommRing A] (f : A) (n : ℕ) :
     IsUnit (algebraMap A (Localization.Away f) (f ^ n)) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -500,11 +504,13 @@ example (A : Type*) [CommRing A] (p : Ideal A) [p.IsPrime] : Type _ :=
 This answers the section's question of why $`S = A \setminus \mathfrak{p}` is multiplicative: a product lands in a prime ideal only if one of its factors does, so the complement is closed under multiplication.
 Prove that closure directly.
 
+:::exercise
 ```lean
 example (A : Type*) [CommRing A] (p : Ideal A) [p.IsPrime]
     {x y : A} (hx : x ∉ p) (hy : y ∉ p) : x * y ∉ p := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -539,12 +545,14 @@ The bijection is moreover *inclusion-preserving*, and contraction is where that 
 Prove that it is monotone: a containment $`q_1 \subseteq q_2` of primes of the localization pulls back to $`\iota^{-1}(q_1) \subseteq \iota^{-1}(q_2)`.
 Take a point of the smaller contraction, unfold its membership with `Ideal.mem_comap` (which says $`x \in \iota^{-1}(q)` iff $`\iota(x) \in q`), push the image through the hypothesis $`q_1 \subseteq q_2`, and repackage with `Ideal.mem_comap` again.
 
+:::exercise
 ```lean
 example (A : Type*) [CommRing A] (S : Submonoid A) (B : Type*) [CommRing B]
     [Algebra A B] [IsLocalization S B] (q₁ q₂ : Ideal B) (h : q₁ ≤ q₂) :
     q₁.comap (algebraMap A B) ≤ q₂.comap (algebraMap A B) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -584,11 +592,13 @@ The proposition says the contracted ideal is not just prime but *contains $`I`* 
 Prove that containment for any ideal $`q` of $`A/I`: show $`I \subseteq \psi^{-1}(q)`.
 Take $`x \in I`; by `Ideal.mem_comap` the goal is $`\psi(x) \in q`, and since $`I` is exactly the kernel of $`\psi`, `Ideal.Quotient.eq_zero_iff_mem` rewrites $`\psi(x)` to $`0`, which lies in any ideal by `zero_mem`.
 
+:::exercise
 ```lean
 example (A : Type*) [CommRing A] (I : Ideal A) (q : Ideal (A ⧸ I)) :
     I ≤ q.comap (Ideal.Quotient.mk I) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

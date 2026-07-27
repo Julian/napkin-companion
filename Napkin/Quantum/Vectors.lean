@@ -308,11 +308,13 @@ example (n : ℕ) (ψ : EuclideanSpace ℂ (Fin n)) :
 This is exactly why we normalize a state: when $`|\psi\rangle` has norm $`1`, it forces $`\langle\psi|\psi\rangle = 1`, the condition $`|c_0|^2 + \dots + |c_{n-1}|^2 = 1` from the chapter.
 Prove it — rewrite with the squared-norm identity above, substitute the hypothesis that the norm is $`1`, and finish the numerics with `norm_num`.
 
+:::exercise
 ```lean
 example (n : ℕ) (ψ : EuclideanSpace ℂ (Fin n)) (h : ‖ψ‖ = 1) :
     inner ℂ ψ ψ = 1 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -346,10 +348,12 @@ example (n : ℕ) : Module.finrank ℂ (EuclideanSpace ℂ (Fin n)) = n :=
 A qubit is a *nonzero* element of the state space, so we had better know a nonzero vector exists whenever there is at least one basis state.
 Prove that $`\mathbb{C}^{\oplus (n+1)}` is nontrivial: `Module.nontrivial_of_finrank_pos` reduces the goal to positivity of the dimension, which the computation above turns into $`0 < n + 1`.
 
+:::exercise
 ```lean
 example (n : ℕ) : Nontrivial (EuclideanSpace ℂ (Fin (n + 1))) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -401,6 +405,7 @@ example {n : ℕ}
 A complex number equal to its own conjugate is real — its imaginary part vanishes.
 Combine the self-conjugacy above with `Complex.conj_eq_iff_im` to conclude that the Rayleigh quotient $`\langle Tx|x\rangle` has imaginary part $`0`, which is exactly what makes each eigenvalue real.
 
+:::exercise
 ```lean
 example {n : ℕ}
     (T : EuclideanSpace ℂ (Fin n) →ₗ[ℂ] EuclideanSpace ℂ (Fin n))
@@ -408,6 +413,7 @@ example {n : ℕ}
     (inner ℂ (T x) x).im = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -436,6 +442,7 @@ recall {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
 The two-qubit space $`\mathbb{C}^{\oplus 2} \otimes \mathbb{C}^{\oplus 2}` has the four-element orthonormal basis $`|00\rangle, |01\rangle, |10\rangle, |11\rangle`.
 Confirm that its dimension is therefore $`4`.
 
+:::exercise
 ```lean
 example :
     Module.finrank ℂ
@@ -443,6 +450,7 @@ example :
       = 4 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

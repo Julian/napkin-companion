@@ -347,12 +347,14 @@ Put the bridge to work to see that the single-variable derivative is *unique*.
 Suppose $`f \colon \mathbb{R} \to \mathbb{R}` has derivative both $`a` and $`b` at $`x`.
 Push each hypothesis through the bridge (`.mp`), invoke that Fréchet derivatives are unique (`HasFDerivAt.unique`) to obtain `toSpanSingleton ℝ a = toSpanSingleton ℝ b`, then recover $`a = b` by evaluating these equal maps at `1` (`toSpanSingleton_apply_one`).
 
+:::exercise
 ```lean
 open ContinuousLinearMap in
 example (f : ℝ → ℝ) (a b x : ℝ)
     (ha : HasDerivAt f a x) (hb : HasDerivAt f b x) : a = b := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -382,6 +384,7 @@ example {V W : Type*}
 Continuity *at* the point is the strong statement; every weaker localization follows from it.
 Show that a Fréchet-differentiable function is continuous *within* any set `s` at the point, by first extracting continuity at the point and then restricting it (`ContinuousAt.continuousWithinAt`).
 
+:::exercise
 ```lean
 example {V W : Type*}
     [NormedAddCommGroup V] [NormedSpace ℝ V]
@@ -390,6 +393,7 @@ example {V W : Type*}
     (h : HasFDerivAt f f' p) : ContinuousWithinAt f s p := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -420,6 +424,7 @@ example {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
 The forward direction is the "each coordinate separately" moral in action: from differentiability of the whole map you can read off differentiability of any single coordinate function.
 Extract it — given `HasFDerivAt Φ Φ' x`, prove that the $`i`-th projection $`v \mapsto \Phi(v)_i` is differentiable — by taking the `.mp` direction of the equivalence and specializing it to your index `i`.
 
+:::exercise
 ```lean
 open ContinuousLinearMap in
 example {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
@@ -429,6 +434,7 @@ example {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     HasFDerivAt (fun v => Φ v i) ((proj i).comp Φ') x := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -461,6 +467,7 @@ That lemma produces the *predicate* `HasLineDerivAt`; the chapter's equation $`\
 Prove it: differentiability makes `lineDeriv ℝ f p v` equal to `L v`.
 Build the `HasLineDerivAt` witness with the worked model above, then read off its value with `HasLineDerivAt.lineDeriv`.
 
+:::exercise
 ```lean
 example {V W : Type*}
     [NormedAddCommGroup V] [NormedSpace ℝ V]
@@ -469,6 +476,7 @@ example {V W : Type*}
     lineDeriv ℝ f p v = L v := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -504,6 +512,7 @@ example {V W : Type*}
 Cash it out: for a twice-differentiable `f` and any vectors `v w`, prove the second derivative is symmetric in those two slots.
 Produce the symmetry witness as above, then feed the vectors to its `.eq` field (`IsSymmSndFDerivAt.eq`) — this is Clairaut's theorem, one pair of directions at a time.
 
+:::exercise
 ```lean
 example {V W : Type*}
     [NormedAddCommGroup V] [NormedSpace ℝ V]
@@ -512,6 +521,7 @@ example {V W : Type*}
     fderiv ℝ (fderiv ℝ f) p v w = fderiv ℝ (fderiv ℝ f) p w v := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -545,6 +555,7 @@ The predicate form pins down *which* map is the derivative; the total-function f
 Derive the `fderiv` version of the chain rule: with the same hypotheses, `fderiv ℝ (g ∘ f) p = g'.comp f'`.
 Assemble the `HasFDerivAt` witness with the worked model, then convert a `HasFDerivAt` into a `fderiv` equation with `HasFDerivAt.fderiv`.
 
+:::exercise
 ```lean
 example {V W X : Type*}
     [NormedAddCommGroup V] [NormedSpace ℝ V]
@@ -555,6 +566,7 @@ example {V W X : Type*}
     fderiv ℝ (g ∘ f) p = g'.comp f' := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

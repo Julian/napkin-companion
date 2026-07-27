@@ -365,6 +365,7 @@ example {R M N : Type*} [Ring R]
 Bijectivity is not yet an isomorphism *of representations*, so make that last step.
 Show that a nonzero intertwiner packages into an honest isomorphism `M ≃ₗ[R] N`: obtain bijectivity as above, then hand it to `LinearEquiv.ofBijective`, which promotes a bijective linear map to a linear equivalence.
 
+:::exercise
 ```lean
 example {R M N : Type*} [Ring R]
     [AddCommGroup M] [Module R M] [IsSimpleModule R M]
@@ -372,6 +373,7 @@ example {R M N : Type*} [Ring R]
     (f : M →ₗ[R] N) (hf : f ≠ 0) : Nonempty (M ≃ₗ[R] N) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -411,6 +413,7 @@ The point of "semisimple" is complete reducibility: the regular representation i
 Prove exactly this for the matrix ring — the supremum of its simple submodules is everything.
 Being a semisimple ring means being semisimple *as a module over itself*, so the classification lemma `IsSemisimpleModule.sSup_simples_eq_top` (which says a semisimple module is the join of its simple submodules) applies with the regular module.
 
+:::exercise
 ```lean
 example (k : Type*) [Field k] (n : ℕ) :
     sSup {m : Submodule (Matrix (Fin n) (Fin n) k)
@@ -418,6 +421,7 @@ example (k : Type*) [Field k] (n : ℕ) :
       IsSimpleModule (Matrix (Fin n) (Fin n) k) m} = ⊤ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -458,6 +462,7 @@ An invariant complement is exactly the decomposition $`V = W \oplus W'` the sect
 Unpack it: produce a complement $`q` for which $`p \sqcup q = \top` (together they span $`V`) and $`p` and $`q` are disjoint (their intersection is trivial).
 Grab the complement with `obtain`, then read the two halves off the `IsCompl` witness through its `sup_eq_top` and `disjoint` fields.
 
+:::exercise
 ```lean
 example {k G V : Type*} [Field k] [Group G] [Finite G]
     [NeZero (Nat.card G : k)]
@@ -467,6 +472,7 @@ example {k G V : Type*} [Field k] [Group G] [Finite G]
       p ⊔ q = ⊤ ∧ Disjoint p q := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

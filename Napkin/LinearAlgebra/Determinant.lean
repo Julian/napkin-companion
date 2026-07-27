@@ -318,12 +318,14 @@ example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (m : M) :
 The exercise asked you to derive the anticommutativity $`v \wedge w = -(w \wedge v)` from $`v \wedge v = 0` alone.
 Prove it: the sum `ExteriorAlgebra.ι_add_mul_swap` of the two orders vanishes, so each is the negation of the other.
 
+:::exercise
 ```lean
 example (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (x y : M) :
     ExteriorAlgebra.ι R x * ExteriorAlgebra.ι R y
       = -(ExteriorAlgebra.ι R y * ExteriorAlgebra.ι R x) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -362,11 +364,13 @@ example {n : Type*} [Fintype n] [DecidableEq n] {k : Type*}
 A striking consequence: although matrix multiplication is *not* commutative, the determinant of a product does not notice the order — $`\det(MN) = \det(NM)` even when $`MN \neq NM`.
 Prove it by expanding each side with `Matrix.det_mul` and commuting the resulting scalars in $`k`.
 
+:::exercise
 ```lean
 example {n : Type*} [Fintype n] [DecidableEq n] {k : Type*}
     [CommRing k] (M N : Matrix n n k) : (M * N).det = (N * M).det := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -389,11 +393,13 @@ example {n : Type*} [Fintype n] [DecidableEq n] {k : Type*}
 Over a *field* the units are exactly the nonzero elements, and this recovers the familiar $`\det T \neq 0` form of the criterion.
 Prove that a matrix over a field is invertible iff its determinant is nonzero, by rewriting with the criterion above and then trading `IsUnit` for `≠ 0` in the field (`isUnit_iff_ne_zero`).
 
+:::exercise
 ```lean
 example {n : Type*} [Fintype n] [DecidableEq n] {K : Type*}
     [Field K] (M : Matrix n n K) : IsUnit M ↔ M.det ≠ 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -425,12 +431,14 @@ example {n : Type*} [DecidableEq n] [Fintype n] {k : Type*} [CommRing k]
 The payoff is that *every* matrix is a root of some monic polynomial — it is "algebraic" over $`k` — since its own characteristic polynomial is monic (`Matrix.charpoly_monic`) and, by the theorem above, annihilates it.
 Exhibit that polynomial: give the witness together with the two facts it must satisfy.
 
+:::exercise
 ```lean
 example {n : Type*} [DecidableEq n] [Fintype n] {k : Type*} [CommRing k]
     (M : Matrix n n k) :
     ∃ p : Polynomial k, p.Monic ∧ Polynomial.aeval M p = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

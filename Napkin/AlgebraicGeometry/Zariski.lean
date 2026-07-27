@@ -438,11 +438,13 @@ Asking more equations to hold cuts down the solution set, so a bigger set of pol
 Prove it.
 Everything is unfolded by `PrimeSpectrum.mem_zeroLocus`, which says a prime $`\mathfrak{p}` lies in $`\mathbb{V}(s)` exactly when $`s \subseteq \mathfrak{p}`; once both sides are in that form the statement is transitivity of $`\subseteq`.
 
+:::exercise
 ```lean
 example (R : Type*) [CommRing R] (s t : Set R) (h : s ⊆ t) :
     PrimeSpectrum.zeroLocus t ⊆ PrimeSpectrum.zeroLocus s := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -494,11 +496,13 @@ example (R : Type*) [CommRing R] (f g : R) :
 Cash that out in the case the chapter cares about: if $`g \mid f`, then $`f` vanishes wherever $`g` does, so $`D(f) \subseteq D(g)`.
 Rewrite with the criterion and the goal becomes an ideal membership; divisibility by $`g` *is* membership in the ideal $`(g)` (`Ideal.mem_span_singleton`), and any ideal sits inside its own radical (`Ideal.le_radical`).
 
+:::exercise
 ```lean
 example (R : Type*) [CommRing R] (f g : R) (h : g ∣ f) :
     PrimeSpectrum.basicOpen f ≤ PrimeSpectrum.basicOpen g := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -513,12 +517,14 @@ The chapter asks what $`D(xy)` is, and the answer is $`D(x) \cap D(y)`.
 This is the first place the points being *prime* ideals does real work, so prove it pointwise rather than citing the packaged `PrimeSpectrum.basicOpen_mul`.
 Unfolding with `PrimeSpectrum.mem_basicOpen` turns all three memberships into non-memberships $`f \notin \mathfrak{p}`, and then the two directions are genuinely different: one is closure of an ideal under multiplication (`Ideal.mul_mem_left`, `Ideal.mul_mem_right`, in contrapositive), and the other is primality itself, `Ideal.IsPrime.mem_or_mem`, reached through `p.isPrime`.
 
+:::exercise (chili := 1)
 ```lean
 example (R : Type*) [CommRing R] (f g : R) (p : PrimeSpectrum R) :
     p ∈ PrimeSpectrum.basicOpen (f * g) ↔
       p ∈ PrimeSpectrum.basicOpen f ∧ p ∈ PrimeSpectrum.basicOpen g := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -555,12 +561,14 @@ The theorem that coordinate rings correspond to ideals asked for a *radical* ide
 The reason is the Nullstellensatz: for a radical ideal, passing to the zero locus and back returns $`I` unchanged.
 Prove this recovery.
 
+:::exercise
 ```lean
 example {σ : Type*} [Finite σ] (I : Ideal (MvPolynomial σ ℂ))
     (h : I.IsRadical) :
     MvPolynomial.vanishingIdeal ℂ (MvPolynomial.zeroLocus ℂ I) = I := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -598,11 +606,13 @@ Show that if $`g` is a unit then $`D(g)` is the whole space, so $`f/g` is a glob
 The content is that a unit belongs to no prime ideal: were it in one, that ideal would contain $`1` and hence be everything (`Ideal.eq_top_of_isUnit_mem`), which a prime is not (`Ideal.IsPrime.ne_top`, reached through `p.isPrime`).
 Reduce the equality of opens to a membership statement with `eq_top_iff`, then unfold with `PrimeSpectrum.mem_basicOpen`.
 
+:::exercise (chili := 1)
 ```lean
 example (R : Type*) [CommRing R] (g : R) (hg : IsUnit g) :
     PrimeSpectrum.basicOpen g = ⊤ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -634,11 +644,13 @@ One half is the divisibility exercise above, since $`g \mid g^n` (`dvd_pow_self`
 The other half is *only* true because a radical is involved: $`g` need not lie in the ideal $`(g^n)`, but it lies in its radical, because that means exactly $`g^m \in (g^n)` for *some* $`m` — and $`m = n` works.
 This is the reason the radical shows up in the criterion at all.
 
+:::exercise (chili := 1)
 ```lean
 example {σ : Type*} (g : MvPolynomial σ ℂ) (n : ℕ) (hn : 0 < n) :
     PrimeSpectrum.basicOpen (g ^ n) = PrimeSpectrum.basicOpen g := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -679,11 +691,13 @@ Show this happens already in $`\operatorname{Spec} \mathbb{Z}`, at the point $`(
 After the rewrite you have `(⊥ : Ideal ℤ).IsMaximal` to refute.
 Maximality says every proper ideal above $`\bot` *is* $`\bot` (`Ideal.IsMaximal.eq_of_le`), so feed it $`(2)`, which is proper because $`2` is not a unit (`Ideal.span_singleton_eq_top`, then `Int.isUnit_iff`); concluding $`(2) = \bot` puts $`2` in $`\bot`, i.e. makes $`2 = 0`.
 
+:::exercise (chili := 1)
 ```lean
 example : ¬ IsClosed
     ({⟨(⊥ : Ideal ℤ), Ideal.isPrime_bot⟩} : Set (PrimeSpectrum ℤ)) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

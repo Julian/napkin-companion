@@ -398,12 +398,14 @@ example (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
 Membership in `Ideal.primesOver p B` bundles primality together with lying over, so a single element of it carries both facts at once.
 Peel `P ∈ Ideal.primesOver p B` apart with `obtain` — the definitional unfolding from the first block turns it into a pair — and read `p` off the `LiesOver` half through its `.over` field.
 
+:::exercise
 ```lean
 example (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
     (p : Ideal A) (P : Ideal B) (hP : P ∈ Ideal.primesOver p B) :
     p = P.under A := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -440,6 +442,7 @@ Read in the ramified direction, this is the chapter's headline: a prime that div
 Extract that consequence — from $`p \mid \Delta_K`, produce an actual prime $`P` above $`p` that fails to be unramified.
 The biconditional's right-hand side is a universal "every prime above $`p` is unramified"; since $`p` divides the discriminant that universal must fail, so negate it (`.mpr` turns "all unramified" back into "$`p` avoids the discriminant", contradicting the hypothesis) and let `push_neg` hand you the offending prime.
 
+:::exercise (chili := 1)
 ```lean
 example (K : Type*) [Field K] [NumberField K] {p : ℤ} (hp : Prime p)
     (hdvd : p ∣ NumberField.discr K) :
@@ -447,6 +450,7 @@ example (K : Type*) [Field K] [NumberField K] {p : ℤ} (hp : Prime p)
       (p : 𝓞 K) ∈ P ∧ ¬ Algebra.IsUnramifiedAt ℤ P := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -483,6 +487,7 @@ Prove the fundamental identity in its number field guise.
 Taking $`\mathcal{O}_K` over $`\mathbb{Z}`, whose fraction fields are $`\mathbb{Q}` and $`K`, the sum of $`e_i f_i` across the primes above $`(p)` recovers the degree $`[K:\mathbb{Q}]`.
 The identity itself is `Ideal.sum_ramification_inertia (𝓞 K) ℚ K`; its hypothesis that $`(p)` is maximal follows from `Ideal.span_singleton_prime` together with `Ideal.IsPrime.isMaximal`, and its $`(p) \neq 0` from `Ideal.span_singleton_eq_bot`.
 
+:::exercise (chili := 1)
 ```lean
 example (K : Type*) [Field K] [NumberField K] {p : ℤ} (hp : Prime p) :
     ∑ P ∈ IsDedekindDomain.primesOverFinset (Ideal.span {p}) (𝓞 K),
@@ -491,6 +496,7 @@ example (K : Type*) [Field K] [NumberField K] {p : ℤ} (hp : Prime p) :
           = Module.finrank ℚ K := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -539,6 +545,7 @@ example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] (p : Ideal A)
 A transitive action lets you not just relate two primes but *chain* the relation: composing the automorphism sending $`P` to $`Q` with the one sending $`Q` to $`R` sends $`P` all the way to $`R`.
 Prove it — `obtain` a group element for each leg, then combine them with the group operation, unfolding $`(\tau\sigma) \cdot P` through the action axiom `mul_smul`.
 
+:::exercise
 ```lean
 example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] (p : Ideal A)
     (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
@@ -546,6 +553,7 @@ example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] (p : Ideal A)
     (P Q R : Ideal.primesOver p B) : ∃ σ : G, σ • P = R := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -586,6 +594,7 @@ One consequence pins down a decomposition group's relationship to its own elemen
 When $`\sigma` itself fixes $`\mathfrak{p}` — that is, $`\sigma \in D_\mathfrak{p}` — conjugating $`D_\mathfrak{p}` by $`\sigma` returns $`D_\mathfrak{p}` unchanged, so every element of a decomposition group normalizes it.
 Prove it: feed $`\sigma\mathfrak{p} = \mathfrak{p}` (which `MulAction.mem_stabilizer_iff` extracts from membership) back into the conjugation identity above.
 
+:::exercise
 ```lean
 example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] {p : Ideal A}
     (G : Type*) [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
@@ -595,6 +604,7 @@ example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] {p : Ideal A}
       = MulAction.stabilizer G P := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

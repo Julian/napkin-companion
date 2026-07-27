@@ -461,12 +461,14 @@ example (k V : Type*) [Field k] [IsAlgClosed k] [AddCommGroup V] [Module k V]
 That only asserts an eigen*value* exists; extract from it an actual eigen*vector*.
 Chain the two equivalences above with the existence theorem: `hasEigenvalue_iff` recasts the eigenvalue as "its eigenspace is not `⊥`", `Submodule.exists_mem_ne_zero_of_ne_bot` then hands you a nonzero member, and `mem_eigenspace_iff` unfolds that membership back into the defining equation $`T(v) = \mu v`.
 
+:::exercise (chili := 1)
 ```lean
 example (k V : Type*) [Field k] [IsAlgClosed k] [AddCommGroup V] [Module k V]
     [FiniteDimensional k V] [Nontrivial V] (T : Module.End k V) :
     ∃ (μ : k) (v : V), v ≠ 0 ∧ T v = μ • v := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -527,12 +529,14 @@ Prove that.
 `Module.End.mem_maxGenEigenspace` unfolds membership to "some power of $`T - \mu` kills it"; at $`\mu = 0` that power is just a power of $`T`, so the exponent $`m` from $`T^m = 0` works for every vector at once.
 (Reduce the goal to membership of an arbitrary vector with `eq_top_iff` first.)
 
+:::exercise
 ```lean
 example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
     (T : Module.End k V) (m : ℕ) (hTm : T ^ m = 0) :
     T.maxGenEigenspace 0 = ⊤ := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -549,12 +553,14 @@ example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
 See *why* it holds by running the argument by hand on an actual eigenvector.
 Applying $`T` repeatedly scales it, $`T^m(v) = \mu^m v` (`Module.End.HasEigenvector.pow_apply`); but $`T^m = 0`, so $`\mu^m v = 0`, and since $`v \neq 0` this forces $`\mu^m = 0` (`smul_eq_zero`), hence $`\mu = 0` (`pow_eq_zero_iff`).
 
+:::exercise (chili := 1)
 ```lean
 example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
     (T : Module.End k V) (m : ℕ) (hm : 0 < m) (hTm : T ^ m = 0)
     (μ : k) (v : V) (hv : T.HasEigenvector μ v) : μ = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -583,6 +589,7 @@ example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
 The key inclusion behind "geometric multiplicity $`\leq` algebraic multiplicity" is that the eigenspace sits inside every generalized eigenspace of positive index — because a genuine eigenvector is already killed by the *first* power of $`T - \mu`.
 Prove that inclusion by hand — unfold membership with `Module.End.mem_genEigenspace` and supply the exponent $`1` as the witness — then deduce the inequality of dimensions from it, using that dimension is monotone under inclusion (`Submodule.finrank_mono`).
 
+:::exercise (chili := 1)
 ```lean
 example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
     (T : Module.End k V) (μ : k) (n : ℕ) (hn : 0 < n) :
@@ -595,6 +602,7 @@ example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
       ≤ Module.finrank k (T.genEigenspace μ n) := by
   sorry
 ```
+:::
 
 :::solution
 ```lean

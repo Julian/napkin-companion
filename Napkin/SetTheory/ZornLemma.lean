@@ -310,10 +310,12 @@ The chapter observed that no matter how large the ordinals grow, there is no inf
 This is exactly the well-foundedness `Ordinal.lt_wf` of `<` on the ordinals.
 Show that there is no strictly descending sequence of ordinals indexed by $`\mathbb{N}`.
 
+:::exercise
 ```lean
 example : ¬ ∃ f : ℕ → Ordinal, ∀ n, f (n + 1) < f n := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -345,11 +347,13 @@ Independence has teeth one vector at a time: no basis element can be scaled to $
 Prove that if $`a \cdot b_i = 0` then $`a = 0`.
 A basis vector is never zero (`Module.Basis.ne_zero`), so splitting $`a \cdot b_i = 0` with `smul_eq_zero` — which over the field $`\mathbb{Q}` reads "$`a = 0` or $`b_i = 0`" — leaves only the first disjunct.
 
+:::exercise
 ```lean
 example (i : Module.Basis.ofVectorSpaceIndex ℚ ℝ) (a : ℚ)
     (ha : a • Module.Basis.ofVectorSpace ℚ ℝ i = 0) : a = 0 := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
@@ -377,12 +381,14 @@ The chapter phrased the hypothesis as "every chain has an upper bound" — an el
 Both differ on the surface from Mathlib's `BddAbove` and `IsMax`, so bridge the gap.
 Feed the upper-bound hypothesis to `zorn_le` (it unfolds definitionally to `BddAbove`) to obtain a maximal `m`, then recover the chapter's phrasing by turning `IsMax m` into "no `x` has `m < x`" with `IsMax.not_lt`.
 
+:::exercise
 ```lean
 example {P : Type*} [PartialOrder P]
     (h : ∀ c : Set P, IsChain (· ≤ ·) c → ∃ ub, ∀ p ∈ c, p ≤ ub) :
     ∃ m : P, ∀ x, ¬ m < x := by
   sorry
 ```
+:::
 
 :::solution
 ```lean
