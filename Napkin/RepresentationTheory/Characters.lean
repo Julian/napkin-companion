@@ -338,6 +338,8 @@ example {k G : Type*} [Field k] [Monoid G] (V W : FDRep k G) (i : V ≅ W) :
 ## The dual space modulo the commutator
 
 The commutation identity $`\chi_V(hg) = \chi_V(gh)` is `FDRep.char_mul_comm`, and its consequence that the character is constant on conjugacy classes, $`\chi_V(hgh^{-1}) = \chi_V(g)`, is `FDRep.char_conj`.
+Neither is new: a character is a trace, so these are the two trace facts from the chapter on the dual space and trace, transported along $`\rho`.
+`char_mul_comm` is $`\operatorname{Tr}(ST) = \operatorname{Tr}(TS)`, and `char_conj` is the conjugation-invariance derived from it there — which is exactly why a character can be regarded as a function on conjugacy classes at all.
 
 ```lean
 example {k G : Type*} [Field k] [Monoid G] (V : FDRep k G) (g h : G) :

@@ -574,6 +574,7 @@ example {X : Type*} [TopologicalSpace X] {w x y z : X}
 ## Fundamental groups
 
 Mathlib names the fundamental group {name}`FundamentalGroup`, so that `FundamentalGroup X x₀` carries the {name}`Group` instance whose multiplication is $`\ast`, whose identity is the do-nothing loop {name}`Path.refl`, and whose inverse is the backwards loop {name}`Path.symm`.
+Those three operations are the ones assembled by hand back in the topological-spaces chapter, when building a path from $`z` to $`x` out of paths $`x \to y` and $`y \to z`; the content of this section is that after quotienting by homotopy they satisfy the group axioms.
 Under the hood it is built as the automorphism group of the point $`x_0` inside the *fundamental groupoid*, which is the single package that remembers the homotopy-composition data for every pair of endpoints at once.
 
 ```lean

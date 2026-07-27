@@ -627,6 +627,8 @@ example (A : Type*) [CommRing A] [IsDedekindDomain A] {p : Ideal A}
 ```
 
 That equivalence is what makes the section's exercise — "$`\mathfrak{p}` is prime iff whenever $`\mathfrak{p} \mid \mathfrak{a}\mathfrak{b}` it divides one of $`\mathfrak{a}`, $`\mathfrak{b}`" — fall out.
+It is worth seeing what has moved: in the flavors-of-rings chapter the same statement was proved for *elements* of a UFD, where irreducible and prime coincide.
+That coincidence is precisely what fails in a ring of integers, and the Dedekind condition buys it back one level up — for ideals rather than elements.
 Given a nonzero `IsPrime` ideal dividing a product, deduce it divides a factor: convert to the divisibility-sense `Prime` (the `.mpr` of the equivalence above), whose defining property is exactly `Prime.dvd_or_dvd`.
 
 ```lean

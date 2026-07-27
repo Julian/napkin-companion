@@ -423,6 +423,7 @@ example (K : Type*) [Field K] (x y : PrimeSpectrum K) : x = y := by
 ## The Zariski topology on the spectrum
 
 The vanishing locus $`\mathbb{V}(I)` of a set or an ideal is `PrimeSpectrum.zeroLocus`, and the dual operation sending a set of points back to the ideal of everything vanishing on it is `PrimeSpectrum.vanishingIdeal`.
+These are the same two operations as in the chapter on affine varieties as ringed spaces, and the facts proved there — that $`\mathbb{V}` reverses inclusions, and that $`D(fg) = D(f) \cap D(g)` because the points are *prime* — hold verbatim here, since that chapter already used `PrimeSpectrum` for them.
 
 ```lean
 example (A : Type*) [CommRing A] (I : Ideal A) : Set (PrimeSpectrum A) :=
