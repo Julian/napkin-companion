@@ -381,7 +381,6 @@ example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] (v w : V) :
 
 The payoff of conjugate symmetry is that it forces certain quantities to be *real*, meaning equal to their own conjugate — this is the point of the "why sesquilinear?" remark.
 Prove that $`\langle v, w \rangle + \langle w, v \rangle` is self-conjugate.
-Conjugation is a ring homomorphism, so `map_add` splits the conjugate of the sum; rewrite each summand with `inner_conj_symm`, and the two terms come back swapped, agreeing after `ring`.
 
 :::exercise
 ```lean
@@ -390,6 +389,10 @@ example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] (v w : V) :
       = inner ℂ v w + inner ℂ w v := by
   sorry
 ```
+:::
+
+:::hint
+Conjugation is a ring homomorphism, so `map_add` splits the conjugate of the sum; rewrite each summand with `inner_conj_symm`, and the two terms come back swapped, agreeing after `ring`.
 :::
 
 :::solution
@@ -466,7 +469,6 @@ example (𝕜 E : Type*) [RCLike 𝕜] [NormedAddCommGroup E]
 
 `Orthonormal 𝕜 v` is by definition the conjunction "each $`\|v_i\| = 1`" and "distinct vectors are orthogonal", so its first component `h.1` gives you the norm-1 fact directly.
 Turn that into the *inner-product* form of a unit vector: show $`\langle v_i, v_i \rangle = 1`.
-Rewrite with `inner_self_eq_norm_sq_to_K` — the identity $`\langle x, x \rangle = \|x\|^2` valid over any `RCLike` field — and then `h.1 i`, leaving a cast of $`1^2` that `norm_num` settles.
 
 :::exercise
 ```lean
@@ -475,6 +477,10 @@ example (𝕜 E : Type*) [RCLike 𝕜] [NormedAddCommGroup E]
     (h : Orthonormal 𝕜 v) (i : ι) : inner 𝕜 (v i) (v i) = 1 := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite with `inner_self_eq_norm_sq_to_K` — the identity $`\langle x, x \rangle = \|x\|^2` valid over any `RCLike` field — and then `h.1 i`, leaving a cast of $`1^2` that `norm_num` settles.
 :::
 
 :::solution
@@ -503,7 +509,6 @@ example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 
 But completeness is not an end in itself — its whole content is that *every Cauchy sequence converges*, which is exactly what lets a Hilbert space take the infinite limits the chapter is after.
 Make that concrete: in a finite-dimensional inner product space, show any Cauchy sequence has a limit.
-Install the instance from the worked model with `haveI`, then hand your Cauchy sequence to `cauchySeq_tendsto_of_complete`, which produces the limit point.
 
 :::exercise
 ```lean
@@ -512,6 +517,10 @@ example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℝ V]
     ∃ p, Filter.Tendsto u Filter.atTop (nhds p) := by
   sorry
 ```
+:::
+
+:::hint
+Install the instance from the worked model with `haveI`, then hand your Cauchy sequence to `cauchySeq_tendsto_of_complete`, which produces the limit point.
 :::
 
 :::solution

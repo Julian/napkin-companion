@@ -468,7 +468,6 @@ example (X : Type*) [TopologicalSpace X] [DiscreteTopology X] (S : Set X) :
 
 Here is what that buys you.
 Show that *every* map out of a discrete space is continuous.
-Continuity means "the pre-image of every open set is open" (`continuous_def`); feed that any open `U`, and the pre-image is open for free because *everything* is open in a discrete space.
 
 :::exercise
 ```lean
@@ -476,6 +475,10 @@ example (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
     [DiscreteTopology X] (f : X → Y) : Continuous f := by
   sorry
 ```
+:::
+
+:::hint
+Continuity means "the pre-image of every open set is open" (`continuous_def`); feed that any open `U`, and the pre-image is open for free because *everything* is open in a discrete space.
 :::
 
 :::solution
@@ -508,7 +511,6 @@ example (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
 
 The reason homeomorphisms matter is that they transport *topological* properties across.
 Prove one instance: a homeomorphism sends compact sets to compact sets.
-There is no bespoke lemma — combine the general fact that a continuous image of a compact set is compact (`IsCompact.image`) with the forward continuity you just extracted.
 
 :::exercise
 ```lean
@@ -516,6 +518,10 @@ example (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
     (h : X ≃ₜ Y) (s : Set X) (hs : IsCompact s) : IsCompact (h '' s) := by
   sorry
 ```
+:::
+
+:::hint
+There is no bespoke lemma — combine the general fact that a continuous image of a compact set is compact (`IsCompact.image`) with the forward continuity you just extracted.
 :::
 
 :::solution
@@ -607,7 +613,6 @@ example (X : Type*) [TopologicalSpace X] [T2Space X] (p : X) :
 ```
 
 Build on that: prove a *two-point* set `{p, q}` is closed.
-The move is to see `{p, q}` as a union of two singletons — `Set.insert_eq` rewrites `{p, q}` to `{p} ∪ {q}` — and then combine "each singleton is closed" with "a union of two closed sets is closed" (`IsClosed.union`), reusing both facts from above.
 
 :::exercise
 ```lean
@@ -615,6 +620,10 @@ example (X : Type*) [TopologicalSpace X] [T2Space X] (p q : X) :
     IsClosed ({p, q} : Set X) := by
   sorry
 ```
+:::
+
+:::hint
+The move is to see `{p, q}` as a union of two singletons — `Set.insert_eq` rewrites `{p, q}` to `{p} ∪ {q}` — and then combine "each singleton is closed" with "a union of two closed sets is closed" (`IsClosed.union`), reusing both facts from above.
 :::
 
 :::solution
@@ -684,7 +693,6 @@ example (X : Type*) [TopologicalSpace X] [PathConnectedSpace X] :
 What is worth doing by hand is *building* paths, since that is how path-connectedness is ever established.
 Two constructors do all of it: `Path.trans` walks one path and then the next (reparametrising so the result is still defined on $`[0,1]`), and `Path.symm` walks a path backwards.
 Use them to produce a path from $`z` back to $`x` out of paths $`x \to y` and $`y \to z`.
-The result must be marked `noncomputable`, because the concatenation is defined by a case split on whether the parameter has passed the halfway point — a decision about real numbers, which Lean cannot make by computation.
 
 :::exercise
 ```lean
@@ -692,6 +700,10 @@ noncomputable example {X : Type*} [TopologicalSpace X] {x y z : X}
     (p : Path x y) (q : Path y z) : Path z x := by
   sorry
 ```
+:::
+
+:::hint
+The result must be marked `noncomputable`, because the concatenation is defined by a case split on whether the parameter has passed the halfway point — a decision about real numbers, which Lean cannot make by computation.
 :::
 
 :::solution

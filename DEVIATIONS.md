@@ -151,6 +151,16 @@ lists below.
     upstream's problem sections; 71 exercises carry one.
     `Test.CheckPairing` enforces that every reader exercise is wrapped.
 
+19. **Hints.** The guidance naming which lemmas an exercise needs used to
+    run on in the prose above it, so the exercise could never be
+    attempted cold. Where that guidance separates cleanly from the
+    statement — the prose is one sentence per line, and the convention is
+    exposition, then an imperative, then guidance — it now sits in a
+    collapsible `:::hint` between the exercise and its solution, giving
+    three tiers: attempt, hint, solution. 177 of the 520 exercises split
+    that way; the rest interleave guidance with exposition and were left
+    alone rather than cut by a heuristic.
+
 ## Formalization-forced deviations
 
 Places where Mathlib's design genuinely differs from the chapter's

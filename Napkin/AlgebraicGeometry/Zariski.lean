@@ -436,7 +436,6 @@ noncomputable example {σ : Type*} (V : Set (σ → ℂ)) :
 Before either of those, the most basic feature of $`\mathbb{V}(-)`: it *reverses* inclusions.
 Asking more equations to hold cuts down the solution set, so a bigger set of polynomials has a smaller zero locus.
 Prove it.
-Everything is unfolded by `PrimeSpectrum.mem_zeroLocus`, which says a prime $`\mathfrak{p}` lies in $`\mathbb{V}(s)` exactly when $`s \subseteq \mathfrak{p}`; once both sides are in that form the statement is transitivity of $`\subseteq`.
 
 :::exercise
 ```lean
@@ -444,6 +443,10 @@ example (R : Type*) [CommRing R] (s t : Set R) (h : s ⊆ t) :
     PrimeSpectrum.zeroLocus t ⊆ PrimeSpectrum.zeroLocus s := by
   sorry
 ```
+:::
+
+:::hint
+Everything is unfolded by `PrimeSpectrum.mem_zeroLocus`, which says a prime $`\mathfrak{p}` lies in $`\mathbb{V}(s)` exactly when $`s \subseteq \mathfrak{p}`; once both sides are in that form the statement is transitivity of $`\subseteq`.
 :::
 
 :::solution
@@ -494,7 +497,6 @@ example (R : Type*) [CommRing R] (f g : R) :
 ```
 
 Cash that out in the case the chapter cares about: if $`g \mid f`, then $`f` vanishes wherever $`g` does, so $`D(f) \subseteq D(g)`.
-Rewrite with the criterion and the goal becomes an ideal membership; divisibility by $`g` *is* membership in the ideal $`(g)` (`Ideal.mem_span_singleton`), and any ideal sits inside its own radical (`Ideal.le_radical`).
 
 :::exercise
 ```lean
@@ -502,6 +504,10 @@ example (R : Type*) [CommRing R] (f g : R) (h : g ∣ f) :
     PrimeSpectrum.basicOpen f ≤ PrimeSpectrum.basicOpen g := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite with the criterion and the goal becomes an ideal membership; divisibility by $`g` *is* membership in the ideal $`(g)` (`Ideal.mem_span_singleton`), and any ideal sits inside its own radical (`Ideal.le_radical`).
 :::
 
 :::solution
@@ -603,8 +609,6 @@ example {σ : Type*} (g : MvPolynomial σ ℂ) :
 
 At the opposite extreme from a denominator that vanishes somewhere is one that vanishes nowhere.
 Show that if $`g` is a unit then $`D(g)` is the whole space, so $`f/g` is a global regular function.
-The content is that a unit belongs to no prime ideal: were it in one, that ideal would contain $`1` and hence be everything (`Ideal.eq_top_of_isUnit_mem`), which a prime is not (`Ideal.IsPrime.ne_top`, reached through `p.isPrime`).
-Reduce the equality of opens to a membership statement with `eq_top_iff`, then unfold with `PrimeSpectrum.mem_basicOpen`.
 
 :::exercise (chili := 1)
 ```lean
@@ -612,6 +616,11 @@ example (R : Type*) [CommRing R] (g : R) (hg : IsUnit g) :
     PrimeSpectrum.basicOpen g = ⊤ := by
   sorry
 ```
+:::
+
+:::hint
+The content is that a unit belongs to no prime ideal: were it in one, that ideal would contain $`1` and hence be everything (`Ideal.eq_top_of_isUnit_mem`), which a prime is not (`Ideal.IsPrime.ne_top`, reached through `p.isPrime`).
+Reduce the equality of opens to a membership statement with `eq_top_iff`, then unfold with `PrimeSpectrum.mem_basicOpen`.
 :::
 
 :::solution
@@ -639,10 +648,6 @@ example (R : Type*) [CommRing R] (g : R) (S : Type*) [CommRing S]
 
 The denominators $`g^k` appearing in these fractions all cut out the same open set, since raising to a positive power does not change a distinguished open.
 Prove $`D(g^n) = D(g)`, and note what makes the two directions asymmetric.
-Split with `le_antisymm` and use the radical criterion on each half.
-One half is the divisibility exercise above, since $`g \mid g^n` (`dvd_pow_self`).
-The other half is *only* true because a radical is involved: $`g` need not lie in the ideal $`(g^n)`, but it lies in its radical, because that means exactly $`g^m \in (g^n)` for *some* $`m` — and $`m = n` works.
-This is the reason the radical shows up in the criterion at all.
 
 :::exercise (chili := 1)
 ```lean
@@ -650,6 +655,13 @@ example {σ : Type*} (g : MvPolynomial σ ℂ) (n : ℕ) (hn : 0 < n) :
     PrimeSpectrum.basicOpen (g ^ n) = PrimeSpectrum.basicOpen g := by
   sorry
 ```
+:::
+
+:::hint
+Split with `le_antisymm` and use the radical criterion on each half.
+One half is the divisibility exercise above, since $`g \mid g^n` (`dvd_pow_self`).
+The other half is *only* true because a radical is involved: $`g` need not lie in the ideal $`(g^n)`, but it lies in its radical, because that means exactly $`g^m \in (g^n)` for *some* $`m` — and $`m = n` works.
+This is the reason the radical shows up in the criterion at all.
 :::
 
 :::solution
@@ -688,8 +700,6 @@ The first problem asks you to show the Zariski topology is not Hausdorff.
 Hausdorff is a strong separation property, and the spectrum fails a much weaker one: its points need not even be *closed*.
 The dictionary entry is `PrimeSpectrum.isClosed_singleton_iff_isMaximal` — a one-point set is closed exactly when the corresponding prime is maximal — so any non-maximal prime is a point whose closure is bigger than itself.
 Show this happens already in $`\operatorname{Spec} \mathbb{Z}`, at the point $`(0)`.
-After the rewrite you have `(⊥ : Ideal ℤ).IsMaximal` to refute.
-Maximality says every proper ideal above $`\bot` *is* $`\bot` (`Ideal.IsMaximal.eq_of_le`), so feed it $`(2)`, which is proper because $`2` is not a unit (`Ideal.span_singleton_eq_top`, then `Int.isUnit_iff`); concluding $`(2) = \bot` puts $`2` in $`\bot`, i.e. makes $`2 = 0`.
 
 :::exercise (chili := 1)
 ```lean
@@ -697,6 +707,11 @@ example : ¬ IsClosed
     ({⟨(⊥ : Ideal ℤ), Ideal.isPrime_bot⟩} : Set (PrimeSpectrum ℤ)) := by
   sorry
 ```
+:::
+
+:::hint
+After the rewrite you have `(⊥ : Ideal ℤ).IsMaximal` to refute.
+Maximality says every proper ideal above $`\bot` *is* $`\bot` (`Ideal.IsMaximal.eq_of_le`), so feed it $`(2)`, which is proper because $`2` is not a unit (`Ideal.span_singleton_eq_top`, then `Int.isUnit_iff`); concluding $`(2) = \bot` puts $`2` in $`\bot`, i.e. makes $`2 = 0`.
 :::
 
 :::solution

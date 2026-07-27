@@ -483,7 +483,6 @@ example (A : Type*) [CommRing A] :
 
 The more useful structural fact is how these opens interact with products: multiplying a function by another can only shrink where it is invertible, so $`D(fg) \subseteq D(f)`, matching the chapter's $`D(x) \cap D(y) = D(xy)`.
 Prove that containment by assembling two facts rather than reaching for the packaged `basicOpen_mul_le_left`.
-First rewrite $`D(fg)` as the meet $`D(f) \sqcap D(g)` with `PrimeSpectrum.basicOpen_mul`, then project onto the left factor with `inf_le_left`.
 
 :::exercise
 ```lean
@@ -491,6 +490,10 @@ example (A : Type*) [CommRing A] (f g : A) :
     PrimeSpectrum.basicOpen (f * g) ≤ PrimeSpectrum.basicOpen f := by
   sorry
 ```
+:::
+
+:::hint
+First rewrite $`D(fg)` as the meet $`D(f) \sqcap D(g)` with `PrimeSpectrum.basicOpen_mul`, then project onto the left factor with `inf_le_left`.
 :::
 
 :::solution
@@ -562,13 +565,16 @@ example (K : Type*) [Field K] : IsLocalRing K := inferInstance
 
 The characterization above becomes especially transparent for a field: for any $`a`, either $`a` or $`1 - a` is a unit.
 Verify it directly, which also recovers the "either $`a` or $`1-a` is a unit" problem in the concrete case.
-Split on whether $`a = 0` (`rcases eq_or_ne a 0`); when $`a = 0` the other term is $`1`, and when $`a \neq 0` a nonzero element of a field is a unit by `isUnit_iff_ne_zero`.
 
 :::exercise (chili := 1)
 ```lean
 example (K : Type*) [Field K] (a : K) : IsUnit a ∨ IsUnit (1 - a) := by
   sorry
 ```
+:::
+
+:::hint
+Split on whether $`a = 0` (`rcases eq_or_ne a 0`); when $`a = 0` the other term is $`1`, and when $`a \neq 0` a nonzero element of a field is a unit by `isUnit_iff_ne_zero`.
 :::
 
 :::solution
@@ -600,7 +606,6 @@ example (A : Type*) [CommRing A] [IsDomain A] : IsReduced A := inferInstance
 
 The description of the nilradical as $`\bigcap_\mathfrak{p} \mathfrak{p}` is exactly what powers the chapter's claim that a nilpotent function vanishes at *every* point.
 Prove that consequence: a nilpotent element lies in every prime ideal.
-Rewrite membership in the nilradical with `mem_nilradical`, expand the nilradical as the infimum of the primes with `nilradical_eq_sInf`, and then read off the coordinate at $`\mathfrak{p}` with `Ideal.mem_sInf`.
 
 :::exercise
 ```lean
@@ -608,6 +613,10 @@ example (A : Type*) [CommRing A] (x : A) (hx : IsNilpotent x)
     (p : Ideal A) [p.IsPrime] : x ∈ p := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite membership in the nilradical with `mem_nilradical`, expand the nilradical as the infimum of the primes with `nilradical_eq_sInf`, and then read off the coordinate at $`\mathfrak{p}` with `Ideal.mem_sInf`.
 :::
 
 :::solution

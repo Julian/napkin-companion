@@ -448,13 +448,16 @@ example : Order.IsSuccLimit Ordinal.omega0 :=
 
 The defining feature of a limit is that nothing sits *immediately* below it: the successor of anything below $`\lambda` is still below $`\lambda`.
 Prove this for $`\omega` — if $`b < \omega` then $`b + 1 < \omega`.
-Rewrite the successor $`b + 1` back to `Order.succ b` (with `Order.succ_eq_add_one`), then feed the limit fact above to `Order.IsSuccLimit.succ_lt`.
 
 :::exercise
 ```lean
 example (b : Ordinal) (h : b < Ordinal.omega0) : b + 1 < Ordinal.omega0 := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite the successor $`b + 1` back to `Order.succ b` (with `Order.succ_eq_add_one`), then feed the limit fact above to `Order.IsSuccLimit.succ_lt`.
 :::
 
 :::solution
@@ -478,13 +481,16 @@ example (α : Ordinal) : ∃ β, α < β :=
 
 Unboundedness upgrades to something stronger: the ordinals are *directed*, so any two of them have a common strict upper bound.
 Prove that for any $`\alpha, \beta` there is a $`\gamma` with $`\alpha < \gamma` and $`\beta < \gamma`.
-Take $`\gamma = \max(\alpha, \beta) + 1`; each of $`\alpha, \beta` is $`\le \max(\alpha, \beta)` (`le_max_left`, `le_max_right`), which is in turn $`< \gamma` (`lt_add_one`), so chain the two with `lt_of_le_of_lt`.
 
 :::exercise
 ```lean
 example (α β : Ordinal) : ∃ γ, α < γ ∧ β < γ := by
   sorry
 ```
+:::
+
+:::hint
+Take $`\gamma = \max(\alpha, \beta) + 1`; each of $`\alpha, \beta` is $`\le \max(\alpha, \beta)` (`le_max_left`, `le_max_right`), which is in turn $`< \gamma` (`lt_add_one`), so chain the two with `lt_of_le_of_lt`.
 :::
 
 :::solution
@@ -571,13 +577,16 @@ example : (2 : Ordinal) ^ Ordinal.omega0 = Ordinal.omega0 :=
 
 So the exponential lands back on the limit $`\omega`, which — like every limit — is *not* a successor.
 Put the two facts together: show $`2^\omega \neq \omega + 1`.
-Rewrite $`2^\omega` to $`\omega` using the collapse above, then $`\omega \neq \omega + 1` is `lt_add_one` read as an inequality (`.ne`).
 
 :::exercise
 ```lean
 example : (2 : Ordinal) ^ Ordinal.omega0 ≠ Ordinal.omega0 + 1 := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite $`2^\omega` to $`\omega` using the collapse above, then $`\omega \neq \omega + 1` is `lt_add_one` read as an inequality (`.ne`).
 :::
 
 :::solution

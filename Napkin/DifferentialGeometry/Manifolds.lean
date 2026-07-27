@@ -413,7 +413,6 @@ example {H : Type*} [TopologicalSpace H] {M : Type*} [TopologicalSpace M]
 
 But the chart's source is more than a set containing $`x`: it is *open*, so it is an open neighborhood of $`x` — the honest "looks like the model near $`x`" picture.
 Show that the source is a neighborhood of $`x`.
-Combine that the source is open (`OpenPartialHomeomorph.open_source`) with the membership above, fed to `IsOpen.mem_nhds`.
 
 :::exercise
 ```lean
@@ -421,6 +420,10 @@ example {H : Type*} [TopologicalSpace H] {M : Type*} [TopologicalSpace M]
     [ChartedSpace H M] (x : M) : (chartAt H x).source ∈ nhds x := by
   sorry
 ```
+:::
+
+:::hint
+Combine that the source is open (`OpenPartialHomeomorph.open_source`) with the membership above, fed to `IsOpen.mem_nhds`.
 :::
 
 :::solution
@@ -474,7 +477,6 @@ example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 The real workhorse is that smoothness survives composition, `ContMDiff.comp`.
 Use it together with the identity above: given a smooth self-map $`f`, show $`f \circ \mathrm{id}` is smooth.
-Feed `contMDiff_id` as the inner map to `hf.comp`.
 
 :::exercise
 ```lean
@@ -485,6 +487,10 @@ example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     (f : M → M) (hf : ContMDiff I I n f) : ContMDiff I I n (f ∘ id) := by
   sorry
 ```
+:::
+
+:::hint
+Feed `contMDiff_id` as the inner map to `hf.comp`.
 :::
 
 :::solution
@@ -588,7 +594,6 @@ example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 An orientation is only defined up to rescaling: multiplying a volume form by a nonzero constant leaves it nowhere-zero, so it still orients $`M`.
 Prove that if $`\omega` is a volume form and $`c \neq 0`, then $`c \cdot \omega` witnesses orientability too.
-The scaling acts pointwise (`ManifoldForm.smul_apply`), and a nonzero scalar times a nonzero vector is nonzero (`smul_ne_zero`); feed the resulting nonvanishing form to `of_volumeForm`.
 
 :::exercise
 ```lean
@@ -600,6 +605,10 @@ example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     ManifoldForm.Orientable (I := I) (M := M) n := by
   sorry
 ```
+:::
+
+:::hint
+The scaling acts pointwise (`ManifoldForm.smul_apply`), and a nonzero scalar times a nonzero vector is nonzero (`smul_ne_zero`); feed the resulting nonvanishing form to `of_volumeForm`.
 :::
 
 :::solution
@@ -632,7 +641,6 @@ example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 With this description in hand, differentials behave like the derivatives they package: a constant function has zero differential.
 Prove that the differential of a constant $`0`-form vanishes on every tangent vector.
-Rewrite the evaluation with `ManifoldForm.differential_eval`, then use that the derivative of a constant is zero (`mfderiv_const`) and that the zero map sends $`v_0` to $`0` (`ContinuousLinearMap.zero_apply`).
 
 :::exercise
 ```lean
@@ -644,6 +652,10 @@ example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
       = 0 := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite the evaluation with `ManifoldForm.differential_eval`, then use that the derivative of a constant is zero (`mfderiv_const`) and that the zero map sends $`v_0` to $`0` (`ContinuousLinearMap.zero_apply`).
 :::
 
 :::solution
@@ -727,7 +739,6 @@ example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 Unwind what that means on an actual tangent vector: the induced map fixes every $`v`.
 Show that `mfderiv I I id x v = v`.
-Rewrite with `mfderiv_id` to replace the derivative by the identity linear map, which then sends $`v` to itself (`ContinuousLinearMap.id_apply`).
 
 :::exercise
 ```lean
@@ -739,6 +750,10 @@ example {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     mfderiv I I (id : M → M) x v = v := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite with `mfderiv_id` to replace the derivative by the identity linear map, which then sends $`v` to itself (`ContinuousLinearMap.id_apply`).
 :::
 
 :::solution

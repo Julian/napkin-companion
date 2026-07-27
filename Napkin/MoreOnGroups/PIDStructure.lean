@@ -529,7 +529,6 @@ example (R : Type*) [Semiring R] (M : Type*) [AddCommMonoid M] [Module R M] :
 The chapter asked you to check that the two conditions defining a Noetherian module agree.
 Both characterizations above pass through `IsNoetherian`, so chaining them relates the two conditions directly, without naming Noetherian-ness in between.
 Prove that if every submodule of `M` is finitely generated, then the submodules satisfy the ascending chain condition.
-Repackage the finite-generation hypothesis back into `IsNoetherian` with `isNoetherian_def.mpr`, then read off well-foundedness with `isNoetherian_iff'.mp`.
 
 :::exercise
 ```lean
@@ -537,6 +536,10 @@ example (R : Type*) [Semiring R] (M : Type*) [AddCommMonoid M] [Module R M]
     (h : ∀ s : Submodule R M, s.FG) : WellFoundedGT (Submodule R M) := by
   sorry
 ```
+:::
+
+:::hint
+Repackage the finite-generation hypothesis back into `IsNoetherian` with `isNoetherian_def.mpr`, then read off well-foundedness with `isNoetherian_iff'.mp`.
 :::
 
 :::solution
@@ -590,7 +593,6 @@ example (R : Type*) [CommRing R] [Nontrivial R] (M : Type*)
 
 The uniqueness of a free module's rank says any two finite bases have the same number of elements.
 Prove it for bases indexed by $`\iota` and $`\kappa`.
-Both counts equal the basis-free `Module.finrank R M`: apply `Module.finrank_eq_card_basis` to each of `b` and `c` and chain the two equalities (`rw [← Module.finrank_eq_card_basis b, ← Module.finrank_eq_card_basis c]` closes it).
 
 :::exercise
 ```lean
@@ -601,6 +603,10 @@ example (R : Type*) [CommRing R] [Nontrivial R] (M : Type*)
     Fintype.card ι = Fintype.card κ := by
   sorry
 ```
+:::
+
+:::hint
+Both counts equal the basis-free `Module.finrank R M`: apply `Module.finrank_eq_card_basis` to each of `b` and `c` and chain the two equalities (`rw [← Module.finrank_eq_card_basis b, ← Module.finrank_eq_card_basis c]` closes it).
 :::
 
 :::solution

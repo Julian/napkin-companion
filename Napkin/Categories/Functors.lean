@@ -646,7 +646,6 @@ example (C D : Type*) [Category C] [Category D] (e : C ≌ D) : D ≌ C :=
 
 The cleaner criterion said an equivalence is in particular *essentially surjective*: every object of $`\mathcal{B}` is isomorphic to some $`F(A)`.
 Prove this directly from `e`.
-The witness is forced — the inverse's value $`G(Y)` is the only reasonable candidate — and the isomorphism $`F(G(Y)) \cong Y` is exactly a component of the counit natural isomorphism, `e.counitIso.app Y`.
 
 :::exercise
 ```lean
@@ -654,6 +653,10 @@ example (C D : Type*) [Category C] [Category D] (e : C ≌ D) (Y : D) :
     ∃ X, Nonempty (e.functor.obj X ≅ Y) := by
   sorry
 ```
+:::
+
+:::hint
+The witness is forced — the inverse's value $`G(Y)` is the only reasonable candidate — and the isomorphism $`F(G(Y)) \cong Y` is exactly a component of the counit natural isomorphism, `e.counitIso.app Y`.
 :::
 
 :::solution
@@ -686,7 +689,6 @@ example (C D : Type*) [Category C] [Category D] (F G : C ⥤ D)
 
 Two natural transformations $`\alpha \colon F \to G` and $`\beta \colon G \to H` compose, and the point is that their componentwise composite is *again* natural — its naturality square is two of the above pasted side by side.
 Prove it for a single arrow `f`.
-Reassociate so the inner square is $`\alpha`'s, rewrite it with `α.naturality`, reassociate the other way to expose $`\beta`'s, and finish with `β.naturality` (`Category.assoc` does the regrouping).
 
 :::exercise
 ```lean
@@ -696,6 +698,10 @@ example (C D : Type*) [Category C] [Category D] (F G H : C ⥤ D)
       (α.app A₁ ≫ β.app A₁) ≫ H.map f := by
   sorry
 ```
+:::
+
+:::hint
+Reassociate so the inner square is $`\alpha`'s, rewrite it with `α.naturality`, reassociate the other way to expose $`\beta`'s, and finish with `β.naturality` (`Category.assoc` does the regrouping).
 :::
 
 :::solution
@@ -730,7 +736,6 @@ noncomputable example (C : Type*) [Category C] (X Y : C)
 
 *Fully faithful* also means *full*: that reflected isomorphism is not an accident but a genuine preimage, so pushing its forward map back through the embedding returns the original.
 Prove that `yoneda.map` applied to the reflected iso's `hom` recovers `h.hom`.
-Rewrite `(yoneda.preimageIso h).hom` into a `yoneda.preimage` with `Functor.preimageIso_hom`, then collapse `yoneda.map (yoneda.preimage _)` with `Functor.map_preimage`.
 
 :::exercise
 ```lean
@@ -739,6 +744,10 @@ example (C : Type*) [Category C] (X Y : C)
     yoneda.map (yoneda.preimageIso h).hom = h.hom := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite `(yoneda.preimageIso h).hom` into a `yoneda.preimage` with `Functor.preimageIso_hom`, then collapse `yoneda.map (yoneda.preimage _)` with `Functor.map_preimage`.
 :::
 
 :::solution

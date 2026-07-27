@@ -282,7 +282,6 @@ example {X : Type*} [TopologicalSpace X] [LocPathConnectedSpace X] {U : Set X}
 The question asked why a function with a zero can have no logarithm.
 Since $`\exp` is never zero, a $`g` with $`\exp(g(z)) = f(z)` forces $`f` to be zero-free.
 Prove exactly that, in the positive form: a function admitting a logarithm never vanishes.
-It is one rewrite plus one lemma — replace the goal's `f z₀` by `Complex.exp (g z₀)` by rewriting *backwards* along `hfg z₀`, and then the goal is literally `Complex.exp_ne_zero`.
 
 :::exercise
 ```lean
@@ -290,6 +289,10 @@ example (f g : ℂ → ℂ) (hfg : ∀ z, Complex.exp (g z) = f z) (z₀ : ℂ) 
     f z₀ ≠ 0 := by
   sorry
 ```
+:::
+
+:::hint
+It is one rewrite plus one lemma — replace the goal's `f z₀` by `Complex.exp (g z₀)` by rewriting *backwards* along `hfg z₀`, and then the goal is literally `Complex.exp_ne_zero`.
 :::
 
 :::solution
@@ -314,7 +317,6 @@ recall Complex.exp_log {z : ℂ} (hz : z ≠ 0) : Complex.exp (Complex.log z) = 
 Choosing a branch costs us the identity $`\log(zw) = \log z + \log w`, which can fail by $`2\pi i` when the arguments add up past $`\pi`.
 What survives is the identity one exponential away from it.
 Prove that $`\exp(\log z + \log w) = zw` for nonzero $`z` and $`w`, which says the two sides of the false identity differ by an integer multiple of $`2\pi i` and no more.
-Split the exponential of a sum with `Complex.exp_add`, then round-trip each factor with the lemma above.
 
 :::exercise
 ```lean
@@ -322,6 +324,10 @@ example (z w : ℂ) (hz : z ≠ 0) (hw : w ≠ 0) :
     Complex.exp (Complex.log z + Complex.log w) = z * w := by
   sorry
 ```
+:::
+
+:::hint
+Split the exponential of a sum with `Complex.exp_add`, then round-trip each factor with the lemma above.
 :::
 
 :::solution

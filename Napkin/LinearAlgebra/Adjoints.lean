@@ -374,7 +374,6 @@ example (k V W : Type*) [Field k]
 
 The characteristic feature of the dual map is that it is *contravariant*: it reverses the order of a composition, since $`f \circ (T \circ S) = (f \circ T) \circ S`.
 Prove $`(T \circ S)^\vee = S^\vee \circ T^\vee`.
-Peel off a functional and a vector with `ext f v`, then evaluate each side with `Module.Dual.transpose_apply` and `LinearMap.comp_apply`.
 
 :::exercise
 ```lean
@@ -387,6 +386,10 @@ example (k U V W : Type*) [Field k]
       = (Module.Dual.transpose S).comp (Module.Dual.transpose T) := by
   sorry
 ```
+:::
+
+:::hint
+Peel off a functional and a vector with `ext f v`, then evaluate each side with `Module.Dual.transpose_apply` and `LinearMap.comp_apply`.
 :::
 
 :::solution

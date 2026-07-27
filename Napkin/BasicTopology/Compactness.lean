@@ -543,14 +543,17 @@ example (α : Type*) [PseudoMetricSpace α] [T2Space α] [ProperSpace α]
 
 Use the criterion to certify the compact set you meet most often.
 Show that a closed ball in $`\mathbb{R}` is compact.
-Rewriting with the equivalence splits the goal into the two conditions, and each is a named fact about balls: `Metric.isClosed_closedBall` and `Metric.isBounded_closedBall`.
-The point of doing it this way rather than quoting a packaged lemma is that the proof is the *only* proof available in a general proper space — closed plus bounded is all the information you have.
 
 :::exercise
 ```lean
 example (c r : ℝ) : IsCompact (Metric.closedBall c r) := by
   sorry
 ```
+:::
+
+:::hint
+Rewriting with the equivalence splits the goal into the two conditions, and each is a named fact about balls: `Metric.isClosed_closedBall` and `Metric.isBounded_closedBall`.
+The point of doing it this way rather than quoting a packaged lemma is that the proof is the *only* proof available in a general proper space — closed plus bounded is all the information you have.
 :::
 
 :::solution
@@ -590,8 +593,6 @@ example (X : Type*) [TopologicalSpace X] (s : Set X) {ι : Type}
 Extracting a finite subcover is the one move the definition offers, and almost every use of it looks the same: extract, then collapse the finitely many pieces into one.
 Run that pattern once.
 Suppose a compact set is covered by an *increasing* family $`U_0 \subseteq U_1 \subseteq \cdots`; show that a single $`U_n` already covers it.
-Extract a finite `t : Finset ℕ` with the lemma above, then take `n` to be the largest index appearing in `t` — `t.sup id`, which is available even when `t` is empty.
-Every `U i` with `i ∈ t` is contained in `U (t.sup id)` by monotonicity (`Finset.le_sup` supplies `i ≤ t.sup id`), and `Set.iUnion₂_subset` turns "each piece lands in the target" into "the union does".
 
 :::exercise
 ```lean
@@ -600,6 +601,11 @@ example {X : Type*} [TopologicalSpace X] {s : Set X} (hs : IsCompact s)
     (hsU : s ⊆ ⋃ n, U n) : ∃ n, s ⊆ U n := by
   sorry
 ```
+:::
+
+:::hint
+Extract a finite `t : Finset ℕ` with the lemma above, then take `n` to be the largest index appearing in `t` — `t.sup id`, which is available even when `t` is empty.
+Every `U i` with `i ∈ t` is contained in `U (t.sup id)` by monotonicity (`Finset.le_sup` supplies `i ≤ t.sup id`), and `Set.iUnion₂_subset` turns "each piece lands in the target" into "the union does".
 :::
 
 :::solution
@@ -650,7 +656,6 @@ example (X : Type*) [TopologicalSpace X] (s : Set X) (hs : IsCompact s)
 
 The conclusion is packaged as `IsMaxOn`; unpack it into the concrete bound it stands for.
 Prove that the function attains a value dominating every other: `∃ x ∈ s, ∀ y ∈ s, f y ≤ f x`.
-Pull the maximizer out of the worked model with `obtain`, then read off the pointwise inequality using `isMaxOn_iff`.
 
 :::exercise
 ```lean
@@ -659,6 +664,10 @@ example (X : Type*) [TopologicalSpace X] (s : Set X) (hs : IsCompact s)
     ∃ x ∈ s, ∀ y ∈ s, f y ≤ f x := by
   sorry
 ```
+:::
+
+:::hint
+Pull the maximizer out of the worked model with `obtain`, then read off the pointwise inequality using `isMaxOn_iff`.
 :::
 
 :::solution
@@ -736,7 +745,6 @@ example (M : Type*) [PseudoMetricSpace M] (s : Set M) (hs : IsSeqCompact s) :
 
 Total boundedness is the stronger notion; chase it down to ordinary boundedness.
 Show that a sequentially compact set is bounded (`Bornology.IsBounded`).
-The worked model supplies total boundedness, and `TotallyBounded.isBounded` weakens that to boundedness.
 
 :::exercise
 ```lean
@@ -744,6 +752,10 @@ example (M : Type*) [PseudoMetricSpace M] (s : Set M)
     (hs : IsSeqCompact s) : Bornology.IsBounded s := by
   sorry
 ```
+:::
+
+:::hint
+The worked model supplies total boundedness, and `TotallyBounded.isBounded` weakens that to boundedness.
 :::
 
 :::solution

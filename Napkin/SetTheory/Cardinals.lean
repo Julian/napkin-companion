@@ -409,13 +409,16 @@ example (α β : Type u) (h1 : #α ≤ #β) (h2 : #β ≤ #α) : #α = #β :=
 
 Antisymmetry is really one direction of an equivalence: two cardinals are equal exactly when each is `≤` the other.
 Prove that packaging, splitting the iff with `constructor`.
-The forward direction turns an equality into two inequalities with `le_of_eq` (applied to `h` and to `h.symm`), and the backward direction is the antisymmetry above.
 
 :::exercise (chili := 1)
 ```lean
 example (α β : Type u) : #α = #β ↔ #α ≤ #β ∧ #β ≤ #α := by
   sorry
 ```
+:::
+
+:::hint
+The forward direction turns an equality into two inequalities with `le_of_eq` (applied to `h` and to `h.symm`), and the backward direction is the antisymmetry above.
 :::
 
 :::solution
@@ -582,7 +585,6 @@ example (κ : Cardinal) (h : κ.IsInaccessible) : κ.IsRegular :=
 
 Regularity is only one of the three properties folded into inaccessibility: uncountable, regular, and a strong limit.
 Recover all three at once.
-The projections are `.aleph0_lt` for uncountability, the worked model `.isRegular`, and `.isStrongLimit`.
 
 :::exercise
 ```lean
@@ -590,6 +592,10 @@ example (κ : Cardinal) (h : κ.IsInaccessible) :
     ℵ₀ < κ ∧ κ.IsRegular ∧ IsStrongLimit κ := by
   sorry
 ```
+:::
+
+:::hint
+The projections are `.aleph0_lt` for uncountability, the worked model `.isRegular`, and `.isStrongLimit`.
 :::
 
 :::solution

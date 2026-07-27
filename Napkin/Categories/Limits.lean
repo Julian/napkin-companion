@@ -162,9 +162,6 @@ example {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y)
 
 But it holds for any universal fork, and the proof is a good illustration of what universality buys.
 Prove it.
-Unfold `Mono` with `constructor` and it asks exactly for cancellation: two maps $`u, v \colon W \to E` with $`u e = v e` are equal.
-That is the uniqueness half of the universal property, `CategoryTheory.Limits.Fork.IsLimit.hom_ext`: a map *into* a universal fork is pinned down by its composite with the single leg, so agreeing there is agreeing.
-Notice that nothing about equalizers as such is used — the same argument shows any limit leg is monic in the corresponding sense.
 
 :::exercise
 ```lean
@@ -172,6 +169,12 @@ example {C : Type*} [Category C] {X Y : C} {f g : X ⟶ Y}
     (c : Fork f g) (hc : IsLimit c) : Mono (Fork.ι c) := by
   sorry
 ```
+:::
+
+:::hint
+Unfold `Mono` with `constructor` and it asks exactly for cancellation: two maps $`u, v \colon W \to E` with $`u e = v e` are equal.
+That is the uniqueness half of the universal property, `CategoryTheory.Limits.Fork.IsLimit.hom_ext`: a map *into* a universal fork is pinned down by its composite with the single leg, so agreeing there is agreeing.
+Notice that nothing about equalizers as such is used — the same argument shows any limit leg is monic in the corresponding sense.
 :::
 
 :::solution
@@ -241,8 +244,6 @@ example {J C : Type*} [Category J] [Category C] (F : J ⥤ C) (c : Cone F)
 
 Every argument in this section — the equalizer of two forks being unique, the equalizer leg being monic, the pullback comparison map — used the same two moves, existence and uniqueness of a map into a universal cone, and both survive the generalisation.
 Prove the uniqueness move in its general form: two maps into a limit that agree after every leg are equal.
-The single ingredient is {name}`CategoryTheory.Limits.IsLimit.hom_ext`, and the legs of a cone `c` are `c.π.app j`, one for each object `j` of the indexing category.
-Having this, re-read the equalizer proofs above: `Fork.IsLimit.hom_ext` is this lemma specialised to a two-object indexing category, where checking "every leg" collapses to checking one.
 
 :::exercise
 ```lean
@@ -251,6 +252,11 @@ example {J C : Type*} [Category J] [Category C] (F : J ⥤ C) (c : Cone F)
     (h : ∀ j, u ≫ c.π.app j = v ≫ c.π.app j) : u = v := by
   sorry
 ```
+:::
+
+:::hint
+The single ingredient is {name}`CategoryTheory.Limits.IsLimit.hom_ext`, and the legs of a cone `c` are `c.π.app j`, one for each object `j` of the indexing category.
+Having this, re-read the equalizer proofs above: `Fork.IsLimit.hom_ext` is this lemma specialised to a two-object indexing category, where checking "every leg" collapses to checking one.
 :::
 
 :::solution

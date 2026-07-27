@@ -388,7 +388,6 @@ example (a b c : ℝ) : ∫ _ in a..b, c = (b - a) • c :=
 
 What makes $`\Sigma` — and the integral extending it — a genuine *linear* functional is that it respects sums.
 Prove the additive half on constants: the integral of $`c + d` splits as the sum of the two integrals.
-Rewrite all three integrals to their areas with `intervalIntegral.integral_const`; the leftover goal — the area of $`c + d` equals the sum of the areas of $`c` and $`d` — is `smul_add`.
 
 :::exercise
 ```lean
@@ -396,6 +395,10 @@ example (a b c d : ℝ) :
     ∫ _ in a..b, (c + d) = (∫ _ in a..b, c) + ∫ _ in a..b, d := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite all three integrals to their areas with `intervalIntegral.integral_const`; the leftover goal — the area of $`c + d` equals the sum of the areas of $`c` and $`d` — is `smul_add`.
 :::
 
 :::solution

@@ -538,8 +538,6 @@ example (V : Type*) [AddCommGroup V] [Module ℝ V] (k : ℕ) :
 
 The evaluation rule builds in the alternating law $`\alpha_p(v_1, v_2) = -\alpha_p(v_2, v_1)`, and in particular a form returns $`0` whenever two of its arguments coincide — the degenerate parallelepiped has no volume.
 Prove this for a $`2`-form: feeding the same vector twice returns zero.
-The tuple of tangent vectors is written with Lean's vector-literal notation `![v, w]`, which builds the map `Fin 2 → V` sending `0 ↦ v` and `1 ↦ w`; here `![v, v]` puts $`v` in both slots.
-The finishing lemma is `AlternatingMap.map_eq_zero_of_eq`: give it the two coinciding slots `0` and `1`, the proof that they agree, and the proof `0 ≠ 1`.
 
 :::exercise
 ```lean
@@ -547,6 +545,11 @@ example (V : Type*) [AddCommGroup V] [Module ℝ V]
     (ω : V [⋀^Fin 2]→ₗ[ℝ] ℝ) (v : V) : ω ![v, v] = 0 := by
   sorry
 ```
+:::
+
+:::hint
+The tuple of tangent vectors is written with Lean's vector-literal notation `![v, w]`, which builds the map `Fin 2 → V` sending `0 ↦ v` and `1 ↦ w`; here `![v, v]` puts $`v` in both slots.
+The finishing lemma is `AlternatingMap.map_eq_zero_of_eq`: give it the two coinciding slots `0` and `1`, the proof that they agree, and the proof `0 ≠ 1`.
 :::
 
 :::solution
@@ -603,7 +606,6 @@ example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 The doubled-vector vanishing just above is only the degenerate case of the full alternating law $`\alpha_p(v_1, v_2) = -\alpha_p(v_2, v_1)`; through the shim these are `DiffForm.eval_eq_zero_of_eq` and its parent `DiffForm.eval_swap`.
 Prove the swap law itself for a pointwise $`2`-form: exchanging the two tangent vectors negates the value.
-`DiffForm.eval_swap` states this for a composition with `Equiv.swap i j`, so instantiate it at `i = 0`, `j = 1` on `![w, v]` — then `simpa` reduces `![w, v] ∘ Equiv.swap 0 1` back to `![v, w]`.
 
 :::exercise
 ```lean
@@ -612,6 +614,10 @@ example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
     DiffForm.eval α p ![v, w] = - DiffForm.eval α p ![w, v] := by
   sorry
 ```
+:::
+
+:::hint
+`DiffForm.eval_swap` states this for a composition with `Equiv.swap i j`, so instantiate it at `i = 0`, `j = 1` on `![w, v]` — then `simpa` reduces `![w, v] ∘ Equiv.swap 0 1` back to `![v, w]`.
 :::
 
 :::solution
@@ -649,7 +655,6 @@ example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
 ```
 
 Prove the analogue for a scalar multiple, mirroring the proof with the homogeneity field `D.map_smul` and `smul_zero` in place of `D.map_add` and `add_zero`.
-The bundled form of the result is `D.closed_smul`.
 
 :::exercise
 ```lean
@@ -658,6 +663,10 @@ example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
     (h : D.Closed α) : D.Closed (c • α) := by
   sorry
 ```
+:::
+
+:::hint
+The bundled form of the result is `D.closed_smul`.
 :::
 
 :::solution

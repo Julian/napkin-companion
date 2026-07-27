@@ -311,7 +311,6 @@ example (α : ℂ) (h : IsIntegral ℚ α) :
 
 But the defining feature of the minimal polynomial is that its degree is *as small as possible*, and `minpoly.dvd` is exactly what secures that: it divides every polynomial vanishing at $`\alpha`.
 Turn this into the minimality statement itself — if a nonzero $`p` also vanishes at $`\alpha`, then `minpoly ℚ α` has degree at most that of $`p`.
-Get the divisibility from `minpoly.dvd`, then pass it to degrees with `Polynomial.natDegree_le_of_dvd` (which is why we need $`p \neq 0`).
 
 :::exercise
 ```lean
@@ -320,6 +319,10 @@ example (α : ℂ) (p : Polynomial ℚ) (hp : Polynomial.aeval α p = 0)
     (minpoly ℚ α).natDegree ≤ p.natDegree := by
   sorry
 ```
+:::
+
+:::hint
+Get the divisibility from `minpoly.dvd`, then pass it to degrees with `Polynomial.natDegree_le_of_dvd` (which is why we need $`p \neq 0`).
 :::
 
 :::solution

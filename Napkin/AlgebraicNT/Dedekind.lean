@@ -762,7 +762,6 @@ example (A : Type*) [CommRing A] [IsDedekindDomain A]
 
 Having inverses is exactly what lets you cancel a common nonzero factor.
 Prove the left-cancellation law: if $`J X = J Y` with $`J \neq 0`, then $`X = Y`.
-Multiply the hypothesis on the left by $`J^{-1}`, reassociate, and collapse $`J^{-1} J` to $`1` with `inv_mul_cancel₀`.
 
 :::exercise
 ```lean
@@ -772,6 +771,10 @@ example (A : Type*) [CommRing A] [IsDedekindDomain A]
     (h : J * X = J * Y) : X = Y := by
   sorry
 ```
+:::
+
+:::hint
+Multiply the hypothesis on the left by $`J^{-1}`, reassociate, and collapse $`J^{-1} J` to $`1` with `inv_mul_cancel₀`.
 :::
 
 :::solution

@@ -902,7 +902,6 @@ example (R M N : Type*) [CommRing R]
 
 What makes it a *direct sum* is that every element splits uniquely into a piece from each summand.
 Prove the existence half: any $`p : M \times N` is the sum of its two components, embedded, $`p = (p_1, 0) + (0, p_2)`.
-Compare the two coordinates separately — `Prod.ext` reduces the goal to one equation per component, each of which `simp` settles from the additive identities.
 
 :::exercise
 ```lean
@@ -911,6 +910,10 @@ example (R M N : Type*) [CommRing R]
     (p : M × N) : p = ((p.1, 0) + (0, p.2) : M × N) := by
   sorry
 ```
+:::
+
+:::hint
+Compare the two coordinates separately — `Prod.ext` reduces the goal to one equation per component, each of which `simp` settles from the additive identities.
 :::
 
 :::solution
@@ -1073,7 +1076,6 @@ example (k V ι : Type*) [Field k] [AddCommGroup V] [Module k V]
 
 The matrix depends on the chosen bases, but the assignment $`T \mapsto \operatorname{toMatrix}(T)` is itself *linear* — Mathlib bundles `LinearMap.toMatrix` as a `LinearEquiv`, not merely a bijection.
 Prove that it respects a linear combination: it takes $`a S + T` to $`a \cdot \operatorname{toMatrix}(S) + \operatorname{toMatrix}(T)`.
-This is the same two-step move you used for a linear map — `map_add` then `map_smul` — but now applied to `toMatrix` itself, exploiting that it *is* a linear map.
 
 :::exercise
 ```lean
@@ -1085,6 +1087,10 @@ example (k V W : Type*) [Field k]
       a • LinearMap.toMatrix bV bW S + LinearMap.toMatrix bV bW T := by
   sorry
 ```
+:::
+
+:::hint
+This is the same two-step move you used for a linear map — `map_add` then `map_smul` — but now applied to `toMatrix` itself, exploiting that it *is* a linear map.
 :::
 
 :::solution

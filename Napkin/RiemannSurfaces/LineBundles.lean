@@ -385,7 +385,6 @@ example (B F Z : Type*) [TopologicalSpace B] [TopologicalSpace F]
 ```
 
 Put that accessor to work: two source points whose charts share a base coordinate must sit over the same base point.
-Rewrite the goal $`p z = p w` backwards through `coe_fst` at each point (`rw [← e.coe_fst hz, ← e.coe_fst hw]`), turning it into the hypothesis on the chart coordinates.
 
 :::exercise
 ```lean
@@ -395,6 +394,10 @@ example (B F Z : Type*) [TopologicalSpace B] [TopologicalSpace F]
     (h : (e z).1 = (e w).1) : p z = p w := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite the goal $`p z = p w` backwards through `coe_fst` at each point (`rw [← e.coe_fst hz, ← e.coe_fst hw]`), turning it into the hypothesis on the chart coordinates.
 :::
 
 :::solution
@@ -507,13 +510,16 @@ example (c : ℂ) : IsUnit c ↔ c ≠ 0 :=
 
 The prose example's fiber map multiplies by $`x^2`, and it degenerates exactly at $`x = 0`.
 Confirm that from the equivalence above: the scalar $`x^2` is a unit iff $`x \neq 0`.
-Rewrite with `isUnit_iff_ne_zero` to reduce to $`x^2 \neq 0`, then `pow_ne_zero_iff` (which needs the exponent nonzero) strips the square.
 
 :::exercise
 ```lean
 example (x : ℂ) : IsUnit (x ^ 2) ↔ x ≠ 0 := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite with `isUnit_iff_ne_zero` to reduce to $`x^2 \neq 0`, then `pow_ne_zero_iff` (which needs the exponent nonzero) strips the square.
 :::
 
 :::solution

@@ -517,7 +517,6 @@ example {C : Type*} [Category C] (X : TopCat) (ℱ : TopCat.Presheaf C X)
 There is more hiding here than the identity inclusion, though: the open sets form a *posetal* category, one in which there is at most one arrow between any two objects.
 So the identity is in fact the *only* self-map `U ⟶ U`, and its restriction map must be the identity — no matter which arrow you were handed.
 Prove this stronger statement: for an arbitrary `i : U ⟶ U`, the restriction `ℱ.map i` is the identity.
-The thinness of the category is what forces `i = 𝟙 U` (`Subsingleton.elim`); after substituting, `ℱ.map_id` finishes.
 
 :::exercise
 ```lean
@@ -526,6 +525,10 @@ example {C : Type*} [Category C] (X : TopCat) (ℱ : TopCat.Presheaf C X)
     ℱ.map i = 𝟙 (ℱ.obj U) := by
   sorry
 ```
+:::
+
+:::hint
+The thinness of the category is what forces `i = 𝟙 U` (`Subsingleton.elim`); after substituting, `ℱ.map_id` finishes.
 :::
 
 :::solution
@@ -568,7 +571,6 @@ example {C : Type*} [Category C] [Limits.HasColimits C]
 
 For a sheaf of rings the maps are honest functions, so the same fact can be read *pointwise*: the germ of the restriction of `s` equals the germ of `s`.
 Derive this applied form from the map-level identity above.
-The move is to fold the two function applications back into a composite (`ConcreteCategory.comp_apply`, run backwards), turning the goal into the triangle `germ_res`, which then closes it.
 
 :::exercise
 ```lean
@@ -578,6 +580,10 @@ example (X : TopCat) (F : TopCat.Presheaf CommRingCat X)
     F.germ U x hx (F.map i.op s) = F.germ V x (i.le hx) s := by
   sorry
 ```
+:::
+
+:::hint
+The move is to fold the two function applications back into a composite (`ConcreteCategory.comp_apply`, run backwards), turning the goal into the triangle `germ_res`, which then closes it.
 :::
 
 :::solution
@@ -658,7 +664,6 @@ example (X : TopCat) (F : TopCat.Sheaf CommRingCat X) (U : Opens X)
 
 Injectivity has a familiar corollary for maps of rings: it is detected by the kernel.
 Deduce that a section all of whose germs vanish is itself zero.
-Compare `s` against the zero section using `section_ext`; the remaining germ equality holds because each germ map is a ring homomorphism, so it sends `0` to `0` (`map_zero`).
 
 :::exercise
 ```lean
@@ -668,6 +673,10 @@ example (X : TopCat) (F : TopCat.Sheaf CommRingCat X) (U : Opens X)
     s = 0 := by
   sorry
 ```
+:::
+
+:::hint
+Compare `s` against the zero section using `section_ext`; the remaining germ equality holds because each germ map is a ring homomorphism, so it sends `0` to `0` (`map_zero`).
 :::
 
 :::solution

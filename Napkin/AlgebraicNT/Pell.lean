@@ -237,7 +237,6 @@ example {K : Type*} [Field K] [NumberField K] (x : 𝓞 K) (h : IsUnit x)
 
 The question offered a second route through the characterization $`\operatorname{Norm}_{K/\mathbb{Q}}(\alpha) = \pm 1`, and it is worth crossing the two viewpoints.
 Derive the norm side from the unit side: show that if $`x` is a unit, then the norm of every power $`x^n` has absolute value $`1`.
-The norm is multiplicative, so `map_pow` turns the norm of a power into a power of the norm; `push_cast` moves the coercion inward, after which `abs_pow` and the hypothesis (via `isUnit_iff_norm`) collapse everything to $`1^n`.
 
 :::exercise
 ```lean
@@ -245,6 +244,10 @@ example {K : Type*} [Field K] [NumberField K] (x : 𝓞 K) (h : IsUnit x)
     (n : ℕ) : |(RingOfIntegers.norm ℚ (x ^ n) : ℚ)| = 1 := by
   sorry
 ```
+:::
+
+:::hint
+The norm is multiplicative, so `map_pow` turns the norm of a power into a power of the norm; `push_cast` moves the coercion inward, after which `abs_pow` and the hypothesis (via `isUnit_iff_norm`) collapse everything to $`1^n`.
 :::
 
 :::solution

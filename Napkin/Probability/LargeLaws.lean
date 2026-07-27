@@ -369,7 +369,6 @@ example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
 
 Almost sure convergence is just the almost-everywhere filter wrapped around ordinary convergence, so the pointwise limit laws lift to it verbatim.
 Show that it is closed under sums: if $`X_n \to A` and $`Y_n \to B` almost surely, then $`X_n + Y_n \to A + B` almost surely.
-Land in the worlds where *both* hypotheses hold at once with `filter_upwards`, and there the goal is the ordinary `Tendsto.add`.
 
 :::exercise
 ```lean
@@ -380,6 +379,10 @@ example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
     ∀ᵐ ω ∂μ, Tendsto (fun n => X n ω + Y n ω) atTop (nhds (A ω + B ω)) := by
   sorry
 ```
+:::
+
+:::hint
+Land in the worlds where *both* hypotheses hold at once with `filter_upwards`, and there the goal is the ordinary `Tendsto.add`.
 :::
 
 :::solution
@@ -503,7 +506,6 @@ There is no standalone `weak_law_of_large_numbers` in Mathlib, nor a packaged in
 The chapter states Chebyshev for a mean-zero variable, where the bound reads
 $`\Pr[|X| \ge a] \le \operatorname{Var}[X]/a^2` with nothing to recenter.
 Recover that form: feed the recentered `recall` above the extra hypothesis
-$`\mathbb{E}[X] = 0` and collapse $`|X - \mathbb{E}[X]|` back to $`|X|`.
 
 :::exercise
 ```lean
@@ -512,6 +514,10 @@ example {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
     μ {ω | c ≤ |X ω|} ≤ ENNReal.ofReal (variance X μ / c ^ 2) := by
   sorry
 ```
+:::
+
+:::hint
+$`\mathbb{E}[X] = 0` and collapse $`|X - \mathbb{E}[X]|` back to $`|X|`.
 :::
 
 :::solution
@@ -649,8 +655,6 @@ In the Mathlib development the truncation skeleton is visible as the sequence of
 The `limsup` here is the set of points lying in infinitely many of the $`s_i`, so
 `measure_limsup_atTop_eq_zero` says that set is null.
 Turn that null set into the statement the truncation step actually uses — almost
-every point lies in only finitely many $`s_i`, i.e. eventually lands outside the
-`limsup` — by trading measure zero for an almost-everywhere claim via `ae_iff`.
 
 :::exercise
 ```lean
@@ -658,6 +662,11 @@ example {α : Type*} [MeasurableSpace α] {μ : Measure α} {s : ℕ → Set α}
     (hs : ∑' i, μ (s i) ≠ ∞) : ∀ᵐ x ∂μ, x ∉ limsup s atTop := by
   sorry
 ```
+:::
+
+:::hint
+every point lies in only finitely many $`s_i`, i.e. eventually lands outside the
+`limsup` — by trading measure zero for an almost-everywhere claim via `ae_iff`.
 :::
 
 :::solution

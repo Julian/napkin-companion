@@ -775,8 +775,6 @@ example (f : ℝ → ℝ) (p : ℝ) :
 ```
 
 Prove the forward direction from a more elementary principle: convergence along a filter descends to any coarser one.
-Since the punctured neighborhood is coarser than the full one, `nhdsWithin p {p}ᶜ ≤ nhds p` (which is `nhdsWithin_le_nhds`), a continuous function — which by definition tends to $`f(p)` along the *full* neighborhood — still tends to $`f(p)` along the punctured one.
-Chase this with `Filter.Tendsto.mono_left`, feeding it the containment of filters.
 
 :::exercise
 ```lean
@@ -784,6 +782,11 @@ example (f : ℝ → ℝ) (p : ℝ) (h : ContinuousAt f p) :
     Filter.Tendsto f (nhdsWithin p {p}ᶜ) (nhds (f p)) := by
   sorry
 ```
+:::
+
+:::hint
+Since the punctured neighborhood is coarser than the full one, `nhdsWithin p {p}ᶜ ≤ nhds p` (which is `nhdsWithin_le_nhds`), a continuous function — which by definition tends to $`f(p)` along the *full* neighborhood — still tends to $`f(p)` along the punctured one.
+Chase this with `Filter.Tendsto.mono_left`, feeding it the containment of filters.
 :::
 
 :::solution

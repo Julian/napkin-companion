@@ -439,8 +439,6 @@ example (K : Type*) [Field K] [NumberField K] {p : ℤ} (hp : Prime p) :
 ```
 
 Read in the ramified direction, this is the chapter's headline: a prime that divides the discriminant must ramify somewhere.
-Extract that consequence — from $`p \mid \Delta_K`, produce an actual prime $`P` above $`p` that fails to be unramified.
-The biconditional's right-hand side is a universal "every prime above $`p` is unramified"; since $`p` divides the discriminant that universal must fail, so negate it (`.mpr` turns "all unramified" back into "$`p` avoids the discriminant", contradicting the hypothesis) and let `push_neg` hand you the offending prime.
 
 :::exercise (chili := 1)
 ```lean
@@ -450,6 +448,11 @@ example (K : Type*) [Field K] [NumberField K] {p : ℤ} (hp : Prime p)
       (p : 𝓞 K) ∈ P ∧ ¬ Algebra.IsUnramifiedAt ℤ P := by
   sorry
 ```
+:::
+
+:::hint
+Extract that consequence — from $`p \mid \Delta_K`, produce an actual prime $`P` above $`p` that fails to be unramified.
+The biconditional's right-hand side is a universal "every prime above $`p` is unramified"; since $`p` divides the discriminant that universal must fail, so negate it (`.mpr` turns "all unramified" back into "$`p` avoids the discriminant", contradicting the hypothesis) and let `push_neg` hand you the offending prime.
 :::
 
 :::solution
@@ -484,8 +487,6 @@ with `ramificationIdx` defined as the largest $`n` with $`p \cdot S \subseteq P^
 The identity $`n = \sum e_i f_i` is the *fundamental identity* `Ideal.sum_ramification_inertia`, summing over `IsDedekindDomain.primesOverFinset`.
 
 Prove the fundamental identity in its number field guise.
-Taking $`\mathcal{O}_K` over $`\mathbb{Z}`, whose fraction fields are $`\mathbb{Q}` and $`K`, the sum of $`e_i f_i` across the primes above $`(p)` recovers the degree $`[K:\mathbb{Q}]`.
-The identity itself is `Ideal.sum_ramification_inertia (𝓞 K) ℚ K`; its hypothesis that $`(p)` is maximal follows from `Ideal.span_singleton_prime` together with `Ideal.IsPrime.isMaximal`, and its $`(p) \neq 0` from `Ideal.span_singleton_eq_bot`.
 
 :::exercise (chili := 1)
 ```lean
@@ -496,6 +497,11 @@ example (K : Type*) [Field K] [NumberField K] {p : ℤ} (hp : Prime p) :
           = Module.finrank ℚ K := by
   sorry
 ```
+:::
+
+:::hint
+Taking $`\mathcal{O}_K` over $`\mathbb{Z}`, whose fraction fields are $`\mathbb{Q}` and $`K`, the sum of $`e_i f_i` across the primes above $`(p)` recovers the degree $`[K:\mathbb{Q}]`.
+The identity itself is `Ideal.sum_ramification_inertia (𝓞 K) ℚ K`; its hypothesis that $`(p)` is maximal follows from `Ideal.span_singleton_prime` together with `Ideal.IsPrime.isMaximal`, and its $`(p) \neq 0` from `Ideal.span_singleton_eq_bot`.
 :::
 
 :::solution

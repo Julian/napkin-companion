@@ -345,7 +345,6 @@ example : LinearIndependent ℚ (Module.Basis.ofVectorSpace ℚ ℝ) :=
 
 Independence has teeth one vector at a time: no basis element can be scaled to $`0` by a nonzero rational.
 Prove that if $`a \cdot b_i = 0` then $`a = 0`.
-A basis vector is never zero (`Module.Basis.ne_zero`), so splitting $`a \cdot b_i = 0` with `smul_eq_zero` — which over the field $`\mathbb{Q}` reads "$`a = 0` or $`b_i = 0`" — leaves only the first disjunct.
 
 :::exercise
 ```lean
@@ -353,6 +352,10 @@ example (i : Module.Basis.ofVectorSpaceIndex ℚ ℝ) (a : ℚ)
     (ha : a • Module.Basis.ofVectorSpace ℚ ℝ i = 0) : a = 0 := by
   sorry
 ```
+:::
+
+:::hint
+A basis vector is never zero (`Module.Basis.ne_zero`), so splitting $`a \cdot b_i = 0` with `smul_eq_zero` — which over the field $`\mathbb{Q}` reads "$`a = 0` or $`b_i = 0`" — leaves only the first disjunct.
 :::
 
 :::solution

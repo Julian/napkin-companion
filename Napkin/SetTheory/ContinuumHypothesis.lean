@@ -301,13 +301,16 @@ example : #(Set ℕ) = 𝔠 := mk_set_nat
 
 The branches themselves are the functions $`\omega \to 2`, of which there are again $`2^{\aleph_0} = \mathfrak{c}` many.
 Show that the type of binary branches has size continuum.
-Rewriting with `mk_arrow` turns the goal into a cardinal power that `simp` closes.
 
 :::exercise
 ```lean
 example : #(ℕ → Bool) = 𝔠 := by
   sorry
 ```
+:::
+
+:::hint
+Rewriting with `mk_arrow` turns the goal into a cardinal power that `simp` closes.
 :::
 
 :::solution
@@ -441,13 +444,16 @@ The forcing argument that turns "ccc" into "$`\aleph_2^{M[G]} = \aleph_2^M`" lik
 
 Below the cardinal level, the argument uses only that the antichain $`\{ p_\alpha \mid \alpha < \omega_1 \}` is uncountable, i.e. of size at least $`\aleph_1`.
 Show that any cardinal which is not at most $`\aleph_0` is at least $`\aleph_1`.
-Turning `¬ c ≤ ℵ₀` around with `not_lt` and `lt_aleph_one_iff` gives exactly this.
 
 :::exercise
 ```lean
 example (c : Cardinal) (h : ¬ c ≤ ℵ₀) : ℵ₁ ≤ c := by
   sorry
 ```
+:::
+
+:::hint
+Turning `¬ c ≤ ℵ₀` around with `not_lt` and `lt_aleph_one_iff` gives exactly this.
 :::
 
 :::solution

@@ -70,9 +70,10 @@ The math itself is assumed only as far as the chapter above has taken you.
 Each new idea gets a paragraph naming the Mathlib object that carries it, followed by code you can read as a worked model.
 A `recall` block quotes a real Mathlib declaration's signature; it is checked against Mathlib as the book is built, so a quoted statement cannot silently drift out of date.
 Mathematical notation is sometimes live too: where a symbol is underlined with dots, hovering it shows the signature and doc-string of the Mathlib definition behind it.
-Exercises are labelled — "Lean exercise", numbered alongside the chapter's other callouts — and their proof is left as `sorry`; the paragraph just before each one names the pieces to reach for and the shape of the argument, without writing it out.
+Exercises are labelled — "Lean exercise", numbered alongside the chapter's other callouts — and their proof is left as `sorry`.
+The prose above states the task; where the guidance separates cleanly from the statement, the sentences naming which lemmas to reach for sit in a collapsible *Hint* beneath, so the exercise can be attempted cold and you decide when to be told.
 A chili pepper (🌶) marks a section's closing exercise where the intended solution runs to several steps, the same difficulty glyph the problem sections use.
-Underneath sits a collapsible solution — a complete proof, commented to explain the move rather than merely to display the term.
+Under that sits a collapsible solution — a complete proof, commented to explain the move rather than merely to display the term.
 Within a section the exercises escalate: the first is usually a step or two, the last is a small theorem.
 
 *Where Mathlib has nothing to offer.*

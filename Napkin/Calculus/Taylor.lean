@@ -417,7 +417,6 @@ example (n : ℕ) (x : ℝ) :
 
 "Term by term" means the derivative of a sum is the sum of the derivatives.
 Prove the two-monomial case: $`x \mapsto x^n + x^m` has derivative $`n x^{n-1} + m x^{m-1}`.
-Differentiate each power with `hasDerivAt_pow`, then combine them with `HasDerivAt.add`.
 
 :::exercise
 ```lean
@@ -426,6 +425,10 @@ example (n m : ℕ) (x : ℝ) :
       (n * x ^ (n - 1) + m * x ^ (m - 1)) x := by
   sorry
 ```
+:::
+
+:::hint
+Differentiate each power with `hasDerivAt_pow`, then combine them with `HasDerivAt.add`.
 :::
 
 :::solution
@@ -468,7 +471,6 @@ example (f : ℝ → ℝ) (p : ℝ) (n : WithTop ℕ∞)
 
 Combine that with a closure property.
 Prove that a *sum* of two functions analytic at $`p` is $`C^n` at $`p`.
-Analyticity is closed under addition (`AnalyticAt.add`), and analytic-at implies $`C^n`-at (`AnalyticAt.contDiffAt`); chain the two.
 
 :::exercise
 ```lean
@@ -477,6 +479,10 @@ example (f g : ℝ → ℝ) (p : ℝ) (n : WithTop ℕ∞)
     ContDiffAt ℝ n (fun x => f x + g x) p := by
   sorry
 ```
+:::
+
+:::hint
+Analyticity is closed under addition (`AnalyticAt.add`), and analytic-at implies $`C^n`-at (`AnalyticAt.contDiffAt`); chain the two.
 :::
 
 :::solution
@@ -512,13 +518,16 @@ example : deriv Real.exp = Real.exp :=
 
 Because $`\exp` is its own derivative, *every* derivative of $`\exp` is again $`\exp`.
 Prove it for the second derivative: $`\exp'' = \exp`.
-Rewrite with `Real.deriv_exp` twice — the inner `deriv Real.exp` becomes `Real.exp`, and then the outer one does too.
 
 :::exercise
 ```lean
 example : deriv (deriv Real.exp) = Real.exp := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite with `Real.deriv_exp` twice — the inner `deriv Real.exp` becomes `Real.exp`, and then the outer one does too.
 :::
 
 :::solution
@@ -546,13 +555,16 @@ example (z : ℂ) : AnalyticAt ℂ Complex.exp z :=
 
 Analyticity is also closed under composition.
 Prove that $`z \mapsto \exp(\exp z)` is analytic at every point.
-The composite is `Complex.exp ∘ Complex.exp`; feed the analyticity of the outer and inner copies to `AnalyticAt.comp` (the outer one is analytic at the intermediate point $`\exp z` precisely because $`\exp` is analytic *everywhere*).
 
 :::exercise
 ```lean
 example (z : ℂ) : AnalyticAt ℂ (Complex.exp ∘ Complex.exp) z := by
   sorry
 ```
+:::
+
+:::hint
+The composite is `Complex.exp ∘ Complex.exp`; feed the analyticity of the outer and inner copies to `AnalyticAt.comp` (the outer one is analytic at the intermediate point $`\exp z` precisely because $`\exp` is analytic *everywhere*).
 :::
 
 :::solution
@@ -579,7 +591,6 @@ example (θ : ℝ) : Complex.exp (θ * Complex.I) =
 
 Euler's formula is what turns the angle-addition laws for $`\sin` and $`\cos` into the single statement that $`\exp` sends a *sum* of angles to a *product*.
 Prove that underlying identity: $`\exp(i(\theta + \varphi)) = \exp(i\theta)\exp(i\varphi)`.
-Distribute the $`i` across the sum with `add_mul`, then split the exponential of a sum with `Complex.exp_add`.
 
 :::exercise
 ```lean
@@ -588,6 +599,10 @@ example (θ φ : ℝ) :
       Complex.exp (θ * Complex.I) * Complex.exp (φ * Complex.I) := by
   sorry
 ```
+:::
+
+:::hint
+Distribute the $`i` across the sum with `add_mul`, then split the exponential of a sum with `Complex.exp_add`.
 :::
 
 :::solution

@@ -313,7 +313,6 @@ example (G X : Type*) [Group G] [MulAction G X] (g : G) (x : X) :
 
 That is precisely what makes each $`g` act as a *bijection* — in particular *injectively*.
 Prove it: if $`g \cdot x = g \cdot y`, then $`x = y`.
-Apply the action of $`g^{-1}` to both sides of the hypothesis (`congrArg`), then the round-trip above (as a `simp` lemma) collapses both sides.
 
 :::exercise
 ```lean
@@ -321,6 +320,10 @@ example (G X : Type*) [Group G] [MulAction G X] (g : G) (x y : X)
     (h : g • x = g • y) : x = y := by
   sorry
 ```
+:::
+
+:::hint
+Apply the action of $`g^{-1}` to both sides of the hypothesis (`congrArg`), then the round-trip above (as a `simp` lemma) collapses both sides.
 :::
 
 :::solution
@@ -354,7 +357,6 @@ example (G X : Type*) [Group G] [MulAction G X] (g : G) (x : X) :
 
 Rather than take Mathlib's word that it is a subgroup, prove one of the closure conditions yourself.
 Show that if both $`g` and $`h` fix $`x`, then so does their product $`g h`.
-Expand $`(g h) \cdot x` with `mul_smul` into $`g \cdot (h \cdot x)`, then rewrite inward using each hypothesis in turn.
 
 :::exercise
 ```lean
@@ -362,6 +364,10 @@ example (G X : Type*) [Group G] [MulAction G X] (x : X) (g h : G)
     (hg : g • x = x) (hh : h • x = x) : (g * h) • x = x := by
   sorry
 ```
+:::
+
+:::hint
+Expand $`(g h) \cdot x` with `mul_smul` into $`g \cdot (h \cdot x)`, then rewrite inward using each hypothesis in turn.
 :::
 
 :::solution
@@ -381,8 +387,6 @@ example (G X : Type*) [Group G] [MulAction G X] (x : X) :
 ```
 
 Prove the next clause of "equivalence relation" — *symmetry*.
-If $`y` is in the orbit of $`x`, then $`x` is in the orbit of $`y`.
-Membership $`y \in \operatorname{orbit}(x)` means some $`g` sends $`x` to $`y`; `obtain ⟨g, rfl⟩` names it and replaces $`y` by $`g \cdot x`, after which $`g^{-1}` sends $`y` back to $`x`.
 
 :::exercise
 ```lean
@@ -390,6 +394,11 @@ example (G X : Type*) [Group G] [MulAction G X] (x y : X)
     (h : y ∈ MulAction.orbit G x) : x ∈ MulAction.orbit G y := by
   sorry
 ```
+:::
+
+:::hint
+If $`y` is in the orbit of $`x`, then $`x` is in the orbit of $`y`.
+Membership $`y \in \operatorname{orbit}(x)` means some $`g` sends $`x` to $`y`; `obtain ⟨g, rfl⟩` names it and replaces $`y` by $`g \cdot x`, after which $`g^{-1}` sends $`y` back to $`x`.
 :::
 
 :::solution
@@ -498,7 +507,6 @@ example (G : Type*) [CommGroup G] (g h : G) : g * h * g⁻¹ = h :=
 
 In a *general* group conjugation is far from trivial, but it is still a structural map: conjugating by a fixed $`g` is a homomorphism, meaning it distributes over products.
 Prove $`g(ab)g^{-1} = (g a g^{-1})(g b g^{-1})`.
-This is a pure identity in the group axioms — the `group` tactic, which normalizes both sides, discharges it (notice the middle $`g^{-1} g` cancels).
 
 :::exercise
 ```lean
@@ -506,6 +514,10 @@ example (G : Type*) [Group G] (g a b : G) :
     g * (a * b) * g⁻¹ = (g * a * g⁻¹) * (g * b * g⁻¹) := by
   sorry
 ```
+:::
+
+:::hint
+This is a pure identity in the group axioms — the `group` tactic, which normalizes both sides, discharges it (notice the middle $`g^{-1} g` cancels).
 :::
 
 :::solution

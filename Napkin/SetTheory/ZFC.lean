@@ -389,13 +389,16 @@ example (x y : ZFSet) (h : ∀ z : ZFSet, z ∈ x ↔ z ∈ y) : x = y :=
 ```
 
 Put extensionality to work on a concrete equality: the pair $`\{x, x\}` collapses to the singleton $`\{x\}`.
-Apply `ZFSet.ext`, then reduce each side with its membership lemma — `ZFSet.mem_pair` turns $`z \in \{x, x\}` into $`z = x \lor z = x`, `ZFSet.mem_singleton` turns $`z \in \{x\}` into $`z = x`, and `or_self` closes the gap between them.
 
 :::exercise
 ```lean
 example (x : ZFSet) : ({x, x} : ZFSet) = {x} := by
   sorry
 ```
+:::
+
+:::hint
+Apply `ZFSet.ext`, then reduce each side with its membership lemma — `ZFSet.mem_pair` turns $`z \in \{x, x\}` into $`z = x \lor z = x`, `ZFSet.mem_singleton` turns $`z \in \{x\}` into $`z = x`, and `or_self` closes the gap between them.
 :::
 
 :::solution
@@ -513,7 +516,6 @@ example (α : Type*) : WellFounded (WellOrderingRel : α → α → Prop) :=
 
 Well-foundedness is exactly what lets us "pick minimal elements", the property that makes well-orders useful.
 Deduce it: every nonempty subset $`s` has an element $`m` with nothing in $`s` strictly below it.
-The `WellFounded` proof above carries the method `WellFounded.has_min`, which takes the set and a proof it is nonempty and hands back such a minimal $`m`.
 
 :::exercise
 ```lean
@@ -521,6 +523,10 @@ example (α : Type*) (s : Set α) (hs : s.Nonempty) :
     ∃ m ∈ s, ∀ y ∈ s, ¬ WellOrderingRel y m := by
   sorry
 ```
+:::
+
+:::hint
+The `WellFounded` proof above carries the method `WellFounded.has_min`, which takes the set and a proof it is nonempty and hands back such a minimal $`m`.
 :::
 
 :::solution

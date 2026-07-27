@@ -539,7 +539,6 @@ example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
 
 The same principle governs every degree, not just the bottom: since $`\partial` drops the degree by exactly one, `C.d i j` can only be nonzero when $`i = j + 1`.
 Prove the general vanishing whenever $`i \le j`.
-Hand the goal to `C.shape`, unfold the shape relation to the arithmetic statement $`j + 1 = i` with `ComplexShape.down_Rel`, and let `omega` derive the contradiction with $`i \le j`.
 
 :::exercise (chili := 1)
 ```lean
@@ -547,6 +546,10 @@ example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
     (C : ChainComplex V ℕ) (i j : ℕ) (h : i ≤ j) : C.d i j = 0 := by
   sorry
 ```
+:::
+
+:::hint
+Hand the goal to `C.shape`, unfold the shape relation to the arithmetic statement $`j + 1 = i` with `ComplexShape.down_Rel`, and let `omega` derive the contradiction with $`i \le j`.
 :::
 
 :::solution
@@ -585,7 +588,6 @@ noncomputable example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
 This assignment is *functorial*: it carries identities to identities (`HomologicalComplex.homologyMap_id`) and composites to composites (`HomologicalComplex.homologyMap_comp`).
 That functoriality is exactly why homology cannot tell isomorphic complexes apart — a chain map with an inverse must induce an invertible map on homology.
 Prove one half of that: if a chain map $`g` undoes $`f`, in the sense that the composite $`C \xrightarrow{f} D \xrightarrow{g} C` is the identity, then $`f_\ast` and $`g_\ast` compose to the identity on homology too.
-Fold the two induced maps back into one with `homologyMap_comp` run backwards, rewrite along the hypothesis, and collapse the result with `homologyMap_id`.
 
 :::exercise
 ```lean
@@ -596,6 +598,10 @@ example {V : Type*} [Category V] [Limits.HasZeroMorphisms V]
       𝟙 (C.homology i) := by
   sorry
 ```
+:::
+
+:::hint
+Fold the two induced maps back into one with `homologyMap_comp` run backwards, rewrite along the hypothesis, and collapse the result with `homologyMap_id`.
 :::
 
 :::solution

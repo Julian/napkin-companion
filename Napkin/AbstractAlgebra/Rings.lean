@@ -701,13 +701,16 @@ example (u : ℤ) (h : IsUnit u) : u = 1 ∨ u = -1 := Int.isUnit_iff.mp h
 ```
 
 Put that classification to work.
-Since a unit of $`\mathbb{Z}` is $`\pm 1`, its square is $`1` — prove $`u \cdot u = 1` by case-splitting on the classification (`rcases … with rfl | rfl`, which substitutes each value of $`u`) and computing each branch.
 
 :::exercise
 ```lean
 example (u : ℤ) (h : IsUnit u) : u * u = 1 := by
   sorry
 ```
+:::
+
+:::hint
+Since a unit of $`\mathbb{Z}` is $`\pm 1`, its square is $`1` — prove $`u \cdot u = 1` by case-splitting on the classification (`rcases … with rfl | rfl`, which substitutes each value of $`u`) and computing each branch.
 :::
 
 :::solution
@@ -773,13 +776,16 @@ example (R : Type*) [CommRing R] (I : Ideal R) (u : R) (hu : IsUnit u)
 
 The mandatory exercise was that a field has exactly two ideals; Mathlib's one-liner is `Ideal.eq_bot_or_top`.
 Prove it from the definitions, reusing the fact just above.
-If `I` is not the zero ideal it contains a nonzero element (`Submodule.exists_mem_ne_zero_of_ne_bot`); in a field that element is a unit (`isUnit_iff_ne_zero`); and an ideal containing a unit is the whole ring (`Ideal.eq_top_of_isUnit_mem`, the worked model above).
 
 :::exercise (chili := 1)
 ```lean
 example (K : Type*) [Field K] (I : Ideal K) : I = ⊥ ∨ I = ⊤ := by
   sorry
 ```
+:::
+
+:::hint
+If `I` is not the zero ideal it contains a nonzero element (`Submodule.exists_mem_ne_zero_of_ne_bot`); in a field that element is a unit (`isUnit_iff_ne_zero`); and an ideal containing a unit is the whole ring (`Ideal.eq_top_of_isUnit_mem`, the worked model above).
 :::
 
 :::solution

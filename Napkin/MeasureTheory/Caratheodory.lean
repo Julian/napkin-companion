@@ -453,7 +453,6 @@ example {Ω : Type*} (μ : OuterMeasure Ω) (s t : Set Ω) (h : s ⊆ t) :
 
 Monotonicity is the workhorse for bounding an outer measure: you cheaply bound $`\mu^*` on a set by exhibiting a containment.
 Show that an intersection is measured no larger than either of its parts, $`\mu^*(s \cap t) \le \mu^*(s)` and $`\mu^*(s \cap t) \le \mu^*(t)`.
-Each conjunct is `μ.mono` applied to one of `Set.inter_subset_left` / `Set.inter_subset_right`; pair them with `⟨_, _⟩`.
 
 :::exercise
 ```lean
@@ -461,6 +460,10 @@ example {Ω : Type*} (μ : OuterMeasure Ω) (s t : Set Ω) :
     μ (s ∩ t) ≤ μ s ∧ μ (s ∩ t) ≤ μ t := by
   sorry
 ```
+:::
+
+:::hint
+Each conjunct is `μ.mono` applied to one of `Set.inter_subset_left` / `Set.inter_subset_right`; pair them with `⟨_, _⟩`.
 :::
 
 :::solution
@@ -503,7 +506,6 @@ example {Ω : Type*} (μ : OuterMeasure Ω) (s : Set Ω)
 
 A $`\sigma`-algebra is also closed under set difference, and you can build that from the pieces you already have.
 Show that if $`s` and $`t` are both $`\mu^*`-measurable, then so is $`s \setminus t`.
-Rewrite with `Set.diff_eq` to expose $`s \setminus t = s \cap t^c`, then combine `OuterMeasure.isCaratheodory_inter` with the complement fact above (applied to $`t`).
 
 :::exercise
 ```lean
@@ -512,6 +514,10 @@ example {Ω : Type*} (μ : OuterMeasure Ω) (s t : Set Ω)
     μ.IsCaratheodory (s \ t) := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite with `Set.diff_eq` to expose $`s \setminus t = s \cap t^c`, then combine `OuterMeasure.isCaratheodory_inter` with the complement fact above (applied to $`t`).
 :::
 
 :::solution
@@ -548,13 +554,16 @@ example (a : ℝ) : volume ({a} : Set ℝ) = 0 := Real.volume_singleton
 
 If one point is null, so is any finite handful of them, because a union of null sets stays null.
 Show that a two-point set $`\{a, b\} \subseteq \mathbb{R}` has measure zero.
-Rewrite $`\{a, b\}` as $`\{a\} \cup \{b\}` with `Set.insert_eq`, then close with `measure_union_null` fed two copies of `Real.volume_singleton`.
 
 :::exercise
 ```lean
 example (a b : ℝ) : volume ({a, b} : Set ℝ) = 0 := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite $`\{a, b\}` as $`\{a\} \cup \{b\}` with `Set.insert_eq`, then close with `measure_union_null` fed two copies of `Real.volume_singleton`.
 :::
 
 :::solution

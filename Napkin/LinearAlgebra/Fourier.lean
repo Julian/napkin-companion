@@ -386,9 +386,6 @@ example {T : ℝ} : AddCircle.toCircle (0 : AddCircle T) = 1 := by
 
 The property that makes $`e` a *character* rather than just some map is that it converts addition into multiplication.
 Prove it.
-The obstacle is that a point of `AddCircle T` is an equivalence class, so there is nothing to compute with until you name a representative: `induction x using QuotientAddGroup.induction_on` replaces `x` by an honest real number (do it for both variables).
-After that `AddCircle.coe_add` pushes the sum inside the class, `AddCircle.toCircle_apply_mk` evaluates each side, and `Circle.exp_add` finishes — modulo distributing the factor $`2\pi/T` over the sum with `mul_add`.
-This "reduce to representatives" move is how essentially every statement about a quotient gets proved.
 
 :::exercise (chili := 1)
 ```lean
@@ -397,6 +394,12 @@ example {T : ℝ} (x y : AddCircle T) :
       = AddCircle.toCircle x * AddCircle.toCircle y := by
   sorry
 ```
+:::
+
+:::hint
+The obstacle is that a point of `AddCircle T` is an equivalence class, so there is nothing to compute with until you name a representative: `induction x using QuotientAddGroup.induction_on` replaces `x` by an honest real number (do it for both variables).
+After that `AddCircle.coe_add` pushes the sum inside the class, `AddCircle.toCircle_apply_mk` evaluates each side, and `Circle.exp_add` finishes — modulo distributing the factor $`2\pi/T` over the sum with `mul_add`.
+This "reduce to representatives" move is how essentially every statement about a quotient gets proved.
 :::
 
 :::solution
@@ -446,7 +449,6 @@ example {ι : Type*} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E
 
 The first fact — that the coefficients determine the vector — is where the *basis* part of "orthonormal basis" is doing work: an orthonormal family whose span is not dense would have vectors invisible to it.
 Prove the sharpest form: a vector all of whose Fourier coefficients vanish is zero.
-No computation is needed, only the observation that `repr` is not merely a linear map but a bundled isometric *equivalence*, so it is injective; `map_eq_zero_iff` converts injectivity of a map into the statement that only zero is sent to zero.
 
 :::exercise
 ```lean
@@ -454,6 +456,10 @@ example {ι : Type*} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E
     (b : HilbertBasis ι ℂ E) (x : E) : b.repr x = 0 ↔ x = 0 := by
   sorry
 ```
+:::
+
+:::hint
+No computation is needed, only the observation that `repr` is not merely a linear map but a bundled isometric *equivalence*, so it is injective; `map_eq_zero_iff` converts injectivity of a map into the statement that only zero is sent to zero.
 :::
 
 :::solution
@@ -484,13 +490,16 @@ example (x : BoolCube 3) : chi ∅ x = 1 :=
 
 At the other extreme, a one-element set gives back a single coordinate, $`\chi_{\{i\}}(x) = x_i`.
 Prove it by unfolding the definition and letting `simp` collapse the one-term product (`Finset.prod_singleton`).
-This is the base case of the slogan that the $`\chi_S` are the *square-free monomials* in the coordinates.
 
 :::exercise
 ```lean
 example {n : ℕ} (i : Fin n) (x : BoolCube n) : chi {i} x = pm (x i) := by
   sorry
 ```
+:::
+
+:::hint
+This is the base case of the slogan that the $`\chi_S` are the *square-free monomials* in the coordinates.
 :::
 
 :::solution
@@ -502,7 +511,6 @@ example {n : ℕ} (i : Fin n) (x : BoolCube n) : chi {i} x = pm (x i) := by
 
 Each character takes values in $`\{\pm1\}` — that is `chi_eq_one_or` — because it is a product of $`\pm1`'s; the fact underneath it is that $`\chi_S` squares to $`1`.
 Prove that, which is where the $`\pm1`-valued model earns its keep (over $`\{0,1\}` nothing like it is true).
-The single-coordinate version is `pm_mul_self`, so the work is getting from one coordinate to the whole product: after unfolding `chi` you have a product times a product, and `Finset.prod_mul_distrib` (used right-to-left) merges them into a single product of $`x_i \cdot x_i`.
 
 :::exercise
 ```lean
@@ -510,6 +518,10 @@ example {n : ℕ} (S : Finset (Fin n)) (x : BoolCube n) :
     chi S x * chi S x = 1 := by
   sorry
 ```
+:::
+
+:::hint
+The single-coordinate version is `pm_mul_self`, so the work is getting from one coordinate to the whole product: after unfolding `chi` you have a product times a product, and `Finset.prod_mul_distrib` (used right-to-left) merges them into a single product of $`x_i \cdot x_i`.
 :::
 
 :::solution
@@ -643,7 +655,6 @@ example {T : ℝ} [hT : Fact (0 < T)] {E : Type*} [NormedAddCommGroup E]
 
 Now put the normalization to work on the simplest possible input.
 Show that a constant function has that constant as its zeroth Fourier coefficient — the statement that the "average" really is an average, and the sanity check that would fail if `haarAddCircle` had total mass $`2\pi` instead of $`1`.
-Unfolding `fourierCoeff` leaves the integral of a constant, which `simp` evaluates to (total mass) $`\cdot\, c`; the mass is $`1` because Mathlib registers `AddCircle.haarAddCircle` as a probability measure, and that instance is what makes the constant come back unchanged.
 
 :::exercise
 ```lean
@@ -651,6 +662,10 @@ example {T : ℝ} [hT : Fact (0 < T)] (c : ℂ) :
     fourierCoeff (fun _ : AddCircle T => c) 0 = c := by
   sorry
 ```
+:::
+
+:::hint
+Unfolding `fourierCoeff` leaves the integral of a constant, which `simp` evaluates to (total mass) $`\cdot\, c`; the mass is $`1` because Mathlib registers `AddCircle.haarAddCircle` as a probability measure, and that instance is what makes the constant come back unchanged.
 :::
 
 :::solution

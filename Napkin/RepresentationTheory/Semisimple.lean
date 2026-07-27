@@ -411,7 +411,6 @@ example (k : Type*) [Field k] (n : ℕ) :
 
 The point of "semisimple" is complete reducibility: the regular representation is the sum of its irreducible subrepresentations.
 Prove exactly this for the matrix ring — the supremum of its simple submodules is everything.
-Being a semisimple ring means being semisimple *as a module over itself*, so the classification lemma `IsSemisimpleModule.sSup_simples_eq_top` (which says a semisimple module is the join of its simple submodules) applies with the regular module.
 
 :::exercise
 ```lean
@@ -421,6 +420,10 @@ example (k : Type*) [Field k] (n : ℕ) :
       IsSimpleModule (Matrix (Fin n) (Fin n) k) m} = ⊤ := by
   sorry
 ```
+:::
+
+:::hint
+Being a semisimple ring means being semisimple *as a module over itself*, so the classification lemma `IsSemisimpleModule.sSup_simples_eq_top` (which says a semisimple module is the join of its simple submodules) applies with the regular module.
 :::
 
 :::solution

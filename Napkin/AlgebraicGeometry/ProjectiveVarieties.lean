@@ -580,7 +580,6 @@ example :
 
 This works because the degree-$`n` polynomials are closed under both scaling by constants and addition, which is exactly the shape $`f + c\,g` of that example.
 Prove the general closure: if $`f` and $`g` are homogeneous of degree $`n` then so is $`f + c\,g` for any constant $`c`.
-A constant $`\mathbb{C}\,c` is homogeneous of degree $`0` (`MvPolynomial.isHomogeneous_C`), so $`c\,g` stays in degree $`0 + n = n` after `MvPolynomial.IsHomogeneous.mul`; then combine with `MvPolynomial.IsHomogeneous.add`.
 
 :::exercise
 ```lean
@@ -589,6 +588,10 @@ example {σ : Type*} (f g : MvPolynomial σ ℂ) (c : ℂ) (n : ℕ)
     (f + MvPolynomial.C c * g).IsHomogeneous n := by
   sorry
 ```
+:::
+
+:::hint
+A constant $`\mathbb{C}\,c` is homogeneous of degree $`0` (`MvPolynomial.isHomogeneous_C`), so $`c\,g` stays in degree $`0 + n = n` after `MvPolynomial.IsHomogeneous.mul`; then combine with `MvPolynomial.IsHomogeneous.add`.
 :::
 
 :::solution

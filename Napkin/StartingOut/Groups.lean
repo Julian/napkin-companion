@@ -842,7 +842,6 @@ example (n : ℕ) :
 
 Your turn: compute two element orders in the cyclic group $`\mathbb{Z}/6\mathbb{Z}`.
 Here `addOrderOf` is the additive analogue of `orderOf` (the group is written with `+`).
-The lemmas `ZMod.addOrderOf_one` and `ZMod.addOrderOf_coe` do the work.
 
 :::exercise (chili := 1)
 ```lean
@@ -850,6 +849,10 @@ example : addOrderOf (1 : ZMod 6) = 6 := by sorry
 
 example : addOrderOf (3 : ZMod 6) = 2 := by sorry
 ```
+:::
+
+:::hint
+The lemmas `ZMod.addOrderOf_one` and `ZMod.addOrderOf_coe` do the work.
 :::
 
 :::solution
@@ -914,13 +917,16 @@ example (G : Type*) [Group G] (g : G) (h : g ∈ (⊥ : Subgroup G)) :
 
 The identity is special for a more basic reason, one that leans on the group *axioms* rather than a library lemma.
 Prove that the identity is the only *idempotent*: if $`g \star g = g`, then $`g = 1`.
-The trick is cancellation — rewrite $`g` as $`g \star 1`, so the hypothesis reads $`g \star g = g \star 1`, and cancel the leading $`g` on the left (`mul_left_cancel`).
 
 :::exercise
 ```lean
 example (G : Type*) [Group G] (g : G) (h : g * g = g) : g = 1 := by
   sorry
 ```
+:::
+
+:::hint
+The trick is cancellation — rewrite $`g` as $`g \star 1`, so the hypothesis reads $`g \star g = g \star 1`, and cancel the leading $`g` on the left (`mul_left_cancel`).
 :::
 
 :::solution

@@ -561,7 +561,6 @@ example {M : Type*} [MetricSpace M] (x : M) : dist x x = 0 := dist_self x
 ```
 
 Your turn: the triangle inequality also gives a *reverse* triangle inequality bounding how much a distance can change when one endpoint moves.
-Chase it out of `dist_triangle`.
 
 :::exercise
 ```lean
@@ -569,6 +568,10 @@ example {M : Type*} [MetricSpace M] (x y z : M) :
     dist x z - dist y z ≤ dist x y := by
   sorry
 ```
+:::
+
+:::hint
+Chase it out of `dist_triangle`.
 :::
 
 :::solution
@@ -669,8 +672,6 @@ example {D M : Type*} [MetricSpace M] [TopologicalSpace D]
 ```
 
 Your turn: prove the easy direction of *sequential continuity* — a continuous function preserves convergence.
-If $`x_n \to p` and $`f` is continuous, then $`f(x_n) \to f(p)`.
-(Hint: `Continuous.tendsto` gives you the convergence `f` induces at `p`, and `Filter.Tendsto.comp` chains it with the convergence of `x`.)
 
 :::exercise
 ```lean
@@ -680,6 +681,11 @@ example {M N : Type*} [MetricSpace M] [MetricSpace N] (f : M → N)
     Filter.Tendsto (fun n => f (x n)) Filter.atTop (𝓝 (f p)) := by
   sorry
 ```
+:::
+
+:::hint
+If $`x_n \to p` and $`f` is continuous, then $`f(x_n) \to f(p)`.
+(Hint: `Continuous.tendsto` gives you the convergence `f` induces at `p`, and `Filter.Tendsto.comp` chains it with the convergence of `x`.)
 :::
 
 :::solution
@@ -712,7 +718,6 @@ example (M : Type*) [MetricSpace M] : M ≃ₜ M := Homeomorph.refl M
 ```
 
 Your turn: supply the symmetry and transitivity, i.e. that a homeomorphism can be inverted and that two of them compose.
-(Look for `Homeomorph.symm` and `Homeomorph.trans`.)
 
 :::exercise
 ```lean
@@ -722,6 +727,10 @@ example (M N : Type*) [MetricSpace M] [MetricSpace N]
 example (M N L : Type*) [MetricSpace M] [MetricSpace N] [MetricSpace L]
     (f : M ≃ₜ N) (g : N ≃ₜ L) : M ≃ₜ L := sorry
 ```
+:::
+
+:::hint
+(Look for `Homeomorph.symm` and `Homeomorph.trans`.)
 :::
 
 :::solution
@@ -764,7 +773,6 @@ example {M N : Type*} [MetricSpace M] [MetricSpace N]
 ```
 
 Your turn: put the componentwise criterion to work on the diagonal.
-If $`x_n \to a` in $`M`, show that the paired sequence $`(x_n, x_n) \to (a, a)` in $`M \times M`, by feeding the single hypothesis into *both* coordinates of `Prod.tendsto_iff` through its `.mpr` direction.
 
 :::exercise
 ```lean
@@ -773,6 +781,10 @@ example {M : Type*} [MetricSpace M] (x : ℕ → M) (a : M)
     Filter.Tendsto (fun n => (x n, x n)) Filter.atTop (𝓝 (a, a)) := by
   sorry
 ```
+:::
+
+:::hint
+If $`x_n \to a` in $`M`, show that the paired sequence $`(x_n, x_n) \to (a, a)` in $`M \times M`, by feeding the single hypothesis into *both* coordinates of `Prod.tendsto_iff` through its `.mpr` direction.
 :::
 
 :::solution
@@ -851,8 +863,6 @@ example {M : Type*} [MetricSpace M] (U : ℕ → Set M)
 ```
 
 Your turn: chain these with the fact that each $`r`-neighborhood is open.
-First, a union of open balls is open — hand `isOpen_iUnion` the ball-openness `Metric.isOpen_ball` at each index.
-Second, intersect an open set with such a union, combining `IsOpen.inter` and `isOpen_iUnion`.
 
 :::exercise (chili := 1)
 ```lean
@@ -865,6 +875,11 @@ example {M : Type*} [MetricSpace M] (s : Set M) (U : ℕ → Set M)
     IsOpen (s ∩ ⋃ i, U i) := by
   sorry
 ```
+:::
+
+:::hint
+First, a union of open balls is open — hand `isOpen_iUnion` the ball-openness `Metric.isOpen_ball` at each index.
+Second, intersect an open set with such a union, combining `IsOpen.inter` and `isOpen_iUnion`.
 :::
 
 :::solution
@@ -917,7 +932,6 @@ example {M : Type*} [MetricSpace M] (S : Set M) :
 
 Your turn: closing an already-closed set changes nothing.
 Show that if $`S` is closed then $`\overline S = S`, by proving both inclusions: `subset_closure` gives $`S \subseteq \overline S`, and a closed set contains its own closure through `IsClosed.closure_subset`.
-Glue them with `Set.Subset.antisymm`.
 
 :::exercise
 ```lean
@@ -925,6 +939,10 @@ example {M : Type*} [MetricSpace M] (S : Set M) (h : IsClosed S) :
     closure S = S := by
   sorry
 ```
+:::
+
+:::hint
+Glue them with `Set.Subset.antisymm`.
 :::
 
 :::solution

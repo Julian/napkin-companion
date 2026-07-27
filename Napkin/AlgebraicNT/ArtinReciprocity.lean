@@ -677,7 +677,6 @@ example (K : Type*) [Field K] [NumberField K]
 ```
 
 Put the dichotomy to work: a place that is *not* real must be complex.
-Case-split on `w.isReal_or_isComplex` with `rcases`; the real branch contradicts the hypothesis (discharge it with `absurd`), leaving the complex one.
 
 :::exercise
 ```lean
@@ -686,6 +685,10 @@ example (K : Type*) [Field K] [NumberField K]
     w.IsComplex := by
   sorry
 ```
+:::
+
+:::hint
+Case-split on `w.isReal_or_isComplex` with `rcases`; the real branch contradicts the hypothesis (discharge it with `absurd`), leaving the complex one.
 :::
 
 :::solution
@@ -726,13 +729,16 @@ example : Fintype.card (ClassGroup ℤ) = 1 :=
 
 "A single element" is really the statement that the group is trivial: every ideal class is the identity.
 Prove that any `x : ClassGroup ℤ` equals `1`.
-A cardinality of one forces the type to be a subsingleton (`Fintype.card_le_one_iff_subsingleton`, fed `card_classGroup_eq_one.le`), and in a subsingleton any two elements coincide (`Subsingleton.elim`).
 
 :::exercise
 ```lean
 example (x : ClassGroup ℤ) : x = 1 := by
   sorry
 ```
+:::
+
+:::hint
+A cardinality of one forces the type to be a subsingleton (`Fintype.card_le_one_iff_subsingleton`, fed `card_classGroup_eq_one.le`), and in a subsingleton any two elements coincide (`Subsingleton.elim`).
 :::
 
 :::solution

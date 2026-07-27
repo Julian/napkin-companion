@@ -381,7 +381,6 @@ example (X : Scheme) (U : X.Opens) :
 ```
 
 Read that range description as a surjectivity statement onto `U`: every point of `X` lying in `U` is the image of some point of the open subscheme.
-Rewrite the membership backwards along `Scheme.Opens.range_ι` to turn it into membership in the range, then `obtain` the preimage witness.
 
 :::exercise
 ```lean
@@ -389,6 +388,10 @@ example (X : Scheme) (U : X.Opens) (x : X) (hx : x ∈ (U : Set X)) :
     ∃ y : U, U.ι.base y = x := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite the membership backwards along `Scheme.Opens.range_ι` to turn it into membership in the range, then `obtain` the preimage witness.
 :::
 
 :::solution

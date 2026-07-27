@@ -665,7 +665,6 @@ example (C : Type*) [Category C] {X Y : C} (f : X ⟶ Y) [Mono f]
 
 The question asked you to show that the composition of two monic maps is monic — Mathlib's one-liner is `mono_comp`.
 Prove it from the cancellation property instead, exercising the worked model above.
-To see `f ≫ g` is mono, take `p ≫ (f ≫ g) = q ≫ (f ≫ g)`, reassociate (`Category.assoc`) to expose the outer `g`, cancel it (`cancel_mono g`), then cancel the exposed `f` (`cancel_mono f`).
 
 :::exercise (chili := 1)
 ```lean
@@ -673,6 +672,10 @@ example (C : Type*) [Category C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
     [Mono f] [Mono g] : Mono (f ≫ g) := by
   sorry
 ```
+:::
+
+:::hint
+To see `f ≫ g` is mono, take `p ≫ (f ≫ g) = q ≫ (f ≫ g)`, reassociate (`Category.assoc`) to expose the outer `g`, cancel it (`cancel_mono g`), then cancel the exposed `f` (`cancel_mono f`).
 :::
 
 :::solution

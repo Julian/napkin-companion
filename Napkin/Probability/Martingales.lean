@@ -700,7 +700,6 @@ example {Ω : Type*} {m : MeasurableSpace Ω} (ℱ : Filtration ℕ m) (i j : �
 
 Monotonicity is exactly what lets information *accumulate*: a set already decided by time $`i` stays decided at every later time $`j`, where it can be combined with fresh information.
 Show that if $`s` is $`\mathcal{F}_i`-measurable and $`t` is $`\mathcal{F}_j`-measurable with $`i \le j`, then $`s \cap t` is $`\mathcal{F}_j`-measurable.
-Promote $`s` up to time $`j` by feeding the set to the inclusion `ℱ.mono h` (an inclusion of $`\sigma`-algebras *is* a function on measurable sets), then close under intersection with `MeasurableSet.inter`.
 
 :::exercise
 ```lean
@@ -709,6 +708,10 @@ example {Ω : Type*} {m : MeasurableSpace Ω} (ℱ : Filtration ℕ m) (i j : �
     (ht : MeasurableSet[ℱ j] t) : MeasurableSet[ℱ j] (s ∩ t) := by
   sorry
 ```
+:::
+
+:::hint
+Promote $`s` up to time $`j` by feeding the set to the inclusion `ℱ.mono h` (an inclusion of $`\sigma`-algebras *is* a function on measurable sets), then close under intersection with `MeasurableSet.inter`.
 :::
 
 :::solution
@@ -821,7 +824,6 @@ example {Ω E ι : Type*} [Preorder ι] {m0 : MeasurableSpace Ω} {μ : Measure 
 
 Put that characterization to work on the "$`X_n` is a martingale iff $`-X_n` is a supermartingale" symmetry the chapter leans on throughout.
 Prove that the negation of a martingale is again a martingale.
-Split $`X_n` into its super- and sub-martingale halves with `martingale_iff`; negation *swaps* the two roles — a supermartingale becomes a submartingale under $`X \mapsto -X` (`Supermartingale.neg`) and vice versa (`Submartingale.neg`) — so reassemble the swapped pair back through `martingale_iff`.
 
 :::exercise
 ```lean
@@ -831,6 +833,10 @@ example {Ω E ι : Type*} [Preorder ι] {m0 : MeasurableSpace Ω} {μ : Measure 
     (h : Martingale f ℱ μ) : Martingale (-f) ℱ μ := by
   sorry
 ```
+:::
+
+:::hint
+Split $`X_n` into its super- and sub-martingale halves with `martingale_iff`; negation *swaps* the two roles — a supermartingale becomes a submartingale under $`X \mapsto -X` (`Supermartingale.neg`) and vice versa (`Submartingale.neg`) — so reassemble the swapped pair back through `martingale_iff`.
 :::
 
 :::solution
@@ -875,7 +881,6 @@ example {Ω ι : Type*} {m : MeasurableSpace Ω} [Preorder ι]
 
 That constant is exactly what turns a stopping time $`\tau` into the *capped* time $`\tau \wedge n` behind the stopped process: capping is a pointwise minimum with a constant.
 Prove that the minimum of a stopping time with a fixed time $`i` is again a stopping time.
-`IsStoppingTime.min` combines two stopping times into their pointwise minimum; feed it $`\tau` together with the constant stopping time from the worked model above.
 
 :::exercise
 ```lean
@@ -885,6 +890,10 @@ example {Ω ι : Type*} {m : MeasurableSpace Ω} [LinearOrder ι]
     IsStoppingTime ℱ (fun ω => min (τ ω) (i : WithTop ι)) := by
   sorry
 ```
+:::
+
+:::hint
+`IsStoppingTime.min` combines two stopping times into their pointwise minimum; feed it $`\tau` together with the constant stopping time from the worked model above.
 :::
 
 :::solution

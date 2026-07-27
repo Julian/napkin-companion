@@ -345,7 +345,6 @@ example (f : ℝ → ℝ) (f' x : ℝ) :
 
 Put the bridge to work to see that the single-variable derivative is *unique*.
 Suppose $`f \colon \mathbb{R} \to \mathbb{R}` has derivative both $`a` and $`b` at $`x`.
-Push each hypothesis through the bridge (`.mp`), invoke that Fréchet derivatives are unique (`HasFDerivAt.unique`) to obtain `toSpanSingleton ℝ a = toSpanSingleton ℝ b`, then recover $`a = b` by evaluating these equal maps at `1` (`toSpanSingleton_apply_one`).
 
 :::exercise
 ```lean
@@ -354,6 +353,10 @@ example (f : ℝ → ℝ) (a b x : ℝ)
     (ha : HasDerivAt f a x) (hb : HasDerivAt f b x) : a = b := by
   sorry
 ```
+:::
+
+:::hint
+Push each hypothesis through the bridge (`.mp`), invoke that Fréchet derivatives are unique (`HasFDerivAt.unique`) to obtain `toSpanSingleton ℝ a = toSpanSingleton ℝ b`, then recover $`a = b` by evaluating these equal maps at `1` (`toSpanSingleton_apply_one`).
 :::
 
 :::solution
@@ -510,7 +513,6 @@ example {V W : Type*}
 
 `IsSymmSndFDerivAt` is exactly the promise that the second derivative may have its two arguments swapped.
 Cash it out: for a twice-differentiable `f` and any vectors `v w`, prove the second derivative is symmetric in those two slots.
-Produce the symmetry witness as above, then feed the vectors to its `.eq` field (`IsSymmSndFDerivAt.eq`) — this is Clairaut's theorem, one pair of directions at a time.
 
 :::exercise
 ```lean
@@ -521,6 +523,10 @@ example {V W : Type*}
     fderiv ℝ (fderiv ℝ f) p v w = fderiv ℝ (fderiv ℝ f) p w v := by
   sorry
 ```
+:::
+
+:::hint
+Produce the symmetry witness as above, then feed the vectors to its `.eq` field (`IsSymmSndFDerivAt.eq`) — this is Clairaut's theorem, one pair of directions at a time.
 :::
 
 :::solution
@@ -553,7 +559,6 @@ example {V W X : Type*}
 
 The predicate form pins down *which* map is the derivative; the total-function form `fderiv` then reads it off.
 Derive the `fderiv` version of the chain rule: with the same hypotheses, `fderiv ℝ (g ∘ f) p = g'.comp f'`.
-Assemble the `HasFDerivAt` witness with the worked model, then convert a `HasFDerivAt` into a `fderiv` equation with `HasFDerivAt.fderiv`.
 
 :::exercise
 ```lean
@@ -566,6 +571,10 @@ example {V W X : Type*}
     fderiv ℝ (g ∘ f) p = g'.comp f' := by
   sorry
 ```
+:::
+
+:::hint
+Assemble the `HasFDerivAt` witness with the worked model, then convert a `HasFDerivAt` into a `fderiv` equation with `HasFDerivAt.fderiv`.
 :::
 
 :::solution

@@ -600,8 +600,6 @@ recall IsArithFrobAt.conj {R S : Type*} [CommRing R] [CommRing S]
 
 The order of $`\operatorname{Frob}_\mathfrak{p}` — the inertial degree $`f_\mathfrak{p}` — depends only on the conjugacy class, because conjugate elements share the same order.
 Prove that conjugation preserves the order of a group element.
-The efficient route is to stop thinking of $`\tau \sigma \tau^{-1}` as a product and start thinking of it as the *image of $`\sigma` under an automorphism*: conjugation by $`\tau` is bundled as `MulAut.conj τ`, whose action on an element is `MulAut.conj_apply`, and any group isomorphism preserves orders (`MulEquiv.orderOf_eq`).
-Rewriting *backwards* with `MulAut.conj_apply` is what turns the goal into that shape.
 
 :::exercise
 ```lean
@@ -609,6 +607,11 @@ example {G : Type*} [Group G] (σ τ : G) :
     orderOf (τ * σ * τ⁻¹) = orderOf σ := by
   sorry
 ```
+:::
+
+:::hint
+The efficient route is to stop thinking of $`\tau \sigma \tau^{-1}` as a product and start thinking of it as the *image of $`\sigma` under an automorphism*: conjugation by $`\tau` is bundled as `MulAut.conj τ`, whose action on an element is `MulAut.conj_apply`, and any group isomorphism preserves orders (`MulEquiv.orderOf_eq`).
+Rewriting *backwards* with `MulAut.conj_apply` is what turns the goal into that shape.
 :::
 
 :::solution
@@ -679,8 +682,6 @@ example {G : Type*} [Group G] [Fintype G] (D : ChebotarevData G) :
 
 Every conjugacy class is a subset of $`G`, so no class can be denser than the whole group.
 Show that each density is at most $`1`.
-Rewrite with `chebotarev` to expose the quotient, and `div_le_one` (fed the positive denominator, as above) reduces the goal to a comparison of cardinalities.
-That comparison is where the mathematical content sits: a class is carried into $`G` by an injection — the coercion `Subtype.val` out of the subtype of class members — and `Nat.card_le_card_of_injective` turns an injection into an inequality of cardinalities.
 
 :::exercise
 ```lean
@@ -688,6 +689,11 @@ example {G : Type*} [Group G] [Fintype G] (D : ChebotarevData G)
     (C : ConjClasses G) : D.density C ≤ 1 := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite with `chebotarev` to expose the quotient, and `div_le_one` (fed the positive denominator, as above) reduces the goal to a comparison of cardinalities.
+That comparison is where the mathematical content sits: a class is carried into $`G` by an injection — the coercion `Subtype.val` out of the subtype of class members — and `Nat.card_le_card_of_injective` turns an injection into an inequality of cardinalities.
 :::
 
 :::solution

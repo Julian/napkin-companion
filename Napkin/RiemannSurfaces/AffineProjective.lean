@@ -376,7 +376,6 @@ example :
 
 The smoothness criterion itself asks for less than this: not that this particular partial is nonzero, but that $`\partial f / \partial z` and $`\partial f / \partial w` do not *both* vanish.
 Prove that weaker disjunction at $`(1, 0)`, which is what actually certifies the circle is smooth there.
-Only one partial does the work, so `left` selects the $`\partial f / \partial z` branch and the same `simp [pderiv_X]` closes it.
 
 :::exercise
 ```lean
@@ -387,6 +386,10 @@ example :
         (pderiv 1 (X 0 ^ 2 + X 1 ^ 2 - 1 : MvPolynomial (Fin 2) ℂ)) ≠ 0 := by
   sorry
 ```
+:::
+
+:::hint
+Only one partial does the work, so `left` selects the $`\partial f / \partial z` branch and the same `simp [pderiv_X]` closes it.
 :::
 
 :::solution

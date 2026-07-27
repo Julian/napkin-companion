@@ -476,7 +476,6 @@ example (K : Type*) [Field K] [Fintype K] (i : ℕ) :
 
 The proposition itself is the instance `IsCyclic Kˣ`, and cyclic means a single generator sweeps out the whole group.
 Make that concrete: produce a generator whose order is $`\left\lvert F \right\rvert - 1`, the full size of $`F^\times`.
-Pull a generator from `IsCyclic.exists_generator`, turn "generates" into an order equality with `orderOf_eq_card_of_forall_mem_zpowers`, and rewrite the unit count with `Fintype.card_units`.
 
 :::exercise (chili := 1)
 ```lean
@@ -484,6 +483,10 @@ example (K : Type*) [Field K] [Fintype K] :
     ∃ g : Kˣ, orderOf g = Fintype.card K - 1 := by
   sorry
 ```
+:::
+
+:::hint
+Pull a generator from `IsCyclic.exists_generator`, turn "generates" into an order equality with `orderOf_eq_card_of_forall_mem_zpowers`, and rewrite the unit count with `Fintype.card_units`.
 :::
 
 :::solution

@@ -350,7 +350,6 @@ example (k V W : Type*) [CommRing k]
 
 Those relations really are *all* you get: every other identity between pure tensors has to be squeezed out of them.
 Squeeze out the first one, that $`0 \otimes w = 0`.
-The trick is the usual one for showing something is an additive identity: use distributivity on $`0 = 0 + 0` to get $`0 \otimes w = 0 \otimes w + 0 \otimes w`, then cancel (`add_eq_left` turns `a + b = a` into `b = 0`).
 
 :::exercise
 ```lean
@@ -359,6 +358,10 @@ example (k V W : Type*) [CommRing k]
     (w : W) : (0 : V) ⊗ₜ[k] w = 0 := by
   sorry
 ```
+:::
+
+:::hint
+The trick is the usual one for showing something is an additive identity: use distributivity on $`0 = 0 + 0` to get $`0 \otimes w = 0 \otimes w + 0 \otimes w`, then cancel (`add_eq_left` turns `a + b = a` into `b = 0`).
 :::
 
 :::solution
@@ -377,7 +380,6 @@ A warning that the notation hides: a general element of $`V \otimes_k W` is *not
 That "only a finite sum" is a theorem, and it is the single most useful fact about tensor products: the pure tensors span.
 Prove it.
 The statement is that the span of $`\{v \otimes w\}` is everything, and the proof is the recursion principle `TensorProduct.induction_on`, which builds an arbitrary tensor out of `zero`, `tmul`, and `add` — exactly the three cases you must supply.
-(Start from `Submodule.eq_top_iff'`, which reduces `= ⊤` to membership of an arbitrary element.)
 
 :::exercise (chili := 1)
 ```lean
@@ -386,6 +388,10 @@ example (k V W : Type*) [CommRing k]
     Submodule.span k {t : V ⊗[k] W | ∃ v w, v ⊗ₜ[k] w = t} = ⊤ := by
   sorry
 ```
+:::
+
+:::hint
+(Start from `Submodule.eq_top_iff'`, which reduces `= ⊤` to membership of an arbitrary element.)
 :::
 
 :::solution
@@ -440,8 +446,6 @@ example (k V ι : Type*) [Field k] [AddCommGroup V] [Module k V]
 
 Calling $`e_i^\vee` a *basis* of $`V^\vee` means every functional is a combination of them, and the coefficients are forced: expanding $`f` in the dual basis must reproduce the values $`f(e_i)`.
 Prove that expansion, $`f = \sum_i f(e_i) \, e_i^\vee`.
-Any basis expansion starts from `Module.Basis.sum_repr`, which rebuilds a vector — here the vector is $`f` and the basis is `b.dualBasis` — from its coordinates; rewriting *backwards* with it turns the bare `f` on the left into a sum.
-What identifies those coordinates as the values $`f(e_i)` is `Module.Basis.dualBasis_repr`.
 
 :::exercise
 ```lean
@@ -450,6 +454,11 @@ example (k V ι : Type*) [Field k] [AddCommGroup V] [Module k V]
     f = ∑ i, f (b i) • b.dualBasis i := by
   sorry
 ```
+:::
+
+:::hint
+Any basis expansion starts from `Module.Basis.sum_repr`, which rebuilds a vector — here the vector is $`f` and the basis is `b.dualBasis` — from its coordinates; rewriting *backwards* with it turns the bare `f` on the left into a sum.
+What identifies those coordinates as the values $`f(e_i)` is `Module.Basis.dualBasis_repr`.
 :::
 
 :::solution
@@ -498,7 +507,6 @@ example (k V W : Type*) [CommRing k]
 Read that formula again: whatever $`v` is fed in, the output is a *multiple of the single vector* $`w`.
 So a pure tensor corresponds to a matrix of rank at most one, which is why the pure tensors are so far from being all of $`V^\vee \otimes W`, and why a general matrix needs a sum of them.
 Make that precise: show the image of $`\Psi(f \otimes w)` lies in the line spanned by $`w`.
-Take an arbitrary element of the range apart with `rintro _ ⟨v, rfl⟩` — a range membership is a witness $`v` together with the equation naming the output — then rewrite with the formula above and note that a span is closed under scaling (`Submodule.smul_mem`, applied to `Submodule.mem_span_singleton_self`).
 
 :::exercise
 ```lean
@@ -509,6 +517,10 @@ example (k V W : Type*) [CommRing k]
       ≤ Submodule.span k {w} := by
   sorry
 ```
+:::
+
+:::hint
+Take an arbitrary element of the range apart with `rintro _ ⟨v, rfl⟩` — a range membership is a witness $`v` together with the equation naming the output — then rewrite with the formula above and note that a span is closed under scaling (`Submodule.smul_mem`, applied to `Submodule.mem_span_singleton_self`).
 :::
 
 :::solution
@@ -556,7 +568,6 @@ example (k V W : Type*) [Field k]
 
 That innocuous-looking commutation is the workhorse of the whole theory, because it is what makes the trace *basis-independent*: changing basis replaces $`T` by $`u T u^{-1}`, and cycling $`u^{-1}` around to the front cancels it.
 Prove that invariance.
-Reassociate first — `LinearMap.comp_assoc` regroups $`u \circ (T \circ u^{-1})` as $`(u \circ T) \circ u^{-1}` — and then a single application of the commutation above moves $`u^{-1}` to the front, where `simp` can cancel it against $`u`.
 
 :::exercise
 ```lean
@@ -566,6 +577,10 @@ example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
       = LinearMap.trace k V f := by
   sorry
 ```
+:::
+
+:::hint
+Reassociate first — `LinearMap.comp_assoc` regroups $`u \circ (T \circ u^{-1})` as $`(u \circ T) \circ u^{-1}` — and then a single application of the commutation above moves $`u^{-1}` to the front, where `simp` can cancel it against $`u`.
 :::
 
 :::solution

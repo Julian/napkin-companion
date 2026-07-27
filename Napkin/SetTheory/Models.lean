@@ -674,7 +674,6 @@ example (L : Language) (M : Type*) [L.Structure M]
 
 Put that agreement to work: whatever the ambient model satisfies, the substructure satisfies too.
 Show that if $`M \vDash \phi \land \psi` then $`S` satisfies each conjunct.
-Split the ambient satisfaction with `Sentence.realize_inf`, then push each half down through the `.mpr` direction of the sentence agreement above.
 
 :::exercise
 ```lean
@@ -683,6 +682,10 @@ example (L : Language) (M : Type*) [L.Structure M]
     (h : M ⊨ φ ⊓ ψ) : S ⊨ φ ∧ S ⊨ ψ := by
   sorry
 ```
+:::
+
+:::hint
+Split the ambient satisfaction with `Sentence.realize_inf`, then push each half down through the `.mpr` direction of the sentence agreement above.
 :::
 
 :::solution
@@ -784,8 +787,6 @@ example {𝓜 : SetModel} (π : MostowskiCollapse 𝓜) :
 ```
 
 Build that derivation yourself, to see *why* the collapse forces Foundation.
-The relation `𝓜.mem` is the pullback of the real `∈` along `π.toFun`, which is exactly what `π.mem_iff` says.
-Well-foundedness pulls back along any map, so `InvImage.wf π.toFun ZFSet.mem_wf` well-founds that pullback; since `𝓜.mem` sits inside it, `Subrelation.wf` fed `π.mem_iff` in the forward direction transfers the well-foundedness across.
 
 :::exercise
 ```lean
@@ -793,6 +794,11 @@ example {𝓜 : SetModel} (π : MostowskiCollapse 𝓜) :
     Foundation 𝓜 := by
   sorry
 ```
+:::
+
+:::hint
+The relation `𝓜.mem` is the pullback of the real `∈` along `π.toFun`, which is exactly what `π.mem_iff` says.
+Well-foundedness pulls back along any map, so `InvImage.wf π.toFun ZFSet.mem_wf` well-founds that pullback; since `𝓜.mem` sits inside it, `Subrelation.wf` fed `π.mem_iff` in the forward direction transfers the well-foundedness across.
 :::
 
 :::solution

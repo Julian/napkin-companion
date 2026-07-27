@@ -411,7 +411,6 @@ example (C : Type*) [Category C] [HasZeroMorphisms C] {A B : C} (f : A ⟶ B)
 
 The point of that vanishing is stronger than it looks: not just $`f`, but *anything factoring through* $`f` dies in the cokernel.
 Prove that for any $`h \colon D \to A`, the composite $`(h \circ f) \circ \mathrm{coker}\, f` is zero.
-Reassociate with `Category.assoc` so the inner $`f \circ \mathrm{coker}\, f` appears, rewrite it away with `cokernel.condition`, and finish with `comp_zero`.
 
 :::exercise
 ```lean
@@ -419,6 +418,10 @@ example (C : Type*) [Category C] [HasZeroMorphisms C] {A B D : C} (f : A ⟶ B)
     (h : D ⟶ A) [HasCokernel f] : (h ≫ f) ≫ cokernel.π f = 0 := by
   sorry
 ```
+:::
+
+:::hint
+Reassociate with `Category.assoc` so the inner $`f \circ \mathrm{coker}\, f` appears, rewrite it away with `cokernel.condition`, and finish with `comp_zero`.
 :::
 
 :::solution
@@ -453,7 +456,6 @@ example (C : Type*) [Category C] [Abelian C] {A B : C} (f : A ⟶ B)
 
 The other half is free — an isomorphism is always monic and epic — so in an abelian category the two conditions are in fact *equivalent*.
 Prove the full characterization: $`f` is an isomorphism $`\iff` $`f` is monic and epic.
-Split with `constructor`; the forward direction turns the `IsIso` hypothesis into an instance (`haveI`) and reads off both conditions by `inferInstance`, while the backward direction unpacks the pair and applies the worked model above.
 
 :::exercise (chili := 1)
 ```lean
@@ -461,6 +463,10 @@ example (C : Type*) [Category C] [Abelian C] {A B : C} (f : A ⟶ B) :
     IsIso f ↔ (Mono f ∧ Epi f) := by
   sorry
 ```
+:::
+
+:::hint
+Split with `constructor`; the forward direction turns the `IsIso` hypothesis into an instance (`haveI`) and reads off both conditions by `inferInstance`, while the backward direction unpacks the pair and applies the worked model above.
 :::
 
 :::solution
@@ -499,8 +505,6 @@ example (C : Type*) [Category C] [Abelian C] (S : ShortComplex C)
 ```
 
 Put that monicity to work.
-When such a complex is exact, its second map is monic, and monics are closed under composition — so postcomposing $`S.g` with any monic stays monic.
-From `hf` and exactness extract `Mono S.g` (the forward direction of the equivalence above), register it with `haveI`, and let `mono_comp` combine it with the given monic.
 
 :::exercise
 ```lean
@@ -509,6 +513,11 @@ example (C : Type*) [Category C] [Abelian C] (S : ShortComplex C)
     Mono (S.g ≫ g') := by
   sorry
 ```
+:::
+
+:::hint
+When such a complex is exact, its second map is monic, and monics are closed under composition — so postcomposing $`S.g` with any monic stays monic.
+From `hf` and exactness extract `Mono S.g` (the forward direction of the equivalence above), register it with `haveI`, and let `mono_comp` combine it with the given monic.
 :::
 
 :::solution
@@ -593,7 +602,6 @@ example (C : Type*) [Category C] [Abelian C] {A B : C} (f : A ⟶ B) :
 
 Chasing zero along a *composite* is the same principle applied twice.
 Prove that $`f` then $`g` sends the zero pseudoelement to zero.
-Rewrite the composite with `comp_apply` (the worked model further up) to split it into $`g` applied to $`f` applied to $`0`, then collapse each map in turn with `apply_zero`.
 
 :::exercise
 ```lean
@@ -603,6 +611,10 @@ example (C : Type*) [Category C] [Abelian C] {A B D : C} (f : A ⟶ B)
     pseudoApply (f ≫ g) (0 : Abelian.Pseudoelement A) = 0 := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite the composite with `comp_apply` (the worked model further up) to split it into $`g` applied to $`f` applied to $`0`, then collapse each map in turn with `apply_zero`.
 :::
 
 :::solution

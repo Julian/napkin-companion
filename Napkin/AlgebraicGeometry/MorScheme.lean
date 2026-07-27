@@ -464,7 +464,6 @@ example {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
 
 Put functoriality to work: a ring isomorphism ought to become a scheme isomorphism.
 Suppose `f : R ⟶ S` and `g : S ⟶ R` compose to the identity one way, `f ≫ g = 𝟙 R`; show their `Spec` images cancel the _other_ way, `Spec.map g ≫ Spec.map f = 𝟙 (Spec R)`.
-Fold the composite back up with `Spec.map_comp` run backwards, rewrite along the hypothesis, and finish with `Spec.map_id`.
 
 :::exercise
 ```lean
@@ -472,6 +471,10 @@ example {R S : CommRingCat} (f : R ⟶ S) (g : S ⟶ R) (h : f ≫ g = 𝟙 R) :
     Spec.map g ≫ Spec.map f = 𝟙 (Spec R) := by
   sorry
 ```
+:::
+
+:::hint
+Fold the composite back up with `Spec.map_comp` run backwards, rewrite along the hypothesis, and finish with `Spec.map_id`.
 :::
 
 :::solution

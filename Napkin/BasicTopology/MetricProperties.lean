@@ -283,7 +283,6 @@ example (M : Type*) [PseudoMetricSpace M] (s : Set M)
 
 Boundedness itself is best read as "fits inside a ball", and proving it usually means *exhibiting* such a ball.
 Show that if every point of `s` lies within distance `1` of a fixed centre `c`, then `s` is bounded.
-No single lemma does this — you assemble it: build the containment `s ⊆ closedBall c 1` by hand (a point of `s` satisfies `dist x c ≤ 1`, which is exactly `Metric.mem_closedBall`), observe a closed ball is bounded (`Metric.isBounded_closedBall`), and transport that along the containment with `Bornology.IsBounded.subset`.
 
 :::exercise
 ```lean
@@ -291,6 +290,10 @@ example (M : Type*) [PseudoMetricSpace M] (s : Set M) (c : M)
     (h : ∀ x ∈ s, dist x c ≤ 1) : Bornology.IsBounded s := by
   sorry
 ```
+:::
+
+:::hint
+No single lemma does this — you assemble it: build the containment `s ⊆ closedBall c 1` by hand (a point of `s` satisfies `dist x c ≤ 1`, which is exactly `Metric.mem_closedBall`), observe a closed ball is bounded (`Metric.isBounded_closedBall`), and transport that along the containment with `Bornology.IsBounded.subset`.
 :::
 
 :::solution
@@ -330,7 +333,6 @@ example (M : Type*) [PseudoMetricSpace M] (x : ℕ → M) (p : M)
 
 Completeness is exactly the *converse* holding, so the two notions become equivalent.
 Prove that in a `CompleteSpace`, a sequence converges iff it is Cauchy.
-Split the iff with `constructor`; the forward direction reuses the fact above once you unpack the limit (`rintro ⟨p, hp⟩`), and the backward direction is the one place completeness is used — it hands you a limit through `cauchySeq_tendsto_of_complete`.
 
 :::exercise (chili := 1)
 ```lean
@@ -338,6 +340,10 @@ example (M : Type*) [PseudoMetricSpace M] [CompleteSpace M] (x : ℕ → M) :
     (∃ p, Filter.Tendsto x Filter.atTop (𝓝 p)) ↔ CauchySeq x := by
   sorry
 ```
+:::
+
+:::hint
+Split the iff with `constructor`; the forward direction reuses the fact above once you unpack the limit (`rintro ⟨p, hp⟩`), and the backward direction is the one place completeness is used — it hands you a limit through `cauchySeq_tendsto_of_complete`.
 :::
 
 :::solution

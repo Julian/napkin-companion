@@ -504,7 +504,6 @@ noncomputable example (k G : Type*) [CommRing k] [CommGroup G] :
 ```
 
 See *why* that commutativity holds, one basis element at a time.
-Two basis elements multiply by `MonoidAlgebra.single_mul_single`, which multiplies the group labels and the coefficients separately; commuting each of those two products (`mul_comm` in $`G` and in $`k`) then swaps the factors back.
 
 :::exercise
 ```lean
@@ -514,6 +513,10 @@ example (k G : Type*) [CommRing k] [CommGroup G] (a b : G) (r s : k) :
       = MonoidAlgebra.single b s * MonoidAlgebra.single a r := by
   sorry
 ```
+:::
+
+:::hint
+Two basis elements multiply by `MonoidAlgebra.single_mul_single`, which multiplies the group labels and the coefficients separately; commuting each of those two products (`mul_comm` in $`G` and in $`k`) then swaps the factors back.
 :::
 
 :::solution
@@ -599,11 +602,6 @@ example (k : Type*) [Field k] (d : ℕ) :
 The prototypical exercise of this section --- that this standard representation is irreducible --- is exactly `IsSimpleModule (Matrix (Fin d) (Fin d) k) (Fin d → k)`.
 Prove it: any nonzero vector can be carried onto each standard basis vector by a suitable matrix, so the only nonzero subrepresentation is the whole space.
 Here is the road map, with the lemma names that do each step.
-Rewriting with `isSimpleModule_iff` reduces the goal to `IsSimpleOrder` on the submodule lattice, so it suffices to show that a submodule which is not $`\{0\}` is everything.
-For such a submodule, `Submodule.exists_mem_ne_zero_of_ne_bot` produces a vector $`v \neq 0`, and some coordinate has $`v_j \neq 0`.
-Then the matrix `Matrix.single i j (w i * (v j)⁻¹)` applied to $`v` equals $`w_i` in coordinate $`i` and zero elsewhere: `Matrix.smul_eq_mulVec` unfolds the action to matrix--vector multiplication, `Matrix.single_mulVec_eq` computes it, and `Pi.single_smul'` identifies the result as `Pi.single i (w i)`.
-Summing over $`i` (via `Submodule.sum_mem`) shows every vector lies in the submodule.
-The `[NeZero d]` hypothesis is what keeps the space nonzero, so the submodule lattice is genuinely nontrivial.
 
 :::exercise (chili := 1)
 ```lean
@@ -611,6 +609,14 @@ example (k : Type*) [Field k] (d : ℕ) [NeZero d] :
     IsSimpleModule (Matrix (Fin d) (Fin d) k) (Fin d → k) := by
   sorry
 ```
+:::
+
+:::hint
+Rewriting with `isSimpleModule_iff` reduces the goal to `IsSimpleOrder` on the submodule lattice, so it suffices to show that a submodule which is not $`\{0\}` is everything.
+For such a submodule, `Submodule.exists_mem_ne_zero_of_ne_bot` produces a vector $`v \neq 0`, and some coordinate has $`v_j \neq 0`.
+Then the matrix `Matrix.single i j (w i * (v j)⁻¹)` applied to $`v` equals $`w_i` in coordinate $`i` and zero elsewhere: `Matrix.smul_eq_mulVec` unfolds the action to matrix--vector multiplication, `Matrix.single_mulVec_eq` computes it, and `Pi.single_smul'` identifies the result as `Pi.single i (w i)`.
+Summing over $`i` (via `Submodule.sum_mem`) shows every vector lies in the submodule.
+The `[NeZero d]` hypothesis is what keeps the space nonzero, so the submodule lattice is genuinely nontrivial.
 :::
 
 :::solution
@@ -688,7 +694,6 @@ example (A V W : Type*) [Ring A] [AddCommGroup V] [Module A V]
 ```
 
 Run the argument behind that lemma yourself, to see where irreducibility enters.
-Injectivity is $`\ker T = \{0\}` (`LinearMap.ker_eq_bot`), and $`\ker T` is a subrepresentation of the simple module $`V`, so by `eq_bot_or_eq_top` it is either $`\{0\}` or all of $`V`; the latter would force $`T = 0` (`LinearMap.ker_eq_top`), contradicting `hT`.
 
 :::exercise (chili := 1)
 ```lean
@@ -697,6 +702,10 @@ example (A V W : Type*) [Ring A] [AddCommGroup V] [Module A V]
     (T : V →ₗ[A] W) (hT : T ≠ 0) : Function.Injective T := by
   sorry
 ```
+:::
+
+:::hint
+Injectivity is $`\ker T = \{0\}` (`LinearMap.ker_eq_bot`), and $`\ker T` is a subrepresentation of the simple module $`V`, so by `eq_bot_or_eq_top` it is either $`\{0\}` or all of $`V`; the latter would force $`T = 0` (`LinearMap.ker_eq_top`), contradicting `hT`.
 :::
 
 :::solution

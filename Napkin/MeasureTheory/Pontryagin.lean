@@ -246,7 +246,6 @@ example {G : Type*} [Group G] [MeasurableSpace G]
 
 Read at the level of individual sets, that pushforward identity says $`\mu(gS) = \mu(S)`: the measure of a set is unchanged when the set is pulled back along left multiplication.
 Derive this pointwise form from the pushforward one.
-Rewrite the right-hand $`\mu` as the pushforward `μ.map (g * ·)` — the worked model, run backwards, under `conv_rhs` — and then unfold that pushforward with `MeasureTheory.Measure.map_apply`, whose two side conditions (measurability of `(g * ·)` and of `s`) are closed by `fun_prop` and the hypothesis.
 
 :::exercise
 ```lean
@@ -256,6 +255,10 @@ example {G : Type*} [Group G] [MeasurableSpace G] [MeasurableMul G]
     μ ((g * ·) ⁻¹' s) = μ s := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite the right-hand $`\mu` as the pushforward `μ.map (g * ·)` — the worked model, run backwards, under `conv_rhs` — and then unfold that pushforward with `MeasureTheory.Measure.map_apply`, whose two side conditions (measurability of `(g * ·)` and of `s`) are closed by `fun_prop` and the hypothesis.
 :::
 
 :::solution
@@ -315,7 +318,6 @@ example {T : ℝ} [Fact (0 < T)] {m n : ℤ} (h : m ≠ n) :
 
 Orthogonality is exactly what makes cross terms drop out of an inner product.
 Show that adding an orthogonal monomial to $`e_m` does not change its inner product with $`e_m`, i.e. $`\langle e_m, e_m + e_n\rangle = \langle e_m, e_m\rangle`.
-Distribute over the sum with `inner_add_right`, cancel the cross term $`\langle e_m, e_n\rangle` using the orthogonality above, and clear the leftover zero with `add_zero`.
 
 :::exercise (chili := 1)
 ```lean
@@ -325,6 +327,10 @@ example {T : ℝ} [Fact (0 < T)] {m n : ℤ} (h : m ≠ n) :
       = inner ℂ (fourierLp (T := T) 2 m) (fourierLp (T := T) 2 m) := by
   sorry
 ```
+:::
+
+:::hint
+Distribute over the sum with `inner_add_right`, cancel the cross term $`\langle e_m, e_n\rangle` using the orthogonality above, and clear the leftover zero with `add_zero`.
 :::
 
 :::solution
@@ -368,7 +374,6 @@ example {V E : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 
 Because inversion rebuilds $`f` from its transform $`\widehat{f}`, no information is lost — so the Fourier transform is injective.
 Prove that: two suitably nice functions with the same transform must be equal.
-Rewrite each side back through inversion (the worked model, run backwards, once for $`f` and once for $`g`); the integrability of $`\widehat{g}` is just that of $`\widehat{f}` carried across the hypothesis `h` (`h ▸ hf2`), and the two reconstructions coincide because $`\widehat{f} = \widehat{g}`.
 
 :::exercise
 ```lean
@@ -382,6 +387,10 @@ example {V E : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
     f = g := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite each side back through inversion (the worked model, run backwards, once for $`f` and once for $`g`); the integrability of $`\widehat{g}` is just that of $`\widehat{f}` carried across the hypothesis `h` (`h ▸ hf2`), and the two reconstructions coincide because $`\widehat{f} = \widehat{g}`.
 :::
 
 :::solution

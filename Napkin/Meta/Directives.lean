@@ -634,6 +634,56 @@ def exercise : DirectiveExpanderOf LeanExerciseConfig
     ``(Verso.Doc.Block.other (Block.leanExercise $(quote cfg.chili))
         #[$[$(← contents.mapM elabBlock)],*])
 
+-- Collapsible hint, sitting between an exercise and its solution. The
+-- guidance that used to run on unavoidably in the prose above the
+-- exercise lives here instead, so the exercise can be attempted cold and
+-- the reader chooses when to be told which lemmas to reach for.
+block_extension Block.hint where
+  data := .null
+  traverse _ _ _ := pure none
+  toTeX :=
+    some <| fun _ goB _ _ content => do
+      content.mapM goB
+  toHtml :=
+    open Verso.Output.Html in
+    some <| fun _ goB _ _ content => do
+      pure {{
+        <details class="hint">
+          <summary>"Hint"</summary>
+          <div class="hint-body">{{← content.mapM goB}}</div>
+        </details>
+      }}
+  extraCss := [r#"
+    details.hint {
+      margin: 0.75em 0;
+      border: 1px solid #e3d9b0;
+      background: #fdfaef;
+      border-radius: 3px;
+      padding: 0.2em 0.7em;
+    }
+    details.hint > summary {
+      cursor: pointer;
+      font-variant-caps: all-small-caps;
+      letter-spacing: 0.04em;
+      font-weight: 700;
+      font-size: 0.9em;
+      color: #7a5c00;
+      padding: 0.25em 0;
+      list-style: none;
+    }
+    details.hint > summary::-webkit-details-marker { display: none; }
+    details.hint > summary::before { content: "\2192\00a0"; }
+    details.hint[open] > summary { margin-bottom: 0.25em; }
+    details.hint > .hint-body > *:first-child { margin-top: 0; }
+    details.hint > .hint-body > *:last-child { margin-bottom: 0; }
+  "#]
+
+@[directive]
+def hint : DirectiveExpanderOf Unit
+  | (), contents => do
+    ``(Verso.Doc.Block.other Block.hint
+        #[$[$(← contents.mapM elabBlock)],*])
+
 @[directive]
 def solution : DirectiveExpanderOf Unit
   | (), contents => do

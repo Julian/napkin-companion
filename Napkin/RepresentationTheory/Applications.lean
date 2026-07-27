@@ -371,7 +371,6 @@ example {R : Type*} [CommRing R] {n : Type*} [Unique n] [DecidableEq n]
 ```
 
 Use it to compute the group determinant of the one-element group.
-Unfold `groupDeterminant`, read the $`1 \times 1` determinant off its single entry with `Matrix.det_unique`, and recognize that entry as a diagonal one via `groupMatrix_diag`.
 
 :::exercise
 ```lean
@@ -379,6 +378,10 @@ example {R : Type*} [CommRing R] {G : Type*} [Group G] [Fintype G]
     [DecidableEq G] [Unique G] (x : G → R) : groupDeterminant x = x 1 := by
   sorry
 ```
+:::
+
+:::hint
+Unfold `groupDeterminant`, read the $`1 \times 1` determinant off its single entry with `Matrix.det_unique`, and recognize that entry as a diagonal one via `groupMatrix_diag`.
 :::
 
 :::solution

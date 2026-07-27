@@ -187,9 +187,6 @@ example (G : Type*) [Group G] (x y : Abelianization G) :
 
 What is worth proving is the *reason* it is commutative: the quotient map $`G \to G/[G,G]` throws away exactly the commutators.
 Show that a commutator $`xyx^{-1}y^{-1}` becomes trivial downstairs.
-`Abelianization.of` is a group homomorphism, so `simp only [map_mul, map_inv]` distributes it over the product and the inverses, leaving a bare word in the images.
-From there commutativity is the whole content: swapping the first two letters with `mul_comm` puts each generator next to its own inverse, and the two cancellations (`mul_inv_cancel_right`, then `mul_inv_cancel`) finish.
-Doing it in that order is worth the effort, because it shows precisely which step needs the target to be abelian.
 
 :::exercise
 ```lean
@@ -197,6 +194,12 @@ example (G : Type*) [Group G] (x y : G) :
     Abelianization.of (x * y * x⁻¹ * y⁻¹) = 1 := by
   sorry
 ```
+:::
+
+:::hint
+`Abelianization.of` is a group homomorphism, so `simp only [map_mul, map_inv]` distributes it over the product and the inverses, leaving a bare word in the images.
+From there commutativity is the whole content: swapping the first two letters with `mul_comm` puts each generator next to its own inverse, and the two cancellations (`mul_inv_cancel_right`, then `mul_inv_cancel`) finish.
+Doing it in that order is worth the effort, because it shows precisely which step needs the target to be abelian.
 :::
 
 :::solution
@@ -214,13 +217,16 @@ A group is *solvable* when its derived series eventually reaches the trivial sub
 Mathlib spells this `IsSolvable G`, a typeclass on a group whose single field asserts the existence of an `n` with `derivedSeries G n = ⊥`; the unfold lemma is `isSolvable_def`.
 Abelian groups are the base case: their derived series dies immediately, at step one.
 Prove that version of the statement.
-Unfold with `isSolvable_def` and supply the witness `n = 1`; what makes `n = 1` work is `derivedSeries_one`, which says the first step of the derived series is the commutator subgroup.
 
 :::exercise
 ```lean
 example (G : Type*) [Group G] (h : commutator G = ⊥) : IsSolvable G := by
   sorry
 ```
+:::
+
+:::hint
+Unfold with `isSolvable_def` and supply the witness `n = 1`; what makes `n = 1` work is `derivedSeries_one`, which says the first step of the derived series is the commutator subgroup.
 :::
 
 :::solution
@@ -238,7 +244,6 @@ example (G : Type*) [Group G] (h : commutator G = ⊥) : IsSolvable G := by
 Solvability is engineered so that the derived series is a *descending* chain of normal subgroups; a simple group has no room for such a chain, so the only way it can be solvable is to be abelian outright.
 That dichotomy is `IsSimpleGroup.comm_iff_isSolvable` (in `Mathlib.GroupTheory.Solvable`): for a simple group, "all elements commute" and "solvable" are the *same* statement.
 Turn it into an unsolvability criterion: a simple group with even one pair of non-commuting elements cannot be solvable.
-The contrapositive is the whole proof — assume solvability, feed it to the equivalence to learn that $`x` and $`y` commute, and contradict the hypothesis.
 
 :::exercise
 ```lean
@@ -246,6 +251,10 @@ example (G : Type*) [Group G] [IsSimpleGroup G] (x y : G)
     (hxy : x * y ≠ y * x) : ¬ IsSolvable G := by
   sorry
 ```
+:::
+
+:::hint
+The contrapositive is the whole proof — assume solvability, feed it to the equivalence to learn that $`x` and $`y` commute, and contradict the hypothesis.
 :::
 
 :::solution

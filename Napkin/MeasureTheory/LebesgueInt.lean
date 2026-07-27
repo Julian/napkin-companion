@@ -379,7 +379,6 @@ example : ∫ x in (1 : ℝ)..4, x ^ 2 = 21 := by
 
 That single interval hides a structural fact: an integral splits over adjacent subintervals.
 Prove that integrating $`x^2` over $`[1, 2]` and then $`[2, 4]` recovers the integral over $`[1, 4]`, using `intervalIntegral.integral_add_adjacent_intervals`.
-It demands an integrability witness on each piece, and continuity supplies them — `Continuous.intervalIntegrable` turns the continuity of $`x \mapsto x^2` (`continuous_pow`) into interval-integrability on any bounds.
 
 :::exercise
 ```lean
@@ -387,6 +386,10 @@ example : (∫ x in (1 : ℝ)..2, x ^ 2) + (∫ x in (2 : ℝ)..4, x ^ 2)
     = ∫ x in (1 : ℝ)..4, x ^ 2 := by
   sorry
 ```
+:::
+
+:::hint
+It demands an integrability witness on each piece, and continuity supplies them — `Continuous.intervalIntegrable` turns the continuity of $`x \mapsto x^2` (`continuous_pow`) into interval-integrability on any bounds.
 :::
 
 :::solution

@@ -584,7 +584,6 @@ recall : ∀ (p : ℕ) [Fact p.Prime], NormedField ℚ_[p]
 
 The single normalization that pins the whole absolute value down is $`\|p\|_p = 1/p`, which is `Padic.norm_p`; everything else follows from multiplicativity of a field norm.
 See that in action: compute $`\|p^n\|_p`, which is the statement that high powers of $`p` are *small*, the fact the entire chapter runs on.
-The norm of a power is the power of the norm (`norm_pow`, available because `ℚ_[p]` is a `NormedField`), and then one rewrite finishes it.
 
 :::exercise
 ```lean
@@ -592,6 +591,10 @@ example (p : ℕ) [Fact p.Prime] (n : ℕ) :
     ‖(p : ℚ_[p]) ^ n‖ = ((p : ℝ)⁻¹) ^ n := by
   sorry
 ```
+:::
+
+:::hint
+The norm of a power is the power of the norm (`norm_pow`, available because `ℚ_[p]` is a `NormedField`), and then one rewrite finishes it.
 :::
 
 :::solution
@@ -658,8 +661,6 @@ example (p : ℕ) [Fact p.Prime] (f : ℕ → ℚ_[p]) :
 ```
 
 Put the criterion to work.
-Over $`\mathbb{R}` you would reach for a comparison test, but here it is enough that the terms shrink: prove that $`\sum_n x^n` is summable whenever $`\|x\|_p < 1`.
-Rewrite the goal with the criterion, then `Nat.cofinite_eq_atTop` turns the cofinite filter on `ℕ` into `atTop`, leaving exactly `tendsto_pow_atTop_nhds_zero_of_norm_lt_one`.
 
 :::exercise
 ```lean
@@ -668,6 +669,11 @@ example (p : ℕ) [Fact p.Prime] (x : ℚ_[p]) (h : ‖x‖ < 1) :
     Summable (fun n : ℕ => x ^ n) := by
   sorry
 ```
+:::
+
+:::hint
+Over $`\mathbb{R}` you would reach for a comparison test, but here it is enough that the terms shrink: prove that $`\sum_n x^n` is summable whenever $`\|x\|_p < 1`.
+Rewrite the goal with the criterion, then `Nat.cofinite_eq_atTop` turns the cofinite filter on `ℕ` into `atTop`, leaving exactly `tendsto_pow_atTop_nhds_zero_of_norm_lt_one`.
 :::
 
 :::solution

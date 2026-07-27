@@ -466,7 +466,6 @@ example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
 
 But the swap is not magic: it routes through the single joint integral over the product measure.
 Prove the two iterated orders agree by assembling that route yourself, without reaching for the packaged swap lemma.
-`MeasureTheory.lintegral_lintegral` rewrites the first order as the joint integral $`\int f \; d(\mu \times \nu)`, and `MeasureTheory.lintegral_prod_symm` re-expresses that same joint integral as the *reversed* iterated order.
 
 :::exercise
 ```lean
@@ -477,6 +476,10 @@ example {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
     ∫⁻ x, ∫⁻ y, f x y ∂ν ∂μ = ∫⁻ y, ∫⁻ x, f x y ∂μ ∂ν := by
   sorry
 ```
+:::
+
+:::hint
+`MeasureTheory.lintegral_lintegral` rewrites the first order as the joint integral $`\int f \; d(\mu \times \nu)`, and `MeasureTheory.lintegral_prod_symm` re-expresses that same joint integral as the *reversed* iterated order.
 :::
 
 :::solution

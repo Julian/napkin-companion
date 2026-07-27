@@ -493,7 +493,6 @@ example (n : ℕ) (x : EuclideanSpace ℝ (Fin (n + 1))) :
 
 The chapter's exercise — that the open ball is homeomorphic to $`\mathbb{R}^n` — is real work; here is a smaller step relating the two objects above.
 Show that the sphere sits inside the closed ball.
-Take a point of the sphere, unfold membership in the closed ball to a distance bound with `Metric.mem_closedBall`, rewrite the distance to a norm with `dist_zero_right`, and finish with the norm-one fact above.
 
 :::exercise
 ```lean
@@ -502,6 +501,10 @@ example (n : ℕ) :
       Metric.closedBall (0 : EuclideanSpace ℝ (Fin (n + 1))) 1 := by
   sorry
 ```
+:::
+
+:::hint
+Take a point of the sphere, unfold membership in the closed ball to a distance bound with `Metric.mem_closedBall`, rewrite the distance to a norm with `dist_zero_right`, and finish with the norm-one fact above.
 :::
 
 :::solution
@@ -538,7 +541,6 @@ example {X : Type*} [TopologicalSpace X] (s : Setoid X) :
 
 Continuity of the projection is exactly what lets any continuous map *out* of the quotient be recognized on representatives.
 Show that if $`f : X/{\sim} \to Z` is continuous, then so is $`x \mapsto f([x])`.
-Continuity composes: `Continuous.comp` glues $`f` onto the projection above.
 
 :::exercise
 ```lean
@@ -547,6 +549,10 @@ example {X Z : Type*} [TopologicalSpace X] [TopologicalSpace Z]
     Continuous (fun x => f (Quotient.mk s x)) := by
   sorry
 ```
+:::
+
+:::hint
+Continuity composes: `Continuous.comp` glues $`f` onto the projection above.
 :::
 
 :::solution
@@ -579,7 +585,6 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 That a rectangle is open is not an extra axiom; it falls out of the projections being continuous.
 Reprove it that way.
-Rewrite $`U \times V` as the intersection $`\pi_1^{-1}(U) \cap \pi_2^{-1}(V)` with `Set.prod_eq`, note each factor is an open set pulled back along a continuous projection (`IsOpen.preimage` with `continuous_fst`, `continuous_snd`), and combine them with `IsOpen.inter`.
 
 :::exercise
 ```lean
@@ -588,6 +593,10 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     IsOpen (U ×ˢ V) := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite $`U \times V` as the intersection $`\pi_1^{-1}(U) \cap \pi_2^{-1}(V)` with `Set.prod_eq`, note each factor is an open set pulled back along a continuous projection (`IsOpen.preimage` with `continuous_fst`, `continuous_snd`), and combine them with `IsOpen.inter`.
 :::
 
 :::solution
@@ -622,7 +631,6 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] :
 
 The copy of $`Y` is the other piece, and it is clopen for a free reason: it is the *complement* of the first.
 Show it without re-running the argument.
-Rewrite the range of $`\mathrm{inr}` as the complement of the range of $`\mathrm{inl}` (`Set.compl_range_inl`), then use that a complement of a clopen set is clopen (`IsClopen.compl`).
 
 :::exercise
 ```lean
@@ -630,6 +638,10 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] :
     IsClopen (Set.range (Sum.inr : Y → X ⊕ Y)) := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite the range of $`\mathrm{inr}` as the complement of the range of $`\mathrm{inl}` (`Set.compl_range_inl`), then use that a complement of a clopen set is clopen (`IsClopen.compl`).
 :::
 
 :::solution
@@ -664,7 +676,6 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 But this identification is not magic; it is forced by the gluing relation.
 Reprove it straight from the quotient.
-Two representatives of $`X \oplus Y` name the same point as soon as they are related, which is `Quotient.sound`; here the relation's basepoint clause relates $`\mathrm{inl}\,x_0` and $`\mathrm{inr}\,y_0` via a pair of `rfl`s.
 
 :::exercise
 ```lean
@@ -673,6 +684,10 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     WedgeSum.inl x₀ y₀ x₀ = WedgeSum.inr x₀ y₀ y₀ := by
   sorry
 ```
+:::
+
+:::hint
+Two representatives of $`X \oplus Y` name the same point as soon as they are related, which is `Quotient.sound`; here the relation's basepoint clause relates $`\mathrm{inl}\,x_0` and $`\mathrm{inr}\,y_0` via a pair of `rfl`s.
 :::
 
 :::solution
@@ -724,8 +739,6 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 ```
 
 Prove that injectivity from the quotient directly, to see where the gluing could have interfered.
-Equality of two classes unpacks, via `Quotient.exact`, into the relation `WedgeRel`, whose three disjuncts `rcases` splits.
-The genuine case is closed by `Sum.inl_injective`; the other two would force $`\mathrm{inl}` and $`\mathrm{inr}` values to coincide, which `simp` refutes.
 
 :::exercise (chili := 1)
 ```lean
@@ -734,6 +747,11 @@ example {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     (h : WedgeSum.inl x₀ y₀ x = WedgeSum.inl x₀ y₀ x') : x = x' := by
   sorry
 ```
+:::
+
+:::hint
+Equality of two classes unpacks, via `Quotient.exact`, into the relation `WedgeRel`, whose three disjuncts `rcases` splits.
+The genuine case is closed by `Sum.inl_injective`; the other two would force $`\mathrm{inl}` and $`\mathrm{inr}` values to coincide, which `simp` refutes.
 :::
 
 :::solution
@@ -792,7 +810,6 @@ example (n : ℕ) (v w : Fin (n + 1) → ℝ) (hv : v ≠ 0) (hw : w ≠ 0) :
 ```
 
 Read off that criterion, "names the same point" is visibly symmetric: if $`v` and $`w` agree as points, then $`w` is *also* a scalar multiple of $`v`.
-Extract the scalar with `obtain`, then invert the unit — `inv_smul_smul` cancels it — to hand back the witness the other way around.
 
 :::exercise
 ```lean
@@ -801,6 +818,10 @@ example (n : ℕ) (v w : Fin (n + 1) → ℝ) (hv : v ≠ 0) (hw : w ≠ 0)
     ∃ a : ℝˣ, a • v = w := by
   sorry
 ```
+:::
+
+:::hint
+Extract the scalar with `obtain`, then invert the unit — `inv_smul_smul` cancels it — to hand back the witness the other way around.
 :::
 
 :::solution

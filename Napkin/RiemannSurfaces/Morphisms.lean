@@ -290,7 +290,6 @@ example (f g : ℂ → ℂ) (p : ℂ) (hf : AnalyticAt ℂ f (g p))
 ```
 
 Put that closure to work on the running example $`z \mapsto z^3`: its composite with itself, $`z \mapsto (z^3)^3`, is again holomorphic everywhere.
-The cube map is analytic at every point (`AnalyticAt.pow` fed `analyticAt_id`, the worked model above), so hand that same fact to `AnalyticAt.comp` as both the outer and the inner map.
 
 :::exercise
 ```lean
@@ -298,6 +297,10 @@ example (p : ℂ) :
     AnalyticAt ℂ ((fun w : ℂ => w ^ 3) ∘ fun z : ℂ => z ^ 3) p := by
   sorry
 ```
+:::
+
+:::hint
+The cube map is analytic at every point (`AnalyticAt.pow` fed `analyticAt_id`, the worked model above), so hand that same fact to `AnalyticAt.comp` as both the outer and the inner map.
 :::
 
 :::solution
@@ -392,13 +395,16 @@ example (f : ℂ → ℂ) (x : ℂ) (hf : AnalyticAt ℂ f x)
 ```
 
 Turn that criterion on a concrete map: $`z \mapsto z^2 + 1` has order $`0` at the origin, since it takes the nonzero value $`1` there.
-First assemble its analyticity from `AnalyticAt.pow`, `analyticAt_id`, and `analyticAt_const` through `AnalyticAt.add`; then rewrite along `analyticOrderAt_eq_zero` and settle the value $`0^2 + 1 \neq 0` by computation.
 
 :::exercise
 ```lean
 example : analyticOrderAt (fun z : ℂ => z ^ 2 + 1) 0 = 0 := by
   sorry
 ```
+:::
+
+:::hint
+First assemble its analyticity from `AnalyticAt.pow`, `analyticAt_id`, and `analyticAt_const` through `AnalyticAt.add`; then rewrite along `analyticOrderAt_eq_zero` and settle the value $`0^2 + 1 \neq 0` by computation.
 :::
 
 :::solution
@@ -433,13 +439,16 @@ example (f : ℂ → ℂ) (p : ℂ)
 
 The multiplicity is designed to be blind to a reparametrization of the target, the simplest of which is a shift.
 Show that adding a constant $`c` to the cube map leaves its ramification index at the origin equal to $`3`: recentering on the value cancels the shift, since $`(z^3 + c) - (0^3 + c) = z^3`.
-Unfold the definition (a `show` that recenters on the value), rewrite the recentered map to the plain cube by `ring` and then to the centered cube `(\cdot - 0)^3`, and finish with `analyticOrderAt_centeredMonomial` — the same monomial-order fact behind the $`z^5` worked model above.
 
 :::exercise (chili := 1)
 ```lean
 example (c : ℂ) : ramificationIndex (fun z : ℂ => z ^ 3 + c) 0 = 3 := by
   sorry
 ```
+:::
+
+:::hint
+Unfold the definition (a `show` that recenters on the value), rewrite the recentered map to the plain cube by `ring` and then to the centered cube `(\cdot - 0)^3`, and finish with `analyticOrderAt_centeredMonomial` — the same monomial-order fact behind the $`z^5` worked model above.
 :::
 
 :::solution

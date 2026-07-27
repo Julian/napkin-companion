@@ -372,7 +372,6 @@ example (G : Type*) [Group G] (p : ℕ) [Fact p.Prime] [Finite (Sylow p G)]
 
 The point of an isomorphism is that it transports invariants, and the most basic one is size.
 Use `Sylow.equiv` to prove that any two Sylow $`p`-subgroups have the same number of elements.
-Forget the multiplicative structure with `.toEquiv` to get a plain bijection, then turn that bijection into an equality of cardinalities with `Nat.card_congr`.
 
 :::exercise
 ```lean
@@ -380,6 +379,10 @@ example (G : Type*) [Group G] (p : ℕ) [Fact p.Prime] [Finite (Sylow p G)]
     (P Q : Sylow p G) : Nat.card P = Nat.card Q := by
   sorry
 ```
+:::
+
+:::hint
+Forget the multiplicative structure with `.toEquiv` to get a plain bijection, then turn that bijection into an equality of cardinalities with `Nat.card_congr`.
 :::
 
 :::solution

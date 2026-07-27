@@ -540,7 +540,6 @@ example (B : BezoutData ℂ) (h : B.f.totalDegree = 1) :
 
 Counting with multiplicity dominates counting without, so this pins the number of *distinct* points at no more than $`\deg g`.
 Prove that bound.
-Rewrite the cardinality as a sum of $`1`s (`Finset.card_eq_sum_ones`), replace $`\deg g` by the multiplicity sum just above, and compare termwise (`Finset.sum_le_sum`), using that every listed point has positive multiplicity (`mult_pos`).
 
 :::exercise
 ```lean
@@ -548,6 +547,10 @@ example (B : BezoutData ℂ) (h : B.f.totalDegree = 1) :
     B.points.card ≤ B.g.totalDegree := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite the cardinality as a sum of $`1`s (`Finset.card_eq_sum_ones`), replace $`\deg g` by the multiplicity sum just above, and compare termwise (`Finset.sum_le_sum`), using that every listed point has positive multiplicity (`mult_pos`).
 :::
 
 :::solution
@@ -591,7 +594,6 @@ example (F : Type*) [Field F] (p : F[X]) :
 
 Two curves meeting a line at once should meet it in at most the sum of the two degrees.
 Prove the univariate form for a product $`p \cdot q`.
-The roots of a product are the union of the roots of the factors (`roots_mul`, the worked model further above, needing $`p q \neq 0`); `Multiset.card_add` splits the count, and `card_roots'` bounds each half.
 
 :::exercise
 ```lean
@@ -599,6 +601,10 @@ example (F : Type*) [Field F] (p q : F[X]) (hpq : p * q ≠ 0) :
     Multiset.card (p * q).roots ≤ p.natDegree + q.natDegree := by
   sorry
 ```
+:::
+
+:::hint
+The roots of a product are the union of the roots of the factors (`roots_mul`, the worked model further above, needing $`p q \neq 0`); `Multiset.card_add` splits the count, and `card_roots'` bounds each half.
 :::
 
 :::solution
@@ -630,13 +636,16 @@ example (p : ℂ[X]) : Multiset.card p.roots = p.natDegree :=
 
 That equality has teeth: a nonconstant polynomial must then have an actual root, which is what algebraic closedness of $`\mathbb{C}` buys.
 Prove that a polynomial of degree at least $`1` has a root.
-From the equality the root multiset has positive cardinality, hence is nonempty (`Multiset.card_pos`, then `Multiset.exists_mem_of_ne_zero`); membership in `p.roots` unpacks to a root via `mem_roots'`.
 
 :::exercise (chili := 1)
 ```lean
 example (p : ℂ[X]) (h : 1 ≤ p.natDegree) : ∃ z, IsRoot p z := by
   sorry
 ```
+:::
+
+:::hint
+From the equality the root multiset has positive cardinality, hence is nonempty (`Multiset.card_pos`, then `Multiset.exists_mem_of_ne_zero`); membership in `p.roots` unpacks to a root via `mem_roots'`.
 :::
 
 :::solution

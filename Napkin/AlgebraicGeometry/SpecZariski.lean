@@ -403,13 +403,16 @@ example (K : Type*) [Field K] (x y : PrimeSpectrum K) : x = y :=
 ```
 
 Prove that *directly* from the ideal theory, exposing why the spectrum collapses.
-Two points are equal once their underlying ideals are (`PrimeSpectrum.ext`), and every prime ideal of a field is $`(0)`: a field has only $`\bot` and $`\top` (`Ideal.eq_bot_or_top`), while a prime ideal is never $`\top` (`Ideal.IsPrime.ne_top`), so `Or.resolve_right` pins each ideal to $`\bot`.
 
 :::exercise
 ```lean
 example (K : Type*) [Field K] (x y : PrimeSpectrum K) : x = y := by
   sorry
 ```
+:::
+
+:::hint
+Two points are equal once their underlying ideals are (`PrimeSpectrum.ext`), and every prime ideal of a field is $`(0)`: a field has only $`\bot` and $`\top` (`Ideal.eq_bot_or_top`), while a prime ideal is never $`\top` (`Ideal.IsPrime.ne_top`), so `Or.resolve_right` pins each ideal to $`\bot`.
 :::
 
 :::solution

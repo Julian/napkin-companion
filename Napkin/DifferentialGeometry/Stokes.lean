@@ -554,7 +554,6 @@ The sign that distinguishes orientation-preserving from orientation-reversing re
 
 The "Area of a circle" example computed $`\int_c \alpha = \int_0^{2\pi} \int_0^R r \; dr \; d\theta = \pi R^2` for the volume form pulled back along the polar cell.
 Verify that iterated integral.
-The inner $`\int_0^R r \; dr` is `integral_id` again (giving $`\tfrac{R^2}{2}`), and the outer integral of that constant in $`\theta` is `intervalIntegral.integral_const`; `simp only` with those two lemmas plus `smul_eq_mul` leaves a `ring` identity.
 
 :::exercise
 ```lean
@@ -562,6 +561,10 @@ example (R : ℝ) : ∫ _θ in (0:ℝ)..(2*Real.pi), ∫ r in (0:ℝ)..R, r
     = Real.pi * R^2 := by
   sorry
 ```
+:::
+
+:::hint
+The inner $`\int_0^R r \; dr` is `integral_id` again (giving $`\tfrac{R^2}{2}`), and the outer integral of that constant in $`\theta` is `intervalIntegral.integral_const`; `simp only` with those two lemmas plus `smul_eq_mul` leaves a `ring` identity.
 :::
 
 :::solution
@@ -684,13 +687,16 @@ The gauge-integral original it is deduced from is `BoxIntegral.hasIntegral_GP_di
 
 The prototype case is the fundamental theorem of calculus on $`[a, b]`, where $`\partial [a, b] = \{b\} - \{a\}`.
 Confirm that integrating the constant $`1`-form (i.e. $`dx`) over $`[a, b]` gives $`b - a`.
-The finisher is `intervalIntegral.integral_const`, which gives $`\int_a^b c \; dx = (b - a) \cdot c`; here $`c = 1`, so `smul_eq_mul` and `mul_one` finish it.
 
 :::exercise
 ```lean
 example (a b : ℝ) : ∫ _x in a..b, (1:ℝ) = b - a := by
   sorry
 ```
+:::
+
+:::hint
+The finisher is `intervalIntegral.integral_const`, which gives $`\int_a^b c \; dx = (b - a) \cdot c`; here $`c = 1`, so `smul_eq_mul` and `mul_one` finish it.
 :::
 
 :::solution
@@ -705,13 +711,16 @@ example (a b : ℝ) : ∫ _x in a..b, (1:ℝ) = b - a := by
 The Mathlib name for the elementary cross product on $`\mathbb{R}^3` is `crossProduct` (in the root namespace, written `⨯₃`); the algebraic Hodge-star machinery on exterior powers does not yet have a unified Mathlib home, although `crossProduct` makes the $`n = 3` case fully usable.
 The flux hack identifies $`\mathbf{F}` with a $`2`-form using the star map $`\mathbf{e}_1 \wedge \mathbf{e}_2 \mapsto \mathbf{e}_3`, which is exactly $`\mathbf{e}_1 \times \mathbf{e}_2 = \mathbf{e}_3`.
 Verify that instance of the cross product.
-Since both sides are functions `Fin 3 → ℝ`, take an `ext i`, split the three coordinates with `fin_cases i`, and let `simp [crossProduct]` unfold the definition and compute each entry.
 
 :::exercise
 ```lean
 example : crossProduct (![1,0,0] : Fin 3 → ℝ) ![0,1,0] = ![0,0,1] := by
   sorry
 ```
+:::
+
+:::hint
+Since both sides are functions `Fin 3 → ℝ`, take an `ext i`, split the three coordinates with `fin_cases i`, and let `simp [crossProduct]` unfold the definition and compute each entry.
 :::
 
 :::solution

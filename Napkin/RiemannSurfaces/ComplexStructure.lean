@@ -290,7 +290,6 @@ example (X : Type*) [TopologicalSpace X] [ChartedSpace ℂ X]
 ```
 
 Read off a single point from that containment: the chart `chartAt ℂ p` at any `p` lies in the maximal atlas.
-Rather than cite the packaged `IsManifold.chart_mem_maximalAtlas`, assemble it — `chart_mem_atlas ℂ p` witnesses that `chartAt ℂ p` is one of the concrete charts, and feeding that membership through the containment `IsManifold.subset_maximalAtlas` lands it in the maximal atlas.
 
 :::exercise
 ```lean
@@ -299,6 +298,10 @@ example (X : Type*) [TopologicalSpace X] [ChartedSpace ℂ X]
     chartAt ℂ p ∈ IsManifold.maximalAtlas (𝓘(ℂ, ℂ)) ω X := by
   sorry
 ```
+:::
+
+:::hint
+Rather than cite the packaged `IsManifold.chart_mem_maximalAtlas`, assemble it — `chart_mem_atlas ℂ p` witnesses that `chartAt ℂ p` is one of the concrete charts, and feeding that membership through the containment `IsManifold.subset_maximalAtlas` lands it in the maximal atlas.
 :::
 
 :::solution
@@ -436,7 +439,6 @@ example {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
 ```
 
 Deduce the "takes equal values" form: a holomorphic function on a compact connected complex manifold agrees at any two points.
-Extract the constant `v` with `hf.exists_eq_const_of_compactSpace`, then both values are `v`.
 
 :::exercise
 ```lean
@@ -447,6 +449,10 @@ example {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
     f a = f b := by
   sorry
 ```
+:::
+
+:::hint
+Extract the constant `v` with `hf.exists_eq_const_of_compactSpace`, then both values are `v`.
 :::
 
 :::solution

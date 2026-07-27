@@ -853,7 +853,6 @@ An honest integral ideal lands in the class group via `ClassGroup.mk0`, which se
 
 The prototype says that a principal ideal domain has trivial class group.
 Prove it: every element of the class group of a PID equals the identity.
-The lemma `ClassGroup.mk_eq_one_iff` says a fractional ideal class is trivial exactly when the ideal is principal, and `ClassGroup.induction` reduces an arbitrary class to one of the form `ClassGroup.mk _ I`.
 
 :::exercise
 ```lean
@@ -861,6 +860,10 @@ example (R : Type*) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
     (C : ClassGroup R) : C = 1 := by
   sorry
 ```
+:::
+
+:::hint
+The lemma `ClassGroup.mk_eq_one_iff` says a fractional ideal class is trivial exactly when the ideal is principal, and `ClassGroup.induction` reduces an arbitrary class to one of the form `ClassGroup.mk _ I`.
 :::
 
 :::solution

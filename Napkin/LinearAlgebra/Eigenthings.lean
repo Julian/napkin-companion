@@ -526,8 +526,6 @@ example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
 
 Put that together with the decomposition above and the nilpotent case is exactly the degenerate one: a nilpotent map has $`0` as its only eigenvalue, so the direct sum has a single summand, and the whole space *is* the generalized $`0`-eigenspace.
 Prove that.
-`Module.End.mem_maxGenEigenspace` unfolds membership to "some power of $`T - \mu` kills it"; at $`\mu = 0` that power is just a power of $`T`, so the exponent $`m` from $`T^m = 0` works for every vector at once.
-(Reduce the goal to membership of an arbitrary vector with `eq_top_iff` first.)
 
 :::exercise
 ```lean
@@ -536,6 +534,11 @@ example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
     T.maxGenEigenspace 0 = ⊤ := by
   sorry
 ```
+:::
+
+:::hint
+`Module.End.mem_maxGenEigenspace` unfolds membership to "some power of $`T - \mu` kills it"; at $`\mu = 0` that power is just a power of $`T`, so the exponent $`m` from $`T^m = 0` works for every vector at once.
+(Reduce the goal to membership of an arbitrary vector with `eq_top_iff` first.)
 :::
 
 :::solution
@@ -551,7 +554,6 @@ example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
 :::
 
 See *why* it holds by running the argument by hand on an actual eigenvector.
-Applying $`T` repeatedly scales it, $`T^m(v) = \mu^m v` (`Module.End.HasEigenvector.pow_apply`); but $`T^m = 0`, so $`\mu^m v = 0`, and since $`v \neq 0` this forces $`\mu^m = 0` (`smul_eq_zero`), hence $`\mu = 0` (`pow_eq_zero_iff`).
 
 :::exercise (chili := 1)
 ```lean
@@ -560,6 +562,10 @@ example (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
     (μ : k) (v : V) (hv : T.HasEigenvector μ v) : μ = 0 := by
   sorry
 ```
+:::
+
+:::hint
+Applying $`T` repeatedly scales it, $`T^m(v) = \mu^m v` (`Module.End.HasEigenvector.pow_apply`); but $`T^m = 0`, so $`\mu^m v = 0`, and since $`v \neq 0` this forces $`\mu^m = 0` (`smul_eq_zero`), hence $`\mu = 0` (`pow_eq_zero_iff`).
 :::
 
 :::solution

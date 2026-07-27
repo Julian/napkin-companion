@@ -404,10 +404,6 @@ example (X : Type*) (p : X) :
 
 Reading a *sum* of divisors coefficient-wise runs on the same principle.
 Show that `single p a + single q b`, evaluated at `p` for a point `q ≠ p`, has
-value `a`: only the term based at `p` contributes.
-Unfold `Divisor.single`, split the sum pointwise with `Finsupp.add_apply`, then
-evaluate each single — `Finsupp.single_eq_same` at the matching point and
-`Finsupp.single_eq_of_ne'` at the mismatched one.
 
 :::exercise
 ```lean
@@ -415,6 +411,13 @@ example (X : Type*) (p q : X) (a b : ℤ) (h : q ≠ p) :
     (Divisor.single p a + Divisor.single q b) p = a := by
   sorry
 ```
+:::
+
+:::hint
+value `a`: only the term based at `p` contributes.
+Unfold `Divisor.single`, split the sum pointwise with `Finsupp.add_apply`, then
+evaluate each single — `Finsupp.single_eq_same` at the matching point and
+`Finsupp.single_eq_of_ne'` at the mismatched one.
 :::
 
 :::solution
@@ -487,10 +490,6 @@ example (X : Type*) (D : Divisor X) :
 Being a homomorphism turns *any* relation between degrees into one between
 divisors.
 Show that two divisors of equal degree have a difference of degree $`0`:
-`map_sub` splits `degree (D₁ - D₂)` into `degree D₁ - degree D₂`, the
-hypothesis collapses it, and `sub_self` finishes.
-(This degree-$`0` difference is precisely the relation behind the earlier
-proposition that principal divisors have degree $`0`.)
 
 :::exercise
 ```lean
@@ -499,6 +498,13 @@ example (X : Type*) (D₁ D₂ : Divisor X)
     Divisor.degree (D₁ - D₂) = 0 := by
   sorry
 ```
+:::
+
+:::hint
+`map_sub` splits `degree (D₁ - D₂)` into `degree D₁ - degree D₂`, the
+hypothesis collapses it, and `sub_self` finishes.
+(This degree-$`0` difference is precisely the relation behind the earlier
+proposition that principal divisors have degree $`0`.)
 :::
 
 :::solution

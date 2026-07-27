@@ -489,8 +489,6 @@ example (K : Type*) [Field K] [NumberField K]
 ```
 
 Use that classification.
-A unit's norm is $`\pm 1`, so its square is $`1`.
-Extract $`|\operatorname{N}(x)| = 1` from the iff with `.mp`, then trade the absolute value for a square with `sq_abs`.
 
 :::exercise
 ```lean
@@ -499,6 +497,11 @@ example (K : Type*) [Field K] [NumberField K]
     (RingOfIntegers.norm ℚ x : ℚ) ^ 2 = 1 := by
   sorry
 ```
+:::
+
+:::hint
+A unit's norm is $`\pm 1`, so its square is $`1`.
+Extract $`|\operatorname{N}(x)| = 1` from the iff with `.mp`, then trade the absolute value for a square with `sq_abs`.
 :::
 
 :::solution

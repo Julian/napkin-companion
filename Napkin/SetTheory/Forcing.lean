@@ -547,7 +547,6 @@ example (P : Type*) [Preorder P] {𝒟 : Set (Set P)} {G D : Set P}
 
 Genericity has two independent parts — being a filter, and meeting every dense set of the family — so it can only improve as the family shrinks: a filter generic for $`𝒟` stays generic for any subfamily $`ℰ \subseteq 𝒟`.
 Prove it.
-Split the goal with `refine ⟨h.isFilter, ?_⟩` to reuse the filter half untouched, then route each dense set of $`ℰ` into $`𝒟` through the inclusion before `IsGeneric.meets` closes it.
 
 :::exercise
 ```lean
@@ -556,6 +555,10 @@ example (P : Type*) [Preorder P] {𝒟 ℰ : Set (Set P)} {G : Set P}
     Forcing.IsGeneric ℰ G := by
   sorry
 ```
+:::
+
+:::hint
+Split the goal with `refine ⟨h.isFilter, ?_⟩` to reuse the filter half untouched, then route each dense set of $`ℰ` into $`𝒟` through the inclusion before `IsGeneric.meets` closes it.
 :::
 
 :::solution
@@ -591,7 +594,6 @@ example (α : Type*) [Preorder α] [WellFoundedLT α] (a : α) :
 
 Accessibility is not merely a certificate; it _is_ the induction principle.
 Derive rank induction itself: to prove a predicate `C` holds everywhere, it is enough to prove `C x` from the assumption that `C y` holds for every `y < x`.
-Recurse on the accessibility proof of `a` with `induction … with | intro x _ IH`; the `intro` case hands you exactly the "for every smaller `y`" hypothesis the step consumes.
 
 :::exercise
 ```lean
@@ -599,6 +601,10 @@ example (α : Type*) [Preorder α] [WellFoundedLT α] {C : α → Prop}
     (ih : ∀ x, (∀ y, y < x → C y) → C x) (a : α) : C a := by
   sorry
 ```
+:::
+
+:::hint
+Recurse on the accessibility proof of `a` with `induction … with | intro x _ IH`; the `intro` case hands you exactly the "for every smaller `y`" hypothesis the step consumes.
 :::
 
 :::solution
