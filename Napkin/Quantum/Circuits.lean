@@ -33,14 +33,14 @@ In classical logic, we build circuits which take in some bits for input, and out
 These circuits are built out of individual logic gates.
 For example, the *AND gate* can be pictured as follows.
 
-:::figure "figures/quantum/and-gate.svg"
+:::figure "figures/quantum/and-gate.svg" (alt := "The AND gate on the four possible classical inputs.")
 :::
 
 One can also represent the AND gate using the "truth table": $$`\begin{array}{|cc|c|} \hline A & B & A \text{ and } B \\ \hline 0 & 0 & 0 \\ 0 & 1 & 0 \\ 1 & 0 & 0 \\ 1 & 1 & 1 \\ \hline \end{array}`
 Similarly, we have the *OR gate* and the *NOT gate*: $$`\begin{array}{|cc|c|} \hline A & B & A \text{ or } B \\ \hline 0 & 0 & 0 \\ 0 & 1 & 1 \\ 1 & 0 & 1 \\ 1 & 1 & 1 \\ \hline \end{array} \qquad \begin{array}{|c|c|} \hline A & \text{not } A \\ \hline 0 & 1 \\ 1 & 0 \\ \hline \end{array}`
 We also have a so-called *COPY gate*, which duplicates a bit.
 
-:::figure "figures/quantum/copy-gate.svg"
+:::figure "figures/quantum/copy-gate.svg" (alt := "The COPY gate duplicates a bit.")
 :::
 Of course, the first theorem you learn about these gates is that:
 
@@ -79,13 +79,13 @@ The controlled-NOT gate, or the *CNOT* gate, is a reversible $`2`-bit gate with 
 In other words, this gate XOR's the first bit to the second bit, while leaving the first bit unchanged.
 It is depicted as follows.
 
-:::figure "figures/quantum/cnot-gate.svg"
+:::figure "figures/quantum/cnot-gate.svg" (alt := "The CNOT gate.")
 :::
 
 The first dot is called the "control", while the $`\oplus` is the "negation" operation: the first bit controls whether the second bit gets flipped or not.
 Thus, a typical application might be as follows.
 
-:::figure "figures/quantum/cnot-example.svg"
+:::figure "figures/quantum/cnot-example.svg" (alt := "A typical application of the CNOT gate.")
 :::
 ::::
 
@@ -105,7 +105,7 @@ The gate(s) are *universal* if they can simulate any Boolean function.
 
 For example, the CNOT gate can simulate the NOT gate, using a single ancilla bit $`1`, according to the following circuit.
 
-:::figure "figures/quantum/cnot-not.svg"
+:::figure "figures/quantum/cnot-not.svg" (alt := "CNOT simulates the NOT gate with an ancilla bit.")
 :::
 
 Unfortunately, it is not universal.
@@ -126,7 +126,7 @@ The most commonly used one is:
 ::::DEFINITION
 The three-bit *Toffoli gate*, also called the CCNOT gate, is given by
 
-:::figure "figures/quantum/toffoli-gate.svg"
+:::figure "figures/quantum/toffoli-gate.svg" (alt := "The Toffoli (CCNOT) gate.")
 :::
 
 So the Toffoli has two controls, and toggles the last bit if and only if both of the control bits are $`1`.
@@ -144,14 +144,14 @@ We will show it can *reversibly* simulate AND, NOT, hence OR, which we know is e
 
 For the AND gate, we draw the circuit
 
-:::figure "figures/quantum/toffoli-and.svg"
+:::figure "figures/quantum/toffoli-and.svg" (alt := "Toffoli simulates the AND gate.")
 :::
 
 with one ancilla bit, and no garbage bits.
 
 For the NOT gate, we use two ancilla $`1` bits and one garbage bit:
 
-:::figure "figures/quantum/toffoli-not.svg"
+:::figure "figures/quantum/toffoli-not.svg" (alt := "Toffoli simulates the NOT gate.")
 :::
 
 This completes the proof.
@@ -191,14 +191,14 @@ For example, consider the CNOT gate.
 Its quantum analog should be a unitary map $`U_{\text{CNOT}} \colon H \to H`, where $`H = \mathbb{C}^{\oplus 2} \otimes \mathbb{C}^{\oplus 2}`, given on basis elements by $$`U_{\text{CNOT}}(|00\rangle) = |00\rangle, \quad U_{\text{CNOT}}(|01\rangle) = |01\rangle` $$`U_{\text{CNOT}}(|10\rangle) = |11\rangle, \quad U_{\text{CNOT}}(|11\rangle) = |10\rangle.`
 So pictorially, the quantum CNOT gate is given by
 
-:::figure "figures/quantum/qcnot-gate.svg"
+:::figure "figures/quantum/qcnot-gate.svg" (alt := "The quantum CNOT gate on the four basis states.")
 :::
 
 OK, so what?
 The whole point of quantum mechanics is that we allow linear qubits to be in linear combinations of $`|0\rangle` and $`|1\rangle`, too, and this will produce interesting results.
 For example, let's take $`|x{-}\rangle = \frac{1}{\sqrt{2}}(|0\rangle - |1\rangle)` and plug it into the top, with $`|1\rangle` on the bottom, and see what happens: $$`U_{\text{CNOT}}\left(|x{-}\rangle \otimes |1\rangle\right) = U_{\text{CNOT}}\left(\frac{1}{\sqrt{2}}(|01\rangle - |11\rangle)\right) = \frac{1}{\sqrt{2}}\left(|01\rangle - |10\rangle\right) = |\Psi_-\rangle` which is the fully entangled *singlet state*! Picture:
 
-:::figure "figures/quantum/cnot-singlet.svg"
+:::figure "figures/quantum/cnot-singlet.svg" (alt := "Feeding a mixed state into CNOT yields the entangled singlet state.")
 :::
 
 Thus, when we input mixed states into our quantum gates, the outputs are often entangled states, even when the original inputs are not entangled.
@@ -207,18 +207,18 @@ Thus, when we input mixed states into our quantum gates, the outputs are often e
 - Every reversible classical gate that we encountered before has a quantum analog obtained in the same way as CNOT: by specifying the values on basis elements.
   For example, there is a quantum Toffoli gate which for example sends
 
-  :::figure "figures/quantum/qtoffoli.svg"
+  :::figure "figures/quantum/qtoffoli.svg" (alt := "The quantum Toffoli gate on a basis state.")
   :::
 - The *Hadamard gate* on one qubit is a rotation given by $$`H = \begin{bmatrix} \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}} \end{bmatrix}.`
   Thus, it sends $`|0\rangle` to $`|x{+}\rangle` and $`|1\rangle` to $`|x{-}\rangle`.
   Note that the Hadamard gate is its own inverse.
   It is depicted by an "$`H`" box.
 
-  :::figure "figures/quantum/hadamard-gate.svg"
+  :::figure "figures/quantum/hadamard-gate.svg" (alt := "The Hadamard gate, depicted by an H box.")
   :::
 - More generally, if $`U` is a $`2 \times 2` unitary matrix (i.e. a map $`\mathbb{C}^{\oplus 2} \to \mathbb{C}^{\oplus 2}`) then there is a *$`U`-rotation gate* similar to the previous one, which applies $`U` to the input.
 
-  :::figure "figures/quantum/u-rotation.svg"
+  :::figure "figures/quantum/u-rotation.svg" (alt := "A U-rotation gate applies U to the input.")
   :::
 
   For example, the classical NOT gate is represented by $`U = \sigma_x`.
@@ -226,7 +226,7 @@ Thus, when we input mixed states into our quantum gates, the outputs are often e
   Let $`U \colon \mathbb{C}^{\oplus 2} \to \mathbb{C}^{\oplus 2}` be a rotation gate, and let $`H = \mathbb{C}^{\oplus 2} \otimes \mathbb{C}^{\oplus 2}` be a $`2`-qubit space.
   Then the controlled $`U` gate has the following circuit diagrams.
 
-  :::figure "figures/quantum/controlled-u.svg"
+  :::figure "figures/quantum/controlled-u.svg" (alt := "The controlled U-rotation gate.")
   :::
 
   Thus, $`U` is applied when the controlling bit is $`1`, and CNOT is the special case $`U = \sigma_x`.
@@ -238,7 +238,7 @@ Suppose we try to use CNOT as a copy, with truth table. $$`\begin{array}{|rr|rr|
 The point of this gate is to be used with a garbage $`0` at the bottom to try and simulate a "copy" operation.
 So indeed, one can check that
 
-:::figure "figures/quantum/cnot-copy.svg"
+:::figure "figures/quantum/cnot-copy.svg" (alt := "Using CNOT to copy the basis states.")
 :::
 
 Thus we can copy $`|0\rangle` and $`|1\rangle`.
@@ -257,7 +257,7 @@ The problem is as follows: we're given a function $`f \colon \{0, 1\}^n \to \{0,
 
 The function $`f` is given in the form of a reversible black box $`U_f` which is the control of a NOT gate, so it can be represented as the circuit diagram
 
-:::figure "figures/quantum/uf-blackbox.svg"
+:::figure "figures/quantum/uf-blackbox.svg" (alt := "The Deutsch-Jozsa black box U_f as a reversible controlled-NOT.")
 :::
 
 i.e. if $`f(x_1, \dots, x_n) = 0` then the gate does nothing, otherwise the gate flips the $`y` bit at the bottom.
@@ -280,7 +280,7 @@ The Deutsch-Jozsa problem can be determined in a quantum circuit with only a sin
 For concreteness, we do the case $`n = 1` explicitly; the general case is contained in the Deutsch-Jozsa problem at the end of the chapter.
 We claim that the necessary circuit is
 
-:::figure "figures/quantum/deutsch-jozsa.svg"
+:::figure "figures/quantum/deutsch-jozsa.svg" (alt := "The Deutsch-Jozsa circuit for n=1.")
 :::
 
 Here the $`H`'s are Hadamard gates, and the meter at the end of the rightmost wire indicates that we make a measurement along the usual $`|0\rangle, |1\rangle` basis.
@@ -293,7 +293,7 @@ Now, observe that the effect of going from $`|0\rangle - |1\rangle` to $`|0 + f(
 So we can simplify and factor to get $$`\frac{1}{2}\left((-1)^{f(0)} |0\rangle + (-1)^{f(1)} |1\rangle\right) \otimes \left(|0\rangle - |1\rangle\right).`
 Thus, the picture so far is:
 
-:::figure "figures/quantum/deutsch-jozsa-partial.svg"
+:::figure "figures/quantum/deutsch-jozsa-partial.svg" (alt := "The Deutsch-Jozsa circuit before the final Hadamard and measurement.")
 :::
 
 In particular, the resulting state is not entangled, and we can simply discard the last qubit (!).
@@ -318,14 +318,14 @@ Show that this gate is also reversible and universal.
 ::::PROBLEM "Baby no-cloning theorem"
 Show that there is no unitary map $`U` on two qubits which sends $`U(|\psi\rangle \otimes |0\rangle) = |\psi\rangle \otimes |\psi\rangle` for any qubit $`|\psi\rangle`, i.e. the following circuit diagram is impossible.
 
-:::figure "figures/quantum/no-cloning.svg"
+:::figure "figures/quantum/no-cloning.svg" (alt := "The impossible cloning circuit of the baby no-cloning theorem.")
 :::
 ::::
 
 ::::PROBLEM "Deutsch-Jozsa"
 Given the black box $`U_f` described in the Deutsch-Jozsa algorithm, consider the following circuit.
 
-:::figure "figures/quantum/deutsch-jozsa-full.svg"
+:::figure "figures/quantum/deutsch-jozsa-full.svg" (alt := "The general Deutsch-Jozsa circuit on n+1 qubits.")
 :::
 
 That is, take $`n` copies of $`|0\rangle`, apply the Hadamard rotation to all of them, apply $`U_f`, reverse the Hadamard to all $`n` input bits (again discarding the last bit), then measure all $`n` bits in the $`|0\rangle`/$`|1\rangle` basis.
@@ -337,7 +337,7 @@ Show that the probability of measuring $`|0 \dots 0\rangle` is $`1` if $`f` is c
 Let $$`P = \begin{bmatrix} 1 & 0 \\ 0 & i \end{bmatrix} \qquad Q = \frac{1}{\sqrt{2}}\begin{bmatrix} 1 & -i \\ -i & 1 \end{bmatrix}.`
 Verify that the quantum Toffoli gate can be implemented using just controlled rotations via the circuit
 
-:::figure "figures/quantum/barenco-toffoli.svg"
+:::figure "figures/quantum/barenco-toffoli.svg" (alt := "Implementing the Toffoli gate from controlled rotations (Barenco et al.).")
 :::
 
 This was a big surprise to researchers when discovered, because classical reversible logic requires three-bit gates (e.g. Toffoli, Fredkin).

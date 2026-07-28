@@ -236,7 +236,7 @@ We saw $`\operatorname{Spec} \mathbb{Z}` looked a lot like $`\operatorname{Spec}
 
 There is a famous picture of this scheme in Mumford's "red book", which I will produce here for culture-preservation reasons, even though there are some discrepancies between the pictures that we previously drew.
 
-:::figure "mumforddrawing.jpg"
+:::figure "mumforddrawing.jpg" (alt := "Mumford's hand-drawn picture of this scheme, reproduced from his Red Book.")
 :::
 
 Mumford uses $`[\mathfrak{p}]` to denote the point $`\mathfrak{p}`, which we don't, so you can ignore the square brackets that appear everywhere.

@@ -311,7 +311,7 @@ Unlike the torus one cannot realize this in $`3`-space without self-intersecting
 One can tape together one pair of edges as before to get a cylinder, but to then fuse the resulting circles in opposite directions is not possible in 3D.
 Nevertheless, we often draw a picture in 3-dimensional space in which we tacitly allow the cylinder to intersect itself.
 
-:::figure "klein-fold.png"
+:::figure "klein-fold.png" (alt := "The Klein bottle drawn in three dimensions, where the tube is allowed to pass through its own wall.")
 :::
 
 :::figure "KleinBottle-01.png"
@@ -428,7 +428,7 @@ As before, $`\mathbb{CP}^n` can be thought of as $`\mathbb{C}^n` augmented with 
 
 This space $`\mathbb{CP}^1` with its coordinate system is the *Riemann sphere*.
 
-:::figure "figures/topology/constructions-earth.svg"
+:::figure "figures/topology/constructions-earth.svg" (alt := "The Riemann sphere CP^1 drawn with its coordinate system.")
 :::
 ::::
 

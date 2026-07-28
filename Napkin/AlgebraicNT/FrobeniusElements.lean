@@ -30,7 +30,7 @@ file := "The-Frobenius-element"
 Throughout this chapter $`K/\mathbb{Q}` is a Galois extension with Galois group $`G`, $`p` is an _unramified_ rational prime in $`K`, and $`\mathfrak{p}` is a prime above it.
 Picture:
 
-:::figure "figures/algebraic-nt/frobenius-setup.svg"
+:::figure "figures/algebraic-nt/frobenius-setup.svg" (alt := "The standing setup of the Frobenius chapter: K/ℚ Galois, 𝒪_K/ℤ, a prime 𝔭 above (p), and the residue tower 𝒪_K/𝔭 ≅ 𝔽_{p^f} over 𝔽_p.")
 :::
 
 We recall that the $`p`-th power map $`\sigma \colon \mathbb{F}_{p^f} \to \mathbb{F}_{p^f}` is an automorphism, and it's called the Frobenius map on $`\mathbb{F}_{p^f}`.
@@ -94,7 +94,7 @@ This will only make sense in the context of decomposition groups, so readers whi
 The entire theorem is just a rephrasing of the fact that the map $`\theta` defined in the last section is an isomorphism when $`p` is unramified.
 Picture:
 
-:::figure "figures/algebraic-nt/frobenius-theta.svg"
+:::figure "figures/algebraic-nt/frobenius-theta.svg" (alt := "The decomposition group D_𝔭 inside G = Gal(K/ℚ), isomorphic via θ to the cyclic group ⟨T | T^f = 1⟩, sending Frob_𝔭 to T.")
 :::
 
 In here we can restrict our attention to $`D_\mathfrak{p}` since we need to have $`\sigma(\alpha) \equiv 0 \pmod \mathfrak{p}` when $`\alpha \equiv 0 \pmod \mathfrak{p}`.
@@ -173,7 +173,7 @@ This is no issue, since the only primes that ramify are those dividing $`\Delta_
 
 In other words, if I pick a random prime $`p` and look at the resulting conjugacy class, it's a lot like throwing a dart at $`G`: the probability of hitting any conjugacy class depends just on the size of the class.
 
-:::figure "figures/algebraic-nt/chebotarev-dartboard.svg"
+:::figure "figures/algebraic-nt/chebotarev-dartboard.svg" (alt := "Chebotarev as a dartboard: the group G partitioned into conjugacy classes; the chance of a random prime's Frobenius class landing in each class is proportional to its size.")
 :::
 
 :::REMARK
@@ -214,7 +214,7 @@ Conclude that a rational prime $`p` splits completely in $`\mathcal{O}_L` if and
 
 Let $`L/\mathbb{Q}` and $`K/\mathbb{Q}` be Galois extensions, and consider the setup
 
-:::figure "figures/algebraic-nt/frobenius-restriction.svg"
+:::figure "figures/algebraic-nt/frobenius-restriction.svg" (alt := "The restriction setup: 𝔓 above 𝔭 above (p) in the tower L/K/ℚ, with Frobenius elements upstairs and downstairs.")
 :::
 
 Here $`\mathfrak{p}` is above $`(p)` and $`\mathfrak{P}` is above $`\mathfrak{p}`.
@@ -267,7 +267,7 @@ In fact, we can describe it exactly: viewing $`G \cong (\mathbb{Z}/q\mathbb{Z})^
 By the fundamental theorem of Galois Theory, there ought to be a degree $`2` extension of $`\mathbb{Q}` inside $`\mathbb{Q}(\zeta_q)` (that is, a quadratic field).
 Call it $`\mathbb{Q}(\sqrt{q^\ast})`, for $`q^\ast` squarefree:
 
-:::figure "figures/algebraic-nt/qr-galois-tower.svg"
+:::figure "figures/algebraic-nt/qr-galois-tower.svg" (alt := "The Galois correspondence used in the proof of quadratic reciprocity: ℚ(ζ_q) over ℚ(√q*) over ℚ, matched with {1} ⊆ H ⊆ G.")
 :::
 
 :::EXERCISE
@@ -295,7 +295,7 @@ Either it splits into two in $`K` or is inert; either way let $`\mathfrak{p}` be
 Then let $`\mathfrak{P}` be above $`\mathfrak{p}`.
 It could possibly also split in $`K`: the picture looks like
 
-:::figure "figures/algebraic-nt/qr-prime-tower.svg"
+:::figure "figures/algebraic-nt/qr-prime-tower.svg" (alt := "The primes and residue fields in the quadratic reciprocity proof: 𝔓 in ℤ[ζ_q] above 𝔭 in 𝒪_K above (p) in ℤ.")
 :::
 
 :::QUESTION
@@ -348,13 +348,13 @@ Next, we introduce a Frobenius $`\operatorname{Frob}_{\mathfrak{P}}` above $`(p)
 Then let $`H` be the group corresponding to the field $`E`.
 Diagram:
 
-:::figure "figures/algebraic-nt/frob-factor-diagram.svg"
+:::figure "figures/algebraic-nt/frob-factor-diagram.svg" (alt := "The factorization-pattern setup: K over E over ℚ matched with {1} ⊆ H ⊆ G, and the primes 𝔓, 𝔭₁⋯𝔭_g, (p) with f₁+⋯+f_g = n.")
 :::
 
 Then $`\operatorname{Frob}_{\mathfrak{P}}` induces a _permutation_ of the $`n` left cosets $`gH` by left multiplication (after all, $`\operatorname{Frob}_{\mathfrak{P}}` is an element of $`G` too!).
 Just as with any permutation, we may look at the resulting cycle decomposition, which has a natural "cycle structure": a partition of $`n`.
 
-:::figure "figures/algebraic-nt/frob-coset-action.svg"
+:::figure "figures/algebraic-nt/frob-coset-action.svg" (alt := "The cycle structure of Frob_𝔓 = g acting on the n = 7 left cosets of H: one 3-cycle and one 4-cycle, so the pattern is 7 = 3 + 4.")
 :::
 
 The theorem is that these coincide:
@@ -419,7 +419,7 @@ Let $`\alpha = \sqrt[3]{2}` and $`f = x^3-2`, so $`E = \mathbb{Q}(\sqrt[3]{2})`.
 Set $`p=5` and finally, let $`K = \mathbb{Q}(\sqrt[3]{2}, \omega)` be the splitting field.
 Setup:
 
-:::figure "figures/algebraic-nt/frob-x3-2.svg"
+:::figure "figures/algebraic-nt/frob-x3-2.svg" (alt := "The x³−2 mod 5 example: the tower ℚ(∛2,ω)/ℚ(∛2)/ℚ with primes and the matching factorizations of x³−2 at each level.")
 :::
 
 The three claimed objects now all have shape $`2+1`:
@@ -435,7 +435,7 @@ Letting $`n = \deg f`.
 Let $`H` be the subgroup of $`G = \operatorname{Gal}(K/\mathbb{Q})` corresponding to $`E`, so $`|G/H| = n`.
 Pictorially, we have
 
-:::figure "figures/algebraic-nt/frob-sketch-tower.svg"
+:::figure "figures/algebraic-nt/frob-sketch-tower.svg" (alt := "The Sketch-of-Proof tower for 'Frobenius controls polynomial factorization': K over E = ℚ(α) over ℚ, matched with {1} ⊆ H ⊆ G, and the primes 𝔓, 𝔭, (p).")
 :::
 
 We claim that (i), (ii), (iii) are all equivalent to
@@ -457,7 +457,7 @@ All this can be done in general with $`\mathbb{Q}` replaced by $`F`; for example
 
 As an example of the power we now have at our disposal, let's prove:
 
-:::figure "IMO-2003-logo.png"
+:::figure "IMO-2003-logo.png" (alt := "The logo of the 2003 International Mathematical Olympiad.")
 :::
 
 :::quote

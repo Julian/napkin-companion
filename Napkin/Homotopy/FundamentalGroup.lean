@@ -116,7 +116,7 @@ For homotopy of loops, you might visualize "reeling in" the loop, contracting it
 ::::EXAMPLE "Loops in $S^2$ are nulhomotopic"
 As the following picture should convince you, every loop in the simply connected space $`S^2` is nulhomotopic.
 
-:::figure "S2-simply.png"
+:::figure "S2-simply.png" (alt := "A loop drawn on the sphere, shown contracting to a point.")
 :::
 
 (Starting with the purple loop, we contract to the red-brown point.)

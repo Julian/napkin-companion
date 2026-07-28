@@ -26,7 +26,7 @@ Each entry names its problem and gives whichever of a hint and a solution the so
 *What is the joke in the following figure?*
 (Source: {cite}`img:snsd`.)
 
-:::figure "love-proper-isomorphic-subgroup.jpg"
+:::figure "love-proper-isomorphic-subgroup.jpg" (alt := "A photograph used as a visual joke about a proper subgroup isomorphic to the whole group.")
 :::
 
 _Hint._ Orders.

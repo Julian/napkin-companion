@@ -48,7 +48,7 @@ Nonetheless, perhaps we can also get away with an arbitrary distinction: let's s
 Pictured below are some points (in red) and their images (in blue) under this "upper-half" square root.
 The condition on $`\alpha` means we are forcing the blue points to lie on the right-half plane.
 
-:::figure "figures/complex-analysis/log-sqrt-1.svg"
+:::figure "figures/complex-analysis/log-sqrt-1.svg" (alt := "Red points on a circle around the origin, together with their blue upper-half square roots; the circle meets the negative real axis, where the square root will break.")
 :::
 
 Here, $`w_i^2 = z_i` for each $`i`, and we are constraining the $`w_i` to lie in the right half of the complex plane.
@@ -61,14 +61,14 @@ The negative real axis that we must not touch is what we will later call a *bran
 It is a warning to the red points: if you cross this line, you will die!
 However, if we move the red circle just a little upwards (so that it misses the negative real axis) this issue is avoided entirely, and we get what seems to be a "nice" square root.
 
-:::figure "figures/complex-analysis/log-sqrt-2.svg"
+:::figure "figures/complex-analysis/log-sqrt-2.svg" (alt := "The same circle of red points shifted upwards so that it misses the negative real axis, so the blue square roots vary continuously all the way around.")
 :::
 
 In fact, the ray of death is fairly arbitrary: it is the set of "boundary issues" that arose when we picked $`-\tfrac{1}{2}\pi < \alpha \leq \tfrac{1}{2}\pi`.
 Suppose we instead insisted on the interval $`0 \leq \alpha < \pi`; then the ray of death would be the *positive* real axis instead.
 The earlier circle we had now works just fine.
 
-:::figure "figures/complex-analysis/log-sqrt-3.svg"
+:::figure "figures/complex-analysis/log-sqrt-3.svg" (alt := "The original circle again, now with the ray of death moved to the positive real axis (drawn in grey), which the circle avoids.")
 :::
 
 What we see is that picking a particular $`\alpha`-interval leads to a different set of edge cases, and hence a different ray of death.
@@ -100,7 +100,7 @@ There are two possible ways we could get unlucky in the scheme above: first, if 
 But even if we avoid that, we have to worry that if we run a full loop in the complex plane, we might end up in a different place from where we started.
 For concreteness, consider the following situation, again with $`f = \operatorname{id}`:
 
-:::figure "figures/complex-analysis/log-sqrt-4.svg"
+:::figure "figures/complex-analysis/log-sqrt-4.svg" (alt := "A red loop running once around the origin whose blue square roots do not return to their starting point.")
 :::
 
 We started at the point $`z_0`, with one of its square roots as $`w_0`.

@@ -543,7 +543,7 @@ This makes rigorous the notion that "groups are very symmetric".
 What is the joke in the following figure?
 (Source: {cite}`img:snsd`.)
 
-:::figure "love-proper-isomorphic-subgroup.jpg"
+:::figure "love-proper-isomorphic-subgroup.jpg" (alt := "A photograph used as a visual joke about a proper subgroup isomorphic to the whole group.")
 :::
 ::::
 

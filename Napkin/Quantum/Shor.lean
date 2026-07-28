@@ -106,7 +106,7 @@ So by using mixed states, the quantum Fourier transform can use this "multiplica
 Now, without further ado, here's the circuit.
 Define the rotation matrices $$`R_k = \begin{bmatrix} 1 & 0 \\ 0 & \exp(2\pi i / 2^k) \end{bmatrix}.` Then, for $`n = 3` the circuit is given by using controlled $`R_k`'s as follows:
 
-:::figure "figures/quantum/shor-qft.svg"
+:::figure "figures/quantum/shor-qft.svg" (alt := "The quantum Fourier transform circuit for n=3.")
 :::
 
 :::EXERCISE
@@ -115,7 +115,7 @@ Show that in this circuit, the image of $`|x_3 x_2 x_1\rangle` is $$`\Big(|0\ran
 
 For general $`n`, we can write this as inductively as
 
-:::figure "figures/quantum/shor-qft-general.svg"
+:::figure "figures/quantum/shor-qft-general.svg" (alt := "The quantum Fourier transform circuit for general n, built inductively.")
 :::
 
 :::QUESTION

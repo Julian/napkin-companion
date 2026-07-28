@@ -66,7 +66,7 @@ In this way we obtain $$`0, 1, 2, 3, \dots, \omega, \; \omega + 1, \dots, \omega
 
 The first several ordinals can be illustrated in a nice spiral.
 
-:::figure "500px-Omega-exp-omega-labeled.png"
+:::figure "500px-Omega-exp-omega-labeled.png" (alt := "A labelled picture of the ordinal omega to the omega, drawn as successively finer groups of tick marks.")
 :::
 
 :::REMARK

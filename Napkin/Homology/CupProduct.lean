@@ -233,7 +233,7 @@ $`\mathbb{RP}^2` isn't too hard to visualize — it's just a $`2`-sphere, quotie
 
 There is a $`1`-cycle on it that is not homologous to $`0`:
 
-:::figure "figures/homology/cup-product-1cycle.svg"
+:::figure "figures/homology/cup-product-1cycle.svg" (alt := "A 1-cycle drawn on the real projective plane that is not homologous to zero.")
 :::
 
 It's not very easy to show, but every such $`1`-cycle is homologous to each other, and double of that cycle is homologous to $`0`.

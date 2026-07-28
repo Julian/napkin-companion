@@ -39,7 +39,7 @@ Thus we get a factorization into prime ideals $$`p \cdot \mathcal{O}_K = \mathfr
 We say that each $`\mathfrak{p}_i` is *above* $`(p)`.{margin}[Reminder that $`p \cdot \mathcal{O}_K` and $`(p)` mean the same thing, and I'll use both interchangeably.]
 Pictorially, you might draw this as follows:
 
-:::figure "figures/algebraic-nt/prime-above.svg"
+:::figure "figures/algebraic-nt/prime-above.svg" (alt := "A prime 𝔭ᵢ of 𝒪_K sitting above the rational prime (p) of ℤ.")
 :::
 
 Some names for various behavior that can happen:
@@ -131,7 +131,7 @@ Moreover, since $`p \in \mathfrak{p}` and $`\sigma` fixes $`\mathbb{Q}`, we know
 Thus, by the pointwise mapping, *the Galois group acts on the prime ideals above a rational prime $`p`*.
 Picture:
 
-:::figure "figures/algebraic-nt/primes-orbit.svg"
+:::figure "figures/algebraic-nt/primes-orbit.svg" (alt := "The Galois group acting on the prime ideals above a rational prime p: the primes 𝔭ᵢ float above p, and σ moves one to another.")
 :::
 
 The notation $`\sigma^{\mathrm{img}}(\mathfrak{p})` is hideous in this context, since we're really thinking of $`\sigma` as just doing a group action, and so we give the shorthand:
@@ -236,7 +236,7 @@ We can look at both the fields $`\mathcal{O}_K / \mathfrak{p}` and $`\mathbb{Z} 
 Naturally, since $`\mathcal{O}_K / \mathfrak{p}` is a finite field we can view it as a field extension of $`\mathbb{F}_p`.
 So we can get the diagram
 
-:::figure "figures/algebraic-nt/prime-above-quotient.svg"
+:::figure "figures/algebraic-nt/prime-above-quotient.svg" (alt := "The residue-field column added to the prime-above picture: the quotients 𝒪_K/𝔭 ≅ 𝔽_{p^f} over 𝔽_p are finite fields.")
 :::
 
 At the far right we have finite field extensions, which we know are _really_ well behaved.
@@ -289,7 +289,7 @@ This gives us a pretty cool sequence of subgroups $`\{1\} \subseteq I \subseteq 
 Let's look at the corresponding _fixed fields_ via the Fundamental theorem of Galois theory.
 Picture:
 
-:::figure "figures/algebraic-nt/ramification-tower.svg"
+:::figure "figures/algebraic-nt/ramification-tower.svg" (alt := "The tower of fixed fields K ⊇ K^I ⊇ K^D ⊇ ℚ matched with the subgroup chain {1} ⊆ I ⊆ D ⊆ G, with the ramify/inert/split steps of sizes e, f, g.")
 :::
 
 Something curious happens:
@@ -302,7 +302,7 @@ Something curious happens:
 In other words, the process of going from $`1` to $`efg` can be very nicely broken into the three steps above.
 To draw this in the picture, we get
 
-:::figure "figures/algebraic-nt/split-inert-ramify.svg"
+:::figure "figures/algebraic-nt/split-inert-ramify.svg" (alt := "The three-step factorization of (p) as it climbs ℚ → K^D → K^I → K: first splitting into g primes, then inert (degree grows to f), then ramifying with exponent e.")
 :::
 
 In any case, in the "typical" case that there is no ramification, we just have $`K^I = K`.

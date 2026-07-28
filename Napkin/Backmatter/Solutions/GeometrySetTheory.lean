@@ -162,7 +162,7 @@ _Hint._ The answer is $`k[x, y] \times k[z, z^{-1}]`.
 _Solution._ Let $`V = D(x) \cup D(y) \subset U` denote the punctured plane, so its complement $`D(z)` looks like a punctured line.
 Then $`V \cap D(z) = \varnothing` and the following diagram of restriction maps commutes
 
-:::figure "figures/algebraic-geometry/gyrotop-restriction.svg"
+:::figure "figures/algebraic-geometry/gyrotop-restriction.svg" (alt := "The diagram of restriction maps for the punctured gyrotop: the global section ring A = O_X(X) restricts to O_X(U), which restricts to both O_X(D(z)) and O_X(V), each restricting to O_X(empty) = 0.")
 :::
 
 By sheaf axioms we should actually have $$`\mathcal{O}_X(U) = \mathcal{O}_X(D(z)) \times \mathcal{O}_X(V).`

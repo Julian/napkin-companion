@@ -170,9 +170,13 @@ These apply to every chapter and are not repeated in the per-chapter lists below
     screen reader. The image now carries `role="img"` and
     `aria-labelledby` pointing at its own `<figcaption>`, so the caption
     becomes the image's accessible name; 282 figures gain one that way.
-    The remaining 89 have no caption upstream either, and `:::figure`
-    takes an `(alt := "…")` for them — writing those descriptions is
-    outstanding authoring work, deliberately not guessed here.
+    The remaining 89 have no caption upstream either, so `:::figure`
+    takes an `(alt := "…")`, and all 89 now carry one: 72 are the
+    description in the header comment of the figure's own TikZ source,
+    and the other 17 — vendored rasters and PDF-converted 3-D views with
+    no source to read — are written from what the surrounding prose says
+    the picture shows, claiming no visual detail beyond that. All 371
+    figures in the book now have an accessible name.
 
 ## Formalization-forced deviations
 

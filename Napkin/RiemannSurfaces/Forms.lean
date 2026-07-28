@@ -49,14 +49,14 @@ With that visualization, here are some examples.
 ::::EXAMPLE "The 1-form $`dz`"
 We may visualize $`dz`, which is just the change in $`z`, as follows.
 
-:::figure "figures/riemann-surfaces/dz-arrows.svg"
+:::figure "figures/riemann-surfaces/dz-arrows.svg" (alt := "Quiver visualization of the 1-form dz (full-arrow form) on the complex plane: at each grid point, short arrows in the four axis directions are labeled with the value of the form on that tangent vector.")
 :::
 
 The integration $`\int_c dz` can be computed by adding up the value of the vectors together, so we get $`2 + i` — this is indeed equal to the change of $`z` as we travel along the curve, $`0 - (-2-i) = 2 + i`.
 
 Since having the arrows extending the whole length can be confusing, we will shorten the arrow like the following.
 
-:::figure "figures/riemann-surfaces/dz-quiver.svg"
+:::figure "figures/riemann-surfaces/dz-quiver.svg" (alt := "Quiver visualization of the 1-form dz (short-arrow form) on the complex plane: at each grid point, short arrows in the four axis directions are labeled with the value of the form on that tangent vector.")
 :::
 ::::
 
@@ -65,7 +65,7 @@ While we have never defined what a holomorphic $`1`-form is, it makes intuitive 
 
 In any case, if you perform the same procedure as above and compute the differential change of $`z^2` along the tangent vectors, you will get the following.
 
-:::figure "figures/riemann-surfaces/dz2-quiver.svg"
+:::figure "figures/riemann-surfaces/dz2-quiver.svg" (alt := "Quiver visualization of the 1-form d(z^2) = 2z dz on the complex plane: at each grid point, short arrows in the four axis directions are labeled with the value of the form on that tangent vector.")
 :::
 
 Unfortunately, it gets a bit cluttered regardless.
@@ -81,7 +81,7 @@ Turns out it isn't.
 
 Consider the following example: let $`\omega = d \overline{z}` — this is just the change in value of $`\overline{z}`.
 
-:::figure "figures/riemann-surfaces/dzbar-quiver.svg"
+:::figure "figures/riemann-surfaces/dzbar-quiver.svg" (alt := "Quiver visualization of the 1-form d z-bar on the complex plane: at each grid point, short arrows in the four axis directions are labeled with the value of the form on that tangent vector.")
 :::
 ::::
 

@@ -209,7 +209,7 @@ Let $`\mathbb{F}_9` be the finite field of order $`9`, and represent it concrete
 Let $`\sigma_3 \colon \mathbb{F}_9 \to \mathbb{F}_9` be $`x \mapsto x^3`.
 We can witness the fate of all nine elements:
 
-:::figure "figures/algebraic-nt/ff9-frobenius.svg"
+:::figure "figures/algebraic-nt/ff9-frobenius.svg" (alt := "The fate of the nine elements of 𝔽₉ = ℤ[i]/(3) under the Frobenius x ↦ x³: 0, 1, 2 are fixed and the other six swap in pairs.")
 :::
 
 (As claimed, $`0`, $`1`, $`2` are the fixed points, so I haven't drawn arrows for them.)

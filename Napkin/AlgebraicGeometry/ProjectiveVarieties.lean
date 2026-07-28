@@ -150,7 +150,7 @@ Let's try to picture the variety $$`\mathbb{V}_+(x^2 + y^2 - z^2) \subseteq \mat
 which consists of the points $`[x : y : z]` such that $`x^2 + y^2 = z^2`.
 If we view this as subspace of $`\mathbb{C}^3` (i.e. by thinking of $`\mathbb{CP}^2` as the set of lines through the origin), then we get a "cone".
 
-:::figure "figures/algebraic-geometry/proj-var-cone.svg"
+:::figure "figures/algebraic-geometry/proj-var-cone.svg" (alt := "The cone in C^3 swept out by the lines through the origin that represent the points of the projective variety.")
 :::
 
 If we take the standard affine charts now, we obtain:

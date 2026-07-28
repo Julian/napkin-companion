@@ -69,7 +69,7 @@ When the field is $`K = \mathbb{Q}(\sqrt{-5})`, the ring of integers is $`\mathc
 The first picture below depicts the ideal $`(1) \subseteq \mathcal{O}_K`.
 The second picture depicts $`(2, 1+\sqrt{-5}) \subseteq \mathcal{O}_K`, which is not a principal ideal.
 
-:::figure "figures/algebraic-nt/ideal-classes-qm5.svg"
+:::figure "figures/algebraic-nt/ideal-classes-qm5.svg" (alt := "Two ideals of Z[sqrt(-5)] drawn in the complex plane. Left: the principal ideal (1), the full lattice with unit cell 1 x sqrt(5). Right: the non-principal ideal (2, 1 + sqrt(-5)) — the sublattice of points a + b sqrt(-5) with a + b even — with two fundamental cells showing its different 'shape'.")
 :::
 ::::
 
@@ -100,7 +100,7 @@ This leads us to consider the set of points $$`\left( \sigma_1(\alpha), \sigma_2
 This lets us visualize what $`\mathcal{O}_K` looks like in $`\mathbb{R}^2`.
 The points of $`K` are dense in $`\mathbb{R}^2`, but the points of $`\mathcal{O}_K` cut out a lattice.
 
-:::figure "figures/algebraic-nt/zsqrt2-lattice.svg"
+:::figure "figures/algebraic-nt/zsqrt2-lattice.svg" (alt := "The ring Z[sqrt(2)] embedded as a lattice in R^2 via the two real embeddings a + b sqrt(2) |-> (a + b sqrt(2), a - b sqrt(2)), with the fundamental parallelepiped spanned by 1 and sqrt(2) shaded.")
 :::
 
 To see how big the lattice is, we look at how $`\{1, \sqrt2\}`, the generators of $`\mathcal{O}_K`, behave.
@@ -321,7 +321,7 @@ Note that this depends on the value of $`M`.
 
 Think of this box as a _mousetrap_: anything that falls in it is going to have a small norm, and our goal is to use Minkowski to lure some nonzero element into it.
 
-:::figure "figures/algebraic-nt/trap-box.svg"
+:::figure "figures/algebraic-nt/trap-box.svg" (alt := "The 'trap box' |x| + |y| <= M (a diamond) overlaid on the lattice of Z[sqrt(2)] under the canonical embedding: Minkowski's theorem will force a nonzero lattice point into the box.")
 :::
 
 That is, suppose $`\alpha \in \mathfrak{a}` falls into the box I've defined above, which means
@@ -427,7 +427,7 @@ Suppose we want to build such an ideal $`\mathfrak{a} = \mathfrak{p}_1^{e_1} \do
 Recall that a prime ideal $`\mathfrak{p}_i` must have some rational prime $`p` inside it, meaning $`\mathfrak{p}_i` divides $`(p)` and $`p` divides $`\operatorname{Norm}(\mathfrak{p}_i)`.
 So let's group all the $`\mathfrak{p}_i` we want to build $`\mathfrak{a}` with based on which $`(p)` they came from.
 
-:::figure "figures/algebraic-nt/cherry-tree.svg"
+:::figure "figures/algebraic-nt/cherry-tree.svg" (alt := "The 'cherry tree': each branch is a rational prime (p), and the cherries below it are the finitely many prime ideals dividing (p).")
 :::
 
 To be more dramatic: imagine you have a _cherry tree_; each branch corresponds to a prime $`(p)` and contains as cherries (prime ideals) the factors of $`(p)` (finitely many).
@@ -762,14 +762,14 @@ We know $`1 \in A` and $`i \in A`, so $`\mathbb{Z}[i] \subseteq A`.
 
 Assume we know in addition that $`2.3 - 3.1i \in A`.
 
-:::figure "figures/algebraic-nt/zi-extra-point.svg"
+:::figure "figures/algebraic-nt/zi-extra-point.svg" (alt := "The Gaussian-integer lattice Z[i] (blue) together with one extra known lattice point 2.3 - 3.1i (red), for the third proof that O_K is a free Z-module.")
 :::
 
 Because $`A` is closed under addition, we know that $`(2.3 - 3.1i) + (-2 + 3i) = 0.3-0.1i \in A`.
 We replace $`1` in the basis with $`0.3-0.1i`.
 Then, the lattice $`\langle i, 0.3-0.1i\rangle \subseteq A` has smaller mesh than $`\langle 1, i \rangle` as expected.
 
-:::figure "figures/algebraic-nt/zi-refined.svg"
+:::figure "figures/algebraic-nt/zi-refined.svg" (alt := "The refined lattice spanned by i and 0.3 - 0.1i, obtained after replacing 1 by the smaller vector 0.3 - 0.1i: the mesh shrinks. The new basis vector is highlighted in red.")
 :::
 ::::
 
@@ -782,7 +782,7 @@ Almost, but not quite:
 ::::EXAMPLE
 Consider $`\alpha_1 = 1+3i` and $`\alpha_2 = 2+7i`.
 
-:::figure "figures/algebraic-nt/mesh-far-points.svg"
+:::figure "figures/algebraic-nt/mesh-far-points.svg" (alt := "A lattice basis (alpha_1 = 1 + 3i, alpha_2 = 2 + 7i) whose fundamental parallelogram has mesh 1 even though neither basis vector is close to the origin.")
 :::
 
 The mesh of the lattice spanned by $`\alpha_1` and $`\alpha_2` is $`1`, however, neither $`\alpha_1` nor $`\alpha_2` are particularly close to the origin.

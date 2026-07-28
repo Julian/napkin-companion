@@ -46,7 +46,7 @@ Consider some familiar curves on the plane.
 
 There is not much going on so far, but here is a picture.
 
-:::figure "figures/riemann-surfaces/affine-projective-line-circle.svg"
+:::figure "figures/riemann-surfaces/affine-projective-line-circle.svg" (alt := "A line and the unit circle in the affine plane.")
 :::
 
 As you can see, the definitions above are actually quite clumsy.
@@ -157,7 +157,7 @@ The real part of the Riemann surface $`w = z^2` is a parabola.
 Since drawing a graph in $`4` dimensions is difficult, we will project the Riemann surface onto $`3` dimensions.
 The result is:
 
-:::figure "figures/riemann-surfaces/affine-projective-parabola-3d.svg"
+:::figure "figures/riemann-surfaces/affine-projective-parabola-3d.svg" (alt := "A three-dimensional view of the Riemann surface of the projective parabola.")
 :::
 
 This Riemann surface is in fact isomorphic to the complex plane $`\mathbb{C}` by $`(z, w) \mapsto z`.
@@ -167,7 +167,7 @@ This Riemann surface is in fact isomorphic to the complex plane $`\mathbb{C}` by
 We all know what the real part of the circle looks like.
 Visualizing the whole Riemann surface is a bit more difficult, however.
 
-:::figure "figures/riemann-surfaces/affine-projective-circle-3d.svg"
+:::figure "figures/riemann-surfaces/affine-projective-circle-3d.svg" (alt := "A three-dimensional view of the Riemann surface of the projective circle.")
 :::
 
 The highlighted red circle is the real part.
@@ -181,7 +181,7 @@ With another rotation and multiplication by a constant, it is in turn isomorphic
 The real part looks like this.
 (The complex part is not drawn this time.)
 
-:::figure "figures/riemann-surfaces/affine-projective-cubic.svg"
+:::figure "figures/riemann-surfaces/affine-projective-cubic.svg" (alt := "The cubic curve y^2 = x^3 - x (an elliptic curve).")
 :::
 
 While we won't be able to prove this any time soon, turns out this Riemann surface is not isomorphic to $`\mathbb{C}` — even if we allow deleting finitely many points.

@@ -99,12 +99,12 @@ Just as how you can keep all the information of the Riemann sphere $`\mathbb{C}_
 First, we visualize $`\mathbb{C} \times X` where $`X = \mathbb{C}`.
 Looking at only the real parts, it looks like a plane.
 
-:::figure "figures/riemann-surfaces/lb-plane.svg"
+:::figure "figures/riemann-surfaces/lb-plane.svg" (alt := "The real part of the trivial bundle C x X over X = C: a plane.")
 :::
 
 As a line bundle, the preimage of each point is a line.
 
-:::figure "figures/riemann-surfaces/lb-lines.svg"
+:::figure "figures/riemann-surfaces/lb-lines.svg" (alt := "Fibers of the trivial line bundle: the preimage of each point is a line.")
 :::
 
 :::QUESTION
@@ -115,13 +115,13 @@ They are not just disparate lines however — there are two more structures.
 First one is a vector space structure — of course the dimension of $`\mathbb{C}` as a $`\mathbb{C}`-vector space is $`1`.
 We can visualize it by marking the points $`1, 2, 3, \dots` on the line.
 
-:::figure "figures/riemann-surfaces/lb-dots.svg"
+:::figure "figures/riemann-surfaces/lb-dots.svg" (alt := "Marking 1, 2, 3, ... on each fiber: the vector space structure.")
 :::
 
 The other structure is that the lines must "smoothly varies" as $`p` varies over $`X`.
 We visualize this by drawing, well, a grid.
 
-:::figure "figures/riemann-surfaces/lb-grid.svg"
+:::figure "figures/riemann-surfaces/lb-grid.svg" (alt := "Fibers varying smoothly: the grid picture of a line bundle chart.")
 :::
 
 :::QUESTION
@@ -131,7 +131,7 @@ How does the picture of the grid correspond to the formal definition of a line b
 
 So far, nothing surprising — this is just the usual grid graph, where we can draw functions on it like $`y = x^2-1`, and a function is analytic if it is analytic with respect to the grid.
 
-:::figure "figures/riemann-surfaces/lb-section.svg"
+:::figure "figures/riemann-surfaces/lb-section.svg" (alt := "A section drawn on the grid: the graph of y = x^2 - 1.")
 :::
 
 Of course, instead of a function, we call this a _section_.
@@ -140,24 +140,24 @@ This particular section is in fact analytic, as you would expect.
 Let us take a look at which "grids" represent the same line bundle structure.
 For this part, we will look at $`\{ z : \mathbb{C} \mid |z-3| < 2 \}`, its real part being $`(1, 5)`.
 
-:::figure "figures/riemann-surfaces/lb-chart1.svg"
+:::figure "figures/riemann-surfaces/lb-chart1.svg" (alt := "A line bundle chart over the disk |z-3| < 2 (real part (1,5)).")
 :::
 
 If we apply an analytic reparametrization on the segment $`(1, 5)` — for example let $`t = 25/x`, then the grid becomes like the following.
 It still represents the same line bundle structure — in other words, the two charts are compatible.
 
-:::figure "figures/riemann-surfaces/lb-chart2.svg"
+:::figure "figures/riemann-surfaces/lb-chart2.svg" (alt := "The same line bundle structure after the analytic reparametrization t = 25/x.")
 :::
 
 If we rescale the vertical direction by an analytically-varying function, it still represents the same line bundle structure.
 
-:::figure "figures/riemann-surfaces/lb-chart3.svg"
+:::figure "figures/riemann-surfaces/lb-chart3.svg" (alt := "Rescaling the vertical direction by an analytically-varying (linear) factor: still the same line bundle structure.")
 :::
 
 However, if we rescale the vertical direction by something that is not linear, the vector space structure will be changed.
 The following grid _does not_ represent the same line bundle structure:
 
-:::figure "figures/riemann-surfaces/lb-chart4.svg"
+:::figure "figures/riemann-surfaces/lb-chart4.svg" (alt := "A nonlinear vertical rescaling: this grid does NOT represent the same line bundle structure.")
 :::
 
 Intuitively, this makes sense — in a _vector space_, you can add two elements together and get another element — in our case, if $`a, b : L` such that $`\pi(a) = \pi(b)`, we can compute $`c = a + b` and get another element $`c : L` with $`\pi(c) = \pi(a) = \pi(b)`.
@@ -175,7 +175,7 @@ Let us consider a more complicated space $`X` — the Riemann sphere.
 
 Because we are looking at the real part only, so once again, $`\mathbb{C}_\infty` looks like just a circle.
 
-:::figure "figures/riemann-surfaces/cinf.svg"
+:::figure "figures/riemann-surfaces/cinf.svg" (alt := "The real part of the Riemann sphere C-infinity, which is a circle.")
 :::
 
 As before, we let $`z` and $`t` parametrize the points on the surface, with $`t = \frac{1}{z}` wherever both are defined.
@@ -183,7 +183,7 @@ As before, we let $`z` and $`t` parametrize the points on the surface, with $`t 
 Still, we need two dimensions to embed a circle.
 So, the real part of $`\mathbb{C} \times \mathbb{C}_\infty` may looks something like the following:
 
-:::figure "figures/riemann-surfaces/cxcinf.svg"
+:::figure "figures/riemann-surfaces/cxcinf.svg" (alt := "The real part of C times C-infinity.")
 :::
 
 The grid lines are drawn, and the origin $`z = 0`, is marked with a dot.
@@ -192,7 +192,7 @@ The vertical lines mark the position $`z = 0`, $`z = \frac{1}{2}`, $`z = 1`, $`z
 On the opposite side, we may have something like the following.
 The vertical lines mark the position $`t = 0`, $`t = \frac{1}{2}`, $`t = 1`, $`t = \frac{3}{2}`, ….
 
-:::figure "figures/riemann-surfaces/cxcinf2.svg"
+:::figure "figures/riemann-surfaces/cxcinf2.svg" (alt := "The same surface with vertical lines marking the positions t = 0, 1/2, 1, 3/2, and so on.")
 :::
 
 :::QUESTION
@@ -206,7 +206,7 @@ As promised, there are also nontrivial line bundles here.
 
 First, recall from the section above: over any open set $`U` that contains neither $`0` nor $`\infty`, we can consider another line bundle chart that scales the vertical direction by a factor of $`z`, this induces the same line bundle structure on $`U`.
 
-:::figure "figures/riemann-surfaces/lb-twist.svg"
+:::figure "figures/riemann-surfaces/lb-twist.svg" (alt := "Two compatible charts over U: the purple grid, and the green grid scaled vertically by a factor of z.")
 :::
 
 :::QUESTION
@@ -220,7 +220,7 @@ There is nothing that restricts us to that specific welding method, however — 
 The thing will look like this.
 It looks quite complicated, so this time 4 views are shown.
 
-:::figure "figures/riemann-surfaces/cxcinf3.svg"
+:::figure "figures/riemann-surfaces/cxcinf3.svg" (alt := "Four views of the same surface, shown together because one view is hard to read.")
 :::
 
 The cylinder this time is only for illustrative purpose.

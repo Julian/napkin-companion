@@ -107,7 +107,7 @@ Consider the following function $`f \colon X \to Y` between compact smooth real 
 (Note that a compact $`1`-manifold cannot be embedded into $`\mathbb{R}`, because compact subsets of $`\mathbb{R}` are closed and bounded, thus necessarily have a boundary.
 A proper graph would live in a $`4`-dimensional space, which is rather difficult to visualize, so we settle with an approximate representation.)
 
-:::figure "figures/riemann-surfaces/morphism-counterexample.svg"
+:::figure "figures/riemann-surfaces/morphism-counterexample.svg" (alt := "An approximate plot of a map between compact smooth real 1-manifolds, whose proper graph would need four dimensions.")
 :::
 
 Here, $`X` and $`Y` are both isomorphic to the unit circle.

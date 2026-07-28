@@ -319,7 +319,7 @@ The bug takes $`15` steps.
 At each step, the bug moves to an adjacent label such that it only walks counterclockwise along the inner circle and clockwise along the outer circle.
 In how many ways can the bug move to end up at $`A` after all steps?
 
-:::figure "figures/representation-theory/aime-wheel.svg"
+:::figure "figures/representation-theory/aime-wheel.svg" (alt := "The AIME 2018 bug-on-a-wheel: two concentric circles joined by five spokes, with a label at each spoke/circle meeting point and the start vertex A marked on the inner circle.")
 :::
 ::::
 

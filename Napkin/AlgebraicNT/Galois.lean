@@ -163,7 +163,7 @@ Recall that any irreducible polynomial over $`\mathbb{Q}` has distinct roots (a 
 We'll adjoin elements $`\alpha_1, \alpha_2, \dots, \alpha_m` one at a time to $`\mathbb{Q}`, until we eventually get all of $`K`, that is, $$`K = \mathbb{Q}(\alpha_1, \dots, \alpha_n).`
 Diagrammatically, this is
 
-:::figure "figures/algebraic-nt/embedding-tower.svg"
+:::figure "figures/algebraic-nt/embedding-tower.svg" (alt := "The tower of embeddings in the proof of the n-embeddings theorem: adjoin α₁, α₂, … one at a time, choosing at each stage an extension τᵢ of the previous embedding into ℂ.")
 :::
 
 First, we claim there are exactly $$`[\mathbb{Q}(\alpha_1) : \mathbb{Q}]` ways to pick $`\tau_1`.
@@ -448,7 +448,7 @@ What is $`K^H`?
 
 In that case, the diagram of fields between $`\mathbb{Q}` and $`K` matches exactly with the subgroups of $`G`, as follows:
 
-:::figure "figures/algebraic-nt/galois-correspondence.svg"
+:::figure "figures/algebraic-nt/galois-correspondence.svg" (alt := "The lattice of fields between ℚ and ℚ(√2, √3) alongside the lattice of subgroups of its Klein-four Galois group, illustrating the fundamental theorem of Galois theory.")
 :::
 
 We see that subgroups correspond to fixed fields.
@@ -536,7 +536,7 @@ The easier direction is when $`K` is a splitting field.
 Assume $`K = F(\alpha_1, \dots, \alpha_n)` is the splitting field of some separable polynomial $`p \in F[x]` with $`n` distinct roots $`\alpha_1, \dots, \alpha_n`.
 Adjoin them one by one:
 
-:::figure "figures/algebraic-nt/embedding-tower-f.svg"
+:::figure "figures/algebraic-nt/embedding-tower-f.svg" (alt := "The analogous tower for a splitting field K = F(α₁, …, αₙ) over a general base field F, used in the optional proof that Galois extensions are splitting.")
 :::
 
 (Does this diagram look familiar?)
