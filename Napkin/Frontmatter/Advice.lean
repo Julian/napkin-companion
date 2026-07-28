@@ -147,6 +147,9 @@ The code goes the other way round, and does it often enough to be worth flagging
 Around a hundred of them appear in this book.
 Meanwhile `≅` is reserved for the categorical `Iso`, which is what the category-theory chapters use.
 So in the prose $`\simeq` means homotopy and in the code it means isomorphism; nothing is ambiguous within either, but do not carry the reading across.
+
+The subset symbols need no such warning, only a translation: Mathlib's `⊆` is this book's, and its `⊂` is *strict*, so the code writes `s ⊂ t` for what the prose writes $`S \subsetneq T`.
+The power set is `𝒫 S`, or `Set.powerset`.
 :::
 
 I generally use $`\subseteq` and $`\subsetneq` since these are non-ambiguous, unlike $`\subset`.
