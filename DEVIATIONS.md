@@ -1,18 +1,14 @@
 # Deviations from the upstream text
 
-This book is a faithful port of Evan Chen's *An Infinitely Large Napkin*
-(the LaTeX source lives under `book/`) interleaved with Lean/Mathlib
-formalization content. The prose is ported verbatim wherever possible.
+This book is a faithful port of Evan Chen's *An Infinitely Large Napkin* (the LaTeX source lives under `book/`) interleaved with Lean/Mathlib formalization content.
+The prose is ported verbatim wherever possible.
 This file records every place the port deliberately deviates, and why.
 
-Formalization commentary itself — `recall` blocks, worked `example`s,
-Mathlib naming discussions — is the point of the project, not a
-deviation, and is not listed here.
+Formalization commentary itself — `recall` blocks, worked `example`s, Mathlib naming discussions — is the point of the project, not a deviation, and is not listed here.
 
 ## Book-wide conventions
 
-These apply to every chapter and are not repeated in the per-chapter
-lists below.
+These apply to every chapter and are not repeated in the per-chapter lists below.
 
 1. **Types, not sets.** Carriers of algebraic and topological
    structures are types ("a type of points $M$") rather than sets, and
@@ -161,6 +157,13 @@ lists below.
     that way; the rest interleave guidance with exposition and were left
     alone rather than cut by a heuristic.
 
+20. **Internal links resolve against the site root.** Verso emits a
+    per-page `<base href>`, so an in-book link is written
+    `Backmatter/References/`, never with `../`. A wrong one still builds
+    and renders — it only 404s — so `lake exe linkcheck <site>` walks the
+    rendered output and fails on any internal target that resolves to
+    nothing; CI runs it before deploying.
+
 ## Formalization-forced deviations
 
 Places where Mathlib's design genuinely differs from the chapter's
@@ -208,7 +211,9 @@ Chapters not listed deviate only via the book-wide conventions above.
   It also replaces the LaTeX dependency digraph with a regenerated
   clickable SVG chapter graph, and adds one companion-only `:::aside`
   under Prerequisites flagging the `x : X` notation and pointing at the
-  appendix section that explains it.
+  appendix section that explains it. Upstream's pointer to "Appendix B
+  and Appendix C" becomes a single link to the merged hints-and-solutions
+  appendix, per book-wide convention 5.
 - **Sales pitches** is verbatim (all six section pitches match
   sentence-for-sentence; `g ∈ G` → `g : G` per the types-not-sets
   convention).

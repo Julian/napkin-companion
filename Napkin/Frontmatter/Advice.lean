@@ -68,7 +68,7 @@ In this book, there are three hierarchies:
   - *Daggered problems*, which are (usually interesting) results that one should know, but won't be used directly later.
   - *Starred problems*, which are results which will be used later on in the book.{margin}[This is to avoid the classic "we are done by PSet 4, Problem 8" that happens in college sometimes, as if I remembered what that was.]
 
-Several hints and solutions can be found in [Appendix B](Backmatter/Hints-to-selected-problems/) and [Appendix C](Backmatter/Sketches-of-selected-solutions/).
+Several hints and solutions can be found in [the hints-and-solutions appendix](Hints-and-Solutions/).
 
 :::figure "abstruse-goose-exercise.png"
 Image from {cite}`img:exercise`.

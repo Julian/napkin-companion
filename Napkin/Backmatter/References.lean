@@ -12,6 +12,10 @@ set_option pp.rawOnError true
 
 #doc (Manual) "Pedagogical comments and references" =>
 
+%%%
+file := "References"
+%%%
+
 Here are some higher-level comments on the way specific topics were presented, as well as pointers to further reading.
 
 # Basic algebra and topology

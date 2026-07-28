@@ -56,6 +56,12 @@ name = "exercises"
 root = "BuildExercises"
 supportInterpreter = true
 
+# Reports internal links in a rendered site that resolve to nothing.
+[[lean_exe]]
+name = "linkcheck"
+root = "BuildLinkCheck"
+supportInterpreter = true
+
 # Test runner. Wired up as `testDriver` so `lake test` invokes it.
 # Currently runs the render-diff check; new tests are registered in
 # `Test/Main.lean`.

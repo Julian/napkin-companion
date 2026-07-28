@@ -50,6 +50,10 @@ jobs:
           test: "false"  # Already covered by the `test` job.
       - name: Render book
         run: lake exe napkin --output _site
+      # In-book links are written relative to the site root, so a wrong one
+      # still builds and renders — it just 404s. Catch that before deploying.
+      - name: Check internal links
+        run: lake exe linkcheck _site
       - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
