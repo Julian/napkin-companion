@@ -141,6 +141,14 @@ An element of such an equivalence class is a *representative* of that equivalenc
 I always use $`\cong` for an "isomorphism"-style relation (formally: a relation which is an isomorphism in a reasonable category).
 The only time $`\simeq` is used in the Napkin is for homotopic paths.
 
+:::aside "The same words in Mathlib"
+The code goes the other way round, and does it often enough to be worth flagging: there $`\simeq` is the isomorphism symbol.
+`X ≃ Y` is a bijection (`Equiv`), and the decorated forms say which structure is preserved — `≃*` a group isomorphism, `≃+` an additive one, `≃ₗ` linear, `≃ₐ` an algebra isomorphism, `≃ₜ` a homeomorphism.
+Around a hundred of them appear in this book.
+Meanwhile `≅` is reserved for the categorical `Iso`, which is what the category-theory chapters use.
+So in the prose $`\simeq` means homotopy and in the code it means isomorphism; nothing is ambiguous within either, but do not carry the reading across.
+:::
+
 I generally use $`\subseteq` and $`\subsetneq` since these are non-ambiguous, unlike $`\subset`.
 I only use $`\subset` on rare occasions in which equality obviously does not hold yet pointing it out would be distracting.
 For example, I write $`\mathbb{Q} \subset \mathbb{R}` since "$`\mathbb{Q} \subsetneq \mathbb{R}`" is distracting.

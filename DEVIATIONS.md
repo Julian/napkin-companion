@@ -78,6 +78,15 @@ from the text.
   concern upstream is guarding against is one the code has already
   settled.
 
+- **$\simeq$ means opposite things in prose and code.** Upstream reserves
+  $\simeq$ for homotopic paths and uses $\cong$ for isomorphism. Mathlib
+  inverts that: `≃` is `Equiv` and its decorated forms (`≃*`, `≃+`, `≃ₗ`,
+  `≃ₐ`, `≃ₜ`) are the isomorphisms, of which this book's code blocks
+  contain about a hundred, while `≅` is the categorical `Iso`. Neither
+  convention is wrong and neither is ambiguous internally, so both stand;
+  an `:::aside` under Conventions warns against carrying the reading
+  across.
+
 ## Book-wide conventions
 
 These apply to every chapter and are not repeated in the per-chapter lists below.
