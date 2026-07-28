@@ -761,8 +761,14 @@ block_extension Block.remark (title : String) where
 def REMARK : DirectiveExpanderOf TitledConfig :=
   titledDirective "" fun t => ``(Block.remark $(quote t))
 
-block_extension Block.figure (src : String) where
-  data := .str src
+/-- Derive a stable element id from a figure's source path, so the caption
+    can name the image for assistive technology. -/
+private def figureCaptionId (src : String) : String :=
+  "figcap-" ++ String.ofList (src.toList.map fun c =>
+    if c.isAlphanum then c else '-')
+
+block_extension Block.figure (src : String) (alt : String) where
+  data := .arr #[.str src, .str alt]
   traverse _ _ _ := pure none
   toTeX :=
     some <| fun _ goB _ _ content => do
@@ -770,10 +776,22 @@ block_extension Block.figure (src : String) where
   toHtml :=
     open Verso.Output.Html in
     some <| fun _ goB _ data content => do
+      let (src, alt) :=
+        match data with
+        | .arr #[.str s, .str a] => (s, a)
+        | other => (dataStr other, "")
+      let capId := figureCaptionId src
+      -- `alt=""` alone would mark the image decorative and drop it from the
+      -- accessibility tree. An explicit `role` puts it back, and the caption
+      -- — which is what actually describes the picture — becomes its name.
+      -- An `(alt := "…")` on the directive wins over that when supplied.
+      let naming : Array (String × String) :=
+        if alt.isEmpty then #[("role", "img"), ("aria-labelledby", capId)]
+        else #[]
       pure {{
         <figure class="napkin-figure">
-          <img src={{dataStr data}} alt=""/>
-          <figcaption>{{← content.mapM goB}}</figcaption>
+          <img src={{src}} alt={{alt}} {{naming}}/>
+          <figcaption id={{capId}}>{{← content.mapM goB}}</figcaption>
         </figure>
       }}
   extraCss := [r#"
@@ -795,13 +813,17 @@ block_extension Block.figure (src : String) where
 
 structure FigureConfig where
   src : String
+  /-- Replacement text, for a figure whose caption does not describe the
+      picture (or which has no caption at all). Empty means "let the
+      caption name it". -/
+  alt : String
 
 section
 variable [Monad m] [MonadInfoTree m] [MonadLiftT CoreM m] [MonadEnv m]
   [MonadError m] [MonadFileMap m]
 
 def FigureConfig.parse : ArgParse m FigureConfig :=
-  FigureConfig.mk <$> .positional `src .string
+  FigureConfig.mk <$> .positional `src .string <*> .namedD `alt .string ""
 
 instance : FromArgs FigureConfig m := ⟨FigureConfig.parse⟩
 
@@ -810,7 +832,7 @@ end
 @[directive]
 def figure : DirectiveExpanderOf FigureConfig
   | cfg, contents => do
-    ``(Verso.Doc.Block.other (Block.figure $(quote cfg.src))
+    ``(Verso.Doc.Block.other (Block.figure $(quote cfg.src) $(quote cfg.alt))
         #[$[$(← contents.mapM elabBlock)],*])
 
 block_extension Block.exercise (title : String) where

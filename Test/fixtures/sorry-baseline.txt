@@ -37,7 +37,7 @@
 4	Napkin/Categories/Limits.lean
 6	Napkin/ComplexAnalysis/Holomorphic.lean
 4	Napkin/ComplexAnalysis/Log.lean
-6	Napkin/ComplexAnalysis/Meromorphic.lean
+7	Napkin/ComplexAnalysis/Meromorphic.lean
 4	Napkin/ComplexAnalysis/Quintic.lean
 7	Napkin/DifferentialGeometry/Forms.lean
 8	Napkin/DifferentialGeometry/Manifolds.lean

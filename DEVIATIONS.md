@@ -164,6 +164,16 @@ These apply to every chapter and are not repeated in the per-chapter lists below
     rendered output and fails on any internal target that resolves to
     nothing; CI runs it before deploying.
 
+21. **Figures name themselves.** Every `:::figure` used to render
+    `<img alt="">`, which marks an image *decorative* and drops it from
+    the accessibility tree — so all 371 figures were invisible to a
+    screen reader. The image now carries `role="img"` and
+    `aria-labelledby` pointing at its own `<figcaption>`, so the caption
+    becomes the image's accessible name; 282 figures gain one that way.
+    The remaining 89 have no caption upstream either, and `:::figure`
+    takes an `(alt := "…")` for them — writing those descriptions is
+    outstanding authoring work, deliberately not guessed here.
+
 ## Formalization-forced deviations
 
 Places where Mathlib's design genuinely differs from the chapter's

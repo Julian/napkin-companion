@@ -506,6 +506,29 @@ example (z₀ : ℂ) : residue (fun z => (z - z₀)⁻¹) z₀ 1 = 1 :=
   residue_sub_center_inv z₀ one_ne_zero
 ```
 
+That prototype is the only computation the theory needs, because the residue is linear in $`f`: scaling the function scales the contour integral, which is `residue_const_mul`.
+Put the two together and read off a general simple pole — the chapter's $`100 z^{-1}` having residue $`100`.
+
+:::exercise
+```lean
+example (a z₀ : ℂ) : residue (fun z => a * (z - z₀)⁻¹) z₀ 1 = a := by
+  sorry
+```
+:::
+
+:::hint
+`residue_const_mul` pulls the `a` out front, `residue_sub_center_inv` collapses what is left to `1`, and `mul_one` finishes.
+:::
+
+:::solution
+```lean
+example (a z₀ : ℂ) : residue (fun z => a * (z - z₀)⁻¹) z₀ 1 = a := by
+  rw [residue_const_mul, residue_sub_center_inv z₀ one_ne_zero, mul_one]
+```
+:::
+
+(`residue_simple_pole` packages that.)
+
 The *winding number* $`\operatorname{Wind}(\gamma, p) = \frac{1}{2\pi i} \oint_\gamma \frac{1}{z - p}` is `circleWindingNumber c r p` for the circle $`\gamma = C(c, r)`.
 A circle winds once around every point strictly inside it — `circleWindingNumber_of_mem_ball` — recovering the text's $`\operatorname{Wind}(\text{circle}, p) = 1`.
 
