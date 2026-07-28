@@ -168,6 +168,13 @@ Let $`X \xrightarrow{f} Y` be a function:
 
 - Sometimes functions $`f \colon X \to Y` are _injective_ or _surjective_; I may emphasize this sometimes by writing $`f \colon X \hookrightarrow Y` or $`f \colon X \twoheadrightarrow Y`, respectively.
 
+:::aside "The same words in Mathlib"
+The worry that motivates the $`f^{\mathrm{pre}}` notation — that $`f^{-1}` should mean an inverse function and nothing else — is one Mathlib shares, and it settles the matter with notation rather than a convention.
+The pre-image of a set is `f ⁻¹' T` and the image is `f '' S`, both `Set`-valued and both defined for *any* function; an actual inverse is a different thing with a different name, `Function.invFun` for a one-sided inverse or `Equiv.symm` for the inverse of a bijection.
+So `f ⁻¹' T` is exactly $`f^{\mathrm{pre}}(T)` and carries no suggestion that $`f` is invertible.
+Restriction is `Set.restrict`, written `S.restrict f`.
+:::
+
 ## Cycle notation for permutations
 
 Additionally, a permutation on a finite set may be denoted in _cycle notation_, as described in say [Wikipedia](https://en.wikipedia.org/wiki/Permutation#Cycle_notation).

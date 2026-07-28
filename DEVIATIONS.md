@@ -69,6 +69,15 @@ from the text.
   family) rather than a structure, and anticommutative rings have no
   Mathlib counterpart at all.
 
+- **Pre-image and image notation.** Upstream avoids $f^{-1}(T)$ for the
+  pre-image, reserving $f^{-1}$ for an inverse *function*, and coins
+  $f^{\mathrm{pre}}$ and $f^{\mathrm{img}}$. Mathlib draws the same
+  distinction with notation instead: `f ⁻¹' T` and `f '' S` are defined
+  for any function, while an inverse is `Function.invFun` or
+  `Equiv.symm`. An `:::aside` under Conventions says so, since the
+  concern upstream is guarding against is one the code has already
+  settled.
+
 ## Book-wide conventions
 
 These apply to every chapter and are not repeated in the per-chapter lists below.
