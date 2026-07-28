@@ -51,7 +51,6 @@ Two sets are equal if they share the same elements: $$`\left\{ x \mid x \text{ i
 
 As another example, we have our empty set $`\varnothing` that contains no objects.
 We can have a set $`\{1, 2, 3\}`, or maybe the set of natural numbers $`\mathbb N = \{0, 1, 2, \dots \}`.
-(For the purposes of set theory, $`0` is usually considered a natural number.)
 Sets can even contain other sets, like $`\left\{ \mathbb Z, \mathbb Q, \mathbb N \right\}`.
 Fine and dandy, right?
 
@@ -223,8 +222,8 @@ The set of all natural numbers is denoted $`\omega`.
 :::
 
 :::ABUSE
-Yes, I'm sorry, in set theory $`0` is considered a natural number.
-For this reason I'm using $`\omega` and not $`\mathbb{N}` since I explicitly have $`0 \notin \mathbb{N}` in all other parts of this book.
+The set of all natural numbers gets written $`\omega` here rather than $`\mathbb{N}`.
+It is the same set; $`\omega` is the standard set-theoretic name, and shortly it will be read as the first infinite ordinal as well.
 :::
 
 Et cetera, et cetera.

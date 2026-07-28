@@ -6,6 +6,51 @@ This file records every place the port deliberately deviates, and why.
 
 Formalization commentary itself — `recall` blocks, worked `example`s, Mathlib naming discussions — is the point of the project, not a deviation, and is not listed here.
 
+## Mathematical conventions changed to match Mathlib
+
+Most entries in this file are presentational: the mathematics is upstream's,
+and only its framing moved. The entries in *this* section are different — they
+change a convention upstream states explicitly, so a sentence in the book now
+asserts something upstream denies. Each is a deliberate decision that the cost
+of the prose and the code disagreeing on a symbol exceeds the cost of departing
+from the text.
+
+- **$\mathbb{N}$ contains $0$.** Upstream's "Conventions and notations"
+  declares $\mathbb{N}$ to be the *positive* integers and, on that basis, the
+  set-theory chapters substitute $\omega$ "for consistency with the rest of the
+  book". Lean's `ℕ` is `Nat`, built from `0` and a successor, with the positive
+  naturals a separate type `PNat` (notation `ℕ+`); nearly six hundred `ℕ` tokens
+  of code in this book therefore already meant the 0-inclusive set, and several
+  passages of prose describing that code had drifted into saying so outright
+  (the Basel-problem paragraph in Linear Algebra / Fourier reads "runs over all
+  of $\mathbb{N}$ including $n = 0$"). The convention is now flipped to match:
+  - `Frontmatter/Advice.lean` — §"Natural numbers are positive" becomes
+    §"Natural numbers include zero", with an `:::aside` noting that other
+    authors do reserve $\mathbb{N}$ for the positive integers, and that the
+    choice here follows Lean and Mathlib, where those are `ℕ+`.
+  - `Backmatter/Notation.lean` — the glossary entry, plus a new
+    notation-to-Mathlib line for `Nat`/`PNat`.
+  - `Backmatter/SetsFunctions.lean` — Appendix E's three restatements.
+  - `SetTheory/ZFC.lean` — the "for the purposes of set theory" parenthetical
+    and the "Yes, I'm sorry" `:::ABUSE` box are gone; $\omega$ stays, but as
+    standard set-theoretic naming that doubles as the first infinite ordinal,
+    not as an escape from a clashing convention.
+  - `StartingOut/Groups.lean` — the $g^n$ abuse-of-notation box now says
+    $g^0 = 1_G$ outright, which `Monoid.npow` and `pow_zero` agree with, and
+    which makes the "smallest *positive* $n$" in the definition of element
+    order load-bearing rather than incidental.
+  - `Calculus/Limits.lean` — $\sup_n a_n$ was defined as
+    $\sup\{a_n \mid n : \mathbb{N}\}$ for a sequence written $a_1, \dots$;
+    the index set is now written $n \ge 1$, preserving upstream's meaning
+    rather than silently extending the sup over an undefined $a_0$.
+
+  Not changed: the 55 places upstream says "positive integer" in words, which
+  stay correct; and the 1-indexed sequence displays ($a_1, a_2, \dots$) that
+  run through Calculus and elsewhere, which are a display habit rather than a
+  claim about $\mathbb{N}$. Reconciling those with Mathlib's 0-indexed
+  `ℕ → ℝ` sequences is a separate open question, complicated by examples like
+  $a_n = 1/n$.
+
 ## Book-wide conventions
 
 These apply to every chapter and are not repeated in the per-chapter lists below.

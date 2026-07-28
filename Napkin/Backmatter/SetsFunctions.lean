@@ -57,7 +57,7 @@ None of this requires knowing any type theory, and the set-theory chapters — w
 # Sets
 
 A *set* for us will just be a collection of elements (whatever they may be).
-For example, the set $`\mathbb{N} = \{1, 2, 3, 4, \dots\}` is the positive integers, and $`\mathbb{Z} = \{ \dots, -2, -1, 0, 1, 2, \dots\}` is the set of all integers.
+For example, the set $`\mathbb{N} = \{0, 1, 2, 3, \dots\}` is the nonnegative integers, and $`\mathbb{Z} = \{ \dots, -2, -1, 0, 1, 2, \dots\}` is the set of all integers.
 As another example, we have a set of humans: $$`H = \left\{ x \mid x \text{ is a featherless biped} \right\}.`
 (Here the "$`\mid`" means "such that".)
 
@@ -123,7 +123,7 @@ Here are some commonly recurring sets:
 
 - $`\mathbb{C}` is the set of complex numbers, like $`3.2 + \sqrt 2 \, i`.
 - $`\mathbb{R}` is the set of real numbers, like $`\sqrt 2` or $`\pi`.
-- $`\mathbb{N}` is the set of positive integers, like $`5` or $`9`.
+- $`\mathbb{N}` is the set of nonnegative integers, like $`0` or $`9`.
 - $`\mathbb{Q}` is the set of rational numbers, like $`7/3`.
 - $`\mathbb{Z}` is the set of integers, like $`-2` or $`8`.
 
@@ -269,7 +269,7 @@ An *equivalence class* is then a set of all things equivalent to each other.
 One can show that $`X` becomes partitioned by these equivalence classes:
 
 :::EXAMPLE "Example of an equivalence relation"
-Let $`\mathbb{N}` denote the set of positive integers.
+Let $`\mathbb{N}` denote the set of nonnegative integers.
 Then suppose we declare $`a \sim b` if $`a` and $`b` have the same last digit, for example $`131 \sim 211`, $`45 \sim 125`, and so on.
 
 Then $`\sim` is an equivalence relation.

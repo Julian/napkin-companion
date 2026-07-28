@@ -118,10 +118,15 @@ Most of these are "remarks for experts": if something doesn't make sense, you pr
 
 A full glossary of notation used can be found in the appendix.
 
-## Natural numbers are positive
+## Natural numbers include zero
 
-The set $`\mathbb{N}` is the set of _positive_ integers, not including $`0`.
-In the set theory chapters, we use $`\omega = \{0, 1, \dots\}` instead, for consistency with the rest of the book.
+The set $`\mathbb{N} = \{0, 1, 2, \dots\}` is the set of _nonnegative_ integers.
+In the set theory chapters the same collection is written $`\omega`, which is the standard name there and doubles as the first infinite ordinal.
+
+:::aside
+Counting from zero is not the universal convention: plenty of authors reserve $`\mathbb{N}` for the positive integers and write $`\mathbb{N}_0` or $`\mathbb{Z}_{\ge 0}` when they want $`0` as well.
+The choice here follows Lean and Mathlib, which instead use `ℕ+` to refer to the positive natural numbers.
+:::
 
 ## Sets and equivalence relations
 

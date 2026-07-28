@@ -217,6 +217,7 @@ Also, because the operation $`\star` is associative, we will omit unnecessary pa
 
 :::ABUSE
 From now on, for any $`g : G` and $`n : \mathbb{N}` we abbreviate $$`g^n = \underbrace{g \star \dots \star g}_{n \text{ times}}.`
+In particular $`g^0 = 1_G`, the product of no copies of $`g` at all.
 Moreover, we let $`g^{-1}` denote the inverse of $`g`, and $`g^{-n} = (g^{-1})^n`.
 :::
 

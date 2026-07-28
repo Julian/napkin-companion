@@ -109,7 +109,7 @@ Since the examples for infimums are basically the same, we stick with supremums 
 :::
 
 :::DEFINITION "Porting definitions to sequences"
-If $`a_1, \dots` is a sequence we will often write $$`\sup_n a_n \,\overset{\text{def}}{=}\, \sup\{a_n \mid n : \mathbb{N}\}` $$`\inf_n a_n \,\overset{\text{def}}{=}\, \inf\{a_n \mid n : \mathbb{N}\}` for the supremum and infimum of the set of elements of the sequence.
+If $`a_1, \dots` is a sequence we will often write $$`\sup_n a_n \,\overset{\text{def}}{=}\, \sup\{a_n \mid n \ge 1\}` $$`\inf_n a_n \,\overset{\text{def}}{=}\, \inf\{a_n \mid n \ge 1\}` for the supremum and infimum of the set of elements of the sequence.
 We also use the words "bounded above/below" for sequences in the same way.
 :::
 

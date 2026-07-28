@@ -39,7 +39,7 @@ These may also be thought of as groups, rings, fields etc. in the obvious way.
 
 - $`\mathbb{C}`: set of complex numbers
 - $`\mathbb{R}`: set of real numbers
-- $`\mathbb{N}`: set of positive integers
+- $`\mathbb{N}`: set of nonnegative integers
 - $`\mathbb{Q}`: set of rational numbers
 - $`\mathbb{Z}`: set of integers
 - $`\varnothing`: empty set
@@ -330,6 +330,8 @@ Every name here is checked against the Mathlib the book is built with — the bl
 ```lean -show
 open CategoryTheory MeasureTheory NumberField Napkin.Missing
 open scoped TensorProduct DirectSum Topology
+#check @Nat
+#check @PNat
 #check @Set.image
 #check @Set.preimage
 #check @Set.restrict
@@ -467,6 +469,7 @@ open scoped TensorProduct DirectSum Topology
 
 Functions and sets:
 
+- {mathname Nat}`\mathbb{N}`: `Nat` (written `ℕ`), which includes $`0`; the positive naturals are the separate type `PNat`, written `ℕ+`
 - $`f(S)`, $`f^{-1}(T)`: `Set.image`, `Set.preimage`
 - {mathname Set.restrict}`f\restriction_S`: `Set.restrict`
 - $`f^n`: `Nat.iterate` (written `f^[n]`)
