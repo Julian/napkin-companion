@@ -205,6 +205,18 @@ There is an elaborate scheme for naming rings which are not commutative, used on
 
 On the other hand, an _algebra_ always has $`1`, but it need not be commutative.
 
+:::aside "The same words in Mathlib"
+This is the one place where a word means something different in the prose and in the code beside it, so it is worth pinning down.
+Mathlib does not scope "ring" to the commutative case: its `Ring` has a $`1` and need not commute, and commutativity is the separate `CommRing`.
+So wherever this book says *ring*, the code says `CommRing`; Mathlib's bare `Ring` is what the table above would have to call a not-necessarily-commutative ring with $`1`.
+
+The rest of the table lines up as follows.
+A *pseudo-ring* — dropping the $`1` — is `NonUnitalRing`, and its commutative form is `NonUnitalCommRing`.
+An *integral domain* is a `CommRing` together with `IsDomain`, which is where $`0 \neq 1` is required.
+Grading is not a structure on a ring in Mathlib but a predicate about one: `GradedRing 𝒜` says that a given family $`\mathcal{A}` of submodules decomposes the ring, and the graded objects assembled from a family carry `DirectSum.GRing` or `DirectSum.GCommRing`.
+For *anticommutative* rings there is no counterpart at all: Mathlib has no such class, and anticommutativity is proved as a fact about the specific algebra — for the exterior algebra, that its degree-one generators square to zero.
+:::
+
 ## Choice
 
 We accept the Axiom of Choice, and use it freely.

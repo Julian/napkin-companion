@@ -56,6 +56,19 @@ from the text.
   embeddings, roots — which are indexed by `Fin n` and are not part of this
   question at all.)
 
+- **"Ring" is scoped differently.** Upstream's Conventions declare *all
+  rings commutative unless otherwise specified*, and give a naming scheme
+  (pseudo-ring, graded ring, anticommutative ring) used in the cohomology
+  chapter. Mathlib does not scope the word that way: `Ring` has a `1` and
+  need not commute, `CommRing` is the commutative one. This is a scoping
+  choice rather than a claim Mathlib denies, so upstream's convention and
+  its table stand; an `:::aside` after the table gives the correspondence
+  — book "ring" is `CommRing`, pseudo-ring is `NonUnitalRing`, integral
+  domain is `CommRing` plus `IsDomain`, grading is the predicate
+  `GradedRing 𝒜` (or `DirectSum.GRing`/`GCommRing` on an assembled
+  family) rather than a structure, and anticommutative rings have no
+  Mathlib counterpart at all.
+
 ## Book-wide conventions
 
 These apply to every chapter and are not repeated in the per-chapter lists below.
