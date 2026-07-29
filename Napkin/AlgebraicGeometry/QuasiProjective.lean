@@ -101,7 +101,7 @@ So in this section, we will
 - classify all the morphisms from $`\mathbb{A}^m \to \mathbb{A}^n`, and
 - classify all the morphisms from $`\mathbb{CP}^m \to \mathbb{CP}^n`.
 
-It what follows I will wave my hands a lot in claiming that something is a morphism, since doing so is mostly detail checking.
+In what follows I will wave my hands a lot in claiming that something is a morphism, since doing so is mostly detail checking.
 The theorems which follow will give us alternative definitions of morphism which are more coordinate-based and easier to use for actual computations.
 
 ## Affine classification
@@ -173,7 +173,7 @@ Thus actually $`V \cong \mathbb{CP}^1`.
 $`\mathbb{A}^1 \hookrightarrow \mathbb{CP}^1` is a good one.
 :::
 
-The previous section complete settles affine varieties to affine varieties, and projective varieties to projective varieties.
+The previous section completely settles affine varieties to affine varieties, and projective varieties to projective varieties.
 However, the definition we gave at the start of the chapter works for _any_ baby ringed spaces, and therefore there is still a lot of room to explore.
 
 For example, *we can have affine spaces talk to projective ones*.

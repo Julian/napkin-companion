@@ -403,7 +403,7 @@ Compute $`\mathcal{O}_X(U)`.
 :::
 
 :::PROBLEM "Characterizing local rings"
-Show that a ring $`R` is a local ring if and only of the following property is true: for any $`x \in R`, either $`x` or $`1 - x` is a unit.
+Show that a ring $`R` is a local ring if and only if the following property is true: for any $`x \in R`, either $`x` or $`1 - x` is a unit.
 :::
 
 :::PROBLEM "Localizing a local ring at its maximal ideal"

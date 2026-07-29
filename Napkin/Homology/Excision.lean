@@ -71,7 +71,7 @@ Even when $`A` is closed in $`X`, problems can still happen.
 ::::EXAMPLE "The shrinking wedge of circles"
 Let $`X` be the interval $`[0, 1]`, and $`A \subseteq X` be $`A = \{\tfrac{1}{n} \mid n \in \mathbb{Z}^+\} \cup \{0\}`.
 In this case, the quotient $`X/A` would be isomorphic to the shrinking wedge of circles.
-Note that in $`X/A`, any open neighborhood of the red dot $`A/A` must contains all but finitely many circles.
+Note that in $`X/A`, any open neighborhood of the red dot $`A/A` must contain all but finitely many circles.
 
 :::figure "figures/homology/excision-quotient-nasty.svg"
 Collapsing $`A = \{1/n\} \cup \{0\} \subseteq [0, 1]` to a point yields the shrinking wedge of circles $`X/A`.

@@ -51,7 +51,7 @@ The proper generalization of our $`\mathcal{O}_V` is a so-called sheaf of rings.
 Recall that $`\mathcal{O}_V` took _open sets of $`V`_ to _rings_, with the interpretation that $`\mathcal{O}_V(U)` was a "ring of functions".
 
 Recall that $`\mathcal{O}_V`, as a set, consist of simply the algebraic functions.
-However, if we view $`\mathcal{O}_V` purely as a set, the structure of the functions is essentially thrown way.
+However, if we view $`\mathcal{O}_V` purely as a set, the structure of the functions is essentially thrown away.
 
 Let us see how the functions in $`\mathcal{O}_V` are related to each other:
 

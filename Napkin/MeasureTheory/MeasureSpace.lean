@@ -135,7 +135,7 @@ I've gone on too long with no examples.
 The first two examples actually say what $`\mathcal{A}` is; the third example (most important) will use generation.
 
 - If $`\Omega` is any set, then the power set $`\mathcal{A} = 2^\Omega` is obviously a $`\sigma`-algebra.
-  This will be used if $`\Omega` is countably finite, but it won't be very helpful if $`\Omega` is huge.
+  This will be used if $`\Omega` is countable, but it won't be very helpful if $`\Omega` is huge.
 - If $`\Omega` is an uncountable set, then we can declare $`\mathcal{A}` to be all subsets of $`\Omega` which are either countable, or which have countable complement.
   (You should check this satisfies the definitions.)
   This is a very "coarse" algebra.
@@ -254,7 +254,7 @@ Apart from the obvious symmetry with the definition of continuous function, as w
 
 :::REMARK
 Note that a measurable function actually does not need to be continuous, as the next example shows.
-On the other hand, most functions you actually encounter in practice will be continuous, and in that case ware fine.
+On the other hand, most functions you actually encounter in practice will be continuous, and in that case we're fine.
 :::
 
 :::EXAMPLE "Continuous function with non-measurable preimage of measurable set"

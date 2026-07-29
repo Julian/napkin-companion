@@ -53,7 +53,7 @@ _Solution._ Let $`c \in C` with $`\gamma(c) = 0`.
 We show $`c = 0`.
 This proceeds in a diagram chase:
 
-- Note that $`0 = r'(\gamma(c)) = \delta(r(c))`, and since $`\delta` is injective, it follows that $`r(c) = 0`.
+- Note that $`0 = r'(\gamma(c)) = \delta(r(c))`, and since $`\delta` is surjective, it follows that $`r(c) = 0`.
 - Since the top row is exact, it follows $`c = q(b)` for some $`b \in B`.
 - Then $`q'(\beta(b)) = 0`, so if we let $`b' = \beta(b)`, then $`b' \in \ker(q')`.
   As the bottom row is exact, there exists $`a'` with $`p'(a') = b'`.

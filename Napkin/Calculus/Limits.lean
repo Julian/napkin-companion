@@ -176,7 +176,7 @@ Then one *defines* a real number to be a "cut" $`A \mid B` of the set of rationa
 
 This can again be visualized by taking what you think of as the real line, and slicing at some real number.
 The subset $`\mathbb{Q} \subset \mathbb{R}` gets cut into two halves $`A` and $`B`.
-If the knife happens to land exactly at a rational number, by convention we consider that number to be in the right half (which explains the last fourth condition that $`\sup A \notin A`).
+If the knife happens to land exactly at a rational number, by convention we consider that number to be in the right half (which explains the last condition that $`\sup A \notin A`).
 
 With this definition the existence of $`\sup`/$`\inf` is easy: to take the supremum of a set of real numbers, we take the union of all the left halves.
 The hard part is then figuring out how to define $`+`, $`-`, $`\times`, $`\div` and so on with this rather awkward construction.
@@ -189,7 +189,7 @@ Here is a great exercise.
 :::EXERCISE "Mandatory"
 Prove that if $`a_1 \geq a_2 \geq \dots \geq 0` then the limit $$`\lim_{n \to \infty} a_n` exists.
 Hint: the idea in the proof of the previous section helps; you can also try to use completeness of $`\mathbb{R}`.
-Second hint: if you are really stuck, wait until after the "partial sums of nonnegatives bounded implies convergent" proposition, at which point you can use essentially copy its proof.
+Second hint: if you are really stuck, wait until after the "partial sums of nonnegatives bounded implies convergent" proposition, at which point you can essentially copy its proof.
 :::
 
 The proof here readily adapts by shifting.
@@ -206,7 +206,7 @@ Then $`\lim_{n \to \infty} a_n` exists.
 For non-decreasing, the limit is $`\sup_n a_n`; for non-increasing, $`\inf_n a_n`.
 
 :::EXAMPLE "Silly example of monotonicity"
-Consider the sequence defined by $$`\begin{aligned} a_1 &= 1.2 \\ a_2 &= 1.24 \\ a_3 &= 1.248 \\ a_4 &= 1.24816 \\ a_5 &= 1.2481632 \\ &\vdots \end{aligned}` and so on, where in general we stuck on the decimal representation of the next power of $`2`.
+Consider the sequence defined by $$`\begin{aligned} a_1 &= 1.2 \\ a_2 &= 1.24 \\ a_3 &= 1.248 \\ a_4 &= 1.24816 \\ a_5 &= 1.2481632 \\ &\vdots \end{aligned}` and so on, where in general we tack on the decimal representation of the next power of $`2`.
 This will converge to *some* real number, although of course this number is quite unnatural and there is probably no good description for it.
 :::
 

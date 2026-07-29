@@ -339,7 +339,7 @@ In these cases we say the short exact sequence *splits*.
 The point is that
 
 :::MORAL
-An exact sequence which splits let us obtain $`B` given $`A` and $`C`.
+An exact sequence which splits lets us obtain $`B` given $`A` and $`C`.
 :::
 
 In particular, for $`C = \mathbb{Z}` or any free abelian group, condition (b) is necessarily true.

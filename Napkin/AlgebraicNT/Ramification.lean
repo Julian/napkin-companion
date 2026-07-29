@@ -160,7 +160,7 @@ Before proving this, let us consider the easier problem of factorization into el
 
 :::quote
 Suppose $`\mathcal{O}_K` is an UFD, and $`p` factors as $`u p_1 p_2 \cdots p_n` in $`\mathcal{O}_K`, where $`p_i` are irreducibles and $`u` is an unit.
-Show that the $`p_i` are all conjugates of each other, up to multiplication by an unit.
+Show that the $`p_i` are all conjugates of each other, up to multiplication by a unit.
 :::
 
 :::QUESTION

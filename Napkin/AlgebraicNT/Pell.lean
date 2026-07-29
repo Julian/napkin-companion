@@ -196,7 +196,7 @@ All solutions are generated this way, up to $`\pm` signs (by considering $`\pm u
 Determine the number of soldiers in the following battle:
 
 :::quote
-The men of Harold stood well together, as their wont was, and formed thirteen squares, with a like number of men in every square thereof, and woe to the hardy Norman who ventured to enter their redoubts; for a single blow of Saxon war-hatched would break his lance and cut through his coat of mail . . . when Harold threw himself into the fray the Saxons were one might square of men, shouting the battle-cries, "Ut!", "Olicrosse!", "Godemite!"
+The men of Harold stood well together, as their wont was, and formed thirteen squares, with a like number of men in every square thereof, and woe to the hardy Norman who ventured to enter their redoubts; for a single blow of Saxon war-hatchet would break his lance and cut through his coat of mail . . . when Harold threw himself into the fray the Saxons were one mighty square of men, shouting the battle-cries, "Ut!", "Olicrosse!", "Godemite!"
 :::
 ::::
 

@@ -40,7 +40,7 @@ We'll see that this statement is really a statement of ideals: "$`(3, 5) = 1` in
 *Basic Topology.*
 The more analytically inclined can instead move into topology, learning more about spaces.
 We'll find out that "metric spaces" are actually too specific, and that it's better to work with *topological spaces*, which are based on the so-called *open sets*.
-You'll then get to see the buddings of some geometrical ideals, ending with the really great notion of *compactness*, a powerful notion that makes real analysis tick.
+You'll then get to see the buddings of some geometrical ideas, ending with the really great notion of *compactness*, a powerful notion that makes real analysis tick.
 
 One example of an application of compactness to tempt you now: a continuous function $`f \colon [0, 1] \to \mathbb{R}` always achieves a _maximum_ value.
 (In contrast, $`f \colon (0, 1) \to \mathbb{R}` by $`x \mapsto 1/x` does not.)
@@ -111,7 +111,7 @@ We then introduce *meromorphic functions*, which are like quotients of holomorph
 
 *Measure Theory.*
 Measure theory is the upgraded version of integration.
-The Riemann integration is for a lot of purposes not really sufficient; for example, if $`f` is the function equals $`1` at rational numbers but $`0` at irrational numbers, we would hope that $`\int_0^1 f(x) \; dx = 0`, but the Riemann integral is not capable of handling this function $`f`.
+The Riemann integration is for a lot of purposes not really sufficient; for example, if $`f` is the function equal to $`1` at rational numbers but $`0` at irrational numbers, we would hope that $`\int_0^1 f(x) \; dx = 0`, but the Riemann integral is not capable of handling this function $`f`.
 
 The *Lebesgue integral* will handle these mistakes by assigning a _measure_ to a generic space $`\Omega`, making it into a *measure space*.
 This will let us develop a richer theory of integration where the above integral _does_ work out to zero because the "rational numbers have measure zero".

@@ -29,7 +29,7 @@ The key change — and the reason that quantum circuits can do things that class
 
 # Classical logic gates
 
-In classical logic, we build circuits which take in some bits for input, and output some more bits for input.
+In classical logic, we build circuits which take in some bits for input, and output some more bits for output.
 These circuits are built out of individual logic gates.
 For example, the *AND gate* can be pictured as follows.
 
@@ -67,7 +67,7 @@ CNOT gate, Toffoli gate.
 
 For the purposes of quantum mechanics, this is not enough.
 To carry through the analogy we in fact need gates that are *reversible*, meaning the gates are bijections from the input space to the output space.
-In particular, such gates must take the same number of input and output gates.
+In particular, such gates must take the same number of input and output bits.
 
 :::EXAMPLE "Reversible gates"
 - None of the gates AND, OR, COPY are reversible for dimension reasons.

@@ -213,7 +213,7 @@ So you can divide by $`p` with no repercussions.
 ## Definition
 
 Up until now we've been thinking about things mostly algebraically, but moving forward it will be helpful to start using the language of analysis.
-Usually, two real numbers are considered "close" if they are close on the number of line, but for $`p`-adic purposes we only care about modulo $`p^e` information.
+Usually, two real numbers are considered "close" if they are close on the number line, but for $`p`-adic purposes we only care about modulo $`p^e` information.
 So, we'll instead think of two elements of $`\mathbb{Z}_p` or $`\mathbb{Q}_p` as "close" if they differ by a large multiple of $`p^e`.
 
 For this we'll borrow the familiar $`\nu_p` from elementary number theory.

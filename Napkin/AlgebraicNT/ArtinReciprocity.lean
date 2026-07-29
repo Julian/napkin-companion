@@ -609,7 +609,7 @@ Let $`p` be a prime with $`p \nmid 20`, then $`p` can be written as $`x^2 + 5y^2
 
 :::PROBLEM "Kronecker-Weber theorem"
 Let $`L` be an abelian extension of $`\mathbb Q`.
-Then $`L` is contained in a cyclic extension $`\mathbb Q(\zeta)` where $`\zeta` is an $`m`th root of unity (for some $`m`).
+Then $`L` is contained in a cyclotomic extension $`\mathbb Q(\zeta)` where $`\zeta` is an $`m`th root of unity (for some $`m`).
 (Hint: pick $`m` so that $`\mathfrak f(L/\mathbb Q) \mid m\infty`.)
 :::
 

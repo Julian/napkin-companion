@@ -36,7 +36,7 @@ You may remember that when we were working with affine varieties, there were con
 The point is that we introduced a lot of denominators.
 Localization will give us a concise way of doing this in general.
 
-This thus also explain why the operation is called "localization": we start from a set of "global" functions, and get a (larger) set of functions that are well-defined on a "smaller" open set, or in an open neighborhood of point $`p`.
+This thus also explains why the operation is called "localization": we start from a set of "global" functions, and get a (larger) set of functions that are well-defined on a "smaller" open set, or in an open neighborhood of point $`p`.
 
 Of course, this is the Zariski topology, so "small" means "everywhere except certain curves".
 
@@ -192,7 +192,7 @@ Consequently, we give several examples in this vein.
 
 :::EXAMPLE "Geometric examples of localizing at a prime"
 1. We let $`\mathfrak{m}` be the maximal ideal $`(x)` of $`A = \mathbb{C}[x]`.
-   Then $`A_\mathfrak{m} = \left\{ \frac{f(x)}{g(x)} \mid g(0) \neq 0 \right\}` consists of the Laurent series.
+   Then $`A_\mathfrak{m} = \left\{ \frac{f(x)}{g(x)} \mid g(0) \neq 0 \right\}` consists of the rational functions with no pole at the origin.
 2. We let $`\mathfrak{m}` be the maximal ideal $`(x, y)` of $`A = \mathbb{C}[x, y]`.
    Then $`A_\mathfrak{m} = \left\{ \frac{f(x, y)}{g(x, y)} \mid g(0, 0) \neq 0 \right\}`.
 3. Let $`\mathfrak{p}` be the prime ideal $`(y - x^2)` of $`A = \mathbb{C}[x, y]`.

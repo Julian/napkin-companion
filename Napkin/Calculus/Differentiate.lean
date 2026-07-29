@@ -194,7 +194,7 @@ A point $`p` is a *local extrema* if it satisfies either of these.
 The nice thing about derivatives is that they pick up all extrema.
 
 :::THEOREM "Fermat's theorem on stationary points"
-Suppose $`f \colon U \to \mathbb{R}` is differentiable and $`p \in U` is a local extrema.
+Suppose $`f \colon U \to \mathbb{R}` is differentiable and $`p \in U` is a local extremum.
 Then $`f'(p) = 0`.
 :::
 
@@ -204,7 +204,7 @@ If you draw a picture, this result is not surprising.
 At an interior local maximum the tangent line is horizontal, so $`f'(p) = 0`.
 :::
 (Note also: the converse is not true.
-Say, $`f(x) = x^{2019}` has $`f'(0) = 0` but $`x = 0` is not a local extrema for $`f`.)
+Say, $`f(x) = x^{2019}` has $`f'(0) = 0` but $`x = 0` is not a local extremum for $`f`.)
 
 :::PROOF
 Assume for contradiction $`f'(p) > 0`.
@@ -317,7 +317,7 @@ Suppose you cover $`900` kilometers in your car over the course of $`5` hours (s
 Then there is *some* point at time in which your speed at that moment was exactly $`180` kilometers per hour, and so you cannot really complain when the cops pull you over for speeding.
 :::
 
-The mean value theorem is important because it lets you relate *use derivative information to get information about the function* in a way that is really not possible without it.
+The mean value theorem is important because it lets you *use derivative information to get information about the function* in a way that is really not possible without it.
 Here is one quick application to illustrate my point:
 
 :::PROPOSITION "Racetrack principle"

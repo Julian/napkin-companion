@@ -127,7 +127,7 @@ It thus just remains that we always can keep getting nontrivial commutators.
 We've reduced this to a group theory problem.
 Given a chain of commutators
 $$`S_5 = G \supseteq G^{(1)} \supseteq G^{(2)} \supseteq \dots`
-where each group is the commutator subgroup of the next, we want to show that $`G^{(n)}` never becomes trivial.
+where each group is the commutator subgroup of the previous, we want to show that $`G^{(n)}` never becomes trivial.
 This chain is called the *derived series*.
 
 :::EXERCISE
@@ -135,7 +135,7 @@ Show that for the commutator subgroup $`[G, G]` of a group $`G`, we have that $`
 :::
 
 :::DEFINITION
-A group $`G` is *solvable* if its derived series is nontrivial.
+A group $`G` is *solvable* if its derived series eventually becomes trivial.
 :::
 
 So all that remains is showing that $`S_5` is not solvable.

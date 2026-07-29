@@ -23,7 +23,7 @@ To cement in the previous two chapters, we now give an enormous list of examples
 Each example gets its own section, rather than having page-long orange boxes.
 
 One common theme you will find as you wade through the examples is that your geometric intuition may be better than your algebraic one.
-For example, while studying $`k[x, y] / (xy)` you will say "geometrically, I expect so-and-so to look like other thing", but when you write down the algebraic statements you find two expressions that are don't look equal to you.
+For example, while studying $`k[x, y] / (xy)` you will say "geometrically, I expect so-and-so to look like other thing", but when you write down the algebraic statements you find two expressions that don't look equal to you.
 However, if you then do some calculation you will find that they were isomorphic after all.
 So in that sense, in this chapter you will learn to begin drawing pictures of algebraic statements — which is great!
 

@@ -76,7 +76,7 @@ which gives a homotopy from $`\operatorname{id}` to $`-\operatorname{id}`.
 So $`\deg(\operatorname{id}) = \deg(-\operatorname{id})`, which means $`1 = (-1)^{n+1}` so $`n` must be odd.
 :::
 
-Of course, the one can construct such a vector field whenever $`n` is odd.
+Of course, one can construct such a vector field whenever $`n` is odd.
 For example, when $`n = 1` such a vector field is drawn below.
 
 :::figure "figures/homology/cellular-s1-vector-field.svg"

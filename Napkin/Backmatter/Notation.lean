@@ -213,7 +213,7 @@ Operations with categories:
 # Differential geometry
 
 - $`Df`: total derivative of $`f`
-- $`(Df)_p`: total derivate of $`f` at point $`p`
+- $`(Df)_p`: total derivative of $`f` at point $`p`
 - $`\frac{\partial f}{\partial e_i}`: $`i`th partial derivative
 - $`\alpha_p`: evaluating a $`k`-form $`\alpha` at $`p`
 - $`\int_c \alpha`: integration of the differential form $`\alpha` over a cell $`c`

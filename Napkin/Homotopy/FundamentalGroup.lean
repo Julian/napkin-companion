@@ -172,7 +172,7 @@ For now, just try to see intuitively why the claimed answer "should" be correct.
 2. On the other hand, the fundamental group of $`\mathbb{C} \setminus \{0\}` (meteor example from earlier) with any base point is actually $`\mathbb{Z}`!
    We won't be able to prove this for a while, but essentially a loop is determined by the number of times that it winds around the origin — these are so-called _winding numbers_.
    Think about it!
-3. Similarly, we will soon show that the fundamental group of $`S^1` (the boundary of the unit circle) is $`\mathbb{Z}`.
+3. Similarly, we will soon show that the fundamental group of $`S^1` (the unit circle) is $`\mathbb{Z}`.
 
 Officially, I also have to tell you what the base point is, but by symmetry in these examples, it doesn't matter.
 :::
@@ -463,7 +463,7 @@ sending a pointed map $`f \colon (X, x_0) \to (Y, y_0)` to the induced homomorph
 The functor $`\pi_1` sends a pointed map $`f` to the induced homomorphism $`f_\sharp`.
 :::
 
-The fact that $`\pi_1` is a functor instead of merely assigns some group $`\pi_1(X, x_0)` to each pointed topological space $`(X, x_0)` automatically implies several nice things, like:
+The fact that $`\pi_1` is a functor instead of merely assigning some group $`\pi_1(X, x_0)` to each pointed topological space $`(X, x_0)` automatically implies several nice things, like:
 
 - The functor bundles the information of $`f_\sharp`, including the fact that it respects composition.
   In the categorical language, $`f_\sharp` is $`\pi_1(f)`.

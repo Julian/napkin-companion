@@ -62,7 +62,7 @@ The class group $`\operatorname{Cl}_K` is the set of nonzero fractional ideals m
 You can also think of the classes as the "shapes" of the ideals, as two ideals belong to the same class if and only if they're isomorphic as $`\mathcal{O}_K`-modules.
 
 ::::EXAMPLE "Ideal classes in ℚ(√−5)"
-If the field is an imaginary quadratic field, visualizing the class of an ideal is really easy: because multiplication by a complex number corresponds to a combination of a scaling and a rotation (i.e. it preserves angles), two ideals belong to the same class if they are similar, that is, you can overlap one onto the another using rotation and scaling.
+If the field is an imaginary quadratic field, visualizing the class of an ideal is really easy: because multiplication by a complex number corresponds to a combination of a scaling and a rotation (i.e. it preserves angles), two ideals belong to the same class if they are similar, that is, you can overlap one onto the other using rotation and scaling.
 
 When the field is $`K = \mathbb{Q}(\sqrt{-5})`, the ring of integers is $`\mathcal{O}_K = \mathbb{Z}[\sqrt{-5}]`.
 
@@ -583,7 +583,7 @@ Excerpt:
 :::quote
 "Will we be allowed to bring a small calculator on the exam?" — Student 1
 
-"What does the size have to do with anything?  You could have an Apple Watch" — Professor
+"What does the size have to do with anything? You could have an Apple Watch" — Professor
 
 "Just use the fact that $`\pi \ge 3`" — me
 

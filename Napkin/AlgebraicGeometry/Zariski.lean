@@ -111,7 +111,7 @@ All this is to say
 The nonempty Zariski open sets are _huge_.
 :::
 
-This is an important difference than what you're used to in topology.
+This is an important difference from what you're used to in topology.
 To be very clear:
 
 - In the past, if I said something like "has so-and-so property in an open neighborhood of point $`p`", one thought of this as saying "is true in a small region around $`p`".

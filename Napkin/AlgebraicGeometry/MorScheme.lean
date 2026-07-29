@@ -29,7 +29,7 @@ Throughout this chapter, you should imagine your ringed spaces are the affine sc
 # Morphisms of ringed spaces via sections
 
 Let $`(X, \mathcal{O}_X)` and $`(Y, \mathcal{O}_Y)` be ringed spaces.
-We want to give a define what it means to have a function $`\pi \colon X \to Y` between them.{margin}[Notational connotations: for ringed spaces, $`\pi` will be used for maps, since $`f` is often used for sections.]
+We want to define what it means to have a function $`\pi \colon X \to Y` between them.{margin}[Notational connotations: for ringed spaces, $`\pi` will be used for maps, since $`f` is often used for sections.]
 We start by requiring the map to be continuous, but this is not enough: there is a sheaf on it!
 
 Well, you might remember what we did for baby ringed spaces: any time we had a function on an open set of $`U \subseteq Y`, we wanted there to be an analogous function on $`\pi^{-1}(U) \subseteq X`.
@@ -276,7 +276,7 @@ The only extra work we have to do is verify that we get a continuous map in the 
 We thus get the huge important theorem about affine schemes.
 
 :::THEOREM "$\\operatorname{Spec} A \\to \\operatorname{Spec} B$ is just $B \\to A$"
-These two construction gives a bijection between ring homomorphisms $`B \to A` and $`\operatorname{Spec} A \to \operatorname{Spec} B`.
+These two constructions give a bijection between ring homomorphisms $`B \to A` and $`\operatorname{Spec} A \to \operatorname{Spec} B`.
 :::
 
 :::PROOF

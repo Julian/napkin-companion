@@ -59,13 +59,13 @@ Then we say $`f_1`, $`f_2`, … *converges pointwise* to the limit $`f`, written
 We can define $`\liminf_{n \to \infty} f_n` and $`\limsup_{n \to \infty} f_n` similarly.
 :::
 
-By "the Lebesgue integral has better behavior", we means the following:
+By "the Lebesgue integral has better behavior", we mean the following:
 
 :::PROPOSITION
 If $`f_1, f_2, \dots \colon \Omega \to \mathbb{R}` are measurable functions, then $`\liminf_{n \to \infty} f_n` and $`\limsup_{n \to \infty} f_n` are measurable.
 :::
 
-When $`f_n` are all nonnegative, this means $`\int_\Omega \liminf_{n \to \infty} f_n \; d\mu` and $`\int_\Omega \limsup_{n \to \infty} f_n \; d\mu` exists.
+When $`f_n` are all nonnegative, this means $`\int_\Omega \liminf_{n \to \infty} f_n \; d\mu` and $`\int_\Omega \limsup_{n \to \infty} f_n \; d\mu` exist.
 (If they can be negative, the behavior is not that nice.)
 
 Unfortunately, even if the integral exists, we can't always exchange pointwise limit with Lebesgue integral.
@@ -94,13 +94,13 @@ In all of these examples, we cannot interchange the limit and the integral witho
 The last example is similar in behavior to an example known as the Witch's hat.
 :::
 
-As such, the convergence theorems stated below is an attempt to classify all the possible anomalies, and to show that in "usual" cases, interchanging limit and integral just works.
+As such, the convergence theorems stated below are an attempt to classify all the possible anomalies, and to show that in "usual" cases, interchanging limit and integral just works.
 
 As mentioned earlier, we choose to use the Lebesgue integral instead of the Riemann integral, because in such cases, the Lebesgue integral will usually just exist.
 
 # Overview
 
-The three big-name results for exchanging pointwise limits with Lebesgue integrals is:
+The three big-name results for exchanging pointwise limits with Lebesgue integrals are:
 
 - *Fatou's lemma*: the most general statement possible, for any nonnegative measurable functions.
 - *Monotone convergence*: "increasing limits" just work.
@@ -142,7 +142,7 @@ Notice that there are *no extra hypothesis* on $`f_n` other than nonnegative: wh
 
 # Everything else
 
-The big surprise is how quickly all the "big-name" theorem follows from Fatou's lemma.
+The big surprise is how quickly all the "big-name" theorems follow from Fatou's lemma.
 Here is the so-called "monotone convergence theorem".
 
 :::COROLLARY "Monotone convergence theorem"

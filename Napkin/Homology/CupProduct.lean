@@ -382,7 +382,7 @@ Actually, we have the following:
 If $`X` and $`Y` are CW complexes and $`R` is a PID, then the cross product of two nonzero elements in $`H_m(X)` and $`H_n(Y)` is nonzero.
 :::
 
-Thus formalize our intuition earlier — at least, if we use homology as a measure of "holes".
+This formalizes our intuition earlier — at least, if we use homology as a measure of "holes".
 
 ## Cross product is not a ℤ-module homomorphism
 
@@ -442,14 +442,14 @@ Given two cellular cochains $`f \in \operatorname{Hom}(\operatorname{Cells}_m(X)
 Of course, it is defined in the most natural way possible: for a cell $`e^m` of $`X` and a cell $`e^n` of $`Y`, we have $`(f \times g)(e^m \times e^n) = f(e^m) \cdot g(e^n)`.
 
 Sounds good?
-Not yet — since not all $`(m + n)`-cells $`e^{m + n}` of $`X \times Y` is formed as a product of a $`m`-cell in $`X` and a $`n`-cell in $`Y`.
+Not yet — since not all $`(m + n)`-cells $`e^{m + n}` of $`X \times Y` are formed as a product of a $`m`-cell in $`X` and a $`n`-cell in $`Y`.
 For those, we simply declare that $`(f \times g)(e^{m + n}) = 0`.
 
 As usual, this map induces a $`R`-module homomorphism on the cohomology groups: $$`\times \colon H^m(X; R) \otimes_R H^n(Y; R) \to H^{m + n}(X \times Y; R).`
 
 ## Motivation: cross product of differential forms
 
-The definition of the cross product of two cellular cochains above are clean, but may appear to be dry and unmotivated.
+The definition of the cross product of two cellular cochains above is clean, but may appear to be dry and unmotivated.
 
 Turns out you can do the same thing on differential forms.
 What's more, it gives a clean way of defining the wedge product $`\alpha \wedge \beta`!

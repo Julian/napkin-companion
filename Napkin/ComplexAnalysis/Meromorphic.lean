@@ -330,7 +330,7 @@ Let $`a = \gamma(0)` be the starting point of $`\gamma`, and $`b = \gamma(2\pi)`
 
 We all know that $`z \mapsto \log z` is not an actual function — even ignoring the singularity at $`0`, it has a branch cut (we will formally handle this in the next chapter).
 
-Nevertheless, if we close our eyes and shuffling some symbols around, we get:
+Nevertheless, if we close our eyes and shuffle some symbols around, we get:
 $$`\begin{aligned} \frac{1}{2\pi i} \oint_\gamma \frac{f'(z)}{f(z)} \; dz &= \frac{1}{2\pi i} \oint_\gamma \frac{d}{dz} \log f(z) \; dz \\ &= \frac{1}{2\pi i} \oint_\gamma d(\log f(z)) \\ &= \frac{1}{2\pi i} \cdot (\log f(b) - \log f(a)). \end{aligned}`
 Miraculously, everything seems to cancel out so nicely!
 This is not a coincidence.
@@ -338,7 +338,7 @@ This is not a coincidence.
 Now, if $`\gamma` is a circle, then $`a = b`, so the formula above seemingly states that the integral will be $`0`?
 Fortunately for us, no — $`\log` is in fact not a function.
 
-So, does the formula above means anything?
+So, does the formula above mean anything?
 It does!
 While we won't prove this rigorously, the point is that:
 

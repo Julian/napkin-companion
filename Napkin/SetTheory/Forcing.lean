@@ -347,7 +347,7 @@ For $`p \in \mathbb{P}` and $`\varphi(\sigma_1, \dots, \sigma_n)` a formula in t
 
 1. $`p \Vdash \tau_1 = \tau_2` means:
    - For all $`\left<\sigma_1, q_1\right> \in \tau_1` the set $$`D_{\sigma_1, q_1} \coloneqq \left\{ r \mid r \le q_1 \to \exists \left<\sigma_2, q_2\right> \in \tau_2 \left( r \le q_2 \land r \Vdash (\sigma_1 = \sigma_2) \right)\right\}`
-     is dense in $`p`.
+     is dense below $`p`.
      (This encodes "$`\tau_1 \subseteq \tau_2`".)
    - For all $`\left<\sigma_2, q_2\right> \in \tau_2`, the set $`D_{\sigma_2, q_2}` defined similarly is dense below $`p`.
 2. $`p \Vdash \tau_1 \in \tau_2` means $$`\left\{ q \in \mathbb{P} \mid \exists \left<\tau, r\right> \in \tau_2 \left( q \le r \land q \Vdash (\tau = \tau_1) \right) \right\}`

@@ -650,7 +650,7 @@ _Solution._ The following solution is due to Royce Yao.
 We show the contrapositive:
 if $`M` is not compact, then there exists a homeomorphic unbounded metric.
 
-The main step is to construction
+The main step is to construct
 an unbounded continuous function $`F \colon M \to \mathbb{R}`.
 Once such a function $`F` is defined, the metric
 
@@ -666,7 +666,7 @@ $$`0 < r_i < \frac{1}{2} \min_{j} d(a_i, a_j)`
 
 Define $`C_i` as an open ball at $`a_i` with radius $`r_i`.
 Note that every ball is disjoint.
-Then, we define $`F` as follow
+Then, we define $`F` by
 
 $$`F(x) = \begin{cases} 0 & x \not\in C_i \\ \frac{i}{r_1}(r_i - d(x, a_i)) & x \in C_i \end{cases}`
 
@@ -693,7 +693,7 @@ and let $`K_1` denote the closed disk with boundary $`C_1`.
 If we repeat in this way,
 we get a nested sequence $`K_0 \supseteq K_1 \supseteq \dots`
 and the radii of $`C_i` approach zero
-(since each is at most half the previous once).
+(since each is at most half the previous one).
 Thus some point $`p` lies in $`\bigcap_n K_n` which is impossible.
 
 Now for part (b),

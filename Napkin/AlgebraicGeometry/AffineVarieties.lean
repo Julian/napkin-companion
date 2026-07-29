@@ -333,7 +333,7 @@ As usual, you can make varieties which are just unions of these irreducible ones
 For example, if you wanted the variety consisting of a parabola $`y = x^2` plus the point $`(20, 15)` you would write $$`\mathbb{V} \left( (y - x^2)(x - 20), (y - x^2)(y - 15) \right).`
 
 The picture in $`\mathbb{A}^3` is harder to describe.
-Again, you have points $`\mathbb{V}(x - a, y - b, z - c)` corresponding to be zero-dimensional points $`(a, b, c)`, and two-dimensional surfaces $`\mathbb{V}(f)` for each irreducible polynomial $`f` (for example, $`x + y + z = 0` is a plane).
+Again, you have points $`\mathbb{V}(x - a, y - b, z - c)` corresponding to zero-dimensional points $`(a, b, c)`, and two-dimensional surfaces $`\mathbb{V}(f)` for each irreducible polynomial $`f` (for example, $`x + y + z = 0` is a plane).
 But there are more prime ideals, like $`\mathbb{V}(x, y)`, which corresponds to the intersection of the planes $`x = 0` and $`y = 0`: this is the one-dimensional $`z`-axis.
 It turns out there is no reasonable way to classify the "one-dimensional" varieties; they correspond to "irreducible curves".
 

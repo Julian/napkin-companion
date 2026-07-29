@@ -226,7 +226,7 @@ In $`S^1`, the loop $`\gamma = c - d` bounds a $`2`-simplex, drawn metaphoricall
 :::EXAMPLE "The first homology group of the figure eight"
 Consider the figure eight $`X_8`.
 Both homology and homotopy see the two loops in $`X_8`, call them $`a` and $`b`.
-The difference is that in $`\pi_1(X_8, x_0)`, these two loops are not allowed to commute: we don't have $`ab \neq ba`, because the group operation in $`\pi_1` is "concatenate paths".
+The difference is that in $`\pi_1(X_8, x_0)`, these two loops are not allowed to commute: we have $`ab \neq ba`, because the group operation in $`\pi_1` is "concatenate paths".
 But in the homology group $`H_1(X)` the way we add $`a` and $`b` is to add them formally, to get the $`1`-chain $`a + b`.
 So $$`H_1(X) \cong \mathbb{Z}^{\oplus 2} \quad\text{while}\quad \pi_1(X, x_0) = \left< a, b\right>.`
 :::

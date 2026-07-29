@@ -211,7 +211,7 @@ Let $`Y` be the *Warsaw circle*, depicted below, consisting of the graph of $`y 
 Image from {cite}`ref:hatcher`.
 :::
 
-The space $`Y` is simply connected, thus the lifting criteria is trivially satisfied, but the function $`f \colon Y \to S^1` which collapses the sine curve vertically does not lift to a function $`\tilde f \colon Y \to \mathbb{R}`.
+The space $`Y` is simply connected, thus the lifting criterion is trivially satisfied, but the function $`f \colon Y \to S^1` which collapses the sine curve vertically does not lift to a function $`\tilde f \colon Y \to \mathbb{R}`.
 The lifting theorem does not apply here, because $`Y` is not locally path-connected at the origin.
 ::::
 
