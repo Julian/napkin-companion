@@ -213,7 +213,7 @@ Any set of pairwise orthogonal vectors $`v_1, v_2, \dots, v_n`, with $`\|v_i\| \
 Consider a dependence $$`a_1 v_1 + \dots + a_n v_n = 0` for $`a_i` in $`\mathbb{R}` or $`\mathbb{C}`.
 Then $$`0 = \left\langle v_1, \sum a_i v_i \right\rangle = \overline{a_1} \|v_1\|^2.`
 Hence $`a_1 = 0`, since we assumed $`\|v_1\| \neq 0`.
-Similarly $`a_2 = \dots = a_m = 0`.
+Similarly $`a_2 = \dots = a_n = 0`.
 :::
 
 In light of this, we can now consider a stronger condition on our bases:

@@ -404,7 +404,7 @@ According to the theory of linear recurrences, there exists a matrix $`A` such t
 Let $`p` be a prime not dividing $`\det A`.
 Let $`T` be an integer such that $`A^T \equiv \mathrm{id} \pmod p` (with $`\mathrm{id}` denoting the identity matrix).
 
-Fix any $`0 \leq r < N`.
+Fix any $`0 \leq r < T`.
 We will prove that either all the terms $$`f(n) = x_{nT + r} \qquad n = 0, 1, \dots` are zero, or at most finitely many of them are.
 This will conclude the proof.
 

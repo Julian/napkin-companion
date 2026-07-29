@@ -417,7 +417,7 @@ Then $$`\begin{bmatrix} x & y \\ -v & u \end{bmatrix} \begin{bmatrix} a \\ b \en
 and the first matrix is invertible (check this!), as desired.
 
 Let $`s_1 = \gcd_{i,j} a_{ij}` be the GCD of all entries.
-Now by repeatedly applying this algorithm, we can cause $`s` to appear in the upper left hand corner.
+Now by repeatedly applying this algorithm, we can cause $`s_1` to appear in the upper left hand corner.
 Then, we use it to kill off all the entries in the first row and the first column, thus arriving at a block-diagonal form.
 We then repeat the same procedure with the lower-right $`(m-1) \times (n-1)` matrix, and so on.
 This gives the Smith normal form.

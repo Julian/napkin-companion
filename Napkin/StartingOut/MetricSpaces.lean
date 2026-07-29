@@ -287,7 +287,7 @@ It will not be important which of the three metrics we select.
 
 :::EXAMPLE "ℝ²"
 If $`M = N = \mathbb{R}`, we get $`\mathbb{R}^2`, the Euclidean plane.
-The metric $`d_{\text{Euclid}}` is the one we started with, but using either of the other two metric works fine as well.
+The metric $`d_{\text{Euclid}}` is the one we started with, but using either of the other two metrics works fine as well.
 :::
 
 The product metric plays well with convergence of sequences.

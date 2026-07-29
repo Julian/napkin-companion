@@ -140,12 +140,12 @@ _Hint._ Plug in $`|\psi\rangle = |0\rangle`, $`|\psi\rangle = |1\rangle`, $`|\ps
 _Hint._ First show that the box sends $`|x_1\rangle \otimes \dots \otimes |x_m\rangle \otimes |{\downarrow_x}\rangle` to $`(-1)^{f(x_1, \dots, x_m)} (|x_1\rangle \otimes \dots \otimes |x_m\rangle \otimes |{\downarrow_x}\rangle)`.
 
 _Solution._ Put $`|{\downarrow_x}\rangle = \frac{1}{\sqrt2}(|0\rangle - |1\rangle)`.
-Then we have that $`U_f` sends $$`|x_1\rangle \dots |x_m\rangle |0\rangle - |x_1\rangle \dots |x_m\rangle |1\rangle \overset{U_f}{\longmapsto} \pm |x_1\rangle \dots |x_m\rangle |0\rangle \mp |x_1\rangle \dots |x_m\rangle |1\rangle`
-the sign being $`+`, $`-` exactly when $`f(x_1, \dots, x_m) = 1`.
-Now, upon inputting $`|0\rangle \dots |0\rangle |1\rangle`, we find that $`H^{\otimes m+1}` maps it to $$`2^{-n/2} \sum_{x_1, \dots, x_n} |x_1\rangle \dots |x_n\rangle |{\downarrow_x}\rangle.`
+Then we have that $`U_f` sends $$`|x_1\rangle \dots |x_n\rangle |0\rangle - |x_1\rangle \dots |x_n\rangle |1\rangle \overset{U_f}{\longmapsto} \pm |x_1\rangle \dots |x_n\rangle |0\rangle \mp |x_1\rangle \dots |x_n\rangle |1\rangle`
+the sign being $`+`, $`-` exactly when $`f(x_1, \dots, x_n) = 1`.
+Now, upon inputting $`|0\rangle \dots |0\rangle |1\rangle`, we find that $`H^{\otimes n+1}` maps it to $$`2^{-n/2} \sum_{x_1, \dots, x_n} |x_1\rangle \dots |x_n\rangle |{\downarrow_x}\rangle.`
 Then the image under $`U_f` is $$`2^{-n/2} \sum_{x_1, \dots, x_n} (-1)^{f(x_1, \dots, x_n)} |x_1\rangle \dots |x_n\rangle |{\downarrow_x}\rangle.`
 We now discard the last qubit, leaving us with $$`2^{-n/2} \sum_{x_1, \dots, x_n} (-1)^{f(x_1, \dots, x_n)} |x_1\rangle \dots |x_n\rangle.`
-Applying $`H^{\otimes m}` to this, we get $$`2^{-n/2} \sum_{x_1, \dots, x_n} (-1)^{f(x_1, \dots, x_n)} \left( 2^{-n/2} \sum_{y_1, \dots, y_n} (-1)^{x_1 y_1 + \dots + x_n y_n} |y_1\rangle |y_2\rangle \dots |y_n\rangle \right)`
+Applying $`H^{\otimes n}` to this, we get $$`2^{-n/2} \sum_{x_1, \dots, x_n} (-1)^{f(x_1, \dots, x_n)} \left( 2^{-n/2} \sum_{y_1, \dots, y_n} (-1)^{x_1 y_1 + \dots + x_n y_n} |y_1\rangle |y_2\rangle \dots |y_n\rangle \right)`
 since $`H|0\rangle = \frac{1}{\sqrt2}(|0\rangle + |1\rangle)` while $`H|1\rangle = \frac{1}{\sqrt2}(|0\rangle - |1\rangle)`, so minus signs arise exactly if $`x_i = 1` and $`y_i = 1` simultaneously, hence the term $`(-1)^{x_1 y_1 + \dots + x_n y_n}`.
 Swapping the order of summation, we get $$`2^{-n} \sum_{y_1, \dots, y_n} C(y_1, \dots, y_n) |y_1\rangle |y_2\rangle \dots |y_n\rangle`
 where $`C(y_1, \dots, y_n) = \sum_{x_1, \dots, x_n} (-1)^{f(x_1, \dots, x_n) + x_1 y_1 + \dots + x_n y_n}`.

@@ -125,7 +125,7 @@ This behavior is called *quantum collapse*.
   (In fact, we may as well say it collapses to $`|i\rangle_T`, since again constant factors are not relevant.)
 - More generally, if we observe $`\lambda`, consider the generalized eigenspace $`H_\lambda` (i.e. the span of eigenvectors with the same eigenvalue).
   Then the physical state $`|\psi\rangle` has been changed as well: it has now been projected onto the eigenspace $`H_\lambda`.
-  In still other words, after observation, the state collapses to $$`\sum_{\substack{0 \le i \le n \\ \lambda_i = \lambda}} c_i |i\rangle_T.`
+  In still other words, after observation, the state collapses to $$`\sum_{\substack{0 \le i \le n-1 \\ \lambda_i = \lambda}} c_i |i\rangle_T.`
 
 In other words,
 

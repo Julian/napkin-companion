@@ -152,8 +152,8 @@ Let's say we're trying to factor $`M = 77`, and we randomly select $`x = 2`, and
 Let $`n = 13` and $`N = 2^{13}`, and start by initializing the state $$`|\psi\rangle = \frac{1}{\sqrt{N}} \sum_{k=0}^{N-1} |k\rangle.`
 Now, build a circuit $`U_x` (depending on $`x`) which takes $`|k\rangle |0\rangle` to $`|k\rangle |x^k \bmod M\rangle`.
 Applying this to $`|\psi\rangle \otimes |0\rangle` gives $$`U(|\psi\rangle |0\rangle) = \frac{1}{\sqrt{N}} \sum_{k=0}^{N-1} |k\rangle \otimes |x^k \bmod M\rangle.`
-Now suppose we measure the second qubit, and get a state of $`|128\rangle`.
-That tells us that the collapsed state now, up to scaling, is $$`(|7\rangle + |7 + r\rangle + |7 + 2r\rangle + \dots) \otimes |128\rangle.`
+Now suppose we measure the second qubit, and get a state of $`|51\rangle` (note that $`2^7 \equiv 51 \pmod{77}`).
+That tells us that the collapsed state now, up to scaling, is $$`(|7\rangle + |7 + r\rangle + |7 + 2r\rangle + \dots) \otimes |51\rangle.`
 :::
 
 The bottleneck is actually the circuit $`U_x`; one can compute $`x^k \pmod M` by using repeated squaring, but it's still the clumsy part of the whole operation.
@@ -170,7 +170,7 @@ In general, the operation is:
 Suppose we apply the quantum Fourier transform to the left qubit $`|\phi\rangle` now: since the left bit is periodic modulo $`r`, we expect the transform will tell us what $`r` is.
 Unfortunately, this doesn't quite work out, since $`N` is a power of two, but we don't expect $`r` to be.
 
-Nevertheless, consider a state $$`|\phi\rangle = |k_0\rangle + |k_0 + r\rangle + \dots` so for example previously we had $`k_0 = 7` if we measured $`128` on $`x = 2`.
+Nevertheless, consider a state $$`|\phi\rangle = |k_0\rangle + |k_0 + r\rangle + \dots` so for example previously we had $`k_0 = 7` if we measured $`51` on $`x = 2`.
 Applying the quantum Fourier transform, we see that the coefficient of $`|j\rangle` in the transformed image is equal to $$`\omega_N^{k_0 j} \cdot \left(\omega_N^{0} + \omega_N^{jr} + \omega_N^{2jr} + \omega_N^{3jr} + \dots\right).`
 As this is a sum of roots of unity, we realize we have destructive interference unless $`\omega_N^{jr} = 1` (since $`N` is large).
 In other words, we approximately have $$`U_{\text{QFT}}(|\phi\rangle) \approx \sum_{\substack{0 \leq j < N \\ jr/N \in \mathbb{Z}}} |j\rangle` up to scaling as usual.

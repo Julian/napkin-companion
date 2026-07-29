@@ -125,7 +125,7 @@ We can then start actually stating results like the *law of large numbers* and *
 
 *Differential Geometry.*
 Multivariable calculus is often confusing because of all the partial derivatives.
-But we'll find out that, armed with our good understanding of linear algebra, that we're really looking at a *total derivative*: at every point of a function $`f \colon \mathbb{R}^n \to \mathbb{R}` we can associate a _linear map_ $`Df` which captures in one object the notion of partial derivatives.
+But we'll find out that, armed with our good understanding of linear algebra, we're really looking at a *total derivative*: at every point of a function $`f \colon \mathbb{R}^n \to \mathbb{R}` we can associate a _linear map_ $`Df` which captures in one object the notion of partial derivatives.
 Set up this way, we'll get to see versions of *differential forms* and *Stokes' theorem*, and we finally will know what the notation $`dx` really means.
 In the end, we'll say a little bit about manifolds in general.
 

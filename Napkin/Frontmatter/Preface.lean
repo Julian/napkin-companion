@@ -43,7 +43,7 @@ On the flip side, the benefit of this "light" approach is that it becomes access
 I initially wrote this book with talented high-school students in mind, particularly those with math-olympiad type backgrounds.
 Some remnants of that cultural bias can still be felt throughout the book, particularly in assorted challenge problems which are taken from mathematical competitions.
 However, in general I think this would be a good reference for anyone with some amount of mathematical maturity and curiosity.
-Examples include but certainly not limited to: math undergraduate majors, physics/CS majors, math PhD students who want to hear a little bit about fields other than their own, advanced high schoolers who like math but not math contests, and unusually intelligent kittens fluent in English.
+Examples include but are certainly not limited to: math undergraduate majors, physics/CS majors, math PhD students who want to hear a little bit about fields other than their own, advanced high schoolers who like math but not math contests, and unusually intelligent kittens fluent in English.
 
 # Source code
 

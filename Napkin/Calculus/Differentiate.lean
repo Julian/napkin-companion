@@ -188,7 +188,7 @@ A *local minimum* is defined similarly.
 :::
 
 :::DEFINITION
-A point $`p` is a *local extrema* if it satisfies either of these.
+A point $`p` is a *local extremum* if it satisfies either of these.
 :::
 
 The nice thing about derivatives is that they pick up all extrema.
@@ -220,10 +220,10 @@ However, this is not actually adequate if we want a complete method for optimiza
 The issue is that we seek *global* extrema, which may not even exist: for example $`f(x) = x` (which has $`f'(x) = 1`) obviously has no local extrema at all.
 The key to resolving this is to use *compactness*: we change the domain to be a compact set $`Z`, for which we know that $`f` will achieve some global maximum.
 The set $`Z` will naturally have some *interior* $`S`, and calculus will give us all the extrema within $`S`.
-Then we manually check all cases outside $`Z`.
+Then we manually check all cases outside $`S`.
 
 Let's see two extended examples.
-The one is simple, and you probably already know about it, but I want to show you how to use compactness to argue thoroughly, and how the "boundary" points naturally show up.
+The first one is simple, and you probably already know about it, but I want to show you how to use compactness to argue thoroughly, and how the "boundary" points naturally show up.
 
 ::::EXAMPLE "Rectangle area optimization"
 Suppose we consider rectangles with perimeter $`20` and want the rectangle with the smallest or largest area.

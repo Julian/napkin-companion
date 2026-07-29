@@ -180,7 +180,7 @@ $`(f(x)-\varepsilon_x, f(x))` or $`(f(x), f(x)+\varepsilon_x)` (or both).
 Projecting these missing intervals to the $`y`-axis you find uncountably
 many intervals (one for each $`x \in [0,1]`) all of which are disjoint.
 In particular, summing the $`\varepsilon_x` you get that a sum of uncountably
-many positive reals is $`1`.
+many positive reals is at most $`1`.
 
 But in general it isn't possible for an uncountable family $`\mathcal F`
 of positive reals to have finite sum.
@@ -485,7 +485,7 @@ $$`\begin{aligned}d(x_1, x_2) &< r \cdot c \\ d(x_2, x_3) &< r^2 \cdot c \\ d(x_
 
 and so for large $`M < N` we have
 
-$$`d(x_M, x_N) < \left( r^M + r^{M+1} + \dots + r^N \right) \cdot c < \frac{r^M}{1-r} \cdot c`
+$$`d(x_M, x_N) < \left( r^M + r^{M+1} + \dots + r^{N-1} \right) \cdot c < \frac{r^M}{1-r} \cdot c`
 
 which tends to zero once $`M` is large enough.
 
@@ -662,13 +662,13 @@ So, let $`a_1`, $`a_2`, \…\\ be a sequence in $`M`
 with no convergent subsequence.
 For each $`a_i`, there exists a radius $`r_i` such that
 
-$$`0 < r_i < \frac{1}{2} \min_{j} d(a_i, a_j)`
+$$`0 < r_i < \frac{1}{2} \min_{j \neq i} d(a_i, a_j)`
 
 Define $`C_i` as an open ball at $`a_i` with radius $`r_i`.
 Note that every ball is disjoint.
 Then, we define $`F` by
 
-$$`F(x) = \begin{cases} 0 & x \not\in C_i \\ \frac{i}{r_1}(r_i - d(x, a_i)) & x \in C_i \end{cases}`
+$$`F(x) = \begin{cases} 0 & x \not\in C_i \\ \frac{i}{r_i}(r_i - d(x, a_i)) & x \in C_i \end{cases}`
 
 which can be seen to be continuous.
 Then, $`F` is unbounded by considering $`F(a_i)` as $`i` goes to infinity.
@@ -741,7 +741,7 @@ so it can't be written as the union of two open sets.
 - Now suppose there are neon yellow points.
 We claim there is a neon yellow circle minimal by inclusion.
 If not, then repeat the argument of (a) to get a contradiction,
-since any neon yellow circle must have diameter the distance from $`p` to $`q`.
+since any neon yellow circle must have diameter at least the distance from $`p` to $`q`.
 So we can find a neon yellow circle $`\mathscr C` whose
 interior is all magenta and cyan.
 Now repeat the argument of the previous part,
@@ -1260,7 +1260,7 @@ That means there are $`(7-1) \cdot 8 = 48` elements of order $`7` in $`G`.
 
 But consider the Sylow $`2`-subgroups.
 These have $`8` elements each, and we conclude therefore
-that there is at exactly one Sylow $`2`-subgroup.
+that there is exactly one Sylow $`2`-subgroup.
 That subgroup is normal, contradiction.
 
 *Engel's PSS.*

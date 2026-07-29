@@ -43,7 +43,7 @@ We say that $`f` is *uniformly continuous* if for all $`\varepsilon > 0` there e
 $$`d_M(p, q) < \delta \implies d_N(f(p), f(q)) < \varepsilon.`
 :::
 
-This difference is that given an $`\varepsilon > 0` we must specify a $`\delta > 0` which works for *every* choice $`p` and $`q` of inputs; whereas usually $`\delta` is allowed to depend on $`p` and $`q`.
+The difference is that given an $`\varepsilon > 0` we must specify a $`\delta > 0` which works for *every* choice $`p` and $`q` of inputs; whereas usually $`\delta` is allowed to depend on $`p` and $`q`.
 (Also, this definition can't be ported to a general topological space.)
 
 :::EXAMPLE "Uniform continuity failure"
@@ -206,7 +206,7 @@ Then we added the area of the rectangles.
 Nonetheless, we will give a definition that's more like what you're used to seeing in other places.
 
 :::DEFINITION
-A *tagged partition* $`P` of $`[a, b]` consists of a partition of $`[a, b]` into $`n` intervals, with a point $`\xi_i` in the $`n`th interval, denoted
+A *tagged partition* $`P` of $`[a, b]` consists of a partition of $`[a, b]` into $`n` intervals, with a point $`\xi_i` in the $`i`th interval, denoted
 $$`a = t_0 < t_1 < t_2 < \dots < t_n = b \qquad\text{and}\qquad \xi_i \in [t_{i-1}, t_i] \quad \forall \; 1 \leq i \leq n.`
 The *mesh* of $`P` is the width of the longest interval, i.e. $`\max_i (t_i - t_{i-1})`.
 :::
