@@ -296,6 +296,15 @@ book's mathematics is untouched, and the chapter says so where it arises.
   Colophon and the chapters flag each instance where it first bites
   (`minpoly` returning `0`, `condExp` and `stoppedValue` choosing junk
   representatives, `ramificationIdx` on a degenerate setup, and so on).
+- **Finiteness and decidability.** Mathematics says "finite set"; Mathlib
+  distinguishes `Finset` (finite set as data, which is what `∑ i ∈ s`
+  ranges over) from `Set` plus `Set.Finite` (as a proposition), with
+  `Fintype` for a finite type. Separately, statements that decide an
+  equality carry `[DecidableEq ι]`. Both are Lean-side bookkeeping with
+  no counterpart in the prose, so nothing in the text changes; they are
+  named once in the Colophon, since a reader otherwise meets
+  `[DecidableEq ι]` in exercise after exercise with no account of why it
+  is there.
 - **$\sup S = +\infty$.** The Calculus chapter's convention for unbounded
   sets is standard analysis; `Real.sSup`'s `0` is an instance of the
   totality convention above, not a rival definition. Kept, with the chapter
