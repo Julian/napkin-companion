@@ -2,7 +2,7 @@
 8	Napkin/AbstractAlgebra/Quotient.lean
 7	Napkin/AbstractAlgebra/Rings.lean
 5	Napkin/AlgebraicGeometry/AffineVarieties.lean
-7	Napkin/AlgebraicGeometry/Bezout.lean
+8	Napkin/AlgebraicGeometry/Bezout.lean
 5	Napkin/AlgebraicGeometry/Localization.lean
 5	Napkin/AlgebraicGeometry/MorScheme.lean
 5	Napkin/AlgebraicGeometry/ProjectiveVarieties.lean

@@ -512,6 +512,37 @@ example {k : Type*} [Field k] {m n : ℕ}
   curveDegree_mul hf hg hf0 hg0
 ```
 
+Those two facts together say what the count does when a curve breaks into pieces.
+Since the Bézout number is a *product* of degrees and degree is *additive* over components, splitting one factor distributes the count over the pieces: intersecting $`f_1 f_2` with $`g` predicts exactly as many points as intersecting $`f_1` with $`g` and $`f_2` with $`g` separately.
+That is why Pascal's three lines can be counted line by line.
+
+:::exercise
+```lean
+example {k : Type*} [Field k] {m n : ℕ} {f₁ f₂ g : MvPolynomial (Fin 3) k}
+    (hf₁ : f₁.IsHomogeneous m) (hf₂ : f₂.IsHomogeneous n)
+    (hf₁0 : f₁ ≠ 0) (hf₂0 : f₂ ≠ 0) :
+    bezoutNumber (f₁ * f₂) g = bezoutNumber f₁ g + bezoutNumber f₂ g := by
+  sorry
+```
+:::
+
+:::hint
+Rewrite all three Bézout numbers into degrees with `bezoutNumber_eq`, replace $`\deg(f_1 f_2)` using `curveDegree_mul`, and the goal becomes the distributive law `Nat.add_mul`.
+:::
+
+:::solution
+```lean
+example {k : Type*} [Field k] {m n : ℕ} {f₁ f₂ g : MvPolynomial (Fin 3) k}
+    (hf₁ : f₁.IsHomogeneous m) (hf₂ : f₂.IsHomogeneous n)
+    (hf₁0 : f₁ ≠ 0) (hf₂0 : f₂ ≠ 0) :
+    bezoutNumber (f₁ * f₂) g = bezoutNumber f₁ g + bezoutNumber f₂ g := by
+  rw [bezoutNumber_eq, bezoutNumber_eq, bezoutNumber_eq,
+    curveDegree_mul hf₁ hf₂ hf₁0 hf₂0, Nat.add_mul]
+```
+:::
+
+(`bezoutNumber_mul_left` packages it.)
+
 The *intersection multiplicity* $`I_p(f, g)` at a point is the dimension $`\dim_k(\mathcal{O}_p / (f, g))` of the local quotient ring, `intersectionMult k 𝒪ₚ f g`.
 A point lying off one of the curves — where $`(f, g)` is the unit ideal — contributes nothing.
 

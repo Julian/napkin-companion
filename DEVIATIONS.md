@@ -86,6 +86,25 @@ These apply to every chapter and are not repeated in the per-chapter lists below
     derivable even though the theorem itself is assumed; this is flagged
     in each such definition's doc-string.
 
+    **Unused API in this layer is expected, not a defect.** A stopgap is
+    written object-first — to model `MappingDegree` faithfully you state
+    the degree's basic laws — and a chapter then cites some of them. An
+    audit on 2026-07-29 found 39 of 319 definitions referenced by no
+    chapter and nowhere else in `Missing`, spread one to four per file
+    across 23 files with every file imported and mostly used, so there
+    are no abandoned modules. Of those 39: about 31 are that library
+    completeness (one-line laws like `deg_one` and `boundary_add`,
+    plumbing, and convenience aliases whose own doc-strings name the
+    Mathlib lemma they wrap); four are duplicated by a chapter working
+    the same fact inline, which is deliberate, since seeing the proof is
+    the teaching (the plane-curve nodes, the antipodal degree); and the
+    genuinely absent were `bezoutNumber_mul_left` (now an exercise),
+    `residue_simple_pole` (likewise), a Hurwitz monotonicity bound, and
+    a GCH-implies-CH implication whose chapter never mentions GCH — the
+    stopgap reaching past its chapter rather than the chapter falling
+    short. Deleting the 31 would make each stopgap a worse model of the
+    object it stands in for, so they stay.
+
 13. **Exercise design in the Formalization sections.** Each section
     reveals the Mathlib object in prose, shows worked models, and then
     poses exercises as code blocks proved by `sorry`, each followed by a
