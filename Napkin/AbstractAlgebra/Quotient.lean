@@ -27,7 +27,7 @@ file := "Homomorphisms-and-quotient-groups"
 # Generators and group presentations
 
 :::PROTOTYPE
-$`D_{2n} = \langle r, s \mid r^n = s^2 = 1 \rangle`
+$`D_{2n} = \langle r, s \mid r^n = s^2 = 1, rs = sr^{-1} \rangle`
 :::
 
 Let $`G` be a group.

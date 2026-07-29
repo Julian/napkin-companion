@@ -344,7 +344,7 @@ Part (b) is the same.
 Sometimes you will be faced with two functions which you cannot easily decouple; the following form may be more useful in that case.
 
 :::THEOREM "Ratio mean value theorem"
-Let $`f, g \colon [a, b] \to \mathbb{R}` be two continuous functions which are differentiable on $`(a, b)`, and such that $`g(a) \neq g(b)`.
+Let $`f, g \colon [a, b] \to \mathbb{R}` be two continuous functions which are differentiable on $`(a, b)`.
 Then there exists $`c \in (a, b)` such that $$`f'(c)(g(b) - g(a)) = g'(c)(f(b) - f(a)).`
 :::
 

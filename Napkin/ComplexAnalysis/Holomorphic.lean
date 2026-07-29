@@ -359,9 +359,9 @@ Suppose $`D` is contained inside $`U`.
 Then $`f` is given everywhere in $`D` by a Taylor series
 $$`f(z) = c_0 + c_1 (z - p) + c_2 (z - p)^2 + \cdots`
 where
-$$`c_k = \frac{f^{(k)}(p)}{k!} = \frac{1}{2\pi i} \oint_\gamma \frac{f(w - p)}{(w - p)^{k+1}} \; dw.`
+$$`c_k = \frac{f^{(k)}(p)}{k!} = \frac{1}{2\pi i} \oint_\gamma \frac{f(w)}{(w - p)^{k+1}} \; dw.`
 In particular,
-$$`f^{(k)}(p) = k! c_k = \frac{k!}{2\pi i} \oint_\gamma \frac{f(w - p)}{(w - p)^{k+1}} \; dw.`
+$$`f^{(k)}(p) = k! c_k = \frac{k!}{2\pi i} \oint_\gamma \frac{f(w)}{(w - p)^{k+1}} \; dw.`
 :::
 
 Most importantly,
@@ -501,7 +501,7 @@ Considering $`\alpha = \gamma`, because the starting and ending point for a loop
 
 ## The rest
 
-Next step, we should show the power series coincide with $`f`, that is $$`f(z) = \oint_\gamma \frac{f(t)}{t} \; dt + \oint_\gamma \frac{f(t)}{t^2} \; dt \cdot z + \oint_\gamma \frac{f(t)}{t^3} \; dt \cdot z^2 + \cdots`
+Next step, we should show the power series coincide with $`f`, that is $$`f(z) = \frac{1}{2\pi i} \oint_\gamma \frac{f(t)}{t} \; dt + \frac{1}{2\pi i} \oint_\gamma \frac{f(t)}{t^2} \; dt \cdot z + \frac{1}{2\pi i} \oint_\gamma \frac{f(t)}{t^3} \; dt \cdot z^2 + \cdots`
 Here we assume $`\gamma` is the unit circle, the power series is centered at $`0`, and $`t` is inside the unit disk.
 
 :::EXERCISE

@@ -210,7 +210,7 @@ For instance the determinant definition obscures the following theorem, which is
 
 :::THEOREM "Cayley-Hamilton"
 Let $`T \colon V \to V` be a map of finite-dimensional vector spaces over an algebraically closed field.
-Then for any $`T \colon V \to V`, the map $`p_T(T)` is the zero map.
+Then the map $`p_T(T)` is the zero map.
 :::
 
 Here, by $`p_T(T)` we mean that if $$`p_T(X) = X^n + c_{n-1} X^{n-1} + \dots + c_0` then $$`p_T(T) = T^n + c_{n-1} T^{n-1} + \dots + c_1 T + c_0 I` is the zero map, where $`T^k` denotes $`T` applied $`k` times.

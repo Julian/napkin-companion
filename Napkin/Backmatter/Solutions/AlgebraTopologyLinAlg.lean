@@ -213,7 +213,7 @@ which has the firm answer YES.
 
 On the other hand, it does not make sense to try to define $`1/x`
 as a function on $`\mathbb{R}`.
-The definition a function requires you to specify an output value for every input,
+The definition of a function requires you to specify an output value for every input,
 so at least if you want a real-valued function (Those of you
 that know what $`\mathbb{RP}^1` is could consider it as a function
 $`\mathbb{RP}^1 \to \mathbb{RP}^1` if you insisted;
@@ -276,11 +276,12 @@ But then let $`g = (3 \; 4)`; one can check $`gHg^{-1} \neq H`.
 
 _Hint._ $`\gcd(1000,999)=1`.
 
-_Solution._ $`G/\operatorname{ker} G` is isomorphic to a subgroup of $`H`.
+_Solution._ Let $`\phi \colon G \to H` be a homomorphism.
+Then $`G / \operatorname{ker} \phi` is isomorphic to a subgroup of $`H`.
 The order of the former divides $`1000`;
 the order of the latter divides $`999`.
-This can only occur if $`G / \operatorname{ker} G = \{1\}`
-so $`\operatorname{ker} G = G`.
+This can only occur if $`G / \operatorname{ker} \phi = \{1\}`
+so $`\operatorname{ker} \phi = G`.
 
 *Find a non-abelian group $`G` such that every subgroup of $`G` is normal.*
 

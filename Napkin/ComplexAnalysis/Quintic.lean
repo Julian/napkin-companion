@@ -145,7 +145,7 @@ This is a calculation that isn't relevant to the topology ideas in this chapter,
 
 While this is indeed a valid proof, it has some pros and cons.
 As a con, we haven't shown that any polynomial such as $`z^5 - z - 1` has a root that can't be expressed using nested $`n`th roots.
-We've only that we don't have a formula for all degree $`5` polynomials.
+We've only shown that we don't have a formula for all degree $`5` polynomials.
 
 As a pro, this argument makes it easy to add even more functions such as $`\exp`, $`\sin`, and $`\cos` to the mix and show even then that no such formula exists.
 It also allows you to broadly understand what people mean when they compare this theorem to a fact that $`A_5` is not solvable.
