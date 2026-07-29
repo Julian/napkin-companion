@@ -332,6 +332,15 @@ book's mathematics is untouched, and the chapter says so where it arises.
   and to motivate the Lebesgue theory that follows, and the chapter states
   that the two agree on continuous functions over a compact interval.
 
+Three further decisions of the same kind are recorded among the book-wide
+conventions below, because they shape every chapter rather than one:
+modelling carriers as types rather than sets (1), keeping Mathlib's
+`Group`/`AddGroup` split visible instead of hiding it (2), and reading
+$(\mathbb{Z}/n\mathbb{Z})^\times$ as the group of units (3). Considered and
+judged not to need saying: numeric coercions, which appear as seven `↑`
+arrows and nineteen `push_cast`/`exact_mod_cast` calls, each already named
+in the prose above its solution.
+
 ## Per-chapter notes
 
 Chapters not listed deviate only via the book-wide conventions above.
