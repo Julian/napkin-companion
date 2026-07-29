@@ -279,30 +279,49 @@ These apply to every chapter and are not repeated in the per-chapter lists below
     the picture shows, claiming no visual detail beyond that. All 371
     figures in the book have an accessible name.
 
-## Formalization-forced deviations
+## Conventions deliberately *not* changed
 
-Places where Mathlib's design genuinely differs from the chapter's
-mathematical framing, acknowledged in the text where they occur:
+The counterpart to the section above. The test that separates the two: does
+the book end up asserting something Mathlib denies, or is this a difference
+in how the formalization is *built*? Only the former is worth changing the
+text for. Everything below is the latter — Mathlib's design differs, the
+book's mathematics is untouched, and the chapter says so where it arises.
 
-- **Calculus / Limits.** Mathlib's `Real.sSup` returns `0` for empty
-  or unbounded sets, versus the chapter's $\sup S = +\infty$
-  convention; `ENNReal`/`EReal` are named as the faithful carriers.
-  Mathlib's `HasSum` is unconditional (net) convergence over finite
-  subsets, unlike the chapter's prefix-sum definition, so
-  permutation-invariance is automatic and conditional convergence has
-  to be reintroduced by hand.
-- **Calculus / Limits.** The chapter constructs $\mathbb{R}$ by
-  Dedekind cuts; Mathlib's `Real` is the Cauchy completion of `ℚ`.
-- **Calculus / p-adics.** Mathlib defines `ℚ_[p]` first and carves out
-  `ℤ_[p]` as the closed unit ball — the reverse of the chapter's
-  inverse-limit-first construction. The chapter's inverse limit
-  $\varprojlim \mathbb{Z}/p^n\mathbb{Z}$ is defined as a genuine object
-  in `Napkin.Missing.PadicInverseLimit`, with an injective bridge from
-  Mathlib's `ℤ_[p]`.
-- **Calculus / Integration.** Mathlib's `intervalIntegral` is a
-  Bochner (Lebesgue-flavored) integral; the chapter's Riemann
-  construction is presented for pedagogy and connected to the Mathlib
-  API afterward.
+- **Totality and junk values.** Mathlib functions are total, so `1 / 0`,
+  `(0 : ℝ)⁻¹`, `Real.log 0`, `sSup (∅ : Set ℝ)`, a divergent `∑'` and the
+  `deriv` of a non-differentiable function are all `0`, and `ℕ` subtraction
+  truncates (`2 - 3 = 0`). These are not mathematical claims and nothing in
+  the prose should change to accommodate them; the mathematics lives in the
+  hypotheses the *theorems* carry. The principle is stated once in the
+  Colophon and the chapters flag each instance where it first bites
+  (`minpoly` returning `0`, `condExp` and `stoppedValue` choosing junk
+  representatives, `ramificationIdx` on a degenerate setup, and so on).
+- **$\sup S = +\infty$.** The Calculus chapter's convention for unbounded
+  sets is standard analysis; `Real.sSup`'s `0` is an instance of the
+  totality convention above, not a rival definition. Kept, with the chapter
+  naming `ENNReal`/`EReal` as the carriers where `sSup` is well behaved on
+  every set.
+- **Series as partial sums.** Mathlib's `HasSum` is unconditional
+  convergence over the net of finite subsets, so `Summable` already implies
+  permutation-invariance and conditionally convergent series are *not*
+  `HasSum`. The chapter keeps the partial-sum presentation — it is the right
+  one for a first course, and the conditional/absolute distinction is real
+  mathematics, not an artifact — and explains that Mathlib's choice is a
+  reaction to the Riemann rearrangement theorem.
+- **The construction of $\mathbb{R}$.** The chapter builds it by Dedekind
+  cuts, Mathlib by Cauchy completion of `ℚ`. Both land on the same complete
+  ordered field, which is what any theorem about $\mathbb{R}$ actually uses,
+  so neither side needs to move.
+- **The construction of $\mathbb{Z}_p$.** Mathlib defines `ℚ_[p]` first and
+  carves out `ℤ_[p]` as the closed unit ball, the reverse of the chapter's
+  inverse limit. Here the port does more than note it: the inverse limit is
+  built as a real object in `Napkin.Missing.PadicInverseLimit`, with an
+  injective bridge from Mathlib's `ℤ_[p]`, so the chapter's construction
+  exists rather than being described.
+- **The Riemann integral.** Mathlib has none; `intervalIntegral` is the
+  Bochner integral. The chapter's Riemann construction stays, for pedagogy
+  and to motivate the Lebesgue theory that follows, and the chapter states
+  that the two agree on continuous functions over a compact interval.
 
 ## Per-chapter notes
 
