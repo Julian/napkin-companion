@@ -209,9 +209,9 @@ _Hint._ Factor in $`\mathbb{Q}(i)`.
 _Hint._ Factor $`p`, and show that the class group of $`\mathbb{Q}(\sqrt{-5})` has order two.
 
 _Solution._ Let $`K = \mathbb{Q}(\sqrt{-5})`.
-Check that $`\operatorname{Cl}_K` has order two using the Minkowski bound; moreover $`\Delta_K = 20`.
+Check that $`\operatorname{Cl}_K` has order two using the Minkowski bound; moreover $`\Delta_K = -20`.
 Now note that $`\mathcal{O}_K = \mathbb{Z}[\sqrt{-5}]`, and $`x^2 + 5` factors mod $`p` as $`(x + k)(x - k)`; hence in $`\mathcal{O}_K` we have $`(p) = (p, \sqrt{-5} + k)(p, \sqrt{-5} - k) = \mathfrak{p}_1 \mathfrak{p}_2`, say.
-For $`p > 5` the prime $`p` does not ramify and we have $`\mathfrak{p}_1 \neq \mathfrak{p}_2`, since $`\Delta_K = 20`.
+For $`p > 5` the prime $`p` does not ramify and we have $`\mathfrak{p}_1 \neq \mathfrak{p}_2`, since $`\Delta_K = -20`.
 Then $`(p^2) = \mathfrak{p}_1^2 \cdot \mathfrak{p}_2^2`.
 Because the class group has order two, both $`\mathfrak{p}_1^2` and $`\mathfrak{p}_2^2` are principal, and because $`\mathfrak{p}_1 \neq \mathfrak{p}_2` they are distinct.
 Thus $`p^2` is a nontrivial product of two elements of $`\mathcal{O}_K`; from this we can extract the desired factorization.
@@ -333,7 +333,7 @@ Note that the condition $`p \equiv 2 \pmod 3` is used only to guarantee that $`\
 _Hint._ Pick $`m` so that $`\mathfrak{f}(L/\mathbb{Q}) \mid m\infty`.
 
 _Solution._ Suppose $`\mathfrak{f}(L/\mathbb{Q}) \mid m\infty` for some $`m`.
-Then by the earlier example we have the chain $$`P_{\mathbb{Q}}(m\infty) = H(\mathbb{Q}(\zeta)/\mathbb{Q}, m\infty) \subseteq H(L/\mathbb{Q}, m) \subseteq I_\mathbb{Q}(m\infty).`
+Then by the earlier example we have the chain $$`P_{\mathbb{Q}}(m\infty) = H(\mathbb{Q}(\zeta)/\mathbb{Q}, m\infty) \subseteq H(L/\mathbb{Q}, m\infty) \subseteq I_\mathbb{Q}(m\infty).`
 So by inclusion reversal we're done.
 
 *Hilbert class field.*

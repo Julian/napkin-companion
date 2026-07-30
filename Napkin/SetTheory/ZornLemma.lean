@@ -270,7 +270,7 @@ Label each of the following statements as true or false.
 5. The function $`f` is not a bijection from $`(0, \infty)` to $`\mathbb{R}`.
 6. It's possible for $`f` to be injective but not linear.
 7. It's possible for $`f` to be surjective but not linear.
-8. It's possible for $`f` is nonconstant and $`f(x) \in \mathbb{Q}` for all $`x \in \mathbb{R}`.
+8. It's possible that $`f` is nonconstant and $`f(x) \in \mathbb{Q}` for all $`x \in \mathbb{R}`.
 9. It's possible that $`f` is nonconstant and $`f(x) \notin \mathbb{Q}` for all nonzero $`x \in \mathbb{R}`.
 :::
 

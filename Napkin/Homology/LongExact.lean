@@ -215,7 +215,7 @@ From this we derive that $`\widetilde H_n(S^1)` is $`\mathbb{Z}` for $`n = 1` an
 It remains to analyze the generators of $`\widetilde H_1(S^1)`.
 The isomorphism was given by the connecting homomorphism $`\partial`, which is given by a "left, down, left" procedure.
 Marking points $`a` and $`b` in the two disjoint paths of $`U \cap V`, the cycle $`a - b` represents a generator of $`H_0(U \cap V)`, and letting $`c` and $`d` be the chains joining $`a` and $`b` with $`c` contained in $`U` and $`d` contained in $`V`, one finds $`\partial(c - d) = a - b`, so $`c - d` is a generator.
-Thus $`c - d` is (in $`H^1(S^1)`) equivalent to the loop $`\gamma` wrapping around $`S^1` once, counterclockwise.
+Thus $`c - d` is (in $`H_1(S^1)`) equivalent to the loop $`\gamma` wrapping around $`S^1` once, counterclockwise.
 
 :::figure "figures/homology/longexact-mv-s1-cd.svg"
 The chains $`c` and $`d` join $`a` to $`b` inside $`U` and $`V`; the cycle $`c - d` generates $`\widetilde H_1(S^1)`.

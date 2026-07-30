@@ -43,7 +43,7 @@ We will then see that $`H^\bullet(X) \not\cong H^\bullet(Y)` as rings.
 A *cochain complex* $`A^\bullet` is algebraically the same as a chain complex, except that the indices increase.
 So it is a sequence of abelian groups $$`\dots \xrightarrow{\delta} A^{n-1} \xrightarrow{\delta} A^n \xrightarrow{\delta} A^{n+1} \xrightarrow{\delta} \dots.`
 such that $`\delta^2 = 0`.
-Notation-wise, we're now using superscripts, and use $`\delta` rather $`\partial`.
+Notation-wise, we're now using superscripts, and use $`\delta` rather than $`\partial`.
 We define the *cohomology groups* by $$`H^n(A^\bullet) = \ker\left( A^n \xrightarrow{\delta} A^{n+1} \right) / \operatorname{img}\left( A^{n-1} \xrightarrow{\delta} A^n \right).`
 :::
 
@@ -212,7 +212,7 @@ In summary: $$`H^n(K; G) \cong \begin{cases} G & n = 0 \\ G \oplus \operatorname
 
 # Explanation for universal coefficient theorem
 
-There is so much unexplained symbols and formulas in the previous chapter that may make you scream:
+There are so many unexplained symbols and formulas in the previous chapter that may make you scream:
 
 :::quote
 I don't care if $`\mathbb{CP}^2` and $`S^2 \vee S^4` are distinct anymore! What are these spaces anyway?
@@ -233,7 +233,7 @@ The universal coefficient theorem states this precisely, with the "error term" b
 # Visualization of cohomology groups
 
 We try to make sense of $`C^n(X; G)` and $`H^n(X; G)`, for higher values of $`n`.
-As above, $`C_n(X; G)` is the free abelian group on $`n`-simplices on $`X`, so an element $`f \in C^n(X; G)` is a function that takes each $`n`-simplex to an element of $`G` (and extends linearly to all of $`C_n(X; G)`).
+As above, $`C_n(X)` is the free abelian group on $`n`-simplices on $`X`, so an element $`f \in C^n(X; G)` is a function that takes each $`n`-simplex to an element of $`G` (and extends linearly to all of $`C_n(X)`).
 This assignment of value need not have any nice properties — recall that a $`n`-simplex is simply a (continuous) map $`\sigma \colon \Delta^n \to X`, and different maps $`\sigma_1` and $`\sigma_2` are considered different even though $`\operatorname{img} \sigma_1 = \operatorname{img} \sigma_2`.
 In particular,
 

@@ -55,7 +55,7 @@ However, if we view $`\mathcal{O}_V` purely as a set, the structure of the funct
 
 Let us see how the functions in $`\mathcal{O}_V` are related to each other:
 
-- Each function in $`\mathcal{O}_V` is defined on a open set $`U \subseteq V`.
+- Each function in $`\mathcal{O}_V` is defined on an open set $`U \subseteq V`.
 - If two functions are defined on the same open set, you can add and multiply them together.
   In other words, $`\mathcal{O}_V(U)` is a ring.
 - Given a function $`f \in \mathcal{O}_V(U)`, we can restrict it to a smaller open subset $`W \subseteq U`.

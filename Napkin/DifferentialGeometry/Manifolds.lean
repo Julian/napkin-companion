@@ -219,7 +219,7 @@ If we have a $`1`-form $`\alpha`, how do we integrate it over $`M`?
 Since $`M` is just a topological space (rather than a subset of $`\mathbb{R}`), there is no default "left" or "right" that we can pick.
 As another example, if $`M = S^1` is a circle, there is no default "clockwise" or "counterclockwise" unless we decide to embed $`M` into $`\mathbb{R}^2`.
 
-To work around this, we have to make additional assumptions about our manifold.
+To work around this we actually have to make additional assumptions about our manifold.
 
 :::DEFINITION
 A smooth $`n`-manifold is *orientable* if there exists a differential $`n`-form $`\omega` on $`M` such that for every $`p \in M`,
@@ -362,7 +362,7 @@ This definition is even more abstract than the one with derivations above, but h
 ## Sanity check
 
 With all these equivalent definitions, the last thing I should do is check that this definition of tangent space actually gives a vector space of dimension $`n`.
-To do this it suffices to show this for open subsets of $`\mathbb{R}^n`, which will imply the result for general manifolds $`M` (which are locally open subsets of $`\mathbb{R}^n`).
+To do this it suffices to verify this for open subsets of $`\mathbb{R}^n`, which will imply the result for general manifolds $`M` (which are locally open subsets of $`\mathbb{R}^n`).
 Using some real analysis, one can prove the following result:
 
 :::THEOREM "Maximal ideal at the origin"

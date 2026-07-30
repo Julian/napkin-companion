@@ -156,7 +156,7 @@ Show that $`h_{I_k}(d) = 1` for every $`d` (modify the single-point example).
 Hence we can proceed by induction on $`m \ge 2`, with the base case $`m = 1` already done above.
 For the inductive step, we use the projective analogues of the earlier intersection/union theorem.
 We know that $`h_{I_1 \cap \dots \cap I_{m-1}}(d) = m - 1` for $`d \gg 0` (this is the first $`m - 1` points; note that $`I_1 \cap \dots \cap I_{m-1}` is radical).
-To add in the $`m`th point we note that $$`h_{I_1 \cap \dots \cap I_m}(d) = h_{I_1 \cap \dots I_{m-1}}(d) + h_{I_m}(d) - h_J(d)`
+To add in the $`m`th point we note that $$`h_{I_1 \cap \dots \cap I_m}(d) = h_{I_1 \cap \dots \cap I_{m-1}}(d) + h_{I_m}(d) - h_J(d)`
 where $`J = (I_1 \cap \dots \cap I_{m-1}) + I_m`.
 The ideal $`J` may not be radical, but satisfies $`\mathbb{V}_+(J) = \varnothing` by an earlier example, hence $`h_J = 0` for $`d \gg 0`.
 This completes the proof.
@@ -190,7 +190,7 @@ This is a polynomial of degree $`n`.
 Consider the parabola $`zy - x^2` in $`\mathbb{CP}^2` with coordinates $`\mathbb{C}[x, y, z]`.
 Then $$`\mathbb{C}[x, y, z] / (zy - x^2) \cong \mathbb{C}[y, z] \oplus x\mathbb{C}[y, z].`
 A combinatorial computation gives that $`h_{(zy-x^2)}(0) = 1` (basis $`1`), $`h_{(zy-x^2)}(1) = 3` (basis $`x, y, z`), and $`h_{(zy-x^2)}(2) = 5` (basis $`xy, xz, y^2, yz, z^2`).
-We thus in fact see that $`h_{(zy-x^2)}(d) = 2d - 1`.
+We thus in fact see that $`h_{(zy-x^2)}(d) = 2d + 1`.
 :::
 
 In fact, this behavior of "eventually polynomial" always works.
@@ -336,7 +336,7 @@ This can only happen if $`V` is the union of a line and conic, for degree reason
 Finally note that the three intersection points $`AB \cap DE`, $`BC \cap EF` and $`CD \cap FA` do not lie on $`\mathscr{C}`, so they must lie on this line.
 :::
 
-We'd like to remark that the Pascal's theorem is just a special case of the Cayley–Bacharach theorem, which can be used to prove that the addition operation on an elliptic curve is associative.
+We'd like to remark that Pascal's theorem is just a special case of the Cayley–Bacharach theorem, which can be used to prove that the addition operation on an elliptic curve is associative.
 Interested readers may want to try proving the Cayley–Bacharach theorem using the same technique.
 
 # Problems

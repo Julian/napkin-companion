@@ -51,7 +51,7 @@ Suppose I told you that some rational function $`R` always finds a root of a qui
 For simplicity, let all the roots be distinct.
 
 Suppose that initially $`R` outputs $`z_1`.
-Consider what happens we smoothly swap the roots $`z_1` and $`z_2` along two non-intersecting paths that doesn't go through other roots.
+Consider what happens when we smoothly swap the roots $`z_1` and $`z_2` along two non-intersecting paths that don't go through other roots.
 
 :::figure "figures/complex-analysis/quintic-swap-two-paths.svg"
 The two red roots $`z_1` and $`z_2` are swapped along two non-intersecting paths, while the blue roots $`z_3`, $`z_4`, $`z_5` stay fixed.
@@ -107,7 +107,7 @@ How do we handle the nested radicals now?
 
 :::EXAMPLE "Cubic Formula"
 The cubic formula contains a nasty term
-$$`\sqrt[3]{\frac{2b^3 - 9abc + 27a^2 d + \sqrt{(2b^3 - 9abc + 27a^d)^2 - 4(b^3 - 3ac)^3}}{2}}.`
+$$`\sqrt[3]{\frac{2b^3 - 9abc + 27a^2 d + \sqrt{(2b^3 - 9abc + 27a^2 d)^2 - 4(b^2 - 3ac)^3}}{2}}.`
 Here, we've taken multiple roots.
 :::
 
@@ -119,7 +119,7 @@ Let's now consider nested radicals of degree $`2`, such as say $`\sqrt[3]{\sqrt{
 We know that we have nontrivial commutators $`\sigma` and $`\rho` that fix the interior of the cube root, but once again the phase may not be preserved under each operation individually.
 Once again, we can again consider the *commutators* of these commutators, say $`\sigma \rho \sigma^{-1} \rho^{-1}` which by the same logic fixes the issues with phase.
 
-There's no reason, we can't consider the commutators of commutators of commutators to fix radicals of degree $`3` and so on.
+There's no reason we can't consider the commutators of commutators of commutators to fix radicals of degree $`3` and so on.
 It thus just remains that we always can keep getting nontrivial commutators.
 
 # Step 3: Normal Groups

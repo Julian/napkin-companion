@@ -57,7 +57,7 @@ This proceeds in a diagram chase:
 - Since the top row is exact, it follows $`c = q(b)` for some $`b \in B`.
 - Then $`q'(\beta(b)) = 0`, so if we let $`b' = \beta(b)`, then $`b' \in \ker(q')`.
   As the bottom row is exact, there exists $`a'` with $`p'(a') = b'`.
-- Since $`\alpha` is injective, there is $`a \in A` with $`\alpha(a) = a'`.
+- Since $`\alpha` is surjective, there is $`a \in A` with $`\alpha(a) = a'`.
 - Since $`\beta` is injective, it follows that $`p(a) = b`.
 - Since the top row is exact, and $`b` is in the image of $`p`, it follows that $`0 = q(b) = c` as needed.
 

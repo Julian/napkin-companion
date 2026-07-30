@@ -371,7 +371,7 @@ We see that $`\operatorname{Alt} f` is a desirable representative of the equival
 Thus it makes sense for us to define $`\iota \colon \bigwedge^k(V^\vee) \hookrightarrow T^k(V^\vee)` that takes each element to the alternating tensor in $`T^k(V^\vee)`.
 
 ::::EXAMPLE
-With the same example as above, $`V = \mathbb{R}^2`, then we get $$`\iota(\mathbf{e}_1 \wedge \mathbf{e}_2) = \operatorname{Alt}(\mathbf{e}_1 \otimes \mathbf{e}_2) = \frac{\mathbf{e}_2 \otimes \mathbf{e}_1 - \mathbf{e}_1 \otimes \mathbf{e}_2}{2}.`
+With the same example as above, $`V = \mathbb{R}^2`, then we get $$`\iota(\mathbf{e}_1 \wedge \mathbf{e}_2) = \operatorname{Alt}(\mathbf{e}_1 \otimes \mathbf{e}_2) = \frac{\mathbf{e}_1 \otimes \mathbf{e}_2 - \mathbf{e}_2 \otimes \mathbf{e}_1}{2}.`
 
 :::figure "figures/differential-geometry/forms-alternation-embedding.svg"
 The maps relating $`T^k(V^\vee)`, $`\bigwedge^k(V^\vee)`, and their duals.
@@ -455,7 +455,7 @@ We write $`\omega_p(v) \in \mathbb{R}`.
 Since only the direction matters, it makes sense to make $`\omega` satisfy $`\omega_p(\lambda v) = \lambda \omega_p(v)` for $`\lambda \geq 0`.
 In particular, $`\omega_p(0) = 0`.
 
-Then, $`ds` is the differential form $`ds_p(v) = \|v\|`.
+Then, $`ds` is the $`1`-density $`ds_p(v) = \|v\|`.
 While we have not rigorously defined how to integrate over a curve (we will do this next chapter), you can intuitively see how it works.
 
 With this definition, a $`1`-form is just a $`1`-density that is in addition linear in the second argument — $`\omega_p(v + w) = \omega_p(v) + \omega_p(w)`.

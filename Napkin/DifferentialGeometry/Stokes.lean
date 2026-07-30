@@ -250,7 +250,7 @@ Satisfy yourself that one can extend this definition to a $`k`-cell $`c` defined
 :::
 
 ::::EXAMPLE "Examples of boundaries"
-Consider a $`2`-cell $`c \colon [0, 1]^2 \to \mathbb{R}^2` whose image is a (possibly skewed) quadrilateral with corners $`p_1, p_2, p_3, p_4` corresponding to $`(0, 0), (0, 1), (1, 1), (1, 0)`.
+Consider a $`2`-cell $`c \colon [0, 1]^2 \to \mathbb{R}^2` whose image is a (possibly skewed) quadrilateral with corners $`p_1, p_2, p_3, p_4` corresponding to $`(0, 0), (1, 0), (1, 1), (0, 1)`.
 Formally, $`\partial c` is given by
 $$`\partial c = (t \mapsto c(1, t)) - (t \mapsto c(0, t)) - (t \mapsto c(t, 1)) + (t \mapsto c(t, 0)).`
 Apologies for the eyesore notation caused by inline functions; let's just write

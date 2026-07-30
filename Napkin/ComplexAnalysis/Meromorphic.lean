@@ -162,7 +162,7 @@ The function $`\mathbb{C} \to \mathbb{C}` by
 $$`z \mapsto \frac{1}{\sin(z)}`
 has infinitely many poles: the numbers $`z = \pi k`, where $`k` is an integer.
 Let's compute the Laurent series at just $`z = 0`:
-$$`\begin{aligned} \frac{1}{\sin(2\pi z)} &= \frac{1}{\frac{z}{1!} - \frac{z^3}{3!} + \frac{z^5}{5!} - \dotsb} \\ &= \frac{1}{z} \cdot \frac{1}{1 - \left(\frac{z^2}{3!} - \frac{z^4}{5!} + \dotsb\right)} \\ &= \frac{1}{z} \sum_{k \geq 0} \left(\frac{z^2}{3!} - \frac{z^4}{5!} + \dotsb\right)^k. \end{aligned}`
+$$`\begin{aligned} \frac{1}{\sin(z)} &= \frac{1}{\frac{z}{1!} - \frac{z^3}{3!} + \frac{z^5}{5!} - \dotsb} \\ &= \frac{1}{z} \cdot \frac{1}{1 - \left(\frac{z^2}{3!} - \frac{z^4}{5!} + \dotsb\right)} \\ &= \frac{1}{z} \sum_{k \geq 0} \left(\frac{z^2}{3!} - \frac{z^4}{5!} + \dotsb\right)^k. \end{aligned}`
 which is a Laurent series, though I have no clue what the coefficients are.
 You can at least see the residue; the constant term of that huge sum is $`1`, so the residue is $`1`.
 Also, the pole has order $`1`.
@@ -343,7 +343,7 @@ It does!
 While we won't prove this rigorously, the point is that:
 
 :::MORAL
-If we let a point $`p` smoothly moves from $`a` to $`b`, and let $`\log f(p)` follows the value, then $`\log f(b) - \log f(a)` represents the change in value of $`\log f(p)`.
+If we let a point $`p` smoothly move from $`a` to $`b`, and let $`\log f(p)` follow the value, then $`\log f(b) - \log f(a)` represents the change in value of $`\log f(p)`.
 :::
 
 In the language of covering-space lifts, the mouse moves along $`\gamma` from $`a` to $`b`, the first robot moves along $`f \circ \gamma` from $`f(a)` to $`f(b)`, and the second robot moves from $`\log f(a)` to $`\log f(b)`.

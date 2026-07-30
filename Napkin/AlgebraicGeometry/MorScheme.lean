@@ -203,7 +203,7 @@ We would for example need a field homomorphism $`\mathbb{C} = \kappa( (y^2 + 1) 
 Changing the tune, consider maps $`\operatorname{Spec} \mathbb{C}[x] \to \operatorname{Spec} \mathbb{C}[y]`.
 We claim that if $`\mathfrak{m}` is a maximal ideal (closed point) of $`\mathbb{C}[x]`, then it can never be mapped to the generic point $`(0)` of $`\mathbb{C}[y]`.
 
-For otherwise, we would get a local ring homomorphism $`\mathbb{C}(y) \cong \mathcal{O}_{\operatorname{Spec} k[y], (0)} \to \mathcal{O}_{\operatorname{Spec} \mathbb{C}[x], \mathfrak{m}} \cong \mathbb{C}[x]_\mathfrak{m}` which in particular means we have a map on the residue fields $`\mathbb{C}(y) \to \mathbb{C}[x] / \mathfrak{m} \cong \mathbb{C}` which is impossible (why?).
+For otherwise, we would get a local ring homomorphism $`\mathbb{C}(y) \cong \mathcal{O}_{\operatorname{Spec} \mathbb{C}[y], (0)} \to \mathcal{O}_{\operatorname{Spec} \mathbb{C}[x], \mathfrak{m}} \cong \mathbb{C}[x]_\mathfrak{m}` which in particular means we have a map on the residue fields $`\mathbb{C}(y) \to \mathbb{C}[x] / \mathfrak{m} \cong \mathbb{C}` which is impossible (why?).
 :::
 
 The last example gives some nice intuition in general: "more generic" points tend to have bigger stalks than "less generic" points, hence repel them.
@@ -246,7 +246,7 @@ We could figure out the induced map on stalks now, much like before, but in a mo
 # The big theorem
 
 We did a few examples of $`\operatorname{Spec} A \to \operatorname{Spec} B` by hand, specifying the full data of a map of locally ringed spaces.
-It turns out that in fact, we didn't to specify that much data, and much of the process can be automated:
+It turns out that in fact, we didn't have to specify that much data, and much of the process can be automated:
 
 :::PROPOSITION "Affine reconstruction"
 Let $`\pi \colon \operatorname{Spec} A \to \operatorname{Spec} B` be a map of schemes.

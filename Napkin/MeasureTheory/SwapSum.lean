@@ -138,7 +138,7 @@ $$`\int_\Omega \left(\liminf_{n \to \infty} f_n\right) \; d\mu \leq \liminf_{n \
 Here we allow either side to be $`+\infty`.
 :::
 
-Notice that there are *no extra hypothesis* on $`f_n` other than nonnegative: which makes this quite surprisingly versatile if you ever are trying to prove some general result.
+Notice that there are *no extra hypotheses* on $`f_n` other than nonnegative: which makes this quite surprisingly versatile if you ever are trying to prove some general result.
 
 # Everything else
 

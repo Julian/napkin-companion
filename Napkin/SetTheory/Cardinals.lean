@@ -331,7 +331,7 @@ and hence $`\left\lvert \Lambda \right\rvert \le \overline\kappa < \kappa`.
 So, what about limit cardinals?
 It seems that most of them are singular: if $`\aleph_\lambda \neq \aleph_0` is a limit cardinal (that is, $`\lambda` is a limit ordinal), then the sequence $`\{\aleph_\alpha\}_{\alpha \in \lambda}` (of length $`\lambda`) is certainly cofinal.
 
-:::EXAMPLE "Beth fixed point"
+:::EXAMPLE "Aleph fixed point"
 Consider the monstrous cardinal $$`\kappa = \aleph_{\aleph_{\aleph_{\ddots}}}.`
 This might look frighteningly huge, as $`\kappa = \aleph_\kappa`, but its cofinality is $`\omega` as it is the limit of the sequence $$`\aleph_0, \aleph_{\aleph_0}, \aleph_{\aleph_{\aleph_0}}, \dots`
 :::

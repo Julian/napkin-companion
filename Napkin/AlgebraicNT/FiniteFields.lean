@@ -225,8 +225,8 @@ In this section we prove a result which is interesting by its own right, even th
 Consider the field $`F` of order $`p = 17`.
 We may want to ask the following questions about $`F`:
 
-- How many nonzero elements in $`F` is a quadratic residue (can be written as a square of another element in $`F`)?
-- Is there any element $`x` in $`p` such that $`x^2 = -1`?
+- How many nonzero elements in $`F` are quadratic residues (can be written as a square of another element in $`F`)?
+- Is there any element $`x` in $`F` such that $`x^2 = -1`?
 
 With the following proposition, the questions above become easy.
 
@@ -269,7 +269,7 @@ The rest is easily handled using group theory.
 Recall, because $`F^\times` is a finite Abelian group, it is in particular finitely generated, and by the fundamental theorem of finitely generated abelian groups can be written in the form $$`F^\times \cong \mathbb{Z}^{\oplus r} \oplus \mathbb{Z}/q_1\mathbb{Z} \oplus \mathbb{Z}/q_2\mathbb{Z} \oplus \dots \oplus \mathbb{Z}/q_m\mathbb{Z}.`
 Of course, $`r = 0` here.
 
-Now, assume $`F^\times` is not cyclic, so the lowest common denominator of all the $`q_i` values are less than $`|F^\times|`.
+Now, assume $`F^\times` is not cyclic, so the least common multiple of all the $`q_i` values is less than $`|F^\times|`.
 Then, for all $`x \in F^\times`, $`x^{\operatorname{lcm}(q_1, \dots, q_m)} = 1`, which gives a contradiction.
 
 :::REMARK

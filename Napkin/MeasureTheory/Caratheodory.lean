@@ -218,7 +218,7 @@ If $`\mu^*` is an outer measure, and $`\mathcal{A}^{\text{cm}}` is the set of $`
 Both are helpful for remembering what this represents.
 This notation is not standard but the pun was too good to resist.)
 
-Thus, if we compose the outer-measure construction with Carathéodory's theorem, we find that every pre-measure $`\mu_0` on an algebra $`\mathcal{A}_0` naturally gives a $`\sigma`-algebra $`\mathcal{A}^{\text{cm}}` with a complete measure $`\mu^{\text{cm}}`, and our two compatibility results mean that $`\mathcal{A}^{\text{cm}} \supset \mathcal{A}_0` and $`\mu^{\text{cm}}` agrees with $`\mu`.
+Thus, if we compose the outer-measure construction with Carathéodory's theorem, we find that every pre-measure $`\mu_0` on an algebra $`\mathcal{A}_0` naturally gives a $`\sigma`-algebra $`\mathcal{A}^{\text{cm}}` with a complete measure $`\mu^{\text{cm}}`, and our two compatibility results mean that $`\mathcal{A}^{\text{cm}} \supset \mathcal{A}_0` and $`\mu^{\text{cm}}` agrees with $`\mu_0`.
 
 Here is a table showing the process, where going down each row of the table corresponds to restriction process.
 
@@ -246,7 +246,7 @@ The hard part was to showing that there *is* a way to assign measures consistent
 Here is an example.
 
 ::::EXAMPLE "The Cantor set has measure zero"
-The standard *middle-thirds Cantor set* is the subset $`[0, 1]` obtained as follows: we first delete the open interval $`(1/3, 2/3)`.
+The standard *middle-thirds Cantor set* is the subset of $`[0, 1]` obtained as follows: we first delete the open interval $`(1/3, 2/3)`.
 This leaves two intervals $`[0, 1/3]` and $`[2/3, 1]` from which we delete the middle thirds again from both, i.e. deleting $`(1/9, 2/9)` and $`(7/9, 8/9)`.
 We repeat this procedure indefinitely and let $`C` denote the result.
 An illustration is shown below.
@@ -331,7 +331,7 @@ Show that $`\mathcal{A}^{\text{cm}} \supset \mathcal{A}`, so we can just restric
 
 We will in a moment add this as the fourth row in our table.
 
-However, if this is the end goal, than a somewhat different Carathéodory theorem can be stated because often one more niceness condition holds:
+However, if this is the end goal, then a somewhat different Carathéodory theorem can be stated because often one more niceness condition holds:
 
 :::DEFINITION
 A pre-measure or measure $`\mu` on $`\Omega` is *$`\sigma`-finite* if $`\Omega` can be written as a countable union $`\Omega = \bigcup_n A_n` with $`\mu(A_n) < \infty` for each $`n`.

@@ -212,7 +212,7 @@ For $`k = 1`, $`d_1 \colon \operatorname{Cells}_1(X) \to \operatorname{Cells}_0(
 
 :::THEOREM "Cellular boundary for $k > 1$"
 Let $`k > 1` be a positive integer.
-Let $`e^k` be an $`k`-cell, and let $`\{e_\beta^{k-1}\}_\beta` denote all $`(k-1)`-cells of $`X`.
+Let $`e^k` be a $`k`-cell, and let $`\{e_\beta^{k-1}\}_\beta` denote all $`(k-1)`-cells of $`X`.
 Then $`d_k \colon \operatorname{Cells}_k(X) \to \operatorname{Cells}_{k-1}(X)` is given on basis elements by $$`d_k(e^k) = \sum_\beta d_\beta e_\beta^{k-1}`
 where $`d_\beta` is the degree of the composed map $$`S^{k-1} = \partial e^k \xrightarrow{\text{attach}} X^{k-1} \twoheadrightarrow S_\beta^{k-1}.`
 Here the first arrow is the attaching map for $`e^k` and the second arrow is the quotient of collapsing $`X^{k-1} \setminus e^{k-1}_\beta` to a point.
@@ -227,7 +227,7 @@ The boundary map $`d_2` sends a $`2`-cell $`e^2` to the (oriented) $`1`-cells on
 :::
 
 But it's not that easy!
-Note that in a CW complex, the boundary of a $`k`-cell can be fused into _arbitrary points_ in $`X^{k-1}`, so an "edge" of a $`k`-cell need not be a $`k-1`-cell.
+Note that in a CW complex, the boundary of a $`k`-cell can be fused into _arbitrary points_ in $`X^{k-1}`, so an "edge" of a $`k`-cell need not be a $`(k-1)`-cell.
 To make matters worse, sometimes there may be a duplicated edge — in the Klein bottle, each pair of two opposing edges depicted is actually _the same edge_, possibly in different orientations.
 
 :::figure "figures/homology/cellular-klein-square.svg"

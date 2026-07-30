@@ -258,7 +258,7 @@ Mathlib writes the pre-image as `f ⁻¹' T` ({name}`Set.preimage`) and the imag
 # Equivalence relations
 
 Let $`X` be a fixed set now.
-A binary relation $`\sim` on $`X` assigns a truth value "true" or "false" to $`x \sim y` for each $`x` or $`y`.
+A binary relation $`\sim` on $`X` assigns a truth value "true" or "false" to $`x \sim y` for each $`x` and $`y`.
 Now an *equivalence relation* $`\sim` on $`X` is a binary relation which satisfies the following axioms:
 
 - Reflexive: we have $`x \sim x`.

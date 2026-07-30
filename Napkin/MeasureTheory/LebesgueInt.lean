@@ -57,7 +57,7 @@ In particular, it is compatible with the previous step.
 
 Conveniently, this is already enough to define the integral for $`f \colon \Omega \to [0, +\infty]`.
 Note that $`[0, +\infty]` can be thought of as a topological space where we add new open sets $`(a, +\infty]` for each real number $`a` to our usual basis of open intervals.
-Thus we can equip it with the Borel sigma-algebra.
+Thus we can equip it with the Borel $`\sigma`-algebra.
 
 For each measurable function $`f \colon \Omega \to [0, +\infty]`, let
 $$`\int_\Omega f \; d\mu \overset{\text{def}}{=} \sup_{0 \leq s \leq f} \left(\int_\Omega s \; d\mu\right)`

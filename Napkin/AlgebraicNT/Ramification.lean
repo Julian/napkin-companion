@@ -159,7 +159,7 @@ All of the $`\{\mathfrak{p}_i\}` are Galois conjugates of each other.
 Before proving this, let us consider the easier problem of factorization into elements.
 
 :::quote
-Suppose $`\mathcal{O}_K` is an UFD, and $`p` factors as $`u p_1 p_2 \cdots p_n` in $`\mathcal{O}_K`, where $`p_i` are irreducibles and $`u` is an unit.
+Suppose $`\mathcal{O}_K` is a UFD, and $`p` factors as $`u p_1 p_2 \cdots p_n` in $`\mathcal{O}_K`, where $`p_i` are irreducibles and $`u` is a unit.
 Show that the $`p_i` are all conjugates of each other, up to multiplication by a unit.
 :::
 
@@ -175,7 +175,7 @@ Thus $`p \mid q`, so each $`p_i` is a factor of $`q`, and we're done by unique f
 :::
 
 Unfortunately, the product of all conjugates of an ideal $`\mathfrak{p}_1` is not necessarily of the form $`p \cdot \mathcal{O}_K` (for example, $`K=\mathbb{Q}[i]` and $`(1+i)` has no other conjugates).
-So in the proof, we pick $`x` which is an "representative" of $`\mathfrak{p}_1`.
+So in the proof, we pick $`x` which is a "representative" of $`\mathfrak{p}_1`.
 
 :::PROOF
 (of the theorem)
@@ -344,7 +344,7 @@ In the extension $`K^{D_{\mathfrak{p}_1}}/\mathbb{Q}`, $`\mathfrak{p}'_1` has in
 
 # Tangential remark: more general Galois extensions
 
-All the discussion about Galois extensions carries over if we replace $`K/\mathbb{Q}` by some different Galois extension $`K/F`.
+All the discussion about Galois extensions carries over if we replace $`K/\mathbb{Q}` by some different Galois extension $`L/F`.
 Instead of a rational prime $`p` breaking down in $`\mathcal{O}_K`, we would have a prime ideal $`\mathfrak{p}` of $`F` breaking down as $$`\mathfrak{p} \cdot \mathcal{O}_L = (\mathfrak{P}_1 \dots \mathfrak{P}_g)^e` in $`\mathcal{O}_L` and then all results hold verbatim.
 (The $`\mathfrak{P}_i` are primes in $`L` above $`\mathfrak{p}`.)
 Instead of $`\mathbb{F}_p` we would have $`\mathcal{O}_F/\mathfrak{p}`.

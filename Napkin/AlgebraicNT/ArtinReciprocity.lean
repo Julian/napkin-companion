@@ -525,7 +525,7 @@ This can be confusing, so let us take an example.
 Consider abelian field extensions $`L/\mathbb Q`.
 Let the modulus in $`\mathbb Q` be $`\mathfrak m = 15 \infty`.
 
-The ray class group $`C_K(\mathfrak m)` is of course isomorphic to $`(\mathbb Z/15\mathbb Z)^\times \cong (\mathbb Z/3\mathbb Z)^\times \times (\mathbb Z/5\mathbb Z)^\times \cong \mathbb Z/2\mathbb Z \times \mathbb Z/4\mathbb Z`.
+The ray class group $`C_{\mathbb Q}(\mathfrak m)` is of course isomorphic to $`(\mathbb Z/15\mathbb Z)^\times \cong (\mathbb Z/3\mathbb Z)^\times \times (\mathbb Z/5\mathbb Z)^\times \cong \mathbb Z/2\mathbb Z \times \mathbb Z/4\mathbb Z`.
 
 As small as this group is (with only 8 elements), it has 8 subgroups.{margin}[The LMFDB has a diagram of its subgroup lattice at `https://beta.lmfdb.org/Groups/Abstract/diagram/8.2`.]
 Nevertheless, we will only focus on the relevant parts of the subgroup lattice.
@@ -542,7 +542,7 @@ Interested readers may want to try to work out the canonical isomorphism between
 
 Next, how does this relate to the abelian extensions that corresponds to different modulus, let's say $`5 \infty`?
 Intuitively speaking, if we know the value of an ideal mod $`15 \infty`, we would know its value mod $`5 \infty`.
-Formally, the inclusions $`P_K(15\infty) \subseteq I_K(15\infty)` and $`P_K(5\infty) \subseteq I_K(5\infty)` fit into a morphism of short exact sequences, inducing a surjection $`C_K(15 \infty) \twoheadrightarrow C_K(5 \infty)`, or equivalently $`(\mathbb Z/15\mathbb Z)^\times \twoheadrightarrow (\mathbb Z/5\mathbb Z)^\times`.
+Formally, the inclusions $`P_{\mathbb Q}(15\infty) \subseteq I_{\mathbb Q}(15\infty)` and $`P_{\mathbb Q}(5\infty) \subseteq I_{\mathbb Q}(5\infty)` fit into a morphism of short exact sequences, inducing a surjection $`C_{\mathbb Q}(15 \infty) \twoheadrightarrow C_{\mathbb Q}(5 \infty)`, or equivalently $`(\mathbb Z/15\mathbb Z)^\times \twoheadrightarrow (\mathbb Z/5\mathbb Z)^\times`.
 
 :::figure "figures/algebraic-nt/artin-modulus-ses.svg"
 The ray/ideal/class-group sequences for the moduli $`15\infty` and $`5\infty` form a morphism of short exact sequences.
@@ -563,7 +563,7 @@ Let $`L = K(i)`.
 We claim the following is true:
 
 - $`L/K` is an abelian extension,
-- the discriminant is $`\mathfrak f = \mathfrak f(L/K) = 1`,
+- the conductor is $`\mathfrak f = \mathfrak f(L/K) = 1`,
 - $`H(L/K, \mathfrak f) = P_K(\mathfrak f)` — that is, this is exactly the situation where we can determine $`\mathfrak p \pmod{1}` for $`\mathfrak p \subseteq K` based on $`\left(\frac{L/K}{\mathfrak p}\right)`.
 
 (In the general case, the field $`L` exists according to the Hilbert class field problem below.)
@@ -594,7 +594,7 @@ This time, we don't have the first bullet point anymore — $`L` is _not_ the Hi
 The value of $`\left(\frac{L/\mathbb Q}{(p)}\right)` only depends on $`(p) \pmod{\mathfrak f(L/\mathbb Q)}`.
 :::
 
-In this case, the discriminant of the extension $`L/\mathbb Q` is $`\mathfrak f(L/\mathbb Q) = 20 \infty`.
+In this case, the conductor of the extension $`L/\mathbb Q` is $`\mathfrak f(L/\mathbb Q) = 20 \infty`.
 
 So, in summary: $$`\begin{aligned} &\quad \text{$p$ can be written as $x^2 + 5y^2$} \\ &\iff \text{$(p) = \mathfrak p_1 \mathfrak p_2$ for principal $\mathfrak p_1$ when lifted to } \mathbb Q(\sqrt{-5}) \\ &\iff \text{$(p) = \mathfrak p_1 \mathfrak p_2$, and $\mathfrak p_1$ splits completely in } \mathbb Q(\sqrt{-5}, i) \\ &\iff \text{$(p) \subseteq \mathbb Q$ splits completely when lifted to } \mathbb Q(\sqrt{-5}, i) \\ &\iff \left( \frac{\mathbb Q(\sqrt{-5}, i)/\mathbb Q}{(p)} \right) = \operatorname{id} \\ &\iff (p \bmod 20) \in \{1, 9\}. \end{aligned}`
 

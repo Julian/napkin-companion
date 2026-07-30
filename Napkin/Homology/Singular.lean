@@ -104,7 +104,7 @@ Probably $`H_n(S^m)`, especially the case $`m = n = 1`.
 
 Let $`X` be a topological space, and let $`C_n(X)` be the free abelian group of $`n`-chains of $`X` that we defined earlier.
 Our work above gives us a boundary operator $`\partial`, so we have a sequence of maps $$`\dots \xrightarrow{\partial} C_3(X) \xrightarrow{\partial} C_2(X) \xrightarrow{\partial} C_1(X) \xrightarrow{\partial} C_0(X) \xrightarrow{\partial} 0`
-(here I'm using $`0` to for the trivial group, which is standard notation for abelian groups.)
+(here I'm using $`0` to denote the trivial group, which is standard notation for abelian groups.)
 We'll call this the *singular chain complex*.
 
 Now, how does this let us detect holes in the space?
@@ -211,7 +211,7 @@ This captures the fact that $`X` is really just $`S^1`.
 In $`X = S^1`, let $`a` be the uppermost point and $`b` the lowermost point.
 Let $`c` be the simplex from $`a` to $`b` along the left half of the circle, and $`d` the simplex from $`a` to $`b` along the right half.
 Finally, let $`\gamma` be the simplex which represents a loop $`\gamma` from $`a` to itself, wrapping once counterclockwise around $`S^1`.
-We claim that in $`H^1(S^1)` we have $$`\gamma = c - d`
+We claim that in $`H_1(S^1)` we have $$`\gamma = c - d`
 which geometrically means that $`c - d` represents wrapping once around the circle (which is of course what we expect).
 
 Indeed this can be seen by drawing a $`2`-simplex whose boundary is exactly $`\gamma - c + d`.

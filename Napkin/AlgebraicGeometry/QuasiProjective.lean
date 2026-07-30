@@ -129,9 +129,9 @@ Let $`f \colon X \to Y` be a morphism.
 
 First, remark that $`f^{-1}(Y) = X`.
 Now consider the regular function $`\pi_1 \in \mathcal{O}_Y(Y)`, given by the projection $`(y_1, \dots, y_n) \mapsto y_1`.
-Thus we need $`f \circ \pi_1` to be regular on $`X`.
+Thus we need $`\pi_1 \circ f` to be regular on $`X`.
 
-But for affine varieties $`\mathcal{O}_X(X)` is just the coordinate ring $`\mathbb{C}[X]` and so we know there is a polynomial $`P_1` such that $`f \circ \pi_1 = P_1`.
+But for affine varieties $`\mathcal{O}_X(X)` is just the coordinate ring $`\mathbb{C}[X]` and so we know there is a polynomial $`P_1` such that $`\pi_1 \circ f = P_1`.
 Similarly for the other coordinates.
 :::
 
@@ -229,7 +229,7 @@ So instead we start with the simplest affine variety, say $`\mathbb{A}^1`, and t
 Surprisingly, this doesn't work.
 
 :::EXAMPLE "Crucial example: punctured line is isomorphic to hyperbola"
-Let $`X = \mathbb{A}^1 \setminus \{0\}` be an quasi-projective variety.
+Let $`X = \mathbb{A}^1 \setminus \{0\}` be a quasi-projective variety.
 We claim that in fact we have an isomorphism $$`X \cong V = \mathbb{V}(xy - 1) \subseteq \mathbb{A}^2`
 which shows that $`X` is still isomorphic to an affine variety.
 The maps are $`t \mapsto (t, 1/t)` and $`(x, y) \mapsto x`.
@@ -279,7 +279,7 @@ In this way, "projective varieties are locally affine".
 :::
 
 :::PROBLEM "Affine meets irreducible projective"
-Let $`V` be a affine variety and let $`W` be a irreducible projective variety.
+Let $`V` be an affine variety and let $`W` be an irreducible projective variety.
 Prove that $`V \cong W` if and only if $`V` and $`W` are a single point.
 (Hint: examine the global regular functions.)
 :::

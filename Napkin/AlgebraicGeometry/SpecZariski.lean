@@ -94,7 +94,7 @@ So in addition to the "geometric points" (corresponding to the maximal ideals $`
 :::
 
 The non-closed points are the ones you are not used to: there is one for each non-maximal prime ideal (visualized as "irreducible subvariety").
-I like to visualize them in my head like a fly: you can hear it, so you know it is floating _somewhere_ in the room, but as it always moving, you never know exactly where.
+I like to visualize them in my head like a fly: you can hear it, so you know it is floating _somewhere_ in the room, but as it is always moving, you never know exactly where.
 So the generic point of $`\operatorname{Spec} \mathbb{C}[x, y]` corresponding to the prime ideal $`(0)` is floating everywhere in the plane, the one for the ideal $`(y - x^2)` floats along the parabola, etc.
 
 :::figure "calvin-hobbes-fly.png"
@@ -132,12 +132,12 @@ We denote it $`f(\mathfrak{p})`.
 
 :::EXAMPLE "Vanishing locii in $\\mathbb{A}^n$"
 Suppose $`A = \mathbb{C}[x_1, \dots, x_n]`, and $`\mathfrak{m} = (x_1 - a_1, x_2 - a_2, \dots, x_n - a_n)` is a maximal ideal of $`A`.
-Then for a polynomial $`f`, $`f \pmod{\mathfrak{m}} = f(a_1, \dots, a_n)` with the identification that $`A/\mathfrak{m} \cong \mathbb{C}`.
+Then for a polynomial $`f \in A`, $`f \pmod{\mathfrak{m}} = f(a_1, \dots, a_n)` with the identification that $`A/\mathfrak{m} \cong \mathbb{C}`.
 :::
 
 :::EXAMPLE "Functions on $\\operatorname{Spec} \\mathbb{Z}$"
-Consider $`A = \operatorname{Spec} \mathbb{Z}`.
-Then $`2019` is a function on $`A`.
+Consider $`A = \mathbb{Z}`.
+Then $`2019` is a function on $`\operatorname{Spec} A`.
 Its value at the point $`(5)` is $`4 \pmod 5`; its value at the point $`(7)` is $`3 \pmod 7`.
 :::
 
@@ -266,7 +266,7 @@ For affine schemes:
 :::DEFINITION
 Let $`A` be a commutative ring.
 Consider chains of prime ideals $`\mathfrak{p}_0 \subsetneq \mathfrak{p}_1 \subsetneq \dots \subsetneq \mathfrak{p}_n \subseteq A`, where $`n` is called the _length_.
-The supremum of all possible $`n` is the called *Krull dimension* of $`A`.
+The supremum of all possible $`n` is then called the *Krull dimension* of $`A`.
 
 The Krull dimension is always nonnegative unless $`A` is the zero ring, in which case either $`-1` or $`-\infty` are used conventionally.
 :::
@@ -276,7 +276,7 @@ This definition should match your intuition.
 :::EXAMPLE "Examples of Krull dimension"
 1. $`\mathbb{C}[x_1, \dots, x_n]` has Krull dimension $`n`, with the chain $`(0) \subsetneq (x_1) \subsetneq (x_1, x_2) \subsetneq \dots \subsetneq (x_1, \dots, x_n)` having length $`n`.
    This matches our expectation that $`\operatorname{Spec} \mathbb{C}[x_1, \dots, x_n]` corresponds to $`\mathbb{A}^n`.
-2. $`\mathbb{C}[x, y] / (y - x^2)` has Krull dimension $`1`, with the chain $`(x, y) \subsetneq (y - x^2)` having length $`1`.
+2. $`\mathbb{C}[x, y] / (y - x^2)` has Krull dimension $`1`, with the chain $`(y - x^2) \subsetneq (x, y)` having length $`1`.
    Geometrically, we think of $`(x, y)` as the origin and $`(y - x^2)` as the parabola itself.
 3. $`\mathbb{Z}` has Krull dimension $`1`.
 4. $`\mathbb{Z}/(60)` has Krull dimension $`0`; it's just three points.
@@ -345,7 +345,7 @@ Indeed, we may write $$`\sqrt I = \bigcap_{\mathfrak{p} \supseteq I} \mathfrak{p
 We can now state:
 
 :::THEOREM "Radical ideals correspond to closed sets"
-Let $`I` and $`J` be ideals of $`A`, and considering the space $`\operatorname{Spec} A`.
+Let $`I` and $`J` be ideals of $`A`, and consider the space $`\operatorname{Spec} A`.
 Then $$`\mathbb{V}(I) = \mathbb{V}(J) \iff \sqrt I = \sqrt J.`
 In particular, radical ideals exactly correspond to closed subsets of $`\operatorname{Spec} A`.
 :::

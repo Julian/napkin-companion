@@ -160,7 +160,7 @@ This justifies the use of "$`\hookrightarrow`", and we call each $`\sigma_i` an 
 ::::PROOF
 This is actually kind of fun!
 Recall that any irreducible polynomial over $`\mathbb{Q}` has distinct roots (a lemma from the algebraic integers chapter).
-We'll adjoin elements $`\alpha_1, \alpha_2, \dots, \alpha_m` one at a time to $`\mathbb{Q}`, until we eventually get all of $`K`, that is, $$`K = \mathbb{Q}(\alpha_1, \dots, \alpha_n).`
+We'll adjoin elements $`\alpha_1, \alpha_2, \dots, \alpha_m` one at a time to $`\mathbb{Q}`, until we eventually get all of $`K`, that is, $$`K = \mathbb{Q}(\alpha_1, \dots, \alpha_m).`
 Diagrammatically, this is
 
 :::figure "figures/algebraic-nt/embedding-tower.svg" (alt := "The tower of embeddings in the proof of the n-embeddings theorem: adjoin α₁, α₂, … one at a time, choosing at each stage an extension τᵢ of the previous embedding into ℂ.")
@@ -398,7 +398,7 @@ In that case, we denote $`\operatorname{Aut}(K/F)` by $`\operatorname{Gal}(K/F)`
 :::EXAMPLE "Examples and non-examples of Galois extensions"
 1. The extension $`\mathbb{Q}(\sqrt2) / \mathbb{Q}` is Galois, since it's the splitting field of $`x^2-2` over $`\mathbb{Q}`.
    The Galois group has order two, $`\sqrt 2 \mapsto \pm \sqrt 2`.
-2. The extension $`\mathbb{Q}(\sqrt2, \sqrt 3) / \mathbb{Q}` is Galois, since it's the splitting field of $`(x^2-5)^2-6` over $`\mathbb{Q}`.
+2. The extension $`\mathbb{Q}(\sqrt2, \sqrt 3) / \mathbb{Q}` is Galois, since it's the splitting field of $`(x^2-5)^2-24` over $`\mathbb{Q}`.
    As discussed before, the Galois group is $`\mathbb{Z}/2\mathbb{Z} \times \mathbb{Z}/2\mathbb{Z}`.
 3. The extension $`\mathbb{Q}(\sqrt[3]{2}) / \mathbb{Q}` is _not_ Galois.
 :::

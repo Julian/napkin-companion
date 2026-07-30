@@ -248,8 +248,8 @@ _Hint._ Rearrange the cofinal maps to be nondecreasing.
 *Reflection.*
 
 _Hint._ This is very similar to the proof of Löwenheim–Skolem.
-For a sentence $`\phi`, let $`f_\phi` send $`\alpha` to the least $`\beta < \kappa` such that for all $`\vec b \in V_\alpha`, if there exists $`a \in M` such that $`V_\kappa \vDash \phi[a, \vec b]` then $`\exists a \in V_\beta` such that $`V_\kappa \vDash \phi[a, \vec b]`.
-(To prove this $`\beta` exists, use the fact that $`\kappa` is cofinal.)
+For a sentence $`\phi`, let $`f_\phi` send $`\alpha` to the least $`\beta < \kappa` such that for all $`\vec b \in V_\alpha`, if there exists $`a \in V_\kappa` such that $`V_\kappa \vDash \phi[a, \vec b]` then $`\exists a \in V_\beta` such that $`V_\kappa \vDash \phi[a, \vec b]`.
+(To prove this $`\beta` exists, use the fact that $`\kappa` is regular.)
 Then, take the supremum over the countably many sentences for each $`\alpha`.
 
 _Solution._ For a sentence $`\phi` let $`f_\phi \colon \kappa \to \kappa` send $`\alpha` to the least $`\beta < \kappa` such that for all $`\vec b \in V_\alpha`, if there exists $`a \in V_\kappa` such that $`V_\kappa \vDash \phi[a, \vec b]` then $`\exists a \in V_\beta` such that $`V_\kappa \vDash \phi[a, \vec b]`.

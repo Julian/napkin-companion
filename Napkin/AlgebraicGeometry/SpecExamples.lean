@@ -38,7 +38,7 @@ In everything that follows, $`k` is any field.
 # Spec k, a single point
 
 This one is easy: for any field $`k`, $`X = \operatorname{Spec} k` has a single point, corresponding to the only proper ideal $`(0)`.
-There is only way to put a topology on it.
+There is only one way to put a topology on it.
 
 As for the sheaf, $`\mathcal{O}_X(X) = \mathcal{O}_{X, (0)} = k`.
 So the space is remembering what field it wants to be over.
@@ -132,7 +132,7 @@ It has two types of prime ideals:
 So the picture almost does not change.
 This time $`\eta = (0)` has stalk $`\mathbb{Z}_{(0)} = \mathbb{Q}`, so a "rational function" is literally a rational number!
 Thus, $`\frac{20}{19}` is a function with a double root at $`(2)`, a root at $`(5)`, and a simple pole at $`(19)`.
-If we evaluate it at $`\mathfrak{p} = (7)`, we get $`3 \pmod 7`.
+If we evaluate it at $`\mathfrak{p} = (7)`, we get $`4 \pmod 7`.
 In general, the residue fields are what you'd guess: $`\kappa\left( (p) \right) = \mathbb{Z}/(p) \cong \mathbb{F}_p` for each prime $`p`, and $`\kappa\left( (0) \right) \cong \mathbb{Q}`.
 
 The stalk is bigger than the residue field at the closed points: for example $`\mathcal{O}_{\operatorname{Spec} \mathbb{Z}, (3)} \cong \left\{ \frac mn \mid 3 \nmid n \right\}` consists of rational numbers with no pole at $`3`.
@@ -160,7 +160,7 @@ Accordingly there is no generic point floating around: as the space is discrete,
 # Spec k\[x\]/(x²), the double point
 
 We can now elaborate on the "double point" scheme $`X_2 = \operatorname{Spec} k[x] / (x^2)` since it is such an important motivating example.
-How it does differ from the "one-point" scheme $`X_1 = \operatorname{Spec} k[x] / (x) = \operatorname{Spec} k`?
+How does it differ from the "one-point" scheme $`X_1 = \operatorname{Spec} k[x] / (x) = \operatorname{Spec} k`?
 Both $`X_2` and $`X_1` have exactly one point, and so obviously the topologies are the same too.
 
 The difference is that the stalk (equivalently, the section, since we have only one point) is larger: $`\mathcal{O}_{X_2, (x)} = \mathcal{O}_{X_2}(X_2) = k[x]/(x^2)`.
@@ -308,7 +308,7 @@ Like before, topologically it looks like the closed set $`\mathbb{V}(xy)` of $`\
 Verify that $`(y + 3)` is really a maximal ideal of $`\operatorname{Spec} k[x, y] / (xy)` lying in $`\mathbb{V}(x)`.
 :::
 
-The ideal $`(0)` is longer prime, so it is not a point of this space.
+The ideal $`(0)` is no longer prime, so it is not a point of this space.
 Rather, there are two non-closed points this time: the ideals $`(x)` and $`(y)`, which can be visualized as floating around each of the two axes.
 This space is reducible, since it can be written as the union of two proper closed sets, $`\mathbb{V}(x) \cup \mathbb{V}(y)`.
 (It is still _connected_, as a topological space.)

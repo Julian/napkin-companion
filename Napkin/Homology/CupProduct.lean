@@ -114,7 +114,7 @@ This is a special case of a more general structure:
 
 :::DEFINITION
 A *graded pseudo-ring* $`R` is an abelian group $$`R = \bigoplus_{d \ge 0} R^d`
-where $`R^0`, $`R^1`, …, are abelian groups, with an additional associative binary operation $`\times \colon R \to R`.
+where $`R^0`, $`R^1`, …, are abelian groups, with an additional associative binary operation $`\times \colon R \times R \to R`.
 We require that if $`r \in R^d` and $`s \in R^e`, we have $`rs \in R^{d+e}`.
 Elements of an $`R^d` are called *homogeneous elements*; if $`r \in R^d` and $`r \neq 0`, we write $`|r| = d`.
 :::
@@ -396,7 +396,7 @@ Let $`a` and $`b` be any nonzero elements in $`C_m(X)` and $`C_n(Y)` respectivel
 Then, $$`\times(a, b) = a \times b, \qquad 2 \cdot (a, b) = (2a, 2b), \qquad \times(2 \cdot (a, b)) = 4(a \times b).`
 :::
 
-If we want to talk about isomorphism, or do anything with the $`\mathbb{Z}`-module structure of $`C_{m + n}(X \times Y)` or $`H_{m + n}(X \times Y)`, we'd better having a $`\mathbb{Z}`-module homomorphism.
+If we want to talk about isomorphism, or do anything with the $`\mathbb{Z}`-module structure of $`C_{m + n}(X \times Y)` or $`H_{m + n}(X \times Y)`, we'd better have a $`\mathbb{Z}`-module homomorphism.
 
 This is easy enough to fix: $`\times` is bilinear, so it's natural to consider the tensor product: $$`\times \colon C_m(X) \otimes_{\mathbb{Z}} C_n(Y) \to C_{m + n}(X \times Y).`
 With this notation, $`\times(a \otimes b) = a \times b`.
@@ -413,7 +413,7 @@ is an injective $`\mathbb{Z}`-module homomorphism.
 
 The definition with singular homology is quite clumsy — because we use simplices as the building blocks for the chains, the product of two simplices in $`X` and $`Y` becomes a huge collection of simplices in $`X \times Y`.
 
-We will now redefine the cross product using cellular homology — it can be safely skipped, since both definitions of the cross product gives identical result on the homology groups.
+We will now redefine the cross product using cellular homology — it can be safely skipped, since both definitions of the cross product give identical results on the homology groups.
 
 If $`X` and $`Y` are CW complexes, we can do better.
 We see that $`X \times Y` has a natural CW complex structure: for each cell $`e^m` of $`X` and cell $`e^n` of $`Y`, their product makes for a cell $`e^{m + n}` of $`X \times Y`.

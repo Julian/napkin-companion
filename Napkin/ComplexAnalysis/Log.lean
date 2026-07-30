@@ -137,7 +137,7 @@ Show that the image under $`p` is exactly $`2\mathbb{Z}` once we identify $`\pi_
 
 That means that for any loop $`\gamma` in $`V`, we need $`f \circ \gamma` to have an *even* winding number around $`0 \in B`.
 This amounts to
-$$`\frac{1}{2\pi} \oint_\gamma \frac{f'}{f} \; dz \in 2\mathbb{Z}`
+$$`\frac{1}{2\pi i} \oint_\gamma \frac{f'}{f} \; dz \in 2\mathbb{Z}`
 since $`f` has no poles.
 
 Replacing $`2` with $`n` and carrying over the discussion gives the first main result.

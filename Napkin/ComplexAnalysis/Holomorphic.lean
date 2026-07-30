@@ -390,7 +390,7 @@ Indeed, as you'll see in the problems, the existence of a Taylor series is incre
 
 # Optional: Proof that holomorphic functions are analytic
 
-It is recommended to read the next chapter first to understand the origin of the term $`\frac{f(w - p)}{(w - p)^{k+1}}` in Cauchy's differentiation formula above.
+It is recommended to read the next chapter first to understand the origin of the term $`\frac{f(w)}{(w - p)^{k+1}}` in Cauchy's differentiation formula above.
 
 Each step of the proof is quite intuitive, if not a bit long.
 The outline is:

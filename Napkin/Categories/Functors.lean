@@ -206,10 +206,10 @@ This lets us construct a category $`\mathsf{Cat}` whose objects are categories a
 
 # Covariant functors as indexed family of objects
 
-Instead of viewing functor as a _function_, sometimes it is more convenient to view a functor as an _object_ (or a family of objects).
+Instead of viewing a functor as a _function_, sometimes it is more convenient to view a functor as an _object_ (or a family of objects).
 
 For sets $`A` and $`B`, sometimes the notation $`A^B` is used to denote the set $`\mathrm{Hom}(B, A)` being the set of all functions from $`B` to $`A`.
-This notation is natural because, for finite sets $`A` and $`B`, then $`|\mathrm{Hom}(B, A)| = |A|^{|B|}`.
+This notation is natural because, for finite sets $`A` and $`B`, we have $`|\mathrm{Hom}(B, A)| = |A|^{|B|}`.
 
 That said, the product set $`A \times A` is sometimes also denoted $`A^2`.
 Is there a relation?
@@ -237,7 +237,7 @@ Similar to above, each object in $`\mathcal{A}^2` should correspond to some sort
 But a function's codomain must be an object… $`\mathcal{A}` is a category, so $`f` should be a functor!
 
 So we can make a category $`\mathsf{2}`, and we have $`F \colon \mathsf{2} \to \mathcal{A}`.
-There is only one reasonable way to define $`\mathsf{2}`{margin}[This is *different* from the category $`\mathbf{2}` that we will define later for natural transformation! Be careful.] that do what we want:
+There is only one reasonable way to define $`\mathsf{2}`{margin}[This is *different* from the category $`\mathbf{2}` that we will define later for natural transformation! Be careful.] that does what we want:
 
 - The objects are $`\{0, 1\}`;
 - There is no morphism, except $`\mathrm{id}_0` and $`\mathrm{id}_1`.

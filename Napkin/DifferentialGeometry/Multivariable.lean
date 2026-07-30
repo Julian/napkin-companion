@@ -97,7 +97,7 @@ If $`(Df)_p` exists at every point, we say $`f` is *differentiable*.
 :::
 
 :::QUESTION
-Check if that $`V = W = \mathbb{R}`, this is equivalent to the single-variable definition.
+Check that if $`V = W = \mathbb{R}`, this is equivalent to the single-variable definition.
 (What are the linear maps from $`V` to $`W`?)
 :::
 

@@ -85,7 +85,7 @@ We will now really hammer in the importance of the distinguished open sets.
 The definition is analogous to before:
 
 :::DEFINITION
-Let $`f \in \operatorname{Spec} A`.
+Let $`f \in A`.
 Then $`D(f)` is the set of $`\mathfrak{p}` such that $`f(\mathfrak{p}) \neq 0`, a *distinguished open set*.
 :::
 
@@ -191,7 +191,7 @@ There is an obvious map $`\mathcal{F}_\mathfrak{p} \to A_\mathfrak{p}` on germs 
 We show injectivity and surjectivity:
 
 - Injective: suppose $`(U_1, f_1 / g_1)` and $`(U_2, f_2 / g_2)` are two germs with $`f_1/g_1 = f_2/g_2 \in A_\mathfrak{p}`.
-  This means $`h(g_1 f_2 - f_2 g_1) = 0` in $`A`, for some nonzero $`h`.
+  This means $`h(f_1 g_2 - f_2 g_1) = 0` in $`A`, for some $`h \notin \mathfrak{p}`.
   Then both germs identify with the germ $`(U_1 \cap U_2 \cap D(h), f_1 / g_1)`.
 - Surjective: let $`U = D(g)`.
 :::
@@ -242,7 +242,7 @@ Proof in a moment; for now let's introduce some words so we can give our example
 
 :::DEFINITION
 A ring $`R` with exactly one maximal ideal $`\mathfrak{m}` will be called a *local ring*.
-The *residue field* is the quotient $`A / \mathfrak{m}`.
+The *residue field* is the quotient $`R / \mathfrak{m}`.
 :::
 
 :::QUESTION
@@ -396,7 +396,7 @@ Show that $`\operatorname{Spec} A` is quasicompact for any ring $`A`.
 :::
 
 :::PROBLEM "Punctured gyrotop, communicated by Aaron Pixton"
-The gyrotop is the scheme $`X = \operatorname{Spec} \mathbb{C}[x, y, z] / (xy, z)`.
+The gyrotop is the scheme $`X = \operatorname{Spec} \mathbb{C}[x, y, z] / (xz, yz)`.
 We let $`U` denote the open subset obtained by deleting the closed point $`\mathfrak{m} = (x, y, z)`.
 Compute $`\mathcal{O}_X(U)`.
 (Hint: $`k[x, y] \times k[z, z^{-1}]`.)

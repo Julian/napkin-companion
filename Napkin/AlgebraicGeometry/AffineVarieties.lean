@@ -320,7 +320,7 @@ Here are a few.
   (In fact, since $`\mathbb{C}` is a field, the ideal $`(x - a, y - b)` is _maximal_.)
   The vanishing set of this is $`\mathbb{V}(x - a, y - b) = \{ (a, b) \} \in \mathbb{C}^2`, so these ideals correspond to a single point.
 - Let $`f(x, y)` be an irreducible polynomial, like $`y - x^2`.
-  Then $`(f)` is a prime ideal! Here $`\mathbb{V}(I)` is a "degree one curve".
+  Then $`(f)` is a prime ideal! Here $`\mathbb{V}(I)` is a "codimension one curve".
 
 By using some polynomial algebra (again you're welcome to check this; Euclidean algorithm), these are in fact the only prime ideals of $`\mathbb{C}[x, y]`.
 Here's a picture.

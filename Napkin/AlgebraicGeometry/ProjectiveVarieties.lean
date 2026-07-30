@@ -206,7 +206,7 @@ Thus there is a natural bijection between:
 
 :::PROOF
 For the first part, let $`V = \mathbb{V}_+(I)` and $`W = \mathbb{V}_+(J)` be projective varieties in $`\mathbb{CP}^n`.
-We can consider them as _affine varieties_ in $`\mathbb{A}^{n+1}` by using the interpretation of $`\mathbb{CP}^n` as lines through the origin in $`\mathbb{C}^n`.
+We can consider them as _affine varieties_ in $`\mathbb{A}^{n+1}` by using the interpretation of $`\mathbb{CP}^n` as lines through the origin in $`\mathbb{C}^{n+1}`.
 
 Algebraically, this is done by taking the homogeneous ideals $`I, J \subseteq \mathbb{C}[x_0, \dots, x_n]` and using the same ideals to cut out _affine_ varieties $`V_{\text{aff}} = \mathbb{V}(I)` and $`W_{\text{aff}} = \mathbb{V}(J)` in $`\mathbb{A}^{n+1}`.
 For example, the cone $`x^2 + y^2 - z^2 = 0` is a conic (a one-dimensional curve) in $`\mathbb{CP}^2`, but can also be thought of as a cone (which is a two-dimensional surface) in $`\mathbb{A}^3`.
@@ -247,7 +247,7 @@ The *homogeneous coordinate ring* of a projective variety $`V = \mathbb{V}_+(I) 
 :::
 
 :::REMARK
-Unlike the affine case, an element of $`\mathbb{C}[V]` no longer correspond to a function from $`V` to $`\mathbb{C}`; nevertheless, it is a function from $`\mathbb{V}(I) \subseteq \mathbb{A}^{n+1}` to $`\mathbb{C}`.
+Unlike the affine case, an element of $`\mathbb{C}[V]` no longer corresponds to a function from $`V` to $`\mathbb{C}`; nevertheless, it is a function from $`\mathbb{V}(I) \subseteq \mathbb{A}^{n+1}` to $`\mathbb{C}`.
 :::
 
 However, when we define a rational function we must impose a new requirement that the numerator and denominator are the same degree.

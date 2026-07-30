@@ -202,7 +202,7 @@ We now proceed by induction on $`n`.
 The base case $`n = 1` is trivial, since we can just take $`R = \varnothing`.
 For the inductive step we consider two cases.
 
-First, assume there exists an $`a \in C` contained in uncountably many $`F \in C`.
+First, assume there exists an element $`a` contained in uncountably many $`F \in C`.
 Throw away all the other guys.
 Then we can just delete $`a`, and apply the inductive hypothesis.
 
@@ -223,7 +223,7 @@ Let $`\left\{ p_\alpha \mid \alpha < \omega_1 \right\}` be a strong antichain.
 Let $`C = \left\{ \operatorname{dom}(p_\alpha) \mid \alpha < \omega_1 \right\}`.
 Let $`\overline C \subseteq C` be such that $`\overline C` is uncountable, and $`\overline C` is a $`\Delta`-system with root $`R`.
 Then let $`B = \left\{ p_\alpha \mid \operatorname{dom}(p_\alpha) \in \overline C \right\}`.
-Each $`p_\alpha \in B` restricted to $`R` is a function $`R \to \{0, 1\}`, so there are two that agree on $`R` — hence two that are compatible, contradicting that they form a strong antichain.
+Each $`p_\alpha \in B` restricts to a function $`p_\alpha \restriction_R \colon R \to \{0, 1\}`, so there are two that agree on $`R` — hence two that are compatible, contradicting that they form a strong antichain.
 :::
 
 Thus, we have proven that the Continuum Hypothesis cannot be proven in ZFC.

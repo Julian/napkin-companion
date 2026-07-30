@@ -84,7 +84,7 @@ The alternating decomposition used to compare $`H_1(X, A)` with $`\widetilde H_1
 We claim that $`H_1(X, A) \not\cong \widetilde H_1(X/A)`.
 
 What could go wrong?
-Generally speaking, when you work algebraically then everything are finite, while in topology you have to consider things related to infinity.
+Generally speaking, when you work algebraically then everything is finite, while in topology you have to consider things related to infinity.
 Every element of $`H(X, A)` has a representative in $`C(X)` as a $`1`-cycle, which comprises of finitely many $`1`-simplices, so intuitively every element of $`H(X, A)` can only cover "finitely many circles" (or all but finitely many).
 
 Formally speaking, the quotient maps $`q \colon X \to X/A` and $`q \colon A \to A/A` induce $`q_\ast \colon H_1(X, A) \to H_1(X/A, A/A)`, and $`q_\ast` is not injective.

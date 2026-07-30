@@ -99,8 +99,8 @@ Linear algebra:
 - $`V \otimes W`: tensor product
 - $`V^{\otimes n}`: tensor product of $`V`, $`n` times
 - $`V^\vee`: dual space
-- $`T^\vee`: dual map (for $`T` a vector space)
-- $`T^\dagger`: conjugate transpose (for $`T` a vector space)
+- $`T^\vee`: dual map (for $`T` a linear map)
+- $`T^\dagger`: conjugate transpose (for $`T` a linear map)
 - $`\left< -, - \right>`: a bilinear form
 - $`\operatorname{Mat}(V)`: endomorphisms of $`V`, i.e. $`\operatorname{Hom}_k(V, V)`
 - $`e_1, \dots, e_n`: the "standard basis" of $`k^{\oplus n}`
@@ -151,7 +151,7 @@ Complex analysis:
 
 # Measure theory and probability
 
-- $`\mathcal{A}^\ast`: the $`\sigma`-algebra of Carathéodory-measurable sets
+- $`\mathcal{A}^{\text{cm}}`: the $`\sigma`-algebra of Carathéodory-measurable sets
 - $`\mathcal{B}(X)`: the Borel space for $`X`
 - $`\mu^\ast`: the induced measure on $`\mathcal{A}^\ast`.
 - $`\lambda`: Lebesgue measure

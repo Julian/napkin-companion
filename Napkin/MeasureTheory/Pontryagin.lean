@@ -36,7 +36,7 @@ Earlier we played with $`\mathbb{R}`, which is nice because in addition to being
 These sorts of objects which are both groups and spaces have a name.
 
 :::DEFINITION
-A group $`G` is a *topological group* is a Hausdorff topological space equipped also with a group operation $`(G, \cdot)`, such that both maps
+A *topological group* $`G` is a Hausdorff topological space equipped also with a group operation $`(G, \cdot)`, such that both maps
 $$`G \times G \to G \quad\text{by}\quad (x, y) \mapsto xy`
 $$`G \to G \quad\text{by}\quad x \mapsto x^{-1}`
 are continuous.
@@ -75,7 +75,7 @@ Moreover, it is unique up to scaling by a positive constant.
 
 :::REMARK
 Note that if $`G` is compact, then $`\mu(G)` is finite (and positive).
-For this reason the Haar measure on a LCA group $`G` is usually normalized so $`\mu(G) = 1`.
+For this reason the Haar measure on an LCA group $`G` is usually normalized so $`\mu(G) = 1`.
 :::
 
 For this chapter, we will only use the first two properties at all, and the other two are just mentioned for completeness.
@@ -154,7 +154,7 @@ $$`\widehat{f}(\xi) = \langle f, e_\xi \rangle = \int_G f(x) \exp(-2\pi i \xi(x)
 The sum $`\sum_{\xi \in \widehat{G}}` makes sense since $`\widehat{G}` is discrete.
 In particular,
 
-- Letting $`G = Z` for a finite group $`G` gives "Fourier transform on finite groups".
+- Letting $`G = Z` for a finite group $`Z` gives "Fourier transform on finite groups".
 - The special case $`G = \mathbb{Z}/n\mathbb{Z}` has its own well-known name: the "discrete Fourier transform".
 - Letting $`G = \mathbb{T}` gives the "Fourier series".
 
