@@ -44,8 +44,8 @@ We call $`U` *evenly covered* (by $`p`) if $`p^{-1}(U)` is a disjoint union of o
 
 Picture:
 
-:::figure "even-covering.png"
-Image from {cite}`img:even_covering`.
+:::figure "figures/homotopy/even-covering.svg"
+An evenly covered $`U`: its pre-image is a stack of disjoint sheets, each mapped homeomorphically onto $`U` by $`p`.
 :::
 
 All we're saying is that $`U` is evenly covered if its pre-image is a bunch of copies of it.
@@ -207,8 +207,8 @@ Hence given a homotopy $`\gamma_1 \simeq \gamma_2` in the base space $`B`, we ca
 ::::REMARK "The locally path-connected condition really is necessary"
 Let $`Y` be the *Warsaw circle*, depicted below, consisting of the graph of $`y = \sin(1/x)` for $`0 < x < 1/\pi`, the segment $`\{0\} \times [-1, 1]`, and a curve to close everything up.
 
-:::figure "warsaw_circle.png"
-Image from {cite}`ref:hatcher`.
+:::figure "figures/homotopy/warsaw-circle.svg"
+The Warsaw circle: the topologist's sine curve, its limiting segment, and an arc closing the two ends up.
 :::
 
 The space $`Y` is simply connected, thus the lifting criterion is trivially satisfied, but the function $`f \colon Y \to S^1` which collapses the sine curve vertically does not lift to a function $`\tilde f \colon Y \to \mathbb{R}`.
@@ -283,7 +283,7 @@ Since $`\mathbb{R}` is simply connected, this is a universal cover of $`S^1`.
 And indeed, the fiber of any point in $`S^1` is a copy of the integers: naturally in bijection with loops in $`S^1`.
 
 You can show (and it's intuitively obvious) that the bijection $$`\Phi \colon \pi_1(S^1) \leftrightarrow \mathbb{Z}`
-is in fact a group homomorphism if we equip $`\mathbb{Z}` with its additive group structure $`\mathbb{Z}`.
+is in fact a group homomorphism if we equip $`\mathbb{Z}` with its additive group structure.
 Since it's a bijection, this leads us to conclude $`\pi_1(S^1) \cong \mathbb{Z}`.
 :::
 

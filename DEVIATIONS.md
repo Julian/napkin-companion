@@ -37,7 +37,12 @@ These apply to every chapter and are not repeated in the per-chapter lists below
    `figures/`. Every upstream figure is now shown; the only figures
    drawn differently from upstream are Asymptote/tikz pictures redrawn as
    SVG (functionally identical, captions rewritten for this edition),
-   itemized per chapter below.
+   itemized per chapter below. Upstream has since replaced two of the
+   raster images it used to vendor — the even-covering diagram and the
+   Warsaw circle — with Asymptote drawings of its own; both are redrawn
+   here as TikZ (`figures/homotopy/even-covering.tex`,
+   `warsaw-circle.tex`), so the third-party CC-3.0 diagram and its
+   attribution are gone from this edition too.
 
 5. **Hints and solutions.** Upstream collects `\begin{hint}` /
    `\begin{sol}` blocks into two backmatter appendices ("Hints to

@@ -779,8 +779,6 @@ def config : Config where
                  ("media/cantor-thirds.png", "cantor-thirds.png"),
                  ("media/weierstrass-pubdomain.png", "weierstrass-pubdomain.png"),
                  ("media/S2-simply.png", "S2-simply.png"),
-                 ("media/even-covering.png", "even-covering.png"),
-                 ("media/warsaw_circle.png", "warsaw_circle.png"),
                  ("media/Projection_color_torus.jpg", "Projection_color_torus.jpg"),
                  ("media/KleinBottle-01.png", "KleinBottle-01.png"),
                  ("media/klein-fold.png", "klein-fold.png"),
