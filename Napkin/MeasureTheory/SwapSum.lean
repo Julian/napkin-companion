@@ -87,7 +87,7 @@ In all of these examples, we cannot interchange the limit and the integral witho
 - The sequence $`f_k(x) = \frac{\mathbf{1}_{(0, k)}}{k}` converges pointwise to $`f(x) = 0` as $`k \to \infty`, for every $`k` then $`\int f_k(x) \; dx = 1`, but $`\int f(x) \; dx = 0`.
 
   Note that, in this case, the convergence is actually uniform!
-- We don't even need $`k` in the denominator — the sequence $`f_k(x) = \mathbf{1}_{(0, k)}` also converges pointwise to $`f(x) = 0`, but this time, for every $`k` then $`\int f_k(x) \; dx = \infty`!
+- We don't even need $`k` in the denominator — the sequence $`f_k(x) = \mathbf{1}_{(k, \infty)}` also converges pointwise to $`f(x) = 0`, but this time, for every $`k` then $`\int f_k(x) \; dx = \infty`!
 - The sequence $`f_k(x) = k \cdot \mathbf{1}_{(0, 1/k)}` converges pointwise to $`f(x) = 0` as $`k \to \infty`.
   But similar to above, $`\int f_k(x) \; dx = 1` for every $`k`, but $`\int f(x) \; dx = 0`.
 

@@ -134,7 +134,7 @@ But $`G` is not abelian, hence $`Z(G) \neq G`, thus the center $`Z(G)` is a nont
 # Frobenius determinant
 
 We finish with the following result, the problem that started the branch of representation theory.
-Given a finite group $`G`, we create $`n` variables $`\{x_g\}_{g : G}`, and an $`n \times n` matrix $`M_G` whose $`(g, h)`th entry is $`x_{gh}`.
+Given a finite group $`G`, we create $`n` variables $`\{x_g\}_{g : G}`, and an $`n \times n` matrix $`M_G` whose $`(g, h)`th entry is $`x_{gh^{-1}}`.
 
 :::EXAMPLE "Frobenius determinants"
 1. If $`G = \mathbb{Z}/2\mathbb{Z} = \langle T \mid T^2 = 1 \rangle` then the matrix would be $$`M_G = \begin{bmatrix} x_{\operatorname{id}} & x_T \\ x_T & x_{\operatorname{id}} \end{bmatrix}.`
@@ -307,10 +307,9 @@ example (G : Type*) [Group G] [IsSimpleGroup G] (H : Subgroup G)
 The group matrix $`M_G` and the group determinant $`\det M_G` are exactly the objects this problem introduces, and Mathlib has neither.
 They are supplied by `Napkin.Missing.GroupDeterminant`: for one indeterminate `x g` per group element, `groupMatrix x` is the $`|G| \times |G|` matrix whose $`(g, h)` entry is `x (g * h⁻¹)`, and `groupDeterminant x` is its determinant.
 
-:::aside "The `x (g * h⁻¹)` convention"
-The companion places `x (g * h⁻¹)` in the $`(g, h)` slot rather than $`x_{gh}`; the two differ only by permuting columns, so their determinants agree up to sign.
-This convention makes the diagonal the constant $`x_1` and identifies $`M_G` with the regular-representation matrix $`\sum_g x_g\, \rho(g)`.
-For $`\mathbb{Z}/2\mathbb{Z}` it reproduces the matrix in the text on the nose.
+:::aside "Why $gh^{-1}$"
+Indexing the entry by $`gh^{-1}` rather than by $`gh` makes the diagonal the constant $`x_1`, and identifies $`M_G` with the regular-representation matrix $`\sum_g x_g\, \rho(g)`.
+The two indexings differ only by permuting columns, so either way the determinant is the same up to sign.
 :::
 
 The $`(g, h)` entry is `x (g * h⁻¹)` by definition.

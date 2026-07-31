@@ -122,9 +122,9 @@ You may already start to see that we really like nonnegative functions: with the
 But once we start dealing with functions that can be either positive or negative, we have to start adding finiteness restrictions — actually essentially what we're doing is splitting the function into its positive and negative part, requiring both are finite, and then integrating.
 
 To finish this section, we state for completeness some results that you probably could have guessed were true.
-Fix $`\Omega = (\Omega, \mathcal{A}, \mu)`, and let $`f` and $`g` be measurable real-valued functions such that $`f(x) = g(x)` almost everywhere.
+Fix $`\Omega = (\Omega, \mathcal{A}, \mu)`, and let $`f` and $`g` be measurable real-valued functions.
 
-- (Almost-everywhere preservation) The function $`f` is absolutely integrable if and only if $`g` is, and if so, their Lebesgue integrals match.
+- (Almost-everywhere preservation) If $`f(x) = g(x)` almost everywhere then $`f` is absolutely integrable if and only if $`g` is, and if so, their Lebesgue integrals match.
 - (Additivity) If $`f` and $`g` are absolutely integrable then
   $$`\int_\Omega f + g \; d\mu = \int_\Omega f \; d\mu + \int_\Omega g \; d\mu.`
   The "absolutely integrable" hypothesis can be dropped if $`f` and $`g` are nonnegative.

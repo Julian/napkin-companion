@@ -37,12 +37,7 @@ These apply to every chapter and are not repeated in the per-chapter lists below
    `figures/`. Every upstream figure is now shown; the only figures
    drawn differently from upstream are Asymptote/tikz pictures redrawn as
    SVG (functionally identical, captions rewritten for this edition),
-   itemized per chapter below. Upstream has since replaced two of the
-   raster images it used to vendor — the even-covering diagram and the
-   Warsaw circle — with Asymptote drawings of its own; both are redrawn
-   here as TikZ (`figures/homotopy/even-covering.tex`,
-   `warsaw-circle.tex`), so the third-party CC-3.0 diagram and its
-   attribution are gone from this edition too.
+   itemized per chapter below.
 
 5. **Hints and solutions.** Upstream collects `\begin{hint}` /
    `\begin{sol}` blocks into two backmatter appendices ("Hints to
@@ -171,15 +166,15 @@ These apply to every chapter and are not repeated in the per-chapter lists below
     upstream's problem sections; 71 exercises carry one.
     `Test.CheckPairing` enforces that every reader exercise is wrapped.
 
-19. **Hints.** The guidance naming which lemmas an exercise needs used to
-    run on in the prose above it, so the exercise could never be
-    attempted cold. Where that guidance separates cleanly from the
-    statement — the prose is one sentence per line, and the convention is
-    exposition, then an imperative, then guidance — it now sits in a
-    collapsible `:::hint` between the exercise and its solution, giving
-    three tiers: attempt, hint, solution. 177 of the 520 exercises split
-    that way; the rest interleave guidance with exposition and were left
-    alone rather than cut by a heuristic.
+19. **Hints.** Guidance naming which lemmas an exercise needs sits in a
+    collapsible `:::hint` between the exercise and its solution, rather
+    than in the prose above it, so an exercise can be attempted cold:
+    three tiers, attempt then hint then solution. This applies where the
+    guidance separates cleanly from the statement — the prose is one
+    sentence per line, and the convention is exposition, then an
+    imperative, then guidance — which covers 177 of the 520 exercises.
+    The rest interleave guidance with exposition and are left alone
+    rather than cut by a heuristic.
 
 20. **Internal links resolve against the site root.** Verso emits a
     per-page `<base href>`, so an in-book link is written
@@ -188,19 +183,17 @@ These apply to every chapter and are not repeated in the per-chapter lists below
     rendered output and fails on any internal target that resolves to
     nothing; CI runs it before deploying.
 
-21. **Figures name themselves.** Every `:::figure` used to render
-    `<img alt="">`, which marks an image *decorative* and drops it from
-    the accessibility tree — so all 371 figures were invisible to a
-    screen reader. The image now carries `role="img"` and
+21. **Figures name themselves.** Every image carries `role="img"` and
     `aria-labelledby` pointing at its own `<figcaption>`, so the caption
-    becomes the image's accessible name; 282 figures gain one that way.
-    The remaining 89 have no caption upstream either, so `:::figure`
-    takes an `(alt := "…")`, and all 89 now carry one: 72 are the
+    is the image's accessible name — never `alt=""`, which would mark it
+    decorative and drop it from the accessibility tree. 282 figures are
+    named by their caption that way. The remaining 89 have no caption
+    upstream either, so `:::figure` takes an `(alt := "…")`: 72 are the
     description in the header comment of the figure's own TikZ source,
     and the other 17 — vendored rasters and PDF-converted 3-D views with
     no source to read — are written from what the surrounding prose says
     the picture shows, claiming no visual detail beyond that. All 371
-    figures in the book now have an accessible name.
+    figures in the book have an accessible name.
 
 ## Formalization-forced deviations
 

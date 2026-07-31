@@ -313,7 +313,7 @@ For each $`a`, construct a semicircle.
 *The insane scientist.*
 
 _Hint._ Show that $$`\mu^\ast(S) = \begin{cases} 0 & S = \varnothing \\ 1 & S \text{ bounded and nonempty} \\ \infty & S \text{ not bounded}. \end{cases}`
-This lets you solve the measurability part readily; the answer is just the unbounded sets, $`\varnothing`, and the one-point sets.
+This lets you solve the measurability part readily; the answer is just $`\varnothing` and $`\Omega`.
 
 # Bonus: A hint of Pontryagin duality
 

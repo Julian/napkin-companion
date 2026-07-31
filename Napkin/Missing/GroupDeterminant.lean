@@ -33,11 +33,9 @@ per group element, this is the `|G| × |G|` matrix whose `(g, h)` entry is
 regular representation `∑ g, x g • ρ(g)` in the group-element basis — the
 object Dedekind wrote down in 1896 that started representation theory.
 
-This uses the classical Dedekind entry `x (g * h⁻¹)` rather than the book's
-`x_{gh}`.  The two matrices differ only by a fixed column permutation, so their
-determinants agree up to sign and their irreducible factorizations coincide;
-the `x (g * h⁻¹)` convention is what makes the diagonal constant `x 1` and
-identifies the matrix with the regular representation.
+Indexing by `g * h⁻¹` instead of `g * h` permutes the columns by a fixed
+permutation, so either indexing gives the same determinant up to sign and the
+same irreducible factorization.
 
 Not in Mathlib.  Watch for a `Matrix.groupMatrix` / group-determinant entry
 in the representation-theory library. -/

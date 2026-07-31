@@ -33,7 +33,7 @@ It's drawn largely from the first chapter of Oggier's *Algebraic Number Theory* 
 
 # Motivation from high school algebra
 
-This is adapted from Evan's blog, _Power Overwhelming_.{margin}[URL: [https://blog.evanchen.cc/2014/10/19/why-do-roots-come-in-conjugate-pairs/](https://blog.evanchen.cc/2014/10/19/why-do-roots-come-in-conjugate-pairs/).]
+This is adapted from Evan's blog, _Power Overwhelming_.{margin}[URL: [https://blog.evanchen.cc/conjugate/](https://blog.evanchen.cc/conjugate/).]
 
 In high school precalculus, you'll often be asked to find the roots of some polynomial with integer coefficients.
 For instance, $$`x^3 - x^2 - x - 15 = (x-3)(x^2+2x+5)` has roots $`3`, $`-1+2i`, $`-1-2i`.

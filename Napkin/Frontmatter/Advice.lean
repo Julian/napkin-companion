@@ -89,7 +89,7 @@ Image from {cite}`img:read_with_pencil`.
 :::
 
 You are not God.
-You cannot keep everything in your head.{margin}[See also [https://blog.evanchen.cc/2015/03/14/writing/](https://blog.evanchen.cc/2015/03/14/writing/) and the source above.]
+You cannot keep everything in your head.{margin}[See also [https://blog.evanchen.cc/writing/](https://blog.evanchen.cc/writing/) and the source above.]
 If you've printed out a hard copy, then write in the margins.
 If you're trying to save paper, grab a notebook or something along with the ride.
 Somehow, some way, make sure you can write.
