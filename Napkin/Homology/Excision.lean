@@ -123,7 +123,7 @@ The case $`A = \varnothing` is also worth noting.
 We compile these results into a lemma:
 
 :::LEMMA "Relative homology generalizes absolute homology"
-Let $`X` be any space, and $`\ast \in X` a point.
+Let $`X` be any space, and $`\ast : X` a point.
 Then for all $`n`, $$`H_n(X, \{\ast\}) \cong \widetilde H_n(X) \qquad\text{and}\qquad H_n(X, \varnothing) = H_n(X).`
 :::
 
@@ -252,7 +252,7 @@ The corner of the long exact sequence of a triple $`(X, V, A)`.
 One nice application of excision is to compute $`\widetilde H_n(X \vee Y)`.
 
 :::THEOREM "Homology of wedge sums"
-Let $`X` and $`Y` be spaces with basepoints $`x_0 \in X` and $`y_0 \in Y`, and assuming each point is a deformation retract of some open neighborhood.
+Let $`X` and $`Y` be spaces with basepoints $`x_0 : X` and $`y_0 : Y`, and assuming each point is a deformation retract of some open neighborhood.
 Then for every $`n` we have $$`\widetilde H_n(X \vee Y) = \widetilde H_n(X) \oplus \widetilde H_n(Y).`
 :::
 
@@ -279,7 +279,7 @@ More generally, the exact sequence for the pair $`(X, A) = (D^m, S^{m-1})` shows
 Here is one last example of an application of excision.
 
 :::DEFINITION
-Let $`X` be a space and $`p \in X` a point.
+Let $`X` be a space and $`p : X` a point.
 The $`k`th *local homology group* of $`p` at $`X` is defined as $`H_k(X, X \setminus \{p\})`.
 :::
 

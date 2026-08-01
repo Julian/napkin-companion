@@ -124,7 +124,7 @@ As usual, differentiability implies continuity.
 :::REMARK
 Although $`U \subseteq V`, it might be helpful to think of vectors from $`U` and $`V` as different types of objects (in particular, note that it's possible for $`0_V \notin U`).
 The vectors in $`U` are "inputs" on our space while the vectors coming from $`V` are "small displacements".
-For this reason, I deliberately try to use $`p \in U` and $`v \in V` when possible.
+For this reason, I deliberately try to use $`p \in U` and $`v : V` when possible.
 :::
 
 # The projection principle
@@ -311,7 +311,7 @@ $$`(Dh)_p = (Dg)_{f(p)} \circ (Df)_p.`
 
 :::PROBLEM
 Let $`U \subseteq V` be open, and $`f \colon U \to \mathbb{R}` be differentiable $`k` times.
-Show that $`(D^k f)_p` is symmetric in its $`k` arguments, meaning for any $`v_1, \dots, v_k \in V` and any permutation $`\sigma` on $`\{1, \dots, k\}` we have
+Show that $`(D^k f)_p` is symmetric in its $`k` arguments, meaning for any $`v_1, \dots, v_k : V` and any permutation $`\sigma` on $`\{1, \dots, k\}` we have
 $$`(D^k f)_p(v_1, \dots, v_k) = (D^k f)_p(v_{\sigma(1)}, \dots, v_{\sigma(k)}).`
 :::
 

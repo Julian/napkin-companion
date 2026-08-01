@@ -125,7 +125,7 @@ Note that homotopy and homology captures slightly different notion of "holes".
 For example, let $`T` be a torus.
 Then, every map $`S^2 \to T` is nulhomotopic so $`\pi_2(T)` is trivial, but, as we will see, $`H_2(T) \cong \mathbb{Z}`.
 
-At least in the case of $`n = 1`, then the Hurewicz theorem states that for any path-connected space $`X` and $`x_0 \in X`, then $`H_1(X)` is the abelianization of $`\pi_1(X, x_0)`, which is pretty much the best result you can expect — $`H_1(X)` must be abelian, while $`\pi_1(X, x_0)` need not be abelian.
+At least in the case of $`n = 1`, then the Hurewicz theorem states that for any path-connected space $`X` and $`x_0 : X`, then $`H_1(X)` is the abelianization of $`\pi_1(X, x_0)`, which is pretty much the best result you can expect — $`H_1(X)` must be abelian, while $`\pi_1(X, x_0)` need not be abelian.
 Nevertheless, it is still possible that $`\pi_1(X, x_0)` is nontrivial and $`H_1(X)` is trivial — see [this example](https://math.stackexchange.com/q/1052414).
 :::
 
@@ -421,7 +421,7 @@ We now end this chapter by providing some more examples of chain complexes, whic
 :::EXAMPLE "Reduced homology groups"
 Suppose $`X` is a (nonempty) topological space.
 One can augment the standard singular complex as follows: do the same thing as before, but augment the end by adding a $`\mathbb{Z}`, as shown: $$`\dots \to C_1(X) \to C_0(X) \xrightarrow{\varepsilon} \mathbb{Z} \to 0`
-Here $`\varepsilon` is defined by $`\varepsilon(\sum n_i p_i) = \sum n_i` for points $`p_i \in X`.
+Here $`\varepsilon` is defined by $`\varepsilon(\sum n_i p_i) = \sum n_i` for points $`p_i : X`.
 (Recall that a $`0`-chain is just a formal sum of points!)
 We denote this *augmented singular chain complex* by $`\widetilde C_\bullet(X)`.
 

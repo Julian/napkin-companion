@@ -35,7 +35,7 @@ The definition is what we would expect — since a Riemann surface's main featur
 
 :::DEFINITION "Morphism between Riemann surfaces"
 Let $`X` and $`Y` be Riemann surfaces.
-A mapping $`f \colon X \to Y` is *holomorphic* at $`p \in X` if and only if there exist charts $`\phi_1 \colon U_1 \to E_1` on $`X` with $`p \in U_1` and $`\phi_2 \colon U_2 \to E_2` on $`Y` with $`f(p) \in U_2` such that the composition $`\phi_2 \circ f \circ \phi_1^{-1}` is holomorphic at $`\phi_1(p)`.
+A mapping $`f \colon X \to Y` is *holomorphic* at $`p : X` if and only if there exist charts $`\phi_1 \colon U_1 \to E_1` on $`X` with $`p \in U_1` and $`\phi_2 \colon U_2 \to E_2` on $`Y` with $`f(p) \in U_2` such that the composition $`\phi_2 \circ f \circ \phi_1^{-1}` is holomorphic at $`\phi_1(p)`.
 We say $`f` is a *morphism between Riemann surfaces* if and only if it is holomorphic at all points of $`X`.
 :::
 
@@ -72,8 +72,8 @@ $$`g(z) = \begin{cases} f(z) & \text{if } f(z) \neq \infty \\ \infty & \text{if 
 Then $`g` is continuous — but furthermore, it's analytic.
 
 :::QUESTION
-At points $`z \in X` where $`g(z) \neq \infty`, $`g` is clearly analytic.
-Convince yourself that $`g` is also analytic at $`z \in X` where $`g(z) = \infty`.
+At points $`z : X` where $`g(z) \neq \infty`, $`g` is clearly analytic.
+Convince yourself that $`g` is also analytic at $`z : X` where $`g(z) = \infty`.
 (Take a small open set $`U \subseteq X` around such a $`z` and re-parametrize $`g(U) \subseteq \mathbb{C}_\infty` by $`t = 1/z`.)
 :::
 
@@ -96,7 +96,7 @@ Informally speaking, this is because $`\mathbb{C}_\infty` is a "compactification
 
 :::PROPOSITION "Fiber count is constant"
 Let $`X` and $`Y` be compact Riemann surfaces and $`f \colon X \to Y` be holomorphic and not constant.
-For each point $`y \in Y`, define $`d_y` to be the total multiplicity of the points in the preimage of $`y`.
+For each point $`y : Y`, define $`d_y` to be the total multiplicity of the points in the preimage of $`y`.
 Then $`d_y` is well-defined and constant.
 :::
 
@@ -141,7 +141,7 @@ This theme will be recurrent in complex analysis and Riemann surfaces:
 If the "things" are counted properly, the formula is very nice.
 :::
 
-The proof of the proposition is not difficult — the main observation is that the theorem is true for functions of the form $`f(z) = z^n`, and locally around each point $`p \in X`, $`f` is either an isomorphism or has the form above.
+The proof of the proposition is not difficult — the main observation is that the theorem is true for functions of the form $`f(z) = z^n`, and locally around each point $`p : X`, $`f` is either an isomorphism or has the form above.
 So $`d_y` is locally constant, and thus constant because $`Y` is connected.
 
 # Multiplicity of a map
@@ -170,7 +170,7 @@ These two properties completely determine the degree.
 We have the following:
 
 :::PROPOSITION "Local normal form"
-Let $`f \colon X \to Y` be a nonconstant holomorphic map defined at $`p \in X`.
+Let $`f \colon X \to Y` be a nonconstant holomorphic map defined at $`p : X`.
 Then there is a unique integer $`m \geq 1` such that, for every chart $`\phi_2 \colon U_2 \to V_2` on $`Y` centered at $`f(p)` (that is, $`\phi_2(f(p)) = 0`), there is a chart $`\phi_1 \colon U_1 \to V_1` on $`X` centered at $`p` such that the induced map $`\phi_2 \circ f \circ \phi_1^{-1} \colon V_1 \to V_2` has the form $`z \mapsto z^m`.
 :::
 

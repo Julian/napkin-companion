@@ -117,9 +117,19 @@ These apply to every chapter and are not repeated in the per-chapter lists below
 1. **Types, not sets.** Carriers of algebraic and topological
    structures are types ("a type of points $M$") rather than sets, and
    element-of is written `x : X` instead of $x \in X$, matching the
-   Lean code alongside. Genuine subset membership (a subgroup $H$, an
-   ideal $I$, a subspace $W$) keeps $\in$. Set-theory chapters are the
-   planned exception, where sets are the actual subject matter.
+   Lean code alongside. Set-theory chapters are the planned exception,
+   where sets are the actual subject matter.
+
+   Three things deliberately keep $\in$, because there it is not a
+   carrier being described. Genuine subset membership: a subgroup $H$,
+   an ideal $I$, a subspace $W$, an open set $U$, a variety inside
+   $\mathbb{A}^n$, a conjugacy class, `Spec A` where the chapter has
+   just built it as a set of primes. Set-builder: $\{m/6^n \mid m \in
+   \mathbb{Z}\}$, which is how the notation reads in every text and how
+   Mathlib writes it too. And big-operator indexing: $\bigcap_{k \in
+   \mathbb{N}}$, likewise — Mathlib's own big operators are `∑ i ∈ s`.
+   Only binder position over a carrier is affected, so "let $g \in G$"
+   becomes "let $g : G$" and nothing else moves.
 
 2. **The `Group`/`AddGroup` split.** Upstream has a single "group with
    operation $\star$" concept; Mathlib maintains parallel multiplicative

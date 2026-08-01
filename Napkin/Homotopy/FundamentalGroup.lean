@@ -208,7 +208,7 @@ But on the other hand we claim that in a path-connected space, the groups are ve
 
 :::THEOREM "Fundamental groups don't depend on basepoint"
 Let $`X` be a path-connected space.
-Then for any $`x_1 \in X` and $`x_2 \in X`, we have $$`\pi_1(X, x_1) \cong \pi_1(X, x_2).`
+Then for any $`x_1 : X` and $`x_2 : X`, we have $$`\pi_1(X, x_1) \cong \pi_1(X, x_2).`
 :::
 
 Before you read the proof, see if you can guess the isomorphism.
@@ -233,7 +233,7 @@ End of story.
 This is a bigger reason why we usually only care about path-connected spaces.
 
 :::ABUSE
-For a path-connected space $`X` we will often abbreviate $`\pi_1(X, x_0)` to just $`\pi_1(X)`, since it doesn't matter which $`x_0 \in X` we pick.
+For a path-connected space $`X` we will often abbreviate $`\pi_1(X, x_0)` to just $`\pi_1(X)`, since it doesn't matter which $`x_0 : X` we pick.
 :::
 
 Finally, recall that we originally defined "simply connected" as saying that any two paths with matching endpoints were homotopic.
@@ -343,7 +343,7 @@ But let me tell you what the general definition of homotopy is first.
 
 :::DEFINITION
 Let $`f, g \colon X \to Y` be continuous functions.
-A *homotopy* is a continuous function $`F \colon X \times [0, 1] \to Y`, which we'll write $`F_s(x)` for $`s \in [0, 1]`, $`x \in X`, such that $$`F_0(x) = f(x) \text{ and } F_1(x) = g(x) \text{ for all } x \in X.`
+A *homotopy* is a continuous function $`F \colon X \times [0, 1] \to Y`, which we'll write $`F_s(x)` for $`s \in [0, 1]`, $`x : X`, such that $$`F_0(x) = f(x) \text{ and } F_1(x) = g(x) \text{ for all } x : X.`
 If such a function exists, then $`f` and $`g` are *homotopic*.
 :::
 

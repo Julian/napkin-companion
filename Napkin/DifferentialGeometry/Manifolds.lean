@@ -48,7 +48,7 @@ An $`n`-manifold is a space which locally looks like $`\mathbb{R}^n`.
 
 Actually there are two ways to think about a topological manifold $`M`:
 
-- *Locally*: at every point $`p \in M`, some open neighborhood of $`p` looks like an open set of $`\mathbb{R}^n`.
+- *Locally*: at every point $`p : M`, some open neighborhood of $`p` looks like an open set of $`\mathbb{R}^n`.
   For example, to someone standing on the surface of the Earth, the Earth looks much like $`\mathbb{R}^2`.
 - *Globally*: there exists an open cover of $`M` by open sets $`\{U_i\}_i` (possibly infinite) such that each $`U_i` is homeomorphic to some open subset of $`\mathbb{R}^n`.
   For example, from outer space, the Earth can be covered by two hemispherical pancakes.
@@ -160,7 +160,7 @@ Let $`M` be the set of points $`p \in U` such that $`f_1(p) = \dots = f_m(p) = 0
 
 Assume $`M` is nonempty and that the map
 $$`V \to \mathbb{R}^m \quad \text{by} \quad v \mapsto \left( (Df_1)_p(v), \dots, (Df_m)_p(v) \right)`
-has rank $`m`, for every point $`p \in M`.
+has rank $`m`, for every point $`p : M`.
 Then $`M` is a manifold of dimension $`n - m`.
 :::
 
@@ -171,7 +171,7 @@ One very common special case is to take $`m = 1` above.
 :::THEOREM "Level hypersurfaces"
 Let $`V` be a finite-dimensional real normed vector space, let $`U \subseteq V` be open, and let $`f \colon U \to \mathbb{R}` be smooth.
 Let $`M` be the set of points $`p \in U` such that $`f(p) = 0`.
-If $`M \neq \varnothing` and $`(Df)_p` is not the zero map for any $`p \in M`, then $`M` is a manifold of dimension $`\dim V - 1`.
+If $`M \neq \varnothing` and $`(Df)_p` is not the zero map for any $`p : M`, then $`M` is a manifold of dimension $`\dim V - 1`.
 :::
 
 :::EXAMPLE "The circle x²+y²-c=0"
@@ -222,7 +222,7 @@ As another example, if $`M = S^1` is a circle, there is no default "clockwise" o
 To work around this we actually have to make additional assumptions about our manifold.
 
 :::DEFINITION
-A smooth $`n`-manifold is *orientable* if there exists a differential $`n`-form $`\omega` on $`M` such that for every $`p \in M`,
+A smooth $`n`-manifold is *orientable* if there exists a differential $`n`-form $`\omega` on $`M` such that for every $`p : M`,
 $$`\omega_p \neq 0.`
 :::
 
@@ -231,11 +231,11 @@ In that case we say $`\omega` is a *volume form* of $`M`.
 
 How do we picture this definition?
 A differential form is supposed to take tangent vectors of $`M` and return real numbers.
-To this end, we can think of each point $`p \in M` as having a *tangent plane* $`T_p(M)` which is $`n`-dimensional.
+To this end, we can think of each point $`p : M` as having a *tangent plane* $`T_p(M)` which is $`n`-dimensional.
 Now since the volume form $`\omega` is $`n`-dimensional, it takes an entire basis of $`T_p(M)` and gives a real number.
 So a manifold is orientable if there exists a consistent choice of sign for the basis of tangent vectors at every point of the manifold.
 
-For "embedded manifolds", this just amounts to being able to pick a nonzero field of normal vectors to each point $`p \in M`.
+For "embedded manifolds", this just amounts to being able to pick a nonzero field of normal vectors to each point $`p : M`.
 For example, $`S^1` is orientable in this way; similarly, one can orient a sphere $`S^2` by having a field of vectors pointing away from (or toward) the center.
 
 This is all non-rigorous, because I haven't defined the tangent plane $`T_p(M)`; since $`M` is in general an intrinsic object one has to be quite roundabout to define $`T_p(M)` (although I do so in an optional section later).
@@ -282,7 +282,7 @@ All the omitted details are developed in full in {cite}`ref:manifolds`.
 Draw a line tangent to a circle, or a plane tangent to a sphere.
 :::
 
-Let $`M` be a smooth manifold and $`p \in M` a point.
+Let $`M` be a smooth manifold and $`p : M` a point.
 I omitted the definition of $`T_p(M)` earlier, but want to actually define it now.
 
 As I said, geometrically we know what this *should* look like for our usual examples.
@@ -449,7 +449,7 @@ recall IsManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 The "transition maps are smooth" condition becomes the field saying that for any pair of charts in the atlas, the change-of-coordinates partial homeomorphism is in the $`C^n`-groupoid, which is exactly the incarnation of the requirement above.
 
-The counterpart of a smooth map is `ContMDiff I I' n f`: for every point $`x \in M`, the local expression $`\phi_j \circ f \circ \phi_i^{-1}` is $`C^n` between the relevant open subsets of model spaces.
+The counterpart of a smooth map is `ContMDiff I I' n f`: for every point $`x : M`, the local expression $`\phi_j \circ f \circ \phi_i^{-1}` is $`C^n` between the relevant open subsets of model spaces.
 Constant maps are smooth, as expected.
 
 ```lean

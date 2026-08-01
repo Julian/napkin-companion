@@ -200,7 +200,7 @@ Now that we have an element $`\bigwedge^k(V^\vee)`, what can it do?
 Well, first let me get the definition on the table, then tell you what it's doing.
 
 :::DEFINITION "How to evaluate a differential form at a point"
-For linear functions $`\xi_1, \dots, \xi_k \in V^\vee` and vectors $`v_1, \dots, v_k \in V`, set
+For linear functions $`\xi_1, \dots, \xi_k \in V^\vee` and vectors $`v_1, \dots, v_k : V`, set
 $$`(\xi_1 \wedge \dots \wedge \xi_k)(v_1, \dots, v_k) \overset{\text{def}}{=} \det \begin{bmatrix} \xi_1(v_1) & \dots & \xi_1(v_k) \\ \vdots & \ddots & \vdots \\ \xi_k(v_1) & \dots & \xi_k(v_k) \end{bmatrix}.`
 You can check that this is well-defined under e.g. $`v \wedge w = -w \wedge v` and so on.
 :::
@@ -313,7 +313,7 @@ Earlier on, we remarked that $`\bigwedge^k(V^\vee) \cong (\bigwedge^k(V))^\vee` 
 
 The former notation is indeed more convenient (wedge product of two differential form is natural), but it's not clear why the evaluation definition is defined in such a way.
 
-If we used $`(\bigwedge^k(V))^\vee` instead, it's trivial to evaluate a differential form: for $`f \in (\bigwedge^k(V))^\vee` and vectors $`v_1, \dots, v_k \in V`, then
+If we used $`(\bigwedge^k(V))^\vee` instead, it's trivial to evaluate a differential form: for $`f \in (\bigwedge^k(V))^\vee` and vectors $`v_1, \dots, v_k : V`, then
 $$`f(v_1, \dots, v_k) \overset{\text{def}}{=} f(v_1 \wedge \dots \wedge v_k).`
 This is because $`f` naturally takes in an element of $`\bigwedge^k(V)` and returns a real number.
 
@@ -399,7 +399,7 @@ Then, we know:
 
 The last point is obvious if we let the wedge product be the map $`\wedge \colon \bigwedge^2(V^\vee) \times \bigwedge^1(V^\vee) \to \bigwedge^3(V^\vee)`.
 
-However, if we're given $`\alpha` and $`\beta` as elements of $`(\bigwedge^2(V))^\vee` and $`(\bigwedge^1(V))^\vee` respectively (that is, we can only evaluate $`\alpha` at $`v \wedge w` for $`v, w \in V`; and we can only evaluate $`\beta` at $`v` for $`v \in V`), then it would be much more difficult to write down what $`\alpha \wedge \beta` should be.
+However, if we're given $`\alpha` and $`\beta` as elements of $`(\bigwedge^2(V))^\vee` and $`(\bigwedge^1(V))^\vee` respectively (that is, we can only evaluate $`\alpha` at $`v \wedge w` for $`v, w : V`; and we can only evaluate $`\beta` at $`v` for $`v : V`), then it would be much more difficult to write down what $`\alpha \wedge \beta` should be.
 In fact,
 $$`(\alpha \wedge \beta)(v_1 \wedge v_2 \wedge v_3) = \alpha(v_1 \wedge v_2) \beta(v_3) - \alpha(v_1 \wedge v_3) \beta(v_2) + \alpha(v_2 \wedge v_3) \beta(v_1).`
 You can see that this is a variant of the alternation operator (or the evaluation operation), where we compute a weighted average in order to force $`\alpha \wedge \beta` to be alternating.

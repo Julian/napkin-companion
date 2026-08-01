@@ -267,7 +267,7 @@ To do this, we need to define the product of two graded pseudo-rings:
 :::DEFINITION
 Let $`R` and $`S` be two graded pseudo-rings.
 The *product pseudo-ring* $`R \times S` is the graded pseudo-ring defined by taking the underlying abelian group as $$`R \oplus S = \bigoplus_{d \ge 0} (R^d \oplus S^d).`
-Multiplication comes from $`R` and $`S`, followed by declaring $`r \cdot s = 0` for $`r \in R`, $`s \in S`.
+Multiplication comes from $`R` and $`S`, followed by declaring $`r \cdot s = 0` for $`r : R`, $`s \in S`.
 :::
 
 Note that this is just graded version of the product ring defined earlier.

@@ -125,14 +125,14 @@ Since the points on $`\operatorname{Spec} A` are the prime ideals, we continue t
 That is:
 
 :::DEFINITION
-Let $`f \in A` and $`\mathfrak{p} \in \operatorname{Spec} A`.
+Let $`f : A` and $`\mathfrak{p} \in \operatorname{Spec} A`.
 Then the *value* of $`f` at $`\mathfrak{p}` is defined to be $`f \pmod{\mathfrak{p}}`, an element of $`A/\mathfrak{p}`.
 We denote it $`f(\mathfrak{p})`.
 :::
 
 :::EXAMPLE "Vanishing locii in $\\mathbb{A}^n$"
 Suppose $`A = \mathbb{C}[x_1, \dots, x_n]`, and $`\mathfrak{m} = (x_1 - a_1, x_2 - a_2, \dots, x_n - a_n)` is a maximal ideal of $`A`.
-Then for a polynomial $`f \in A`, $`f \pmod{\mathfrak{m}} = f(a_1, \dots, a_n)` with the identification that $`A/\mathfrak{m} \cong \mathbb{C}`.
+Then for a polynomial $`f : A`, $`f \pmod{\mathfrak{m}} = f(a_1, \dots, a_n)` with the identification that $`A/\mathfrak{m} \cong \mathbb{C}`.
 :::
 
 :::EXAMPLE "Functions on $\\operatorname{Spec} \\mathbb{Z}$"
@@ -144,7 +144,7 @@ Its value at the point $`(5)` is $`4 \pmod 5`; its value at the point $`(7)` is 
 Indeed if you replace $`A` with $`\mathbb{C}[x_1, \dots, x_n]` and $`\operatorname{Spec} A` with $`\mathbb{A}^n` in everything that follows, then everything will become quite familiar.
 
 :::DEFINITION
-Let $`f \in A`.
+Let $`f : A`.
 We define the *vanishing locus* of $`f` to be $$`\mathbb{V}(f) = \left\{ \mathfrak{p} \in \operatorname{Spec} A \mid f(\mathfrak{p}) = 0 \right\} = \left\{ \mathfrak{p} \in \operatorname{Spec} A \mid f \in \mathfrak{p} \right\}.`
 More generally, just as in the affine case, we define the vanishing locus for an ideal $`I` as $$`\mathbb{V}(I) = \left\{ \mathfrak{p} \in \operatorname{Spec} A \mid I \subseteq \mathfrak{p} \right\}.`
 Finally, we define the *Zariski topology* on $`\operatorname{Spec} A` by declaring that the sets of the form $`\mathbb{V}(I)` are closed.
@@ -323,7 +323,7 @@ Like any ring, it has some maximal ideal (Krull's theorem).
 This means our usual bijection between prime ideals of $`(A/I)[1/x]`, prime ideals of $`A/I` and prime ideals of $`A` gives some prime ideal $`\mathfrak{p}` of $`A` containing $`I` but not containing $`x`.
 Thus $`x \notin \bigcap_{\mathfrak{p} \supseteq I} \mathfrak{p}`, as desired.
 
-The key idea here is, for $`x \in A`, $`x^n = 0` for some positive _finite_ integer $`n` if and only if $`A[1/x] = 0`.
+The key idea here is, for $`x : A`, $`x^n = 0` for some positive _finite_ integer $`n` if and only if $`A[1/x] = 0`.
 :::
 
 Geometrically speaking, this theorem states: for any $`f` a regular function on $`\operatorname{Spec} A/I`, then $`f^n = 0` for some positive integer $`n` if and only if $`f` vanishes at all points in $`\operatorname{Spec} A/I`.
@@ -331,7 +331,7 @@ Geometrically speaking, this theorem states: for any $`f` a regular function on 
 You may want to run through the proof with the example $`A = k[x]`, $`I = (x^2)` and $`f = x`, keeping in mind the image of $`\operatorname{Spec} A/I` as a "fuzzy" point and $`f` being a nonzero function that takes value zero at every point.
 
 :::REMARK "A variant of Krull's theorem"
-The longer direction of this proof is essentially saying that for any $`x \in A`, there is a maximal ideal of $`A` not containing $`x`.
+The longer direction of this proof is essentially saying that for any $`x : A`, there is a maximal ideal of $`A` not containing $`x`.
 The "short" proof is to use Krull's theorem on $`(A/I)[1/x]` as above, but one can also still prove it directly using Zorn's lemma (by copying the proof of the original Krull's theorem).
 :::
 

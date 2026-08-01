@@ -158,7 +158,7 @@ Here there's one new word I have to define for you, but we won't make much use o
 
 :::DEFINITION
 Let $`R` be an integral domain and let $`K` be its field of fractions.
-We say $`R` is *integrally closed* if the only elements $`a \in K` which are roots of _monic_ polynomials in $`R` are the elements of $`R` (which are roots of the trivial $`x-r` polynomial).
+We say $`R` is *integrally closed* if the only elements $`a : K` which are roots of _monic_ polynomials in $`R` are the elements of $`R` (which are roots of the trivial $`x-r` polynomial).
 :::
 
 The _interesting_ condition in the definition of a Dedekind domain is the last one: prime ideals and maximal ideals are the same thing.
@@ -189,7 +189,7 @@ Boring, but here it is anyways for completeness.
 Since $`\mathcal{O}_K \cong \mathbb{Z}^{\oplus n}`,{margin}[By the free-module theorem from the previous chapter.] we get that it's Noetherian.
 
 Now we show that $`\mathcal{O}_K` is integrally closed.
-Suppose that $`\eta \in K` is the root of some polynomial with coefficients in $`\mathcal{O}_K`.
+Suppose that $`\eta : K` is the root of some polynomial with coefficients in $`\mathcal{O}_K`.
 Thus $$`\eta^n = \alpha_{n-1} \cdot \eta^{n-1} + \alpha_{n-2} \cdot \eta^{n-2} + \dots + \alpha_0` where $`\alpha_i \in \mathcal{O}_K`.
 We want to show that $`\eta \in \mathcal{O}_K` as well.
 

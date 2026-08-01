@@ -77,7 +77,7 @@ But thought of as an element of $`\mathbb{Q}(i)`, its norm really ought to be $`
 Let's make this happen: for $`K` a number field, we will now define $`\operatorname{N}_{K/\mathbb{Q}}(\alpha)` to be the norm of $`\alpha` _with respect to $`K`_ as follows.
 
 :::DEFINITION
-Let $`\alpha \in K` have degree $`n`, so $`\mathbb{Q}(\alpha) \subseteq K`, and set $`k = (\deg K) / n`.
+Let $`\alpha : K` have degree $`n`, so $`\mathbb{Q}(\alpha) \subseteq K`, and set $`k = (\deg K) / n`.
 The *norm* of $`\alpha` is defined as $$`\operatorname{N}_{K/\mathbb{Q}}(\alpha) \coloneqq \left( \prod \text{Galois conj of } \alpha \right)^k.`
 The *trace* is defined as $$`\operatorname{Tr}_{K/\mathbb{Q}}(\alpha) \coloneqq k \cdot \left( \sum \text{Galois conj of } \alpha \right).`
 :::
@@ -128,7 +128,7 @@ Then, $`\operatorname{Tr}_{K/\mathbb{Q}}(\alpha) = \sum_{i=1}^d \sigma_i(\alpha)
 :::
 
 :::THEOREM "Morally correct definition of norm and trace"
-Let $`K` be a number field of degree $`n`, and let $`\alpha \in K`.
+Let $`K` be a number field of degree $`n`, and let $`\alpha : K`.
 Let $`\mu_\alpha \colon K \to K` denote the map $$`x \mapsto \alpha x` viewed as a linear map of $`\mathbb{Q}`-vector spaces.
 Then,
 
@@ -247,7 +247,7 @@ So we see that in fact, $`x` is $`\frac{1}{13}` of an integer in $`\mathcal{O}_K
 The theorem holds true more generally.
 
 :::THEOREM "K is the fraction field of its integers"
-Let $`K` be a number field, and let $`x \in K` be any element.
+Let $`K` be a number field, and let $`x : K` be any element.
 Then there exists an integer $`n` such that $`nx \in \mathcal{O}_K`; in other words, $$`x = \frac 1n \alpha` for some $`\alpha \in \mathcal{O}_K`.
 :::
 

@@ -195,7 +195,7 @@ We have $`\operatorname{Gal}(\mathbb{F}_{p^n}/\mathbb{F}_p) \cong \mathbb{Z}/n\m
 
 :::PROOF
 Since $`[\mathbb{F}_{p^n}:\mathbb{F}_p] = n`, the Galois group $`G` has order $`n`.
-So we just need to show $`\sigma_p \in G` has order $`n`.
+So we just need to show $`\sigma_p : G` has order $`n`.
 
 Note that $`\sigma_p` applied $`k` times gives $`x \mapsto x^{p^k}`.
 Hence, $`\sigma_p` applied $`n` times is the identity, as all elements of $`\mathbb{F}_{p^n}` satisfy $`x^{p^n}=x`.

@@ -52,7 +52,7 @@ $`S^0` is two points bounding the segment $`D^1`, while $`D^2` is a disk with bo
 $`D^n / S^{n-1} = S^n`, or the torus.
 :::
 
-Given a space $`X`, we can _identify_ some of the points together by any equivalence relation $`\sim`; for an $`x \in X` we denote its equivalence class by $`[x]`.
+Given a space $`X`, we can _identify_ some of the points together by any equivalence relation $`\sim`; for an $`x : X` we denote its equivalence class by $`[x]`.
 Geometrically, this is the space achieved by welding together points equivalent under $`\sim`.
 
 Formally,
@@ -126,7 +126,7 @@ $`\mathbb{R} \times \mathbb{R}` is $`\mathbb{R}^2`, $`S^1 \times S^1` is the tor
 
 :::DEFINITION
 Given topological spaces $`X` and $`Y`, the *product topology* on $`X \times Y` is the space whose
-- Points are pairs $`(x, y)` with $`x \in X`, $`y \in Y`, and
+- Points are pairs $`(x, y)` with $`x : X`, $`y : Y`, and
 - Topology is given as follows: the _basis_ of the topology for $`X \times Y` is $`U \times V`, for $`U \subseteq X` open and $`V \subseteq Y` open.
 :::
 
@@ -184,13 +184,13 @@ Show that the disjoint union of two nonempty spaces is disconnected.
 More interesting is the wedge sum, where two topological spaces $`X` and $`Y` are fused together only at a single base point.
 
 :::DEFINITION
-Let $`X` and $`Y` be topological spaces, and $`x_0 \in X` and $`y_0 \in Y` be points.
+Let $`X` and $`Y` be topological spaces, and $`x_0 : X` and $`y_0 : Y` be points.
 We define the equivalence relation $`\sim` by declaring $`x_0 \sim y_0` only.
 Then the *wedge sum* of two spaces is defined as $$`X \vee Y = (X \amalg Y) / {\sim}.`
 :::
 
 :::EXAMPLE "$S^1 \\vee S^1$ is a figure eight"
-Let $`X = S^1` and $`Y = S^1`, and let $`x_0 \in X` and $`y_0 \in Y` be any points.
+Let $`X = S^1` and $`Y = S^1`, and let $`x_0 : X` and $`y_0 : Y` be any points.
 Then $`X \vee Y` is a "figure eight": it is two circles fused together at one point.
 :::
 

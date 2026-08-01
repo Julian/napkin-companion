@@ -327,12 +327,12 @@ In other words, $`\operatorname{Aut}(K/\mathbb{Q})` is the Klein Four Group.
 First, let's repeat the proof of the observation that these embeddings shuffle around roots (akin to the first observation in the introduction):
 
 :::LEMMA "Root shuffling in Aut(K/F)"
-Let $`f \in F[x]`, suppose $`K/F` is a finite extension, and assume $`\alpha : K` is a root of $`f`.
+Let $`f : F[x]`, suppose $`K/F` is a finite extension, and assume $`\alpha : K` is a root of $`f`.
 Then for any $`\sigma \in \operatorname{Aut}(K/F)`, $`\sigma(\alpha)` is also a root of $`f`.
 :::
 
 :::PROOF
-Let $`f(x) = c_n x^n + c_{n-1}x^{n-1} + \dots + c_0`, where $`c_i \in F`.
+Let $`f(x) = c_n x^n + c_{n-1}x^{n-1} + \dots + c_0`, where $`c_i : F`.
 Thus, $$`0 = \sigma(f(\alpha)) = \sigma\left( c_n\alpha^n + \dots + c_0 \right) = c_n\sigma(\alpha)^n + \dots + c_0 = f(\sigma(\alpha)).`
 :::
 
@@ -533,7 +533,7 @@ Show that $`[K:F] \ge |\operatorname{Aut}(K/F)|`, and that equality holds if and
 The equality case is trickier.
 
 The easier direction is when $`K` is a splitting field.
-Assume $`K = F(\alpha_1, \dots, \alpha_n)` is the splitting field of some separable polynomial $`p \in F[x]` with $`n` distinct roots $`\alpha_1, \dots, \alpha_n`.
+Assume $`K = F(\alpha_1, \dots, \alpha_n)` is the splitting field of some separable polynomial $`p : F[x]` with $`n` distinct roots $`\alpha_1, \dots, \alpha_n`.
 Adjoin them one by one:
 
 :::figure "figures/algebraic-nt/embedding-tower-f.svg" (alt := "The analogous tower for a splitting field K = F(α₁, …, αₙ) over a general base field F, used in the optional proof that Galois extensions are splitting.")
@@ -550,7 +550,7 @@ Now assume $`K/F` is Galois.
 First, we state:
 
 :::LEMMA
-Let $`K/F` be Galois, and $`p \in F[x]` irreducible.
+Let $`K/F` be Galois, and $`p : F[x]` irreducible.
 If any root of $`p` (in $`\overline F`) lies in $`K`, then all of them do, and in fact $`p` is separable.
 :::
 

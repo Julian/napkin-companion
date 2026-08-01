@@ -58,7 +58,7 @@ The former will be pronounced "$`R` localized away from $`g`" while the latter w
 Even more generally, next chapter we will throw out the coordinate ring $`R` altogether and replace it with a general commutative ring $`A` (which are still viewed as functions).
 We will construct a ringed space called $`X = \operatorname{Spec} A`, whose elements are _prime ideals_ of $`A` and is equipped with the Zariski topology and a sheaf $`\mathcal{O}_X`.
 It will turn out that, the right way to define the sheaf $`\mathcal{O}_X` is to use localization, $$`\mathcal{O}_X(D(f)) = A[f^{-1}], \qquad \mathcal{O}_{X, \mathfrak{p}} = A_\mathfrak{p}`
-for any element $`f \in A` and prime ideal $`\mathfrak{p} \in \operatorname{Spec} A`.
+for any element $`f : A` and prime ideal $`\mathfrak{p} \in \operatorname{Spec} A`.
 Thus just as with complex affine varieties, localizations will give us a way to more or less describe the sheaf $`\mathcal{O}_X` completely.
 
 In other words,
@@ -123,7 +123,7 @@ $`\mathbb{Z}` localized away from $`6` has fractions $`\frac{m}{2^x 3^y}`.
 We now focus on the two special cases of localization we will need the most; one in this section, the other in the next section.
 
 :::DEFINITION
-For $`f \in A`, we define the *localization of $`A` away from $`f`*, denoted $`A[1/f]` or $`A[f^{-1}]`, to be $`\{1, f, f^2, f^3, \dots\}^{-1} A`.
+For $`f : A`, we define the *localization of $`A` away from $`f`*, denoted $`A[1/f]` or $`A[f^{-1}]`, to be $`\{1, f, f^2, f^3, \dots\}^{-1} A`.
 (Note that $`\left\{ 1, f, f^2, \dots \right\}` is multiplicative.)
 :::
 
@@ -183,7 +183,7 @@ In fact, the same was true for affine varieties too.
 :::EXAMPLE "Relation to affine varieties"
 Let $`V \subseteq \mathbb{A}^n`, let $`A = \mathbb{C}[V]` and let $`p = (a_1, \dots, a_n)` be a point.
 Consider the maximal (hence prime) ideal $`\mathfrak{m} = (x_1 - a_1, \dots, x_n - a_n)`.
-Observe that a function $`f \in A` vanishes at $`p` if and only if $`f \pmod{\mathfrak{m}} = 0`, equivalently $`f \in \mathfrak{m}`.
+Observe that a function $`f : A` vanishes at $`p` if and only if $`f \pmod{\mathfrak{m}} = 0`, equivalently $`f \in \mathfrak{m}`.
 Thus we can write $$`\mathcal{O}_{V, p} = \left\{ \frac{f}{g} \mid f, g \in A, g(p) \neq 0 \right\} = \left\{ \frac{f}{g} \mid f \in A, g \in A \setminus \mathfrak{m} \right\} = \left( A \setminus \mathfrak{m} \right)^{-1} A = A_\mathfrak{m}.`
 So, we can also express $`\mathcal{O}_{V, p}` concisely as a localization.
 :::

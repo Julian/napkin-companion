@@ -64,7 +64,7 @@ If you really like compatible germs, you can write out the definition:
 :::DEFINITION
 Let $`A` be a ring.
 Then $`\operatorname{Spec} A` is made into a ringed space by setting $$`\mathcal{O}_{\operatorname{Spec} A}(U) = \left\{ (f_\mathfrak{p} \in A_\mathfrak{p})_{\mathfrak{p} \in U} \text{ which are locally quotients} \right\}.`
-That is, it consists of sequence $`(f_\mathfrak{p})_{\mathfrak{p} \in U}`, with each $`f_\mathfrak{p} \in A_\mathfrak{p}`, such that for every point $`\mathfrak{p}` there is an open neighborhood $`U_\mathfrak{p}` and an $`f, g \in A` such that $`f_\mathfrak{q} = \frac fg \in A_\mathfrak{q}` for all $`\mathfrak{q} \in U_\mathfrak{p}`.
+That is, it consists of sequence $`(f_\mathfrak{p})_{\mathfrak{p} \in U}`, with each $`f_\mathfrak{p} \in A_\mathfrak{p}`, such that for every point $`\mathfrak{p}` there is an open neighborhood $`U_\mathfrak{p}` and an $`f, g : A` such that $`f_\mathfrak{q} = \frac fg \in A_\mathfrak{q}` for all $`\mathfrak{q} \in U_\mathfrak{p}`.
 :::
 
 We will now *basically forget about this definition*, because we will never use it in practice.
@@ -85,7 +85,7 @@ We will now really hammer in the importance of the distinguished open sets.
 The definition is analogous to before:
 
 :::DEFINITION
-Let $`f \in A`.
+Let $`f : A`.
 Then $`D(f)` is the set of $`\mathfrak{p}` such that $`f(\mathfrak{p}) \neq 0`, a *distinguished open set*.
 :::
 
@@ -109,7 +109,7 @@ Then verify that $`U = \bigcup_{f \in I} D(f)`.
 The second critical fact is that the sections on distinguished open sets can be computed explicitly.
 
 :::THEOREM "Sections of $D(f)$ are localizations away from $f$"
-Let $`A` be a ring and $`f \in A`.
+Let $`A` be a ring and $`f : A`.
 Then $$`\mathcal{O}_{\operatorname{Spec} A}(D(f)) \cong A[1/f].`
 :::
 
@@ -281,7 +281,7 @@ This will imply $`I` is maximal: there are no more non-units to add.
 It will also imply $`I` is the only maximal ideal: because any proper ideal can't contain units, so is contained in $`I`.
 
 This is actually easy.
-An element of $`A_\mathfrak{p}` not in $`I` must be $`x = \frac fg` for $`f, g \in A` and $`f, g \notin \mathfrak{p}`.
+An element of $`A_\mathfrak{p}` not in $`I` must be $`x = \frac fg` for $`f, g : A` and $`f, g \notin \mathfrak{p}`.
 For such an element, $`x^{-1} = \frac gf \notin \mathfrak{p}` too.
 So $`x` is a unit.
 End proof.
@@ -355,8 +355,8 @@ The functions $`0` and $`x` on $`\operatorname{Spec} \mathbb{C}[x]/(x^2)`.
 :::
 
 We close the chapter with a word of warning.
-In any ringed space, a section is determined by its germs; so that on $`\operatorname{Spec} A` a function $`f \in A` is determined by its germ in each stalk $`A_\mathfrak{p}`.
-However, we now will mention that an $`f \in A` is _not_ determined by its value $`f(\mathfrak{p}) = f \pmod \mathfrak{p}` at each point.
+In any ringed space, a section is determined by its germs; so that on $`\operatorname{Spec} A` a function $`f : A` is determined by its germ in each stalk $`A_\mathfrak{p}`.
+However, we now will mention that an $`f : A` is _not_ determined by its value $`f(\mathfrak{p}) = f \pmod \mathfrak{p}` at each point.
 
 The famous example is:
 
@@ -387,7 +387,7 @@ Then our above discussion gives:
 Two functions $`f` and $`g` have the same value on all points of $`\operatorname{Spec} A` if and only if $`f - g` is nilpotent.
 :::
 
-In particular, when $`A` is a reduced ring, even the values $`f(\mathfrak{p})` as $`\mathfrak{p} \in \operatorname{Spec} A` are enough to determine $`f \in A`.
+In particular, when $`A` is a reduced ring, even the values $`f(\mathfrak{p})` as $`\mathfrak{p} \in \operatorname{Spec} A` are enough to determine $`f : A`.
 
 # Problems
 
@@ -403,7 +403,7 @@ Compute $`\mathcal{O}_X(U)`.
 :::
 
 :::PROBLEM "Characterizing local rings"
-Show that a ring $`R` is a local ring if and only if the following property is true: for any $`x \in R`, either $`x` or $`1 - x` is a unit.
+Show that a ring $`R` is a local ring if and only if the following property is true: for any $`x : R`, either $`x` or $`1 - x` is a unit.
 :::
 
 :::PROBLEM "Localizing a local ring at its maximal ideal"

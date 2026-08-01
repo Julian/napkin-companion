@@ -52,7 +52,7 @@ All we're saying is that $`U` is evenly covered if its pre-image is a bunch of c
 (Actually, a little more: each of the pancakes is homeomorphic to $`U`, but we also require that $`p` is the homeomorphism.)
 
 :::DEFINITION
-A *covering projection* $`p \colon E \to B` is a surjective continuous map such that every base point $`b \in B` has an open neighborhood $`U \ni b` which is evenly covered by $`p`.
+A *covering projection* $`p \colon E \to B` is a surjective continuous map such that every base point $`b : B` has an open neighborhood $`U \ni b` which is evenly covered by $`p`.
 :::
 
 :::EXERCISE "On requiring surjectivity of $p$"
@@ -159,14 +159,14 @@ Then there exists a _unique_ lifting $`\tilde\gamma \colon [0, 1] \to E` such th
 :::
 
 :::PROOF
-For every point $`b \in B`, consider an evenly covered open neighborhood $`U_b` in $`B`.
+For every point $`b : B`, consider an evenly covered open neighborhood $`U_b` in $`B`.
 Then the family of open sets $$`\left\{ \gamma^{-1}(U_b) \mid b \in B \right\}`
 is an open cover of $`[0, 1]`.
 As $`[0, 1]` is compact we can take a finite subcover.
 Thus we can chop $`[0, 1]` into finitely many interior-disjoint closed intervals $`[0, 1] = I_1 \sqcup I_2 \sqcup \dots \sqcup I_N` in that order, such that for every $`I_k`, $`\gamma(I_k)` is contained in some $`U_b`.
 
 We'll construct $`\tilde\gamma` interval by interval now, starting at $`I_1`.
-Initially, place a robot at $`e_0 \in E` and a mouse at $`b_0 \in B`.
+Initially, place a robot at $`e_0 : E` and a mouse at $`b_0 : B`.
 For each interval $`I_k`, the mouse moves around according to however $`\gamma` behaves on $`I_k`.
 But the whole time it's in some evenly covered $`U_k`; the fact that $`p` is a covering projection tells us that there are several copies of $`U_k` living in $`E`.
 Exactly one of them, say $`V_k`, contains our robot.
@@ -181,7 +181,7 @@ The general lifting problem: lifting $`f \colon (Y, y_0) \to (B, b_0)` through $
 :::
 
 :::DEFINITION
-A space $`Y` is *locally path-connected* if, at any point $`x \in Y`, every open neighborhood $`U` of $`x` contains a path-connected open neighborhood $`V \subseteq U`.
+A space $`Y` is *locally path-connected* if, at any point $`x : Y`, every open neighborhood $`U` of $`x` contains a path-connected open neighborhood $`V \subseteq U`.
 :::
 
 :::THEOREM "General lifting criterion"
@@ -227,7 +227,7 @@ Let's return to the task of computing fundamental groups.
 Consider a covering projection $`p \colon (E, e_0) \to (B, b_0)`.
 
 A loop $`\gamma` in $`B` can be lifted uniquely to $`\tilde\gamma` in $`E` which starts at $`e_0` and ends at some point $`e` in the fiber $`p^{-1}(b_0)`.
-You can easily check that this $`e \in E` does not change if we pick a different path $`\gamma'` homotopic to $`\gamma`.
+You can easily check that this $`e : E` does not change if we pick a different path $`\gamma'` homotopic to $`\gamma`.
 
 :::QUESTION
 Look at the picture of the lifting of the circle.
@@ -260,7 +260,7 @@ Prove that $`E` path-connected implies $`\Phi` is surjective.
 To prove the proposition, we've done everything except show that $`E` simply connected implies $`\Phi` injective.
 To do this suppose that $`\gamma_1` and $`\gamma_2` are loops such that $`\Phi([\gamma_1]) = \Phi([\gamma_2])`.
 
-Applying lifting, we get paths $`\tilde\gamma_1` and $`\tilde\gamma_2` both starting at some point $`e_0 \in E` and ending at some point $`e_1 \in E`.
+Applying lifting, we get paths $`\tilde\gamma_1` and $`\tilde\gamma_2` both starting at some point $`e_0 : E` and ending at some point $`e_1 : E`.
 Since $`E` is simply connected that means they are _homotopic_, and we can write a homotopy $`F \colon [0, 1] \times [0, 1] \to E` which unites them.
 But then consider the composition of maps $$`[0, 1] \times [0, 1] \xrightarrow{F} E \xrightarrow{p} B.`
 You can check $`p \circ F` is a homotopy from $`\gamma_1` to $`\gamma_2`.
@@ -296,7 +296,7 @@ $`\mathbb{R} \to S^1` comes from $`n \cdot x = n + x`.
 Here's another way to generate some coverings.
 Let $`X` be a topological space and $`G` a group acting on its points.
 Thus for every $`g`, we get a map $`X \to X` by $$`x \mapsto g \cdot x.`
-We require that this map is continuous{margin}[Another way of phrasing this: the action, interpreted as a map $`G \times X \to X`, should be continuous, where $`G` on the left-hand side is interpreted as a set with the discrete topology.] for every $`g \in G`, and that the stabilizer of each point in $`X` is trivial.
+We require that this map is continuous{margin}[Another way of phrasing this: the action, interpreted as a map $`G \times X \to X`, should be continuous, where $`G` on the left-hand side is interpreted as a set with the discrete topology.] for every $`g : G`, and that the stabilizer of each point in $`X` is trivial.
 Then we can consider a quotient space $`X/G` defined by fusing any points in the same orbit of this action.
 Thus the points of $`X/G` are identified with the orbits of the action.
 Then we get a natural "projection" $$`X \to X/G`
@@ -414,11 +414,11 @@ It's an absolute miracle that this is true more generally: the greatest triumph 
 Suppose a space $`X` satisfies some nice conditions, like:
 
 :::DEFINITION
-A space $`X` is called *locally connected* if for each point $`x \in X` and open neighborhood $`V` of it, there is a connected open set $`U` with $`x \in U \subseteq V`.
+A space $`X` is called *locally connected* if for each point $`x : X` and open neighborhood $`V` of it, there is a connected open set $`U` with $`x \in U \subseteq V`.
 :::
 
 :::DEFINITION
-A space $`X` is *semi-locally simply connected* if for every point $`x \in X` there is an open neighborhood $`U` such that all loops in $`U` are nulhomotopic.
+A space $`X` is *semi-locally simply connected* if for every point $`x : X` there is an open neighborhood $`U` such that all loops in $`U` are nulhomotopic.
 (But the contraction need not take place in $`U`.)
 :::
 

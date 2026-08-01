@@ -64,7 +64,7 @@ Let $`G` be a locally compact abelian group.
 We regard it as a measurable space using its Borel $`\sigma`-algebra $`\mathcal{B}(G)`.
 There exists a measure $`\mu \colon \mathcal{B}(G) \to [0, \infty]`, called the *Haar measure*, satisfying the following properties:
 
-- $`\mu(gS) = \mu(S)` for every $`g \in G` and measurable $`S`.
+- $`\mu(gS) = \mu(S)` for every $`g : G` and measurable $`S`.
   That means that $`\mu` is "translation-invariant" under translation by $`G`.
 - $`\mu(K)` is finite for any compact set $`K`.
 - if $`S` is measurable, then $`\mu(S) = \inf\{\mu(U) \mid U \supseteq S \text{ open}\}`.
@@ -171,7 +171,7 @@ The results are less fun in this case, but we still have, for example:
 Let $`\mu` be a Haar measure on $`G`.
 Then there exists a unique Haar measure $`\nu` on $`\widehat{G}` (called the *dual measure*) such that: whenever $`f \in L^1(G)` and $`\widehat{f} \in L^1(\widehat{G})`, we have
 $$`f(x) = \int_{\widehat{G}} \widehat{f}(\xi) \xi(x) \; d\nu`
-for almost all $`x \in G` (with respect to $`\mu`).
+for almost all $`x : G` (with respect to $`\mu`).
 If $`f` is continuous, this holds for all $`x`.
 :::
 

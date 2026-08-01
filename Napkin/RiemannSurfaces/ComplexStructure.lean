@@ -102,7 +102,7 @@ The condition that the transition functions need to be smooth is, of course, to 
 
 In completely the same way, we could have defined a topological manifold by:
 
-> A topological $`n`-manifold $`M` is a set with a collection of subsets $`\{U_i\}` that covers $`M`, for each $`U_i` there is a bijective map from it to a subset of $`\mathbb{R}^n`, say
+> A topological $`n`-manifold $`M` is a type with a collection of subsets $`\{U_i\}` that covers $`M`, for each $`U_i` there is a bijective map from it to a subset of $`\mathbb{R}^n`, say
 > $$`\phi_i \colon U_i \to E_i \subseteq \mathbb{R}^n`
 > where each $`E_i` is an open subset of $`\mathbb{R}^n`, satisfying that all the transition maps are topological homeomorphisms.
 
@@ -163,7 +163,7 @@ A complex chart $`U_i \to E_i` should be thought of as giving a *local coordinat
 Formally:
 
 :::DEFINITION "Local coordinate"
-For a point $`p \in X`, open set $`U \subseteq X` and complex chart $`\phi \colon U \to \mathbb{C}`, let $`z = \phi(x)` for each $`x \in U`; we call $`z` a *local coordinate*.
+For a point $`p : X`, open set $`U \subseteq X` and complex chart $`\phi \colon U \to \mathbb{C}`, let $`z = \phi(x)` for each $`x \in U`; we call $`z` a *local coordinate*.
 We say that the local coordinate is *centered* at $`p` if $`\phi(p) = 0`.
 :::
 

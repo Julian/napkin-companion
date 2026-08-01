@@ -436,7 +436,7 @@ In all these categories, the definition of monic literally reads "$`f` is inject
 So in these categories, "monic" and "injective" coincide.
 
 That said, here is the standard counterexample.
-An additive abelian group $`G = (G, +)` is called *divisible* if for every $`x \in G` and integer $`n > 0` there exists $`y \in G` with $`ny = x`.
+An additive abelian group $`G = (G, +)` is called *divisible* if for every $`x : G` and integer $`n > 0` there exists $`y : G` with $`ny = x`.
 Let $`\mathsf{DivAbGrp}` be the category of such groups.
 
 :::EXERCISE

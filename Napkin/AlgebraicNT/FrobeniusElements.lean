@@ -164,7 +164,7 @@ Miraculously, not only is the answer "yes", but in fact it does so in the nicest
 :::THEOREM "Chebotarev density theorem over ℚ"
 Let $`C` be a conjugacy class of $`G = \operatorname{Gal}(K/\mathbb{Q})`.
 The density of (unramified) primes $`p` such that $`\{ \operatorname{Frob}_\mathfrak{p} \mid \mathfrak{p} \text{ above } p \} = C` is exactly $`\left\lvert C \right\rvert / \left\lvert G \right\rvert`.
-In particular, for any $`\sigma \in G` there are infinitely many rational primes $`p` with $`\mathfrak{p}` above $`p` so that $`\operatorname{Frob}_{\mathfrak{p}} = \sigma`.
+In particular, for any $`\sigma : G` there are infinitely many rational primes $`p` with $`\mathfrak{p}` above $`p` so that $`\operatorname{Frob}_{\mathfrak{p}} = \sigma`.
 :::
 
 By density, I mean that the proportion of primes $`p \le x` that work approaches $`\frac{\left\lvert C \right\rvert}{\left\lvert G \right\rvert}` as $`x \to \infty`.
@@ -225,7 +225,7 @@ Both maps $`\operatorname{Frob}_{\mathfrak{P}}` and $`\operatorname{Frob}_{\math
 :::THEOREM "Restrictions of Frobenius elements"
 Assume $`L/\mathbb{Q}` and $`K/\mathbb{Q}` are both Galois.
 Let $`\mathfrak{P}` and $`\mathfrak{p}` be unramified as above.
-Then $`\operatorname{Frob}_{\mathfrak{P}} \restriction_{K} = \operatorname{Frob}_{\mathfrak{p}}`, i.e. for every $`\alpha \in K`, $$`\operatorname{Frob}_\mathfrak{p}(\alpha) = \operatorname{Frob}_{\mathfrak{P}}(\alpha).`
+Then $`\operatorname{Frob}_{\mathfrak{P}} \restriction_{K} = \operatorname{Frob}_{\mathfrak{p}}`, i.e. for every $`\alpha : K`, $$`\operatorname{Frob}_\mathfrak{p}(\alpha) = \operatorname{Frob}_{\mathfrak{P}}(\alpha).`
 :::
 
 :::PROOF
@@ -443,7 +443,7 @@ We claim that (i), (ii), (iii) are all equivalent to
 (iv) The pattern of the action of $`\operatorname{Frob}_{\mathfrak{P}}` on the $`G/H`.
 
 In other words we claim the cosets correspond to the $`n` roots of $`f` in $`K`.
-Indeed $`H` is just the set of $`\tau \in G` such that $`\tau(\alpha)=\alpha`, so there's a bijection between the roots and the cosets $`G/H` by $`\tau H \mapsto \tau(\alpha)`.
+Indeed $`H` is just the set of $`\tau : G` such that $`\tau(\alpha)=\alpha`, so there's a bijection between the roots and the cosets $`G/H` by $`\tau H \mapsto \tau(\alpha)`.
 Think of it this way: if $`G = S_n`, and $`H = \{\tau : \tau(1) = 1\}`, then $`G/H` has order $`n! / (n-1)! = n` and corresponds to the elements $`\{1, \dots, n\}`.
 So there is a natural bijection from (iii) to (iv).
 
@@ -478,7 +478,7 @@ Let $`G = \operatorname{Gal}(K/\mathbb{Q})`.
 Show that $`p` divides the order of $`G`. (Look at $`E`.)
 :::
 
-Hence by Cauchy's theorem (from the group actions chapter, a purely group-theoretic fact) we can find a $`\sigma \in G` of order $`p`.
+Hence by Cauchy's theorem (from the group actions chapter, a purely group-theoretic fact) we can find a $`\sigma : G` of order $`p`.
 By Chebotarev, there exist infinitely many rational (unramified) primes $`q \neq p` and primes $`\mathfrak{Q} \subseteq \mathcal{O}_K` above $`q` such that $`\operatorname{Frob}_\mathfrak{Q} = \sigma`.
 (Yes, that's an uppercase Gothic $`Q`.
 Sorry.)
@@ -835,7 +835,7 @@ example (F : Type*) [Field F] (f : Polynomial F) (E : Type*) [Field E]
 
 ## Example application: IMO 2003 problem 6
 
-The solution's one non-elementary group-theoretic input — used to produce an element $`\sigma \in G` of order $`p` once $`p \mid \left\lvert G \right\rvert` — is Cauchy's theorem, `exists_prime_orderOf_dvd_card`.
+The solution's one non-elementary group-theoretic input — used to produce an element $`\sigma : G` of order $`p` once $`p \mid \left\lvert G \right\rvert` — is Cauchy's theorem, `exists_prime_orderOf_dvd_card`.
 State it as an exercise.
 
 :::exercise

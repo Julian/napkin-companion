@@ -49,7 +49,7 @@ The integral $`\int_c \alpha` should add up all the $`\alpha` along the curve $`
 :::
 
 Our differential form $`\alpha` first takes in a point $`p` to get $`\alpha_p \in V^\vee`.
-Then, it eats a tangent vector $`v \in V` to the curve $`c` to finally give a real number $`\alpha_p(v) \in \mathbb{R}`.
+Then, it eats a tangent vector $`v : V` to the curve $`c` to finally give a real number $`\alpha_p(v) \in \mathbb{R}`.
 We would like to "add all these numbers up", using only the notion of an integral over $`[a,b]`.
 
 :::EXERCISE
@@ -105,7 +105,7 @@ There is a more concrete way to define the pullback using bases.
 Suppose $`w_1, \dots, w_n` is a basis of $`V'` and $`e_1, \dots, e_m` is a basis of $`V`.
 Thus, by the projection principle, the map $`\phi \colon V \to V'` can be thought of as
 $$`\phi(v) = \phi_1(v) w_1 + \dots + \phi_n(v) w_n`
-where each $`\phi_i` takes in a $`v \in V` and returns a real number.
+where each $`\phi_i` takes in a $`v : V` and returns a real number.
 We know also that $`\alpha` can be written concretely as
 $$`\alpha = \sum_{I \subseteq \{1, \dots, n\}} f_I \; dw_I.`
 Then, we define

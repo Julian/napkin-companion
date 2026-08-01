@@ -372,7 +372,7 @@ The groups thus obtained are the *relative cohomology groups* and are denoted $`
 :::
 
 :::DEFINITION
-The *reduced cohomology groups* of a nonempty space $`X`, denoted $`\widetilde H^n(X; G)`, are defined to be $`H^n(X, \{\ast\}; G)` for some point $`\ast \in X`.
+The *reduced cohomology groups* of a nonempty space $`X`, denoted $`\widetilde H^n(X; G)`, are defined to be $`H^n(X, \{\ast\}; G)` for some point $`\ast : X`.
 :::
 
 # Problems

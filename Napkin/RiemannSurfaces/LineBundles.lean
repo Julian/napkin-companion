@@ -25,7 +25,7 @@ file := "Line-bundles"
 
 # Overview
 
-You might have heard about line bundles, which is somehow "a set $`L` with a map $`\pi \colon L \to X` where the preimage of each point is a line".
+You might have heard about line bundles, which is somehow "a type $`L` with a map $`\pi \colon L \to X` where the preimage of each point is a line".
 And then, in the algebraic geometry section, you come across the concept of "section" which appears to be just a function.
 
 That sounds reasonable, but you may ask, "so what? Isn't it then just another complex manifold which has one more dimension than $`X`? Why not just study complex manifold?"
@@ -53,7 +53,7 @@ Looking only at the real part can makes some intuition slipped however — for e
 So, be careful.
 
 :::DEFINITION
-A *line bundle* $`L` is a set, together with:
+A *line bundle* $`L` is a type, together with:
 
 - A projection map $`\pi \colon L \to X`,
 - An open cover $`\{ U_i \}` of $`X`,
@@ -70,7 +70,7 @@ This time, we use the notation in {cite}`ref:miranda` — the target of a line b
 The definition is dense, but essentially:
 
 :::MORAL
-A line bundle is a set with a line bundle structure, consisting of an analytic structure and a $`1`-dimensional vector space structure.
+A line bundle is a type with a line bundle structure, consisting of an analytic structure and a $`1`-dimensional vector space structure.
 :::
 
 The transition maps is simply to weld the pieces of the line bundle together, just like how they welded pieces of a Riemann surface in the chapter on complex structures.
@@ -250,7 +250,7 @@ It is exactly what you expect — it must respect the line bundle structure (tha
 
 :::DEFINITION
 Let $`\pi_1 \colon L_1 \to X` and $`\pi_2 \colon L_2 \to X` be line bundles.
-A line bundle morphism $`\alpha \colon L_1 \to L_2` is a set morphism such that:
+A line bundle morphism $`\alpha \colon L_1 \to L_2` is a map of the underlying types such that:
 
 - $`\pi_2 \circ \alpha = \pi_1`, and
 - if $`\phi_1 \colon \pi_1^{-1}(U_1) \to \mathbb{C} \times U_1` and $`\phi_2 \colon \pi_2^{-1}(U_2) \to \mathbb{C} \times U_2` are line bundle charts, then the composition $$`\phi_2 \circ \alpha \circ \phi_1^{-1} \colon \mathbb{C} \times (U_1 \cap U_2) \to \mathbb{C} \times (U_1 \cap U_2)` has the form $`(s, p) \mapsto (f(p) \cdot s, p)` where $`f` is analytic on $`U_1 \cap U_2`.

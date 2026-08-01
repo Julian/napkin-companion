@@ -125,7 +125,7 @@ But something _really magical_ happens when we add the additional hypothesis tha
 We set about proving this.
 
 Let $`K/\mathbb{Q}` be Galois with $`G = \operatorname{Gal}(K/\mathbb{Q})`.
-Note that if $`\mathfrak{p} \subseteq \mathcal{O}_K` is a prime above $`p`, then the image $`\sigma[\mathfrak{p}]` is also prime for any $`\sigma \in G` (since $`\sigma` is an automorphism!).
+Note that if $`\mathfrak{p} \subseteq \mathcal{O}_K` is a prime above $`p`, then the image $`\sigma[\mathfrak{p}]` is also prime for any $`\sigma : G` (since $`\sigma` is an automorphism!).
 Moreover, since $`p \in \mathfrak{p}` and $`\sigma` fixes $`\mathbb{Q}`, we know that $`p \in \sigma[\mathfrak{p}]` as well.
 
 Thus, by the pointwise mapping, *the Galois group acts on the prime ideals above a rational prime $`p`*.
