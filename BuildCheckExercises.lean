@@ -21,6 +21,14 @@ inner-loop check.
 
 import Napkin.Meta.Exercises
 
+-- The generated files import these, and `lean` can only load a module that
+-- has already been compiled. Importing them here makes building this
+-- executable build them too, so the check does not quietly depend on
+-- whatever happens to be in `.lake` already — which is the difference
+-- between a developer's tree and a fresh CI checkout.
+import Napkin.Meta
+import Napkin.Missing
+
 open System (FilePath)
 
 /-- Elaborate one file, returning its diagnostics if it failed. -/
