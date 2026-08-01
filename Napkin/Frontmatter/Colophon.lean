@@ -44,18 +44,25 @@ For corrections, comments, or pictures of kittens regarding the original Napkin,
 
 # A Lean companion
 
-This rendering is a Lean companion to the Napkin, prepared by [Julian](https://github.com/Julian).
-The math prose is Evan's, ported close to verbatim; the executable Lean and Mathlib excerpts and minor presentation tweaks needed to bridge the two are Julian's.
+This rendering is a Lean & Mathlib companion to the Napkin prepared by [Julian](https://github.com/Julian).
 
-Each chapter ends with a *Formalization* section that revisits its content in Mathlib's vocabulary — pointing at the names, lemmas, and (occasionally) design choices you'd reach for if you wanted to formalize what you've just read.
-The body of each chapter stays free of Lean, so you can read it as math without needing to know any.
+The companion was prepared for Julian himself to read, and it targets an audience (undoubtedly bigger than one in theory) who simultaneously:
 
+  * wants to learn more math
+  * wants to learn more Lean & Mathlib
+  * wants (or is forced) to do so in a self-guided way outside of a formal degree program
+
+Each chapter ends with a *Formalization* section that revisits its content in Mathlib's vocabulary — pointing at the names, lemmas, and (occasionally) design choices you'd reach for to formalize what you've just read.
+The body of each chapter stays free of Lean, so you can focus on it as mathematical knowledge beforehand.
+
+The math prose began from Evan's, with executable Lean and Mathlib excerpts and minor presentation tweaks added by Julian.
 Evan's voice and first-person pronouns have been preserved in the book contents wherever feasible — so when the body of a chapter says "I" or "mine", that's Evan.
 
+LLMs were a big part of porting the prose and images, and of authoring exercises.
+The goal however is for Julian to read the book cover-to-cover in its new state and correct any AI-induced errors.
+Julian is a fan and hobbyist, not a mathematician, so undoubtedly any errors introduced are his (even those via LLMs), not Evan's!
 If you find an error in the math that isn't in the [original Napkin](https://github.com/vEnhance/napkin), it has very likely been introduced by the port and is Julian's responsibility, not Evan's.
 Please report companion-specific issues, corrections, or suggestions at [github.com/Julian/napkin-companion](https://github.com/Julian/napkin-companion/issues).
-
-Book contents last updated 2026-07-22.
 
 # How to read the Formalization sections
 
