@@ -62,6 +62,13 @@ name = "linkcheck"
 root = "BuildLinkCheck"
 supportInterpreter = true
 
+# Elaborates the generated exercise/solution files. Slow; see the header
+# comment in BuildCheckExercises.lean.
+[[lean_exe]]
+name = "checkexercises"
+root = "BuildCheckExercises"
+supportInterpreter = true
+
 # Test runner. Wired up as `testDriver` so `lake test` invokes it.
 # Currently runs the render-diff check; new tests are registered in
 # `Test/Main.lean`.

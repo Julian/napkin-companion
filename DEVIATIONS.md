@@ -140,10 +140,13 @@ These apply to every chapter and are not repeated in the per-chapter lists below
     writes each chapter's Lean out twice: `<Chapter>-exercises.lean` with
     the exercises still `sorry`, and `<Chapter>-solutions.lean` with them
     filled in. Extraction takes *every* code block of the chapter, hidden
-    `lean -show` setup included, and reuses the chapter's header verbatim,
-    so the files compile exactly when the chapter does; the whole set of
-    190 was compiled to confirm it. Substitution is per declaration, not
-    per block, so an exercise block that also defines a helper keeps it.
+    `lean -show` setup included, and reuses the chapter's header verbatim.
+    Substitution is per declaration, not per block, so an exercise block
+    that also defines a helper keeps it. That the chapter compiles is not
+    evidence that the reassembled file does — a dropped `open` or a
+    reordered declaration shows up only when the file itself is
+    elaborated — so `lake exe checkexercises` regenerates all 192 and
+    elaborates each in its own process, and CI gates the deploy on it.
 
 17. **Hoverable notation.** The body writes $\mathbb{Z}$, not `Int`, so
     Verso's hover documentation — which attaches to code spans — never

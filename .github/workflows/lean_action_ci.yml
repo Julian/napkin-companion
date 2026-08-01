@@ -26,13 +26,37 @@ jobs:
           build: "false"  # `lake test` builds what it needs; skip the full book.
           test: "true"
 
+  # Every chapter also ships as a standalone pair of files a reader can
+  # open and work in. The book compiling says nothing about whether those
+  # do — they are reassembled from the chapter, and a dropped `open` or a
+  # reordered declaration only shows up when the file itself is
+  # elaborated. Each has its own header, so each needs its own process;
+  # that makes this slow, which is why it runs alongside `test` rather
+  # than inside it.
+  exercises:
+    name: Check the exercise files
+    if: github.event_name != 'pull_request' || github.base_ref == 'main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # Required to check out the repository.
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        with:
+          persist-credentials: false
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
+        with:
+          build: "false"
+          test: "false"
+      - name: Elaborate every generated exercise and solution file
+        run: lake exe checkexercises --jobs 4
+
   # Render the book and deploy to GitHub Pages. Only runs on pushes to
-  # `main`, gated on the `test` job, so a broken render never lands on
-  # the live site.
+  # `main`, gated on the checks above, so neither a broken render nor a
+  # broken download lands on the live site.
   deploy-book:
     name: Build and deploy book
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: test
+    needs: [test, exercises]
     runs-on: ubuntu-latest
     permissions:
       contents: read # Required to check out the repository.
