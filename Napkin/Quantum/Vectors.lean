@@ -306,7 +306,7 @@ example (n : ℕ) (ψ : EuclideanSpace ℂ (Fin n)) :
 ```
 
 This is exactly why we normalize a state: when $`|\psi\rangle` has norm $`1`, it forces $`\langle\psi|\psi\rangle = 1`, the condition $`|c_0|^2 + \dots + |c_{n-1}|^2 = 1` from the chapter.
-Prove it — rewrite with the squared-norm identity above, substitute the hypothesis that the norm is $`1`, and finish the numerics with `norm_num`.
+Prove it.
 
 :::exercise
 ```lean
@@ -314,6 +314,10 @@ example (n : ℕ) (ψ : EuclideanSpace ℂ (Fin n)) (h : ‖ψ‖ = 1) :
     inner ℂ ψ ψ = 1 := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite with the squared-norm identity above, substitute the hypothesis that the norm is $`1`, and finish the numerics with `norm_num`.
 :::
 
 :::solution
@@ -346,13 +350,17 @@ example (n : ℕ) : Module.finrank ℂ (EuclideanSpace ℂ (Fin n)) = n :=
 ```
 
 A qubit is a *nonzero* element of the state space, so we had better know a nonzero vector exists whenever there is at least one basis state.
-Prove that $`\mathbb{C}^{\oplus (n+1)}` is nontrivial: `Module.nontrivial_of_finrank_pos` reduces the goal to positivity of the dimension, which the computation above turns into $`0 < n + 1`.
+Prove that $`\mathbb{C}^{\oplus (n+1)}` is nontrivial.
 
 :::exercise
 ```lean
 example (n : ℕ) : Nontrivial (EuclideanSpace ℂ (Fin (n + 1))) := by
   sorry
 ```
+:::
+
+:::hint
+`Module.nontrivial_of_finrank_pos` reduces the goal to positivity of the dimension, which the computation above turns into $`0 < n + 1`.
 :::
 
 :::solution
@@ -403,7 +411,7 @@ example {n : ℕ}
 ```
 
 A complex number equal to its own conjugate is real — its imaginary part vanishes.
-Combine the self-conjugacy above with `Complex.conj_eq_iff_im` to conclude that the Rayleigh quotient $`\langle Tx|x\rangle` has imaginary part $`0`, which is exactly what makes each eigenvalue real.
+Show that the Rayleigh quotient $`\langle Tx|x\rangle` has imaginary part $`0`, which is exactly what makes each eigenvalue real.
 
 :::exercise
 ```lean
@@ -413,6 +421,10 @@ example {n : ℕ}
     (inner ℂ (T x) x).im = 0 := by
   sorry
 ```
+:::
+
+:::hint
+Combine the self-conjugacy established just above with `Complex.conj_eq_iff_im`.
 :::
 
 :::solution
@@ -450,6 +462,10 @@ example :
       = 4 := by
   sorry
 ```
+:::
+
+:::hint
+`Module.finrank_tensorProduct` turns the dimension of a tensor product into the product of the dimensions, and `finrank_euclideanSpace_fin` evaluates each factor.
 :::
 
 :::solution

@@ -249,6 +249,10 @@ example (N : ℕ) [NeZero N] (j : Fin N) : qft N j 0 = qft N 0 j := by
 ```
 :::
 
+:::hint
+`qft_apply_zero_right` and `qft_apply_zero_left` evaluate the two sides.
+:::
+
 :::solution
 ```lean
 example (N : ℕ) [NeZero N] (j : Fin N) : qft N j 0 = qft N 0 j := by
@@ -263,6 +267,10 @@ On a single basis state the transform does nothing: $`\mathrm{qft}\ 1` is the $`
 example : qft 1 = 1 := by
   sorry
 ```
+:::
+
+:::hint
+There is one entry to check: `ext j k` then `fin_cases` on both, and `Real.sqrt_one` clears the normalization.
 :::
 
 :::solution
@@ -281,6 +289,10 @@ For $`N = 2` the root of unity is $`\omega_2 = -1`, so the bottom-right entry is
 example : qft 2 1 1 = (-1 / Real.sqrt 2 : ℂ) := by
   sorry
 ```
+:::
+
+:::hint
+Unfold `qft` and simplify the exponent to $`\pi i`, at which point `Complex.exp_pi_mul_I` gives the $`-1`.
 :::
 
 :::solution
@@ -306,7 +318,7 @@ example (N : ℕ) (hN : N ≠ 0) :
 ```
 
 More is true, and it is exactly the periodicity that drives the interference: *every* multiple of $`N` in the exponent returns $`\omega_N` to $`1`, since $`\omega_N^{Nk} = (\omega_N^N)^k = 1`.
-Prove it by splitting the exponent with `pow_mul` and feeding in the fact just above.
+Prove it.
 
 :::exercise
 ```lean
@@ -314,6 +326,10 @@ example (N : ℕ) (hN : N ≠ 0) (k : ℕ) :
     Complex.exp (2 * Real.pi * Complex.I / N) ^ (N * k) = 1 := by
   sorry
 ```
+:::
+
+:::hint
+Split the exponent with `pow_mul`, then feed in the fact just above — `Complex.isPrimitiveRoot_exp` supplies $`\omega_N^N = 1`.
 :::
 
 :::solution
@@ -326,7 +342,7 @@ example (N : ℕ) (hN : N ≠ 0) (k : ℕ) :
 :::
 
 The interference that makes the transform detect periodicity comes from the identity $`\sum_{j=0}^{N-1} \omega_N^{\,j} = 0` when $`N > 1`: the powers of a primitive root sum to zero.
-Prove it with the geometric-sum lemma for primitive roots.
+Prove it.
 
 :::exercise
 ```lean
@@ -335,6 +351,10 @@ example (N : ℕ) (hN : 1 < N) :
       Complex.exp (2 * Real.pi * Complex.I / N) ^ j = 0 := by
   sorry
 ```
+:::
+
+:::hint
+`Complex.isPrimitiveRoot_exp` again, now with its geometric-sum lemma `IsPrimitiveRoot.geom_sum_eq_zero`, which wants $`1 < N`.
 :::
 
 :::solution
@@ -366,7 +386,7 @@ example (ζ : ℂ) : (Matrix.diagonal ![(1 : ℂ), ζ]).det = ζ := by
 ```
 
 A quantum gate must be invertible, which for a matrix means its determinant is a unit.
-Show that $`R_k` is invertible whenever $`\zeta \neq 0`: reduce the determinant to $`\zeta` as above, then read invertibility off $`\zeta \neq 0` with `isUnit_iff_ne_zero`.
+Show that $`R_k` is invertible whenever $`\zeta \neq 0`.
 
 :::exercise
 ```lean
@@ -374,6 +394,10 @@ example (ζ : ℂ) (hζ : ζ ≠ 0) :
     IsUnit (Matrix.diagonal ![(1 : ℂ), ζ]).det := by
   sorry
 ```
+:::
+
+:::hint
+Reduce the determinant to $`\zeta` as above (`Matrix.det_diagonal`, `Fin.prod_univ_two`), then read invertibility off $`\zeta \neq 0` with `isUnit_iff_ne_zero`.
 :::
 
 :::solution
@@ -394,7 +418,7 @@ example (ζ : ℂ) : (Matrix.diagonal ![(1 : ℂ), ζ]).trace = 1 + ζ := by
 ```
 
 Applying $`R_k` twice squares the phase: $`R_k^2` is again diagonal, now carrying entries $`1` and $`\zeta^2`.
-Compute its trace by first rewriting the power of a diagonal matrix as a diagonal of powers (`Matrix.diagonal_pow`), then reading off the two entries as before.
+Compute its trace.
 
 :::exercise
 ```lean
@@ -402,6 +426,10 @@ example (ζ : ℂ) :
     (Matrix.diagonal ![(1 : ℂ), ζ] ^ 2).trace = 1 + ζ ^ 2 := by
   sorry
 ```
+:::
+
+:::hint
+Rewrite the power of a diagonal matrix as a diagonal of powers (`Matrix.diagonal_pow`), then read off the two entries as before.
 :::
 
 :::solution
@@ -448,6 +476,10 @@ example (M : ℕ) (x : (ZMod M)ˣ) : orderOf x ∣ Nat.totient M := by
 ```
 :::
 
+:::hint
+Euler's theorem is `ZMod.pow_totient`; `orderOf_dvd_of_pow_eq_one` turns "this power is $`1`" into "the order divides it".
+:::
+
 :::solution
 ```lean
 example (M : ℕ) (x : (ZMod M)ˣ) : orderOf x ∣ Nat.totient M :=
@@ -469,6 +501,10 @@ Recover the factor $`3` as $`\gcd(4 - 1, 15)`.
 example : Nat.gcd (4 - 1) 15 = 3 := by
   sorry
 ```
+:::
+
+:::hint
+Both numbers are concrete, so `decide` settles it.
 :::
 
 :::solution
