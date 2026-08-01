@@ -20,10 +20,8 @@ from the text.
   set-theory chapters substitute $\omega$ "for consistency with the rest of the
   book". Lean's `ℕ` is `Nat`, built from `0` and a successor, with the positive
   naturals a separate type `PNat` (notation `ℕ+`); nearly six hundred `ℕ` tokens
-  of code in this book therefore already meant the 0-inclusive set, and several
-  passages of prose describing that code had drifted into saying so outright
-  (the Basel-problem paragraph in Linear Algebra / Fourier reads "runs over all
-  of $\mathbb{N}$ including $n = 0$"). The convention is now flipped to match:
+  of code in this book therefore mean the 0-inclusive set, so the prose reads
+  it that way too. Where the flip touches the text:
   - `Frontmatter/Advice.lean` — §"Natural numbers are positive" becomes
     §"Natural numbers include zero", with an `:::aside` noting that other
     authors do reserve $\mathbb{N}$ for the positive integers, and that the
@@ -31,18 +29,18 @@ from the text.
   - `Backmatter/Notation.lean` — the glossary entry, plus a new
     notation-to-Mathlib line for `Nat`/`PNat`.
   - `Backmatter/SetsFunctions.lean` — Appendix E's three restatements.
-  - `SetTheory/ZFC.lean` — the "for the purposes of set theory" parenthetical
-    and the "Yes, I'm sorry" `:::ABUSE` box are gone; $\omega$ stays, but as
-    standard set-theoretic naming that doubles as the first infinite ordinal,
-    not as an escape from a clashing convention.
+  - `SetTheory/ZFC.lean` — upstream's "for the purposes of set theory"
+    parenthetical and its "Yes, I'm sorry" `:::ABUSE` box are dropped;
+    $\omega$ stays, but as standard set-theoretic naming that doubles as the
+    first infinite ordinal, not as an escape from a clashing convention.
   - `StartingOut/Groups.lean` — the $g^n$ abuse-of-notation box now says
     $g^0 = 1_G$ outright, which `Monoid.npow` and `pow_zero` agree with, and
     which makes the "smallest *positive* $n$" in the definition of element
     order load-bearing rather than incidental.
-  - `Calculus/Limits.lean` — $\sup_n a_n$ was defined as
-    $\sup\{a_n \mid n : \mathbb{N}\}$ for a sequence written $a_1, \dots$;
-    the index set is now written $n \ge 1$, preserving upstream's meaning
-    rather than silently extending the sup over an undefined $a_0$.
+  - `Calculus/Limits.lean` — $\sup_n a_n$, which upstream defines as
+    $\sup\{a_n \mid n : \mathbb{N}\}$ for a sequence written $a_1, \dots$,
+    is indexed here by $n \ge 1$, preserving upstream's meaning rather than
+    silently extending the sup over an undefined $a_0$.
 
   Not changed: the 56 places upstream says "positive integer" in words, which
   stay correct; and the 1-indexed sequence displays ($a_1, a_2, \dots$) that
