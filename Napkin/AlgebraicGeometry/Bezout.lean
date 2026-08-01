@@ -105,7 +105,7 @@ However, in computing Hilbert functions of other examples I will continue using 
 :::
 
 :::EXAMPLE "Hilbert functions for empty varieties"
-Suppose $`I \subsetneq \mathbb{C}[x_0, \dots, x_n]` is an ideal, possibly not radical but such that $`\mathbb{V}_+(I) = \varnothing`, hence $`\sqrt I = (x_0, \dots, x_n)` is the irrelevant ideal.
+Suppose $`I \subset \mathbb{C}[x_0, \dots, x_n]` is an ideal, possibly not radical but such that $`\mathbb{V}_+(I) = \varnothing`, hence $`\sqrt I = (x_0, \dots, x_n)` is the irrelevant ideal.
 Thus there are integers $`d_i` for $`i = 0, \dots, n` such that $`x_i^{d_i} \in I` for every $`i`; consequently, $`h_I(d) = 0` for any $`d > d_0 + \dots + d_n`.
 We summarize this by saying that $`h_I(d) = 0` for all $`d \gg 0`.
 :::

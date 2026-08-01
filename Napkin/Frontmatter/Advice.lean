@@ -141,24 +141,22 @@ An element of such an equivalence class is a *representative* of that equivalenc
 I always use $`\cong` for an "isomorphism"-style relation (formally: a relation which is an isomorphism in a reasonable category).
 The only time $`\simeq` is used in the Napkin is for homotopic paths.
 
-:::aside "The same words in Mathlib"
+:::aside
 The code goes the other way round, and does it often enough to be worth flagging: there $`\simeq` is the isomorphism symbol.
 `X ≃ Y` is a bijection (`Equiv`), and the decorated forms say which structure is preserved — `≃*` a group isomorphism, `≃+` an additive one, `≃ₗ` linear, `≃ₐ` an algebra isomorphism, `≃ₜ` a homeomorphism.
 Around a hundred of them appear in this book.
 Meanwhile `≅` is reserved for the categorical `Iso`, which is what the category-theory chapters use.
 So in the prose $`\simeq` means homotopy and in the code it means isomorphism; nothing is ambiguous within either, but do not carry the reading across.
-
-The subset symbols need no such warning, only a translation: Mathlib's `⊆` is this book's, and its `⊂` is *strict*, so the code writes `s ⊂ t` for what the prose writes $`S \subsetneq T`.
-The power set is `𝒫 S`, or `Set.powerset`.
+This is the one symbol where that is true, and it is forced: $`\cong` is spelled `≅` and category theory has claimed it.
 :::
 
-I generally use $`\subseteq` and $`\subsetneq` since these are non-ambiguous, unlike $`\subset`.
-I only use $`\subset` on rare occasions in which equality obviously does not hold yet pointing it out would be distracting.
-For example, I write $`\mathbb{Q} \subset \mathbb{R}` since "$`\mathbb{Q} \subsetneq \mathbb{R}`" is distracting.
+I use $`\subseteq` for inclusion and $`\subset` for _strict_ inclusion, so that $`S \subset T` says both $`S \subseteq T` and $`S \neq T`.
+Some authors leave $`\subset` ambiguous between the two readings; here it is always the strict one, and $`\subseteq` is available whenever equality is allowed.
+So I write $`\mathbb{Q} \subset \mathbb{R}`, and the strictness is part of the claim rather than a detail suppressed for readability.
 
 I prefer $`S \setminus T` to $`S - T`.
 
-The power set of $`S` (i.e., the set of subsets of $`S`), is denoted either by $`2^S` or $`\mathcal{P}(S)`.
+The power set of $`S` (i.e., the set of subsets of $`S`), is denoted $`\mathcal{P}(S)`, spelled `𝒫 S` in code.
 
 ## Functions
 
@@ -167,23 +165,20 @@ Consult [Appendix E](Backmatter/Terminology-on-sets-and-functions/) for full det
 
 Let $`X \xrightarrow{f} Y` be a function:
 
-- By $`f^{\mathrm{pre}}(T)` I mean the *pre-image* $$`f^{\mathrm{pre}}(T) \coloneqq \{x : X \mid f(x) \in T\}.` This is in contrast to the $`f^{-1}(T)` used in the rest of the world; I only use $`f^{-1}` for an inverse _function_.
+- By $`f^{-1}(T)` I mean the *pre-image* $$`f^{-1}(T) \coloneqq \{x : X \mid f(x) \in T\}.` This is defined for every function, and says nothing about whether $`f` is invertible: an inverse _function_, where there is one, is a different object and gets a different name rather than the same symbol.
 
-  By abuse of notation, we may abbreviate $`f^{\mathrm{pre}}(\{y\})` to $`f^{\mathrm{pre}}(y)`.
-  We call $`f^{\mathrm{pre}}(y)` a *fiber*.
+  By abuse of notation, we may abbreviate $`f^{-1}(\{y\})` to $`f^{-1}(y)`.
+  We call $`f^{-1}(y)` a *fiber*.
 
-- By $`f^{\mathrm{img}}(S)` I mean the *image* $$`f^{\mathrm{img}}(S) \coloneqq \{f(x) \mid x \in S\}.` Almost everyone else in the world uses $`f(S)` (though $`f[S]` sees some use, and $`f''(S)` is often used in logic) but this is abuse of notation, and I prefer $`f^{\mathrm{img}}(S)` for emphasis.
-  This image notation is _not_ standard.
+- By $`f[S]` I mean the *image* $$`f[S] \coloneqq \{f(x) \mid x \in S\}.` Almost everyone else in the world uses $`f(S)`, but this is abuse of notation, and I prefer $`f[S]` for emphasis.
 
 - If $`S \subseteq X`, then the *restriction* of $`f` to $`S` is denoted $`f \restriction_S`, i.e. it is the function $`f \restriction_S \colon S \to Y`.
 
 - Sometimes functions $`f \colon X \to Y` are _injective_ or _surjective_; I may emphasize this sometimes by writing $`f \colon X \hookrightarrow Y` or $`f \colon X \twoheadrightarrow Y`, respectively.
 
-:::aside "The same words in Mathlib"
-The worry that motivates the $`f^{\mathrm{pre}}` notation — that $`f^{-1}` should mean an inverse function and nothing else — is one Mathlib shares, and it settles the matter with notation rather than a convention.
-The pre-image of a set is `f ⁻¹' T` and the image is `f '' S`, both `Set`-valued and both defined for *any* function; an actual inverse is a different thing with a different name, `Function.invFun` for a one-sided inverse or `Equiv.symm` for the inverse of a bijection.
-So `f ⁻¹' T` is exactly $`f^{\mathrm{pre}}(T)` and carries no suggestion that $`f` is invertible.
-Restriction is `Set.restrict`, written `S.restrict f`.
+:::aside
+In code these three are `f ⁻¹' T`, `f '' S` and `S.restrict f`.
+The first two are `Set`-valued and total, so the pre-image needs no invertibility hypothesis; an actual inverse is `Function.invFun` for a one-sided one, or `Equiv.symm` for the inverse of a bijection.
 :::
 
 ## Cycle notation for permutations
@@ -223,10 +218,9 @@ There is an elaborate scheme for naming rings which are not commutative, used on
 
 On the other hand, an _algebra_ always has $`1`, but it need not be commutative.
 
-:::aside "The same words in Mathlib"
-This is the one place where a word means something different in the prose and in the code beside it, so it is worth pinning down.
-Mathlib does not scope "ring" to the commutative case: its `Ring` has a $`1` and need not commute, and commutativity is the separate `CommRing`.
-So wherever this book says *ring*, the code says `CommRing`; Mathlib's bare `Ring` is what the table above would have to call a not-necessarily-commutative ring with $`1`.
+:::aside
+The convention above is a scoping declaration about the word, so the code has to say in each signature what the prose says once: where this book says *ring* and means it commutatively, a signature reads `CommRing`.
+Mathlib's bare `Ring` has a $`1` and need not commute — it is what the table above would call a not-necessarily-commutative ring with $`1`.
 
 The rest of the table lines up as follows.
 A *pseudo-ring* — dropping the $`1` — is `NonUnitalRing`, and its commutative form is `NonUnitalCommRing`.

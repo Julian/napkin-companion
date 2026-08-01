@@ -208,7 +208,7 @@ $$`\int_{(a, b)} f \; d\mu = \lim_{\substack{a' \to a^+ \\ b' \to b^-}} \int_{a'
 where we allow both sides to be $`+\infty` if $`f` is not absolutely integrable.
 :::
 
-The right-hand side makes sense since $`[a', b'] \subsetneq (a, b)` is a compact interval on which $`f` is continuous.
+The right-hand side makes sense since $`[a', b'] \subset (a, b)` is a compact interval on which $`f` is continuous.
 This means that improper Riemann integrals of nonnegative functions can just be regarded as Lebesgue ones over the corresponding open intervals.
 
 It's probably better to just look at an example though.

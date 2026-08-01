@@ -144,7 +144,7 @@ In $`\mathbb{Z}`, we have that $`p \neq 1` is prime if whenever $`p \mid xy`, ei
 We port over this definition to our world of ideals.
 
 :::DEFINITION
-A _proper_ ideal $`I \subsetneq R` is a *prime ideal* if whenever $`xy \in I`, either $`x \in I` or $`y \in I`.
+A _proper_ ideal $`I \subset R` is a *prime ideal* if whenever $`xy \in I`, either $`x \in I` or $`y \in I`.
 :::
 
 The condition that $`I` is proper is analogous to the fact that we don't consider $`1` to be a prime number.
@@ -528,7 +528,7 @@ Prove that any homomorphism $`\psi \colon K \to R` is injective.{margin}[Note th
 
 :::PROBLEM "Pre-image of prime ideals"
 Suppose $`\phi \colon R \to S` is a ring homomorphism, and $`I \subseteq S` is a prime ideal.
-Prove that $`\phi^{\mathrm{pre}}(I)` is prime as well.
+Prove that $`\phi^{-1}(I)` is prime as well.
 :::
 
 :::PROBLEM (chili := 1)
@@ -559,7 +559,7 @@ Which of these ideals are prime / maximal?
 :::
 
 :::PROBLEM
-Recall that a ring $`R` is *Artinian* if it satisfies the *descending chain condition*: there does _not_ exist an infinite descending chain of ideals $`I_1 \supsetneq I_2 \supsetneq I_3 \supsetneq \dots`.
+Recall that a ring $`R` is *Artinian* if it satisfies the *descending chain condition*: there does _not_ exist an infinite descending chain of ideals $`I_1 \supset I_2 \supset I_3 \supset \dots`.
 
 1. Show that if $`R` is Artinian and an integral domain, then it's a field.
 2. More generally, show that every prime ideal in an Artinian ring is maximal.

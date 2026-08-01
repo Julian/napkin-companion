@@ -77,10 +77,10 @@ A set here always lives inside an ambient type — `Set X` — so `x ∈ S` alre
 
 :::DEFINITION
 If every element of a set $`A` is also in a set $`B`, then we say $`A` is a *subset* of $`B`, and denote this by $`A \subseteq B`.
-If moreover $`A \neq B`, we say $`A` is a *proper subset* and write $`A \subsetneq B`.
+If moreover $`A \neq B`, we say $`A` is a *proper subset* and write $`A \subset B`.
 (This is analogous to $`\le` and $`<`.)
 
-Given a set $`A`, the set of all subsets is denoted $`2^A` or $`\mathcal{P}(A)` and called the *power set* of $`A`.
+Given a set $`A`, the set of all subsets is denoted $`\mathcal{P}(A)` and called the *power set* of $`A`.
 :::
 
 :::EXAMPLE "Examples of subsets"
@@ -235,20 +235,21 @@ The dual notion is:
 
 :::DEFINITION
 Suppose $`S \subseteq X`.
-The *image* $`f(S)` is the set of all things of the form $`f(s)`.
+The *image* $`f[S]` is the set of all things of the form $`f(s)`.
+The rest of the world often writes this $`f(S)`, which is an abuse of notation: $`f` eats elements of $`X`, not subsets of it.
 :::
 
 :::EXAMPLE "Examples of images"
 Let $`A = \{1, 2, 3, 4, 5\}` and $`B = \mathbb{Z}`.
 Consider a function $`f \colon A \to B` given by $$`f(1) = 17 \quad f(2) = 17 \quad f(3) = 19 \quad f(4) = 30 \quad f(5) = 234.`
 
-1. The image $`f(\{1, 2, 3\})` is the set $`\{17, 19\}`.
-2. The image $`f(A)` is the set $`\{17, 19, 30, 234\}`.
+1. The image $`f[\{1, 2, 3\}]` is the set $`\{17, 19\}`.
+2. The image $`f[A]` is the set $`\{17, 19, 30, 234\}`.
 :::
 
 :::QUESTION
 Suppose $`f \colon A \twoheadrightarrow B` is surjective.
-What is $`f(A)`?
+What is $`f[A]`?
 :::
 
 :::aside

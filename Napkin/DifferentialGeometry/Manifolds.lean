@@ -366,7 +366,7 @@ To do this it suffices to verify this for open subsets of $`\mathbb{R}^n`, which
 Using some real analysis, one can prove the following result:
 
 :::THEOREM "Maximal ideal at the origin"
-Suppose $`M \subset \mathbb{R}^n` is open and $`0 \in M`.
+Suppose $`M \subseteq \mathbb{R}^n` is open and $`0 \in M`.
 Then
 $$`\mathfrak{m}_0 = \{ \text{smooth functions } f \mid f(0) = 0 \}`
 $$`\mathfrak{m}_0^2 = \{ \text{smooth functions } f \mid f(0) = 0, (\nabla f)_0 = 0 \}.`

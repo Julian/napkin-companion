@@ -396,7 +396,7 @@ Show that for any $`n \ge 1` the Zariski topology of $`\mathbb{A}^n` is _not_ Ha
 :::PROBLEM "Varieties are Noetherian and compact"
 Let $`V` be an affine variety, and consider its Zariski topology.
 
-1. Show that the Zariski topology is *Noetherian*, meaning there is no infinite descending chain $`Z_1 \supsetneq Z_2 \supsetneq Z_3 \supsetneq \dots` of closed subsets.
+1. Show that the Zariski topology is *Noetherian*, meaning there is no infinite descending chain $`Z_1 \supset Z_2 \supset Z_3 \supset \dots` of closed subsets.
 2. Prove that a Noetherian topological space is compact.
    Hence varieties are topologically compact.
 :::

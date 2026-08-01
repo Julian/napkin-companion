@@ -57,7 +57,7 @@ A *line bundle* $`L` is a set, together with:
 
 - A projection map $`\pi \colon L \to X`,
 - An open cover $`\{ U_i \}` of $`X`,
-- For each $`U_i`, a *line bundle chart* $`\phi \colon \pi^{\mathrm{pre}}(U) \to \mathbb{C} \times U` that bijectively maps each point in $`\pi^{\mathrm{pre}}(p)` to a point in $`\mathbb{C} \times p`,
+- For each $`U_i`, a *line bundle chart* $`\phi \colon \pi^{-1}(U) \to \mathbb{C} \times U` that bijectively maps each point in $`\pi^{-1}(p)` to a point in $`\mathbb{C} \times p`,
 - For two open sets $`U_1` and $`U_2`, the *transition function* $`\phi_2 \circ \phi_1^{-1} \colon \mathbb{C} \times U_1 \to \mathbb{C} \times U_2` must be a _$`\mathbb{C}`-vector space isomorphism_ restricted to $`\mathbb{C} \times p \to \mathbb{C} \times p` for each point $`p \in U_1 \cap U_2`, and the scaling factor must be an analytic function on $`U_1 \cap U_2`.
 :::
 
@@ -83,7 +83,7 @@ A *section* on an open set $`U` is a map $`f \colon U \to L` such that $`\pi \ci
 
 We call a section $`f \colon X \to L` a *global section*.
 
-The section $`f \colon U \to L` is an *analytic section* if for every $`U_1 \subseteq U` such that there is a line bundle chart $`\phi \colon \pi^{\mathrm{pre}}(U_1) \to \mathbb{C} \times U_1`, then $`\phi \circ f \restriction_{U_1} \colon U_1 \to \mathbb{C} \times U_1` is analytic.
+The section $`f \colon U \to L` is an *analytic section* if for every $`U_1 \subseteq U` such that there is a line bundle chart $`\phi \colon \pi^{-1}(U_1) \to \mathbb{C} \times U_1`, then $`\phi \circ f \restriction_{U_1} \colon U_1 \to \mathbb{C} \times U_1` is analytic.
 :::
 
 We will see this definition later on in algebraic geometry, as the sections of a presheaf.
@@ -253,7 +253,7 @@ Let $`\pi_1 \colon L_1 \to X` and $`\pi_2 \colon L_2 \to X` be line bundles.
 A line bundle morphism $`\alpha \colon L_1 \to L_2` is a set morphism such that:
 
 - $`\pi_2 \circ \alpha = \pi_1`, and
-- if $`\phi_1 \colon \pi_1^{\mathrm{pre}}(U_1) \to \mathbb{C} \times U_1` and $`\phi_2 \colon \pi_2^{\mathrm{pre}}(U_2) \to \mathbb{C} \times U_2` are line bundle charts, then the composition $$`\phi_2 \circ \alpha \circ \phi_1^{-1} \colon \mathbb{C} \times (U_1 \cap U_2) \to \mathbb{C} \times (U_1 \cap U_2)` has the form $`(s, p) \mapsto (f(p) \cdot s, p)` where $`f` is analytic on $`U_1 \cap U_2`.
+- if $`\phi_1 \colon \pi_1^{-1}(U_1) \to \mathbb{C} \times U_1` and $`\phi_2 \colon \pi_2^{-1}(U_2) \to \mathbb{C} \times U_2` are line bundle charts, then the composition $$`\phi_2 \circ \alpha \circ \phi_1^{-1} \colon \mathbb{C} \times (U_1 \cap U_2) \to \mathbb{C} \times (U_1 \cap U_2)` has the form $`(s, p) \mapsto (f(p) \cdot s, p)` where $`f` is analytic on $`U_1 \cap U_2`.
 :::
 
 :::EXERCISE
@@ -265,7 +265,7 @@ Why?
 :::QUESTION
 Check that the above definition is the equivalent to the following: $`\alpha` is a line bundle morphism if and only if
 
-- it maps a point $`q \in \pi_1^{\mathrm{pre}}(x)` to some point $`\alpha(q) \in \pi_2^{\mathrm{pre}}(x)` (that is, each fiber gets mapped to the corresponding fiber), and
+- it maps a point $`q \in \pi_1^{-1}(x)` to some point $`\alpha(q) \in \pi_2^{-1}(x)` (that is, each fiber gets mapped to the corresponding fiber), and
 - for every analytic section $`s \colon U \to L_1` on open set $`U \subseteq X`, then $`\alpha(s)` is an analytic section $`s \colon U \to L_2`.
 :::
 

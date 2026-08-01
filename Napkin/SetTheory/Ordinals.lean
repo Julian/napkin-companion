@@ -375,7 +375,7 @@ So there is some large ordinal $`\alpha` such that $`y \in V_\alpha` for all $`y
 The von Neumann hierarchy: $`V` is built in layers $`V_0 = \varnothing \subseteq V_1 \subseteq V_2 \subseteq \dots` indexed by the ordinals.
 :::
 
-We can imagine the universe $`V` as a triangle, built in several stages or layers, $`V_0 \subsetneq V_1 \subsetneq V_2 \subsetneq \dots`.
+We can imagine the universe $`V` as a triangle, built in several stages or layers, $`V_0 \subset V_1 \subset V_2 \subset \dots`.
 This universe doesn't have a top: but each of the $`V_i` do.
 However, the universe has a very clear bottom.
 Each stage is substantially wider than the previous one.

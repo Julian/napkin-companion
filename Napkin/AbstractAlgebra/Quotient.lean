@@ -196,7 +196,7 @@ What is the kernel?
 :::
 
 :::QUESTION
-Show that for any homomorphism $`\phi \colon G \to H`, the image $`\phi^{\mathrm{img}}(G)` is a subgroup of $`H`.
+Show that for any homomorphism $`\phi \colon G \to H`, the image $`\phi[G]` is a subgroup of $`H`.
 Hence, we'll be especially interested in the case where $`\phi` is surjective.
 :::
 
@@ -437,7 +437,7 @@ Let $`\phi \colon D_8 \to \mathbb{Z}/4\mathbb{Z}` be defined by $$`r \mapsto \ov
 The kernel of this map is $`N = \{1, r^2, sr, sr^3\}`.
 
 We can do a quick computation of all the elements of $`D_8` to get $$`\phi(1) = \phi(r^2) = \phi(sr) = \phi(sr^3) = \overline{0} \text{ and } \phi(r) = \phi(r^3) = \phi(s) = \phi(sr^2) = \overline{2}.`
-The two relevant fibers are $$`\phi^{\mathrm{pre}}(\overline{0}) = 1N = r^2 N = sr N = sr^3 N = \{1, r^2, sr, sr^3\}` and $$`\phi^{\mathrm{pre}}(\overline{2}) = rN = r^3 N = s N = sr^2 N = \{r, r^3, s, sr^2\}.`
+The two relevant fibers are $$`\phi^{-1}(\overline{0}) = 1N = r^2 N = sr N = sr^3 N = \{1, r^2, sr, sr^3\}` and $$`\phi^{-1}(\overline{2}) = rN = r^3 N = s N = sr^2 N = \{r, r^3, s, sr^2\}.`
 So we see that $`|D_8/N| = 2` is a group of order two, or $`\mathbb{Z}/2\mathbb{Z}`.
 Indeed, the image of $`\phi` is $$`\{\overline{0}, \overline{2}\} \cong \mathbb{Z}/2\mathbb{Z}.`
 :::
@@ -466,12 +466,12 @@ Other sources like to also write the so-called first isomorphism theorem.{margin
 
 :::THEOREM "First isomorphism theorem"
 Let $`\phi \colon G \to H` be a homomorphism.
-Then $`G / \ker \phi` is isomorphic to $`\phi^{\mathrm{img}}(G)`.
+Then $`G / \ker \phi` is isomorphic to $`\phi[G]`.
 :::
 
 To me, this is just a clumsier way of stating the same idea.
 
-About the only merit this claim has is that if $`\phi` is injective, then the image $`\phi^{\mathrm{img}}(G)` is an _isomorphic copy_ of $`G` inside the group $`H`.
+About the only merit this claim has is that if $`\phi` is injective, then the image $`\phi[G]` is an _isomorphic copy_ of $`G` inside the group $`H`.
 (Try to see this directly!)
 This is a pattern we'll often see in other branches of mathematics: whenever we have an _injective structure-preserving map_, often the image of this map will be some "copy" of $`G`.
 (Here "structure" refers to the group multiplication, but we'll see some more other examples of "types of objects" later!)
@@ -774,7 +774,7 @@ example (G : Type*) [CommGroup G] (H : Subgroup G) : H.Normal :=
 
 ## The first isomorphism theorem
 
-The first isomorphism theorem, $`G / \ker \phi \cong \phi^{\mathrm{img}}(G)`, is `QuotientGroup.quotientKerEquivRange`:
+The first isomorphism theorem, $`G / \ker \phi \cong \phi[G]`, is `QuotientGroup.quotientKerEquivRange`:
 
 ```lean
 noncomputable example {G H : Type*} [Group G] [Group H]

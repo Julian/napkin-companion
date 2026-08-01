@@ -363,7 +363,7 @@ Let's see what things we've defined already, along the chain $`K \overset\iota\h
 
 | Object | Image in $`\mathbb{R}^n` | Hypervolume / mesh |
 | --- | --- | --- |
-| box $`S` | $`\tau^{\mathrm{img}}(S)` | $`2^{r_1} \left( \frac\pi2 \right)^{r_2} \frac{M^n}{n!}` |
+| box $`S` | $`\tau[S]` | $`2^{r_1} \left( \frac\pi2 \right)^{r_2} \frac{M^n}{n!}` |
 | $`\mathcal{O}_K` | lattice $`L` | $`2^{-r_2} \sqrt{\left\lvert \Delta_K \right\rvert}` |
 | $`\mathfrak{a}` | lattice $`L_\mathfrak{a}` | $`2^{-r_2} \sqrt{\left\lvert \Delta_K \right\rvert} \operatorname{Norm}(\mathfrak{a})` |
 

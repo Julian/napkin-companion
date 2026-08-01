@@ -271,7 +271,7 @@ A space $`X` is *path-connected* if any two points in it are connected by some p
 :::EXERCISE "Path-connected implies connected"
 Let $`X = U \sqcup V` be a disconnected space.
 Show that there is no path from a point of $`U` to a point of $`V`.
-(If $`\gamma \colon [0, 1] \to X`, then we get $`[0, 1] = \gamma^{\mathrm{pre}}(U) \sqcup \gamma^{\mathrm{pre}}(V)`, but $`[0, 1]` is connected.)
+(If $`\gamma \colon [0, 1] \to X`, then we get $`[0, 1] = \gamma^{-1}(U) \sqcup \gamma^{-1}(V)`, but $`[0, 1]` is connected.)
 :::
 
 :::EXAMPLE "Examples of path-connected spaces"
@@ -401,8 +401,8 @@ Show that there exists a nonconstant continuous function $`X \to \{0, 1\}` if an
 :::PROBLEM
 Let $`X` and $`Y` be topological spaces and let $`f \colon X \to Y` be a continuous function.
 
-1. Show that if $`X` is connected then so is $`f^{\mathrm{img}}(X)`.
-2. Show that if $`X` is path-connected then so is $`f^{\mathrm{img}}(X)`.
+1. Show that if $`X` is connected then so is $`f[X]`.
+2. Show that if $`X` is path-connected then so is $`f[X]`.
 :::
 
 :::PROBLEM "Hausdorff implies T₁ axiom"

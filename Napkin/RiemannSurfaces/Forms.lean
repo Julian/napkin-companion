@@ -135,7 +135,7 @@ For a form $`f(z) \, dz` this says exactly that the local expressions transform 
 
 :::DEFINITION "1-forms on a Riemann surface"
 Let $`X` be a Riemann surface with complex atlas $`\{(U_i, \phi_i)\}`.
-A ($`1`-)form $`\omega` on $`X` is a collection of $`1`-forms $`\omega_i` on the chart images $`\phi_i^{\mathrm{img}}(U_i) \subseteq \mathbb{C}`, such that for any two charts, the local expressions are carried to each other by the substitution rule above under the transition map.
+A ($`1`-)form $`\omega` on $`X` is a collection of $`1`-forms $`\omega_i` on the chart images $`\phi_i[U_i] \subseteq \mathbb{C}`, such that for any two charts, the local expressions are carried to each other by the substitution rule above under the transition map.
 
 The form $`\omega` is *holomorphic* if every local expression $`\omega_i` is holomorphic.
 (*Meromorphic* forms are defined the same way, with local expressions $`f(z) \, dz` for meromorphic $`f`.)

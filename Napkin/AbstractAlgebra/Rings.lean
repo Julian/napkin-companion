@@ -330,7 +330,7 @@ Now we claim that these conditions are sufficient.
 More explicitly,
 
 :::THEOREM "Ring analog of normal subgroups"
-Let $`R` be a ring and $`I \subsetneq R`.
+Let $`R` be a ring and $`I \subset R`.
 Then $`I` is the kernel of some homomorphism if and only if it's an ideal.
 :::
 
@@ -540,14 +540,14 @@ We now name such rings and give two equivalent definitions:
 For a ring $`R`, the following are equivalent:
 
 1. Every ideal $`I` of $`R` is finitely generated (i.e. can be written with a finite generating set).
-2. There does _not_ exist an infinite ascending chain of ideals $$`I_1 \subsetneq I_2 \subsetneq I_3 \subsetneq \dots.`
+2. There does _not_ exist an infinite ascending chain of ideals $$`I_1 \subset I_2 \subset I_3 \subset \dots.`
    The absence of such chains is often called the *ascending chain condition*.
 
 Such rings are called *Noetherian*.
 :::
 
 :::EXAMPLE "Non-Noetherian ring breaks ACC"
-In the ring $`R = \mathbb{Z}[x_1, x_2, x_3, \dots]` we have an infinite ascending chain $$`(x_1) \subsetneq (x_1, x_2) \subsetneq (x_1, x_2, x_3) \subsetneq \dots.`
+In the ring $`R = \mathbb{Z}[x_1, x_2, x_3, \dots]` we have an infinite ascending chain $$`(x_1) \subset (x_1, x_2) \subset (x_1, x_2, x_3) \subset \dots.`
 :::
 
 From the example, you can kind of see why the proposition is true: from an infinitely generated ideal you can extract an ascending chain by throwing elements in one at a time.
@@ -616,7 +616,7 @@ Let $`S` denote the image of $`\Psi`.
 :::
 
 :::PROBLEM "Akizuki's Theorem" (chili := 2)
-We say a ring $`R` is *Artinian* if it satisfies the *descending chain condition*: there does _not_ exist an infinite descending chain of ideals $`I_1 \supsetneq I_2 \supsetneq I_3 \supsetneq \dots`.
+We say a ring $`R` is *Artinian* if it satisfies the *descending chain condition*: there does _not_ exist an infinite descending chain of ideals $`I_1 \supset I_2 \supset I_3 \supset \dots`.
 Show that if a ring $`R` is Artinian, then it's Noetherian.
 
 (Artinian rings are better understood in the context of algebraic geometry, even more so than Noetherian ones — that is, a later problem shows a much better definition of Artinian ring.

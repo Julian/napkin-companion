@@ -74,7 +74,7 @@ A subset $`S \subseteq A` is a *multiplicative set* if $`1 \in S` and $`S` is cl
 :::
 
 :::DEFINITION
-Let $`A` be a ring and $`S \subset A` a multiplicative set.
+Let $`A` be a ring and $`S \subseteq A` a multiplicative set.
 Then the *localization of $`A` at $`S`*, denoted $`S^{-1} A`, is defined as the set of fractions $`\left\{ a/s \mid a \in A, s \in S \right\}` where we declare two fractions $`a_1 / s_1 = a_2 / s_2` to be equal if $`s(a_1 s_2 - a_2 s_1) = 0` for some $`s \in S`.
 Addition and multiplication in this ring are defined in the obvious way.
 :::

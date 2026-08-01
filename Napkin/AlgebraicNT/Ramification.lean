@@ -125,8 +125,8 @@ But something _really magical_ happens when we add the additional hypothesis tha
 We set about proving this.
 
 Let $`K/\mathbb{Q}` be Galois with $`G = \operatorname{Gal}(K/\mathbb{Q})`.
-Note that if $`\mathfrak{p} \subseteq \mathcal{O}_K` is a prime above $`p`, then the image $`\sigma^{\mathrm{img}}(\mathfrak{p})` is also prime for any $`\sigma \in G` (since $`\sigma` is an automorphism!).
-Moreover, since $`p \in \mathfrak{p}` and $`\sigma` fixes $`\mathbb{Q}`, we know that $`p \in \sigma^{\mathrm{img}}(\mathfrak{p})` as well.
+Note that if $`\mathfrak{p} \subseteq \mathcal{O}_K` is a prime above $`p`, then the image $`\sigma[\mathfrak{p}]` is also prime for any $`\sigma \in G` (since $`\sigma` is an automorphism!).
+Moreover, since $`p \in \mathfrak{p}` and $`\sigma` fixes $`\mathbb{Q}`, we know that $`p \in \sigma[\mathfrak{p}]` as well.
 
 Thus, by the pointwise mapping, *the Galois group acts on the prime ideals above a rational prime $`p`*.
 Picture:
@@ -134,10 +134,10 @@ Picture:
 :::figure "figures/algebraic-nt/primes-orbit.svg" (alt := "The Galois group acting on the prime ideals above a rational prime p: the primes 𝔭ᵢ float above p, and σ moves one to another.")
 :::
 
-The notation $`\sigma^{\mathrm{img}}(\mathfrak{p})` is hideous in this context, since we're really thinking of $`\sigma` as just doing a group action, and so we give the shorthand:
+The notation $`\sigma[\mathfrak{p}]` is hideous in this context, since we're really thinking of $`\sigma` as just doing a group action, and so we give the shorthand:
 
 :::ABUSE
-Let $`\sigma\mathfrak{p}` be shorthand for $`\sigma^{\mathrm{img}}(\mathfrak{p})`.
+Let $`\sigma\mathfrak{p}` be shorthand for $`\sigma[\mathfrak{p}]`.
 :::
 
 Since the $`\sigma`'s are all bijections (they are automorphisms!), it should come as no surprise that the prime ideals which are in the same orbit are closely related.
@@ -203,7 +203,7 @@ To see that the inertial degrees are equal, note that each $`\sigma` induces an 
 Because the action is transitive, all $`f_i` are equal.
 
 :::EXERCISE
-Using the fact that $`\sigma \in \operatorname{Gal}(K/\mathbb{Q})`, show that $$`\sigma^{\mathrm{img}}(p \cdot \mathcal{O}_K) = p \cdot \sigma^{\mathrm{img}}(\mathcal{O}_K) = p \cdot \mathcal{O}_K.`
+Using the fact that $`\sigma \in \operatorname{Gal}(K/\mathbb{Q})`, show that $$`\sigma[p \cdot \mathcal{O}_K] = p \cdot \sigma[\mathcal{O}_K] = p \cdot \mathcal{O}_K.`
 :::
 
 So for every $`\sigma`, we have that $`p \cdot \mathcal{O}_K = \prod \mathfrak{p}_i^{e_i} = \prod (\sigma\mathfrak{p}_i)^{e_i}`.

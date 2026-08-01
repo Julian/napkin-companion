@@ -265,7 +265,7 @@ For affine schemes:
 
 :::DEFINITION
 Let $`A` be a commutative ring.
-Consider chains of prime ideals $`\mathfrak{p}_0 \subsetneq \mathfrak{p}_1 \subsetneq \dots \subsetneq \mathfrak{p}_n \subseteq A`, where $`n` is called the _length_.
+Consider chains of prime ideals $`\mathfrak{p}_0 \subset \mathfrak{p}_1 \subset \dots \subset \mathfrak{p}_n \subseteq A`, where $`n` is called the _length_.
 The supremum of all possible $`n` is then called the *Krull dimension* of $`A`.
 
 The Krull dimension is always nonnegative unless $`A` is the zero ring, in which case either $`-1` or $`-\infty` are used conventionally.
@@ -274,15 +274,15 @@ The Krull dimension is always nonnegative unless $`A` is the zero ring, in which
 This definition should match your intuition.
 
 :::EXAMPLE "Examples of Krull dimension"
-1. $`\mathbb{C}[x_1, \dots, x_n]` has Krull dimension $`n`, with the chain $`(0) \subsetneq (x_1) \subsetneq (x_1, x_2) \subsetneq \dots \subsetneq (x_1, \dots, x_n)` having length $`n`.
+1. $`\mathbb{C}[x_1, \dots, x_n]` has Krull dimension $`n`, with the chain $`(0) \subset (x_1) \subset (x_1, x_2) \subset \dots \subset (x_1, \dots, x_n)` having length $`n`.
    This matches our expectation that $`\operatorname{Spec} \mathbb{C}[x_1, \dots, x_n]` corresponds to $`\mathbb{A}^n`.
-2. $`\mathbb{C}[x, y] / (y - x^2)` has Krull dimension $`1`, with the chain $`(y - x^2) \subsetneq (x, y)` having length $`1`.
+2. $`\mathbb{C}[x, y] / (y - x^2)` has Krull dimension $`1`, with the chain $`(y - x^2) \subset (x, y)` having length $`1`.
    Geometrically, we think of $`(x, y)` as the origin and $`(y - x^2)` as the parabola itself.
 3. $`\mathbb{Z}` has Krull dimension $`1`.
 4. $`\mathbb{Z}/(60)` has Krull dimension $`0`; it's just three points.
 :::
 
-You can do this more generally with a topological space $`X`: the Krull dimension of a space is the supremum of chains of irreducible closed subspaces $`Z_0 \subsetneq Z_1 \subsetneq \dots \subsetneq Z_n`.
+You can do this more generally with a topological space $`X`: the Krull dimension of a space is the supremum of chains of irreducible closed subspaces $`Z_0 \subset Z_1 \subset \dots \subset Z_n`.
 You'd only want to use this definition in situations where $`X` had a Zariski topology: in particular, if $`X = \operatorname{Spec} A`, this is just the Krull dimension of the ring $`A` itself.
 
 # On radicals

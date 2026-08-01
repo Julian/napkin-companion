@@ -28,9 +28,8 @@ file := "Glossary-of-notations"
 
 # Functions and sets
 
-- $`f(S)` is the image of $`f \colon X \to Y` for $`S \subseteq X`.
-- $`f^{-1}(y)` is the inverse for $`f \colon X \to Y` when $`y \in Y`.
-- $`f^{-1}(T)` is the pre-image for $`f \colon X \to Y` when $`T \subseteq Y`.
+- $`f[S]` is the image of $`f \colon X \to Y` for $`S \subseteq X`.
+- $`f^{-1}(T)` is the pre-image for $`f \colon X \to Y` when $`T \subseteq Y`, abbreviated $`f^{-1}(y)` when $`T = \{y\}`.
 - $`f\restriction_{S}` is the restriction of $`f \colon X \to Y` to $`S \subseteq X`.
 - $`f^n` is the function $`f` applied $`n` times
 
@@ -46,9 +45,8 @@ These may also be thought of as groups, rings, fields etc. in the obvious way.
 
 Some common notation with sets:
 
-- $`A \subset B`: $`A` is any subset of $`B`
 - $`A \subseteq B`: $`A` is any subset of $`B`
-- $`A \subsetneq B`: $`A` is a _proper_ subset of $`B`
+- $`A \subset B`: $`A` is a _proper_ subset of $`B`
 - $`S \times T`: Cartesian product of sets $`S` and $`T`
 - $`S \setminus T`: difference of sets $`S` and $`T`
 - $`S \cup T`: set union of $`S` and $`T`
@@ -179,7 +177,7 @@ Complex analysis:
 - $`H^n(A_\bullet; G)`: the $`n`th cohomology group of the cochain complex obtained by applying $`\operatorname{Hom}(-, G)` to $`A_\bullet`
 - $`H^n(X; G)`: the $`n`th cohomology group/ring of $`X` with $`G`-coefficients
 - $`\widetilde H^n(X; G)`: the $`n`th reduced cohomology group/ring of $`X` with $`G`-coefficients
-- $`H^n(X, A; G)`: the $`n`th relative cohomology group/ring of $`X` and $`A \subset X` with $`G`-coefficients
+- $`H^n(X, A; G)`: the $`n`th relative cohomology group/ring of $`X` and $`A \subseteq X` with $`G`-coefficients
 - $`f^\sharp`: the induced map on $`H^n(A^\bullet) \to H^n(B^\bullet)` of $`f \colon A^\bullet \to B^\bullet`, or $`H^n(X) \to H^n(Y)` for $`f \colon X \to Y`
 - $`\operatorname{Ext}(-, -)`: the Ext functor
 - $`\phi \smile \psi`: cup product of cochains $`\phi` and $`\psi`
@@ -295,7 +293,7 @@ Operations with categories:
 
 - $`\mathsf{ZFC}`: standard theory of ZFC
 - $`\mathsf{ZFC}^+`: standard theory of ZFC, plus the sentence "there exists a strongly inaccessible cardinal"
-- $`2^S` or $`\mathcal{P}(S)`: power set of $`S`
+- $`\mathcal{P}(S)`: power set of $`S`
 - $`A \land B`: $`A` and $`B`
 - $`A \lor B`: $`A` or $`B`
 - $`\neg A`: not $`A`
@@ -470,7 +468,7 @@ open scoped TensorProduct DirectSum Topology
 Functions and sets:
 
 - {mathname Nat}`\mathbb{N}`: `Nat` (written `ℕ`), which includes $`0`; the positive naturals are the separate type `PNat`, written `ℕ+`
-- $`f(S)`, $`f^{-1}(T)`: `Set.image`, `Set.preimage`
+- $`f[S]`, $`f^{-1}(T)`: `Set.image` (written `f '' S`), `Set.preimage` (written `f ⁻¹' T`)
 - {mathname Set.restrict}`f\restriction_S`: `Set.restrict`
 - $`f^n`: `Nat.iterate` (written `f^[n]`)
 - $`S \times T`, $`S \setminus T`: `Set.prod`, `Set.diff`

@@ -280,10 +280,10 @@ Hence $`V_1` is a Jordan block, as desired.
 # (Optional) Proof of nilpotent Jordan
 
 The proof is just induction on $`\dim V`.
-Assume $`\dim V \geq 1`, and let $`W = T^{\mathrm{img}}(V)` be the image of $`V`.
-Since $`T` is nilpotent, we must have $`W \subsetneq V`.
+Assume $`\dim V \geq 1`, and let $`W = T[V]` be the image of $`V`.
+Since $`T` is nilpotent, we must have $`W \subset V`.
 Moreover, if $`W = \{0\}` (i.e. $`T` is the zero map) then we're already done.
-So assume $`\{0\} \subsetneq W \subsetneq V`.
+So assume $`\{0\} \subset W \subset V`.
 
 By the inductive hypothesis, we can select a good basis of $`W`: $$`\mathcal{B}' = \{ T(v_1), T(T(v_1)), \dots, \; T(v_2), T(T(v_2)), \dots, \; \dots, \; T(v_\ell), T(T(v_\ell)), \dots \}` for some $`T(v_i) \in W` (here we have taken advantage of the fact that each element of $`W` is itself of the form $`T(v)` for some $`v`).
 

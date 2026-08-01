@@ -68,7 +68,7 @@ A random variable $`X \colon \Omega \to \mathbb{R}` usually carries much more in
 That data is a measure on $`\mathbb{R}` obtained by pushing $`\mu` forward.
 
 :::DEFINITION
-The *distribution* (or *law*) of a random variable $`X` is the probability measure $`\mu_X` on $`\mathbb{R}` (with the Borel $`\sigma`-algebra) defined by $$`\mu_X(B) = \mu\left( X^{\mathrm{pre}}(B) \right).`
+The *distribution* (or *law*) of a random variable $`X` is the probability measure $`\mu_X` on $`\mathbb{R}` (with the Borel $`\sigma`-algebra) defined by $$`\mu_X(B) = \mu\left( X^{-1}(B) \right).`
 :::
 
 :::QUESTION

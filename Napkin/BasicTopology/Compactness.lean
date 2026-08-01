@@ -256,14 +256,14 @@ Next, an important result about maps between compact spaces.
 
 :::THEOREM "Images of compacts are compact"
 Let $`f \colon X \to Y` be a continuous function, where $`X` is compact.
-Then the image $`f^{\mathrm{img}}(X) \subseteq Y` is compact.
+Then the image $`f[X] \subseteq Y` is compact.
 :::
 
 :::PROOF
-Take any open cover $`\{V_\alpha\}` in $`Y` of $`f^{\mathrm{img}}(X)`.
+Take any open cover $`\{V_\alpha\}` in $`Y` of $`f[X]`.
 By continuity of $`f`, it pulls back to an open cover $`\{U_\alpha\}` of $`X`.
 Thus some finite subcover of this covers $`X`.
-The corresponding $`V`'s cover $`f^{\mathrm{img}}(X)`.
+The corresponding $`V`'s cover $`f[X]`.
 :::
 
 :::QUESTION
@@ -288,7 +288,7 @@ The point is that the image of $`f` is compact in $`\mathbb{R}`, and hence close
 You can convince yourself that the closed sets are just unions of closed intervals.
 That implies the extreme value theorem.
 
-When $`X = [0, 1]`, the image is also connected, so there should only be one closed interval in $`f^{\mathrm{img}}([0, 1])`.
+When $`X = [0, 1]`, the image is also connected, so there should only be one closed interval in $`f\left[[0, 1]\right]`.
 Since the image is bounded, we then know it's of the form $`[a, b]`.
 (To give a full proof, you would use the so-called *least upper bound* property, but that's a little involved for a bedtime story; also, I think $`\mathbb{R}` is boring.)
 :::

@@ -145,7 +145,7 @@ Finally, we need to introduce the concept of a Noetherian $`R`-module.
 :::DEFINITION
 An $`R`-module $`M` is *Noetherian* if it satisfies one of the two equivalent conditions:
 
-- Its submodules obey the ascending chain condition: there is no infinite sequence of modules $`M_1 \subsetneq M_2 \subsetneq \dots`.
+- Its submodules obey the ascending chain condition: there is no infinite sequence of modules $`M_1 \subset M_2 \subset \dots`.
 - All submodules of $`M` (including $`M` itself) are finitely generated.
 :::
 

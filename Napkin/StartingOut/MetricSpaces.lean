@@ -416,7 +416,7 @@ First, suppose $`V` is an open subset of the metric space $`N`; let $`U = f^{-1}
 Pick $`x \in U`, so $`y = f(x) \in V`; we want an open neighborhood of $`x` inside $`U`.
 
 :::figure "figures/topology/continuity-open-sets.svg"
-The preimage $`U = f^{\mathrm{pre}}(V)` of an open set $`V` is open: around each $`x \in U`, the $`\varepsilon`-ball around $`y = f(x) \in V` pulls back to a $`\delta`-ball around $`x` that lies inside $`U`.
+The preimage $`U = f^{-1}(V)` of an open set $`V` is open: around each $`x \in U`, the $`\varepsilon`-ball around $`y = f(x) \in V` pulls back to a $`\delta`-ball around $`x` that lies inside $`U`.
 :::
 
 As $`V` is open, there is some small $`\varepsilon`-neighborhood around $`y` which is contained inside $`V`.

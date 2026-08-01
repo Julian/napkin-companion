@@ -6,14 +6,16 @@ This file records every place the port deliberately deviates, and why.
 
 Formalization commentary itself — `recall` blocks, worked `example`s, Mathlib naming discussions — is the point of the project, not a deviation, and is not listed here.
 
-## Mathematical conventions changed to match Mathlib
+## Conventions and notation weighed against Mathlib
 
 Most entries in this file are presentational: the mathematics is upstream's,
-and only its framing moved. The entries in *this* section are different — they
-change a convention upstream states explicitly, so a sentence in the book now
-asserts something upstream denies. Each is a deliberate decision that the cost
-of the prose and the code disagreeing on a symbol exceeds the cost of departing
-from the text.
+and only its framing moved. This section is different — each entry is a
+convention or a symbol that upstream states explicitly and Mathlib states
+otherwise, so the book cannot follow both. Each carries its verdict. Where the
+answer is to adopt Mathlib's, the book teaches through the adopted notation
+rather than carrying a note that the code differs; where the answer is to keep
+upstream's, it is because Mathlib's spelling is an artifact of Lean rather than
+a mathematical convention, and the difference is then taught in an `:::aside`.
 
 - **$\mathbb{N}$ contains $0$.** Upstream's "Conventions and notations"
   declares $\mathbb{N}$ to be the *positive* integers and, on that basis, the
@@ -69,21 +71,44 @@ from the text.
 
 - **Pre-image and image notation.** Upstream avoids $f^{-1}(T)$ for the
   pre-image, reserving $f^{-1}$ for an inverse *function*, and coins
-  $f^{\mathrm{pre}}$ and $f^{\mathrm{img}}$. Mathlib draws the same
-  distinction with notation instead: `f ⁻¹' T` and `f '' S` are defined
-  for any function, while an inverse is `Function.invFun` or
-  `Equiv.symm`. An `:::aside` under Conventions says so, since the
-  concern upstream is guarding against is one the code has already
-  settled.
+  $f^{\mathrm{pre}}$ and $f^{\mathrm{img}}$ — the latter, it says itself,
+  "not standard". Mathlib draws the same distinction with notation rather
+  than a convention: `f ⁻¹' T` and `f '' S` are defined for every
+  function and assert nothing about invertibility, while an inverse is a
+  separately named object (`Function.invFun`, `Equiv.symm`). Adopted
+  here: the pre-image is $f^{-1}(T)$ throughout, and the image is $f[S]$
+  — bracket notation, which is unambiguous, is what `''` stands for, and
+  avoids colliding with the second derivative. That removes a
+  Napkin-specific notation the reader would have to learn and then
+  unlearn; the pedagogical point behind it survives as the sentence
+  saying an inverse function is a different object with a different name.
+
+- **$\subset$ is strict.** Upstream uses $\subseteq$ and $\subsetneq$,
+  keeping $\subset$ for occasions where strictness is obvious but saying
+  so would distract. Mathlib fixes the pair: `⊆` is inclusion and `⊂` is
+  *strict* inclusion, exactly parallel to `≤` and `<`. Adopted here, so
+  $\subsetneq$ is gone and $\subset$ always means proper containment.
+  This one cuts both ways: every pre-existing bare $\subset$ had to be
+  audited, and the five that were not in fact strict — an open $M
+  \subseteq \mathbb{R}^n$, the $A \subseteq X$ of relative cohomology, a
+  multiplicative set $S \subseteq A$, and two containments in
+  Carathéodory's construction — are now written $\subseteq$, as are the
+  three loose $\supset$ that went with them.
 
 - **$\simeq$ means opposite things in prose and code.** Upstream reserves
   $\simeq$ for homotopic paths and uses $\cong$ for isomorphism. Mathlib
   inverts that: `≃` is `Equiv` and its decorated forms (`≃*`, `≃+`, `≃ₗ`,
   `≃ₐ`, `≃ₜ`) are the isomorphisms, of which this book's code blocks
-  contain about a hundred, while `≅` is the categorical `Iso`. Neither
-  convention is wrong and neither is ambiguous internally, so both stand;
-  an `:::aside` under Conventions warns against carrying the reading
-  across.
+  contain about a hundred, while `≅` is the categorical `Iso`. Not
+  adopted: Mathlib's spelling is forced by `≅` being taken by category
+  theory, whereas in ordinary mathematics $\cong$ *is* the isomorphism
+  symbol and $\simeq$ *is* homotopy equivalence, so adopting it would
+  make the prose less standard rather than more. Both stand, and an
+  `:::aside` under Conventions warns against carrying the reading across
+  — the only symbol in the book that needs such a warning.
+
+- **The power set.** Upstream offers $2^S$ or $\mathcal{P}(S)$; Mathlib
+  has one spelling, `𝒫 S`. The book now uses $\mathcal{P}(S)$ throughout.
 
 ## Book-wide conventions
 

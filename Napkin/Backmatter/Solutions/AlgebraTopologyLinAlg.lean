@@ -31,7 +31,7 @@ Each entry names its problem and gives whichever of a hint and a solution the so
 
 _Hint._ Orders.
 
-_Solution._ The point is that $`\heartsuit` is a group, $`G \subsetneq \heartsuit` a subgroup and $`G \cong \heartsuit`.
+_Solution._ The point is that $`\heartsuit` is a group, $`G \subset \heartsuit` a subgroup and $`G \cong \heartsuit`.
 This can only occur if $`\left\lvert \heartsuit \right\rvert = \infty`;
 otherwise, a proper subgroup would have strictly smaller size than the original.
 
@@ -799,7 +799,7 @@ and the similar chain for $`\operatorname{img} T` must eventually stabilize
 
 _Solution._ Consider
 
-$$`\{0\} \subsetneq \operatorname{ker} S \subseteq \operatorname{ker} S^2 \subseteq \operatorname{ker} S^3 \subseteq \dots and V \supsetneq \operatorname{img} S \supseteq \operatorname{img} S^2 \supseteq \operatorname{img} S^3 \supseteq \dots.`
+$$`\{0\} \subset \operatorname{ker} S \subseteq \operatorname{ker} S^2 \subseteq \operatorname{ker} S^3 \subseteq \dots and V \supset \operatorname{img} S \supseteq \operatorname{img} S^2 \supseteq \operatorname{img} S^3 \supseteq \dots.`
 
 For dimension reasons, these subspaces must eventually stabilize:
 for some large integer $`N`,
