@@ -44,7 +44,7 @@ A group consists of two pieces of data: a type $`G`, and an associative binary o
 Before I write down the definition of a group, let me give two examples.
 
 :::EXAMPLE "Additive integers"
-The pair $`(\mathbb{Z}, +)` is a group: $`\mathbb{Z} = \{\ldots, -2, -1, 0, 1, 2, \ldots\}` is the type and the associative operation is _addition_.
+The pair $`(\mathbb{Z}, +)` is a group: $`\mathbb{Z}` is the type, $`\ldots, -2, -1, 0, 1, 2, \ldots` are its terms, and the associative operation is _addition_.
 Note that
 
 - The element $`0 : \mathbb{Z}` is an _identity_: $`a + 0 = 0 + a = a` for any $`a`.
@@ -101,7 +101,7 @@ Let's resume writing down examples.
 Here are some more *abelian examples* of groups:
 
 :::EXAMPLE "Complex unit circle"
-Let $`S^1` denote the type of complex numbers $`z` with absolute value one; that is $$`S^1 \coloneqq \{z : \mathbb{C} \mid |z| = 1\}.`
+Let $`S^1` denote the type of complex numbers $`z` with absolute value one; that is, its terms are those $`z : \mathbb{C}` with $`|z| = 1`.
 Then $`(S^1, \times)` is a group because
 
 - The complex number $`1 : S^1` serves as the identity, and
@@ -531,7 +531,7 @@ However we don't include "commutative", because examples below show that there a
 (But we introduce another name "abelian" because we still want to keep track of it.)
 
 Another comment: a good motivation for the inverse axioms is that you get a large amount of *symmetry*.
-The set of positive integers with addition is not a group, for example, because you can't subtract $`6` from $`3`: some elements are "larger" than others.
+The type of positive integers with addition is not a group, for example, because you can't subtract $`6` from $`3`: some elements are "larger" than others.
 By requiring an inverse element to exist, you get rid of this issue.
 (You also need identity for this; it's hard to define inverses without it.)
 

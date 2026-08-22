@@ -157,7 +157,7 @@ Which $`(r, s)` is the identity element of the product ring $`R \times S`?
 :::
 
 :::EXAMPLE "Polynomial ring"
-Given any ring $`R`, the *polynomial ring* $`R[x]` is defined as the type of polynomials with coefficients in $`R`: $$`R[x] = \{ a_n x^n + a_{n-1} x^{n-1} + \dots + a_0 \mid a_0, \dots, a_n : R \}.`
+Given any ring $`R`, the *polynomial ring* $`R[x]` is defined as the type of polynomials with coefficients in $`R`; its terms are $$`a_n x^n + a_{n-1} x^{n-1} + \dots + a_0` where $`a_0, \dots, a_n : R`.
 This is pronounced "$`R` adjoin $`x`".
 Addition and multiplication are done exactly in the way you would expect.
 :::
@@ -179,7 +179,7 @@ We can consider polynomials in $`n` variables with coefficients in $`R`, denoted
 :::
 
 :::EXAMPLE "Gaussian integers are a ring"
-The *Gaussian integers* are the type of complex numbers with integer real and imaginary parts, that is $$`\mathbb{Z}[i] = \{ a + bi \mid a, b : \mathbb{Z} \}.`
+The *Gaussian integers* $`\mathbb{Z}[i]` are the type of complex numbers with integer real and imaginary parts; its terms are $`a + bi` for $`a, b : \mathbb{Z}`.
 :::
 
 :::ABUSE "Liberal use of adjoinment"
@@ -188,7 +188,7 @@ However, it is understood from context that $`i^2 = -1`; and a polynomial in $`i
 :::
 
 :::EXAMPLE "Cube root of 2"
-As another example (using the same abuse of notation): $$`\mathbb{Z}[\sqrt[3]{2}] = \{ a + b \sqrt[3]{2} + c \sqrt[3]{4} \mid a, b, c : \mathbb{Z} \}.`
+As another example (using the same abuse of notation): the terms of $`\mathbb{Z}[\sqrt[3]{2}]` are $`a + b \sqrt[3]{2} + c \sqrt[3]{4}` for $`a, b, c : \mathbb{Z}`.
 :::
 
 # Fields

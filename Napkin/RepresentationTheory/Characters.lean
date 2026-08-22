@@ -144,7 +144,7 @@ So for example, we will write both $`\chi_V(g)` (for $`g : G`) and $`\chi_V(C)` 
 :::
 
 :::DEFINITION
-Let $`\operatorname{FunCl}(G)` denote the set of functions $`\operatorname{Classes}(G) \to \mathbb{C}` viewed as a vector space over $`\mathbb{C}`.
+Let $`\operatorname{FunCl}(G)` denote the type of functions $`\operatorname{Classes}(G) \to \mathbb{C}` viewed as a vector space over $`\mathbb{C}`.
 We endow it with the inner form $$`\langle f_1, f_2 \rangle = \frac{1}{|G|} \sum_{g : G} f_1(g) \overline{f_2(g)}.`
 :::
 

@@ -187,7 +187,7 @@ Each $`\sigma(x)` is in $`K` because $`K/\mathbb{Q}` is Galois!
 
 Since $`\operatorname{Norm}_{K/\mathbb{Q}}(x)` is an integer and divisible by $`\mathfrak{p}_1`, we should have that $`\operatorname{Norm}_{K/\mathbb{Q}}(x)` is divisible by $`p`.
 Thus it should be divisible by $`\mathfrak{p}_2` as well.
-Thus, for some $`\sigma \in \operatorname{Gal}(K/\mathbb{Q})`, $`\sigma(x)` is divisible by $`\mathfrak{p}_2`, equivalently, $`x` is divisible by $`\sigma^{-1}\mathfrak{p}_2`.
+Thus, for some $`\sigma : \operatorname{Gal}(K/\mathbb{Q})`, $`\sigma(x)` is divisible by $`\mathfrak{p}_2`, equivalently, $`x` is divisible by $`\sigma^{-1}\mathfrak{p}_2`.
 But by the way we selected $`x`, we have within the factors of $`p`, $`x` is divisible by only $`\mathfrak{p}_1`!
 So $`\sigma^{-1}\mathfrak{p}_2 = \mathfrak{p}_1`, and we're done.
 :::
@@ -203,7 +203,7 @@ To see that the inertial degrees are equal, note that each $`\sigma` induces an 
 Because the action is transitive, all $`f_i` are equal.
 
 :::EXERCISE
-Using the fact that $`\sigma \in \operatorname{Gal}(K/\mathbb{Q})`, show that $$`\sigma[p \cdot \mathcal{O}_K] = p \cdot \sigma[\mathcal{O}_K] = p \cdot \mathcal{O}_K.`
+Using the fact that $`\sigma : \operatorname{Gal}(K/\mathbb{Q})`, show that $$`\sigma[p \cdot \mathcal{O}_K] = p \cdot \sigma[\mathcal{O}_K] = p \cdot \mathcal{O}_K.`
 :::
 
 So for every $`\sigma`, we have that $`p \cdot \mathcal{O}_K = \prod \mathfrak{p}_i^{e_i} = \prod (\sigma\mathfrak{p}_i)^{e_i}`.
@@ -246,7 +246,7 @@ So we ask:
 _How are $`\operatorname{Gal}\left( (\mathcal{O}_K/\mathfrak{p}) / \mathbb{F}_p \right)` and $`\operatorname{Gal}(K/\mathbb{Q})` related?_
 :::
 
-First, every $`\sigma \in \operatorname{Gal}(K/\mathbb{Q})` induces an automorphism of $`\mathcal{O}_K`, which induces a map $`\mathcal{O}_K \to \mathcal{O}_K/\mathfrak{p}` by $$`\alpha \mapsto \sigma(\alpha) \pmod{\mathfrak{p}}.`
+First, every $`\sigma : \operatorname{Gal}(K/\mathbb{Q})` induces an automorphism of $`\mathcal{O}_K`, which induces a map $`\mathcal{O}_K \to \mathcal{O}_K/\mathfrak{p}` by $$`\alpha \mapsto \sigma(\alpha) \pmod{\mathfrak{p}}.`
 For this to induce a map in $`\operatorname{Gal}\left( (\mathcal{O}_K/\mathfrak{p}) / \mathbb{F}_p \right)`, it's necessary that $`\sigma(\mathfrak{p}) \subseteq \mathfrak{p}`.
 So, we consider the subset of automorphisms that fixes $`\mathfrak{p}`:
 

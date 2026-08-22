@@ -60,13 +60,13 @@ We then require that all the pullbacks are regular on $`X`.
 
 :::DEFINITION
 Let $`(X, \mathcal{O}_X)` and $`(Y, \mathcal{O}_Y)` be baby ringed spaces.
-Given a map $`f \colon X \to Y` and a regular function $`\phi \in \mathcal{O}_Y(U)`, we define the *pullback* of $`\phi`, denoted $`f^\sharp\phi`, to be the composed function $$`f^{-1}(U) \xrightarrow{f} U \xrightarrow{\phi} \mathbb{C}.`
+Given a map $`f \colon X \to Y` and a regular function $`\phi : \mathcal{O}_Y(U)`, we define the *pullback* of $`\phi`, denoted $`f^\sharp\phi`, to be the composed function $$`f^{-1}(U) \xrightarrow{f} U \xrightarrow{\phi} \mathbb{C}.`
 :::
 
 The use of the word "pullback" is the same as in our study of differential forms.
 
 :::figure "figures/algebraic-geometry/quasiproj-ringed-pullback.svg"
-Pulling a regular function $`\phi \in \mathcal{O}_Y(U)` back along $`f \colon X \to Y` to $`f^\sharp\phi \in \mathcal{O}_X(f^{-1}(U))`.
+Pulling a regular function $`\phi : \mathcal{O}_Y(U)` back along $`f \colon X \to Y` to $`f^\sharp\phi : \mathcal{O}_X(f^{-1}(U))`.
 :::
 
 :::DEFINITION
@@ -112,7 +112,7 @@ And in fact, that's all:
 
 :::EXERCISE
 Let $`X = \mathbb{A}^1`, $`Y = \mathbb{A}^1`.
-By considering $`\operatorname{id} \in \mathcal{O}_Y(Y)`, show that no other regular functions exist.
+By considering $`\operatorname{id} : \mathcal{O}_Y(Y)`, show that no other regular functions exist.
 :::
 
 In fact, let's generalize the previous exercise:
@@ -128,7 +128,7 @@ It's not too hard to see that all such functions work, so let's go the other way
 Let $`f \colon X \to Y` be a morphism.
 
 First, remark that $`f^{-1}(Y) = X`.
-Now consider the regular function $`\pi_1 \in \mathcal{O}_Y(Y)`, given by the projection $`(y_1, \dots, y_n) \mapsto y_1`.
+Now consider the regular function $`\pi_1 : \mathcal{O}_Y(Y)`, given by the projection $`(y_1, \dots, y_n) \mapsto y_1`.
 Thus we need $`\pi_1 \circ f` to be regular on $`X`.
 
 But for affine varieties $`\mathcal{O}_X(X)` is just the coordinate ring $`\mathbb{C}[X]` and so we know there is a polynomial $`P_1` such that $`\pi_1 \circ f = P_1`.

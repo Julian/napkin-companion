@@ -126,8 +126,7 @@ Hence to show that spaces are simply connected it suffices to understand the loo
 We are now ready to provide:
 
 :::DEFINITION
-The *fundamental group* of $`X` with basepoint $`x_0`, denoted $`\pi_1(X, x_0)`, is the set of homotopy classes $$`\left\{ [\gamma] \mid \gamma \text{ a loop at } x_0 \right\}`
-equipped with $`\ast` as a group operation.
+The *fundamental group* of $`X` with basepoint $`x_0`, denoted $`\pi_1(X, x_0)`, is the type of homotopy classes $`[\gamma]` of loops $`\gamma` at $`x_0`, equipped with $`\ast` as a group operation.
 :::
 
 It might come as a surprise that this has a group structure.
@@ -625,7 +624,7 @@ example {X : Type*} [TopologicalSpace X] [PathConnectedSpace X] (x₀ x₁ : X)
 
 ## Higher homotopy groups
 
-Mathlib takes exactly the cube-with-boundary-fused route: {name}`GenLoop` is the type of continuous maps $`[0, 1]^n \to X` sending the whole boundary to $`x_0`, and {name}`HomotopyGroup.Pi`, written `π_ n X x`, is its set of homotopy classes.
+Mathlib takes exactly the cube-with-boundary-fused route: {name}`GenLoop` is the type of continuous maps $`[0, 1]^n \to X` sending the whole boundary to $`x_0`, and {name}`HomotopyGroup.Pi`, written `π_ n X x`, is the type of its homotopy classes.
 
 ```lean
 example {X : Type*} [TopologicalSpace X] (x : X) (n : ℕ) : Type _ := π_ n X x

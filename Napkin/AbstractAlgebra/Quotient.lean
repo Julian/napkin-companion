@@ -81,7 +81,7 @@ The *Klein four group*, isomorphic to $`\mathbb{Z}/2\mathbb{Z} \times \mathbb{Z}
 :::EXAMPLE "Free group"
 The *free group on $`n` elements* is the group whose presentation has $`n` generators and no relations at all.
 It is denoted $`F_n`, so $$`F_n = \langle x_1, x_2, \dots, x_n \rangle.`
-In other words, $`F_2 = \langle a, b \rangle` is the set of strings formed by appending finitely many copies of $`a`, $`b`, $`a^{-1}`, $`b^{-1}` together.
+In other words, $`F_2 = \langle a, b \rangle` is the type of strings formed by appending finitely many copies of $`a`, $`b`, $`a^{-1}`, $`b^{-1}` together.
 :::
 
 :::QUESTION

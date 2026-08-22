@@ -120,7 +120,7 @@ A full glossary of notation used can be found in the appendix.
 
 ## Natural numbers include zero
 
-The set $`\mathbb{N} = \{0, 1, 2, \dots\}` is the set of _nonnegative_ integers.
+$`\mathbb{N}` is the type of _nonnegative_ integers; $`0, 1, 2, \dots` are its terms.
 In the set theory chapters the same collection is written $`\omega`, which is the standard name there and doubles as the first infinite ordinal.
 
 :::aside

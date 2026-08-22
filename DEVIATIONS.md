@@ -131,6 +131,30 @@ These apply to every chapter and are not repeated in the per-chapter lists below
    Only binder position over a carrier is affected, so "let $g \in G$"
    becomes "let $g : G$" and nothing else moves.
 
+   Relatedly, a carrier is never *displayed* in braces, since braces
+   say "set" while the sentence around them says "type". Where upstream
+   writes "$\mathbb{Z} = \{\ldots, -1, 0, 1, \ldots\}$ is the set", the
+   book names the type and lists its terms: "$\mathbb{Z}$ is the type,
+   $\ldots, -1, 0, 1, \ldots$ are its terms". Braces still appear
+   wherever a genuine set is meant: subgroups, ideals, subspaces,
+   bases, conjugacy classes, and rosters enumerating the elements of
+   an already-defined group.
+
+   Nor is a carrier *called* a set in prose. The fundamental group is
+   the type of homotopy classes, $\mathcal{O}_V(U)$ the type of regular
+   functions on $U$, $L(D)$ the type of meromorphic functions with the
+   given pole bounds, $\operatorname{Cl}_K$ the type of fractional
+   ideals modulo scaling, and so on; sections are terms of that type,
+   so $s : \mathcal{F}(U)$. Set language is kept on purpose wherever
+   the object is genuinely built as a set of subsets or of equivalence
+   classes: quotients presented as sets of cosets, stalks presented as
+   sets of germs (so $(s, U) \in \mathcal{F}_p$ stays), the
+   localization presented as a set of fractions, and Hom-sets in a
+   category, which the category-theory chapters are careful to call
+   sets. The measure-theory chapters are a further exception in the
+   spirit of the set-theory ones: $\sigma$-algebras of subsets of
+   $\Omega$ are the subject matter there, so $\omega \in \Omega$ stays.
+
 2. **The `Group`/`AddGroup` split.** Upstream has a single "group with
    operation $\star$" concept; Mathlib maintains parallel multiplicative
    and additive hierarchies related by `to_additive`. Chapters
@@ -849,7 +873,13 @@ drops the "(TO DO)" from the part, chapter, and sales-pitch titles.
 ### Algebraic NT II: Galois and Ramification Theory
 
 - **Things Galois.** Prose is verbatim (the embeddings motivation and
-  the embedding definition). The two embedding-tower diagrams and the
+  the embedding definition), except that $\operatorname{Aut}(K/F)$ is
+  the *type* of field isomorphisms fixing $F$, matching Mathlib, where
+  `Gal(K/F)` is notation for the bundled-equivalence type `K ≃ₐ[F] K`
+  carrying `AlgEquiv.aut` as its group structure — not a subset carved
+  out of the maps $K \to K$. Upstream's set-builder restatement of the
+  definition is dropped, and binders over the group carrier read
+  $\sigma : \operatorname{Gal}(K/F)$ throughout this part. The two embedding-tower diagrams and the
   two field/subgroup lattice diagrams are redrawn as SVGs (the latter
   combined into one side-by-side Galois-correspondence figure). Cross-
   references become descriptive phrases; "every field we see in the
@@ -1281,9 +1311,16 @@ Sets are modeled as sets throughout, per the set-theory exception.
   Yang/Dartmouth, Miquel, Munkres, Maxim, Oggier, Lenstra, Miranda,
   Hildebrand) were added to `Bibliography.lean` from the upstream
   `references.bib`.
-- **Glossary of notations** is ported verbatim as a reference list, and
-  gains a companion-only closing section, "The same notation, in
-  Mathlib", reading the glossary in the other direction: notation to the
+- **Glossary of notations** is ported verbatim as a reference list, save
+  that the book-wide types-not-sets convention applies here as it does
+  everywhere else: $\mathbb{C}$, $\mathbb{R}$, $\mathbb{N}$, $\mathbb{Q}$,
+  $\mathbb{Z}$, $(\mathbb{Z}/n\mathbb{Z})^\times$ and
+  $\operatorname{Aut}(K/F)$ are glossed as types, and the binders in the
+  $\operatorname{Stab}$, $\operatorname{Fix}$ and bra-ket entries read
+  $x : X$. Entries for genuine sets — the power set, conjugacy classes,
+  fixed-point sets, roots of unity inside $\mathcal{O}_K$, and the whole
+  set-theory section — are untouched. It gains a companion-only closing
+  section, "The same notation, in Mathlib", reading the glossary in the other direction: notation to the
   name you would type. Partial by design — an entry appears only where
   Mathlib has a counterpart, and the section closes by listing what does
   not have one (bra-ket notation, residues and winding numbers, relative

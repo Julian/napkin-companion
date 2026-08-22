@@ -264,15 +264,15 @@ We define $`k(x) = \operatorname{Frac}(k[x])` (read "$`k` of $`x`"), and call it
 
 :::EXAMPLE "Examples of fraction fields"
 1. By _definition_, $`\operatorname{Frac}(\mathbb{Z}) = \mathbb{Q}`.
-2. The field $`\mathbb{R}(x)` consists of rational functions in $`x`: $$`\mathbb{R}(x) = \left\{ \frac{f(x)}{g(x)} \mid f, g : \mathbb{R}[x] \right\}.`
+2. The field $`\mathbb{R}(x)` consists of rational functions in $`x`; its terms are $$`\frac{f(x)}{g(x)}` for $`f, g : \mathbb{R}[x]`.
    For example, $`\frac{2x}{x^2 - 3}` might be a typical element.
 :::
 
 :::EXAMPLE "Gaussian rationals"
 Just like we defined $`\mathbb{Z}[i]` by abusing notation, we can also write $`\mathbb{Q}(i) = \operatorname{Frac}(\mathbb{Z}[i])`.
-Officially, it should consist of $$`\mathbb{Q}(i) = \left\{ \frac{f(i)}{g(i)} \mid g(i) \neq 0 \right\}` for polynomials $`f` and $`g` with rational coefficients.
-But since $`i^2 = -1` this just leads to $$`\mathbb{Q}(i) = \left\{ \frac{a + bi}{c + di} \mid a, b, c, d : \mathbb{Q}, (c, d) \neq (0, 0) \right\}.`
-And since $`\frac{1}{c + di} = \frac{c - di}{c^2 + d^2}` we end up with $$`\mathbb{Q}(i) = \{ a + bi \mid a, b : \mathbb{Q} \}.`
+Officially, its terms should be $$`\frac{f(i)}{g(i)}` where $`g(i) \neq 0`, for polynomials $`f` and $`g` with rational coefficients.
+But since $`i^2 = -1` this just leads to terms $$`\frac{a + bi}{c + di}` where $`a, b, c, d : \mathbb{Q}` and $`(c, d) \neq (0, 0)`.
+And since $`\frac{1}{c + di} = \frac{c - di}{c^2 + d^2}` we end up with just $`a + bi` for $`a, b : \mathbb{Q}`.
 :::
 
 # Unique factorization domains (UFD's)
@@ -517,7 +517,7 @@ Since $`R` does not have a universal side divisor, $`R` is not a Euclidean domai
 Not olympiad problems, but again the spirit is very close to what you might see in an olympiad.
 
 :::PROBLEM
-Consider the ring $$`\mathbb{Q}[\sqrt{2}] = \{ a + b\sqrt{2} \mid a, b : \mathbb{Q} \}.`
+Consider the ring $`\mathbb{Q}[\sqrt{2}]`, whose terms are $`a + b\sqrt{2}` for $`a, b : \mathbb{Q}`.
 Is it a field?
 :::
 

@@ -227,7 +227,7 @@ Thus properties of a variety $`V` correspond to properties of the ring $`\mathbb
 # The sheaf of regular functions
 
 :::PROTOTYPE
-Let $`V = \mathbb{A}^1`, $`U = V \setminus \{0\}`. Then $`1/x \in \mathcal{O}_V(U)` is regular on $`U`.
+Let $`V = \mathbb{A}^1`, $`U = V \setminus \{0\}`. Then $`1/x : \mathcal{O}_V(U)` is regular on $`U`.
 :::
 
 Let $`V` be an affine variety and let $`\mathbb{C}[V]` be its coordinate ring.
@@ -235,7 +235,7 @@ As mentioned in the start of the chapter, we want to define a variety based on i
 
 In {cite}`ref:vakil`'s "Motivating example: the sheaf of differentiable functions" section, you can see a comparison of how a differentiable manifold can be studied by studying the differentiable functions on it.
 
-Denote the set of all rational functions on $`V` by $`\mathcal{O}_V` (as will be seen later, this terminology is not quite accurate as we need to allow multiple representations).
+Denote the type of all rational functions on $`V` by $`\mathcal{O}_V` (as will be seen later, this terminology is not quite accurate as we need to allow multiple representations).
 We can view this as a set, however this does not capture the full structure of the rational functions:
 
 :::QUESTION
@@ -261,7 +261,7 @@ However, the definition is slightly too restrictive; we have to allow for multip
 Let $`U \subseteq V` be open.
 We say a function $`\phi \colon U \to \mathbb{C}` is a *regular function* if for every point $`p \in U`, we can find an open set $`U_p \subseteq U` containing $`p` and a rational function $`f_p/g_p` on $`U_p` such that $$`\phi(x) = \frac{f_p(x)}{g_p(x)} \qquad \forall x \in U_p.`
 In particular, we require $`g_p(x) \neq 0` on the set $`U_p`.
-We denote the set of all regular functions on $`U` by $`\mathcal{O}_V(U)`.
+We denote the type of all regular functions on $`U` by $`\mathcal{O}_V(U)`.
 :::
 
 Thus,
@@ -278,9 +278,9 @@ For example:
 1. Any function in $`f \in \mathbb{C}[V]` is clearly regular, since we can take $`g_p = 1`, $`f_p = f` for every $`p`.
    So $`\mathbb{C}[V] \subseteq \mathcal{O}_V(U)` for any open set $`U`.
 2. Let $`V = \mathbb{A}^1`, $`U_0 = V \setminus \{0\}`.
-   Then $`1/x \in \mathcal{O}_V(U_0)` is regular on $`U_0`.
+   Then $`1/x : \mathcal{O}_V(U_0)` is regular on $`U_0`.
 3. Let $`V = \mathbb{A}^1`, $`U_{12} = V \setminus \{1, 2\}`.
-   Then $`\frac{1}{(x - 1)(x - 2)} \in \mathcal{O}_V(U_{12})` is regular on $`U_{12}`.
+   Then $`\frac{1}{(x - 1)(x - 2)} : \mathcal{O}_V(U_{12})` is regular on $`U_{12}`.
 :::
 
 The "local" clause with $`p`'s is still necessary, though.

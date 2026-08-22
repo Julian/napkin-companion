@@ -325,7 +325,7 @@ This is just a "product rule".
 Then the tangent space is easy to define:
 
 :::DEFINITION
-A *tangent vector* is just a derivation at $`p`, and the *tangent space* $`T_p(M)` is simply the set of all these tangent vectors.
+A *tangent vector* is just a derivation at $`p`, and the *tangent space* $`T_p(M)` is simply the type of all these tangent vectors.
 :::
 
 In this way we have constructed the tangent space.

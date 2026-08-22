@@ -36,9 +36,9 @@ Picture:
 We recall that the $`p`-th power map $`\sigma \colon \mathbb{F}_{p^f} \to \mathbb{F}_{p^f}` is an automorphism, and it's called the Frobenius map on $`\mathbb{F}_{p^f}`.
 We can try to extend this map to a $`K \to K` map by $`\sigma(x) = x^p`, unfortunately this doesn't make it a field automorphism.
 
-Surprisingly, it is nevertheless possible to extend this to some field automorphism $`\sigma \in \operatorname{Gal}(K/\mathbb{Q})`.
+Surprisingly, it is nevertheless possible to extend this to some field automorphism $`\sigma : \operatorname{Gal}(K/\mathbb{Q})`.
 
-If $`p` is unramified, then one can show there is a unique $`\sigma \in \operatorname{Gal}(K/\mathbb{Q})` such that $`\sigma(\alpha) \equiv \alpha^p \pmod{\mathfrak{p}}` for every $`\alpha \in \mathcal{O}_K`.
+If $`p` is unramified, then one can show there is a unique $`\sigma : \operatorname{Gal}(K/\mathbb{Q})` such that $`\sigma(\alpha) \equiv \alpha^p \pmod{\mathfrak{p}}` for every $`\alpha \in \mathcal{O}_K`.
 
 # Frobenius elements
 
@@ -51,11 +51,11 @@ Here is the theorem statement again:
 :::THEOREM "The Frobenius element"
 Assume $`K/\mathbb{Q}` is Galois with Galois group $`G`.
 Let $`p` be a rational prime unramified in $`K`, and $`\mathfrak{p}` a prime above it.
-There is a _unique_ element $`\operatorname{Frob}_\mathfrak{p} \in G` with the property that, for all $`\alpha \in \mathcal{O}_K`, $$`\operatorname{Frob}_\mathfrak{p}(\alpha) \equiv \alpha^{p} \pmod{\mathfrak{p}}.`
+There is a _unique_ element $`\operatorname{Frob}_\mathfrak{p} : G` with the property that, for all $`\alpha \in \mathcal{O}_K`, $$`\operatorname{Frob}_\mathfrak{p}(\alpha) \equiv \alpha^{p} \pmod{\mathfrak{p}}.`
 It is called the *Frobenius element* at $`\mathfrak{p}`, and has order $`f`.
 :::
 
-The _uniqueness_ part is pretty important: it allows us to show that a given $`\sigma \in \operatorname{Gal}(K/\mathbb{Q})` is the Frobenius element by just observing that it satisfies the above functional equation.
+The _uniqueness_ part is pretty important: it allows us to show that a given $`\sigma : \operatorname{Gal}(K/\mathbb{Q})` is the Frobenius element by just observing that it satisfies the above functional equation.
 
 Let's see an example of this:
 
@@ -108,7 +108,7 @@ So the unique such element is the pre-image of $`T` under $`\theta`.
 
 Now suppose $`\mathfrak{p}_1` and $`\mathfrak{p}_2` are _two_ primes above an unramified rational prime $`p`.
 Then we can define $`\operatorname{Frob}_{\mathfrak{p}_1}` and $`\operatorname{Frob}_{\mathfrak{p}_2}`.
-Since the Galois group acts transitively, we can select $`\sigma \in \operatorname{Gal}(K/\mathbb{Q})` be such that $$`\sigma(\mathfrak{p}_1) = \mathfrak{p}_2.`
+Since the Galois group acts transitively, we can select $`\sigma : \operatorname{Gal}(K/\mathbb{Q})` be such that $$`\sigma(\mathfrak{p}_1) = \mathfrak{p}_2.`
 We claim that $$`\operatorname{Frob}_{\mathfrak{p}_2} = \sigma \circ \operatorname{Frob}_{\mathfrak{p}_1} \circ \sigma^{-1}.`
 Note that this is an equation in $`G`.
 
@@ -229,7 +229,7 @@ Then $`\operatorname{Frob}_{\mathfrak{P}} \restriction_{K} = \operatorname{Frob}
 :::
 
 :::PROOF
-First, $`K/\mathbb{Q}` is normal, so $`\operatorname{Frob}_{\mathfrak{P}}` fixes the image of $`K`, that is, $`\operatorname{Frob}_{\mathfrak{P}} \restriction_{K} \in \operatorname{Gal}(K/\mathbb{Q})` is well-defined.
+First, $`K/\mathbb{Q}` is normal, so $`\operatorname{Frob}_{\mathfrak{P}}` fixes the image of $`K`, that is, $`\operatorname{Frob}_{\mathfrak{P}} \restriction_{K} : \operatorname{Gal}(K/\mathbb{Q})` is well-defined.
 
 We have the natural map $`\phi \colon \mathcal{O}_K \to \mathcal{O}_L \to \mathcal{O}_L/\mathfrak{P}`, and the quotient map $`q\colon \mathcal{O}_K \to \mathcal{O}_K / \mathfrak{p}`.
 Since $`\mathfrak{p} \subseteq \mathfrak{P} \cap \mathcal{O}_K \subseteq \ker \phi`, it follows $`\phi` factors through $`q` to give a natural field homomorphism $`\mathcal{O}_K / \mathfrak{p} \to \mathcal{O}_L / \mathfrak{P}`.
@@ -304,7 +304,7 @@ Why is $`p` not ramified in either $`K` or $`L`?
 
 ## Step 3: Introducing the Frobenius
 
-Now, we take the Frobenius $$`\sigma_p = \operatorname{Frob}_{\mathfrak{P}} \in \operatorname{Gal}(L/\mathbb{Q}).`
+Now, we take the Frobenius $$`\sigma_p = \operatorname{Frob}_{\mathfrak{P}} : \operatorname{Gal}(L/\mathbb{Q}).`
 We claim that $$`\operatorname{Frob}_{\mathfrak{P}} \in H \iff \text{$p$ splits in $K$}.`
 To see this, note that $`\operatorname{Frob}_{\mathfrak{P}}` is in $`H` if and only if it acts as the identity on $`K`.
 But $`\operatorname{Frob}_{\mathfrak{P}} \restriction_{K}` is $`\operatorname{Frob}_\mathfrak{p}`!
@@ -411,7 +411,7 @@ Then for any prime $`p` unramified in the splitting field $`K` of $`f`, the foll
 
 1. The factorization pattern of $`p` in $`E`.
 2. The factorization pattern of $`f \pmod p`.
-3. The cycle structure associated to the action of $`\operatorname{Frob}_{\mathfrak{P}} \in \operatorname{Gal}(K/\mathbb{Q})` on the roots of $`f`, where $`\mathfrak{P}` is above $`p` in $`K`.
+3. The cycle structure associated to the action of $`\operatorname{Frob}_{\mathfrak{P}} : \operatorname{Gal}(K/\mathbb{Q})` on the roots of $`f`, where $`\mathfrak{P}` is above $`p` in $`K`.
 :::
 
 ::::EXAMPLE "Factoring x³−2 mod 5"

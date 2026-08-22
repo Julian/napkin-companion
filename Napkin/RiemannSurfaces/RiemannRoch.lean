@@ -76,7 +76,7 @@ We define $`\operatorname{ord}_p(f)` to be:
 :::
 
 :::EXAMPLE "The space of functions with pole of order at most 4 on $`\\mathbb{C}_\\infty`"
-Let $`L(4 \cdot \infty)` be the set of meromorphic $`\mathbb{C}_\infty \to \mathbb{C}` function, being holomorphic everywhere except $`\infty`, and has a pole of order at most $`4` at $`\infty` — in other words,
+Let $`L(4 \cdot \infty)` be the type of meromorphic $`\mathbb{C}_\infty \to \mathbb{C}` function, being holomorphic everywhere except $`\infty`, and has a pole of order at most $`4` at $`\infty` — in other words,
 $$`L(4 \cdot \infty) = \{ f \text{ meromorphic on } \mathbb{C}_\infty \mid f \text{ defined on } \mathbb{C}_\infty \setminus \{ \infty \}, \operatorname{ord}_\infty(f) \geq -4 \}.`
 (The notation $`L(-)` will be explained later.)
 
@@ -96,7 +96,7 @@ In particular, $`L(4 \cdot \infty)` consists of the polynomials of degree $`\leq
 :::EXAMPLE "More complicated L(−) spaces"
 There's no reason why we should restrict ourselves to considering only the functions that blow up at $`\infty` — as we will see, more general meromorphic functions can be considered, as long as we restrict the order of the poles.
 
-Let $`L(-1 \cdot 3 + 4 \cdot i + 5 \cdot \infty)` be the set of meromorphic functions $`f \colon \mathbb{C}_\infty \to \mathbb{C}` that are:
+Let $`L(-1 \cdot 3 + 4 \cdot i + 5 \cdot \infty)` be the type of meromorphic functions $`f \colon \mathbb{C}_\infty \to \mathbb{C}` that are:
 
 - holomorphic everywhere in $`\mathbb{C}_\infty`, possibly with the exception of the points $`3`, $`i`, and $`\infty`;
 - at $`3`, it must have a root of order $`\geq 1`;

@@ -109,7 +109,7 @@ Polynomial rings are commutative graded rings, while $`\bigwedge^\bullet(V)` is 
 :::
 
 In the de Rham cohomology, the differential forms can interact in another way: given a $`k`-form $`\alpha` and an $`\ell`-form $`\beta`, we can consider a $`(k+\ell)`-form $`\alpha \wedge \beta`.
-So we can equip the set of forms with a "product", satisfying $`\beta \wedge \alpha = (-1)^{k\ell} \alpha \wedge \beta`.
+So we can equip the type of forms with a "product", satisfying $`\beta \wedge \alpha = (-1)^{k\ell} \alpha \wedge \beta`.
 This is a special case of a more general structure:
 
 :::DEFINITION
@@ -136,7 +136,7 @@ A graded (pseudo-)ring $`R` is *anticommutative* if for any homogeneous $`r` and
 2. The ring $`R = \mathbb{Z}[x, y, z]` is a *commutative graded ring*, with the $`d`th component being the abelian group of homogeneous degree $`d` polynomials (and $`0`).
 3. Let $`V` be a vector space, and consider the abelian group $`\bigwedge^\bullet(V) = \bigoplus_{d \ge 0} \bigwedge^d(V)`.
    We endow $`\bigwedge^\bullet(V)` with the product $`\wedge`, which makes it into an *anticommutative ring*.
-4. Consider the set of differential forms of a manifold $`M`, say $`\Omega^\bullet(M) = \bigoplus_{d \ge 0} \Omega^d(M)` endowed with the product $`\wedge`.
+4. Consider the type of differential forms of a manifold $`M`, say $`\Omega^\bullet(M) = \bigoplus_{d \ge 0} \Omega^d(M)` endowed with the product $`\wedge`.
    This is an *anticommutative ring*.
 
 All four examples have a multiplicative identity.

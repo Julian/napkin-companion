@@ -45,7 +45,7 @@ This is a field with $`p` elements, with characteristic $`p`.
 
 :::EXAMPLE "The finite field of nine elements"
 Let $$`F \cong \mathbb{F}_3[X]/(X^2+1) \cong \mathbb{Z}[i] / (3).`
-We can think of its elements as $$`\left\{ a + bi \mid 0 \le a,b \le 2 \right\}.`
+We can think of its elements as $`a + bi` where $`0 \le a,b \le 2`.
 Since $`(3)` is prime in $`\mathbb{Z}[i]`, the ring of integers of $`\mathbb{Q}(i)`, we see $`F` is a field with $`3^2 = 9` elements inside it.
 Note that, although this field has $`9` elements, every element $`x` has the property that $$`3x = \underbrace{x + \dots + x}_{3 \text{ times}} = 0.`
 In particular, $`F` has characteristic $`3`.
@@ -165,7 +165,7 @@ By the above theorem, it's the splitting field of a separable polynomial, hence 
 We would like to find the Galois group.
 
 In fact, we are very lucky: it is cyclic.
-First, we exhibit one such element $`\sigma_p \in \operatorname{Gal}(\mathbb{F}_{p^n} /\mathbb{F}_p)`:
+First, we exhibit one such element $`\sigma_p : \operatorname{Gal}(\mathbb{F}_{p^n} /\mathbb{F}_p)`:
 
 :::THEOREM "The pth power automorphism"
 The map $`\sigma_p \colon \mathbb{F}_{p^n} \to \mathbb{F}_{p^n}` defined by $$`\sigma_p(x) = x^p` is an automorphism, and moreover fixes $`\mathbb{F}_p`.

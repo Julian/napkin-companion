@@ -187,7 +187,7 @@ In particular $`\operatorname{Spec} A` is a locally ringed space.
 
 :::PROOF
 Since sheafification preserved stalks, it's enough to check it for $`\mathcal{F}` the pre-sheaf of globally rational functions in our definition.
-There is an obvious map $`\mathcal{F}_\mathfrak{p} \to A_\mathfrak{p}` on germs by $`\left(U, f/g \in \mathcal{F}(U) \right) \mapsto f/g \in A_\mathfrak{p}`.
+There is an obvious map $`\mathcal{F}_\mathfrak{p} \to A_\mathfrak{p}` on germs by $`\left(U, f/g : \mathcal{F}(U) \right) \mapsto f/g \in A_\mathfrak{p}`.
 We show injectivity and surjectivity:
 
 - Injective: suppose $`(U_1, f_1 / g_1)` and $`(U_2, f_2 / g_2)` are two germs with $`f_1/g_1 = f_2/g_2 \in A_\mathfrak{p}`.

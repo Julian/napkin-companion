@@ -93,9 +93,9 @@ So in fact $`S = R/I` is graded, and is a six-dimensional $`\mathbb{C}`-vector s
 Perhaps $`\mathbb{V}_+(x^2 + y^2 - z^2)`.
 :::
 
-The set of points we choose to work with is $`\mathbb{CP}^n` this time, which for us can be thought of as the set of $`n`-tuples $$`\left( x_0 : x_1 : \dots : x_n \right)`
+The type of points we choose to work with is $`\mathbb{CP}^n` this time, which for us can be thought of as the $`n`-tuples $$`\left( x_0 : x_1 : \dots : x_n \right)`
 not all zero, up to scaling.
-Equivalently, it is the set of lines through the origin in $`\mathbb{C}^{n+1}`.
+Equivalently, its terms are the lines through the origin in $`\mathbb{C}^{n+1}`.
 Projective space is defined in full in the earlier chapter on topological constructions, and you should refer there if you aren't familiar with projective space.
 
 The right way to think about it is "$`\mathbb{A}^n` plus points at infinity":
@@ -273,7 +273,7 @@ Then we can repeat the same definition as before:
 Let $`U \subseteq V` be an open set of a projective variety $`V`.
 We say a function $`\phi \colon U \to \mathbb{C}` is a *regular function* if for every point $`p`, we can find an open set $`U_p` containing $`p` and a rational function $`f_p/g_p` on $`U_p` such that $$`\phi(x) = \frac{f_p(x)}{g_p(x)} \qquad \forall x \in U_p.`
 In particular, we require $`U_p \cap \mathbb{V}_+(g_p) = \varnothing`.
-We denote the set of all regular functions on $`U` by $`\mathcal{O}_V(U)`.
+We denote the type of all regular functions on $`U` by $`\mathcal{O}_V(U)`.
 :::
 
 Of course, the rational functions from the previous example are examples of regular functions as well.

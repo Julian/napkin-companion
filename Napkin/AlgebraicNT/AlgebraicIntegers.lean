@@ -183,7 +183,7 @@ The *degree* of $`K` is its dimension.
 :::
 
 :::EXAMPLE "Prototypical example"
-Consider the field $$`K = \mathbb{Q}(\sqrt2) = \left\{ a+b\sqrt2 \mid a,b \in \mathbb{Q} \right\}.`
+Consider the field $`K = \mathbb{Q}(\sqrt2)`, whose terms are $`a+b\sqrt2` for $`a,b : \mathbb{Q}`.
 This is a field extension of $`\mathbb{Q}`, and has degree $`2` (the basis being $`1` and $`\sqrt2`).
 :::
 

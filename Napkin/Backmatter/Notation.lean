@@ -33,14 +33,14 @@ file := "Glossary-of-notations"
 - $`f\restriction_{S}` is the restriction of $`f \colon X \to Y` to $`S \subseteq X`.
 - $`f^n` is the function $`f` applied $`n` times
 
-Below are some common sets.
+Below are some common types.
 These may also be thought of as groups, rings, fields etc. in the obvious way.
 
-- $`\mathbb{C}`: set of complex numbers
-- $`\mathbb{R}`: set of real numbers
-- $`\mathbb{N}`: set of nonnegative integers
-- $`\mathbb{Q}`: set of rational numbers
-- $`\mathbb{Z}`: set of integers
+- $`\mathbb{C}`: type of complex numbers
+- $`\mathbb{R}`: type of real numbers
+- $`\mathbb{N}`: type of nonnegative integers
+- $`\mathbb{Q}`: type of rational numbers
+- $`\mathbb{Z}`: type of integers
 - $`\varnothing`: empty set
 
 Some common notation with sets:
@@ -62,7 +62,7 @@ Some common notation with sets:
 Some common groups/rings/fields:
 
 - $`\mathbb{Z}/n\mathbb{Z}`: cyclic group of order $`n`
-- $`(\mathbb{Z}/n\mathbb{Z})^\times`: set of units of $`\mathbb{Z}/n\mathbb{Z}`.
+- $`(\mathbb{Z}/n\mathbb{Z})^\times`: type of units of $`\mathbb{Z}/n\mathbb{Z}`.
 - $`S_n`: symmetric group on $`\{1, \dots, n\}`
 - $`D_{2n}`: dihedral group of order $`2n`.
 - $`0`, $`1`: trivial group (depending on context)
@@ -77,8 +77,8 @@ Notation with groups:
 - $`N_G(H)`: normalizer of the subgroup $`H` of $`G`
 - $`G \times H`: product group of $`G` and $`H`
 - $`G \oplus H`: also product group, but often used when $`G` and $`H` are abelian (and hence we can think of them as $`\mathbb{Z}`-modules)
-- $`\operatorname{Stab}_G(x)`: the stabilizer of $`x \in X`, if $`X` is acted on by $`G`
-- $`\operatorname{Fix}(g)`, the set of fixed points by $`g \in G` (under a group action)
+- $`\operatorname{Stab}_G(x)`: the stabilizer of $`x : X`, if $`X` is acted on by $`G`
+- $`\operatorname{Fix}(g)`, the set of fixed points by $`g : G` (under a group action)
 
 Notation with rings:
 
@@ -107,7 +107,7 @@ Linear algebra:
 
 - $`|\psi\rangle`: a vector in some vector space $`H`
 - $`\langle\psi|`: a vector in some vector space $`H^\vee`, dual to $`|\psi\rangle`.
-- $`\langle\phi|\psi\rangle`: evaluation of an element $`\langle\phi| \in H^\vee` at $`|\phi\rangle \in H`.
+- $`\langle\phi|\psi\rangle`: evaluation of an element $`\langle\phi| : H^\vee` at $`|\phi\rangle : H`.
 - $`|{\uparrow_z}\rangle`, $`|{\downarrow_z}\rangle`: spin $`z`-up, spin $`z`-down
 - $`|{\uparrow_x}\rangle`, $`|{\downarrow_x}\rangle`: spin $`x`-up, spin $`x`-down
 - $`|{\uparrow_y}\rangle`, $`|{\downarrow_y}\rangle`: spin $`y`-up, spin $`y`-down
@@ -235,7 +235,7 @@ Operations with categories:
 - $`\Delta_K`: discriminant of number field $`K`
 - $`\mu(\mathcal{O}_K)`: set of roots of unity contained in $`\mathcal{O}_K`
 - $`[K : F]`: degree of a field extension
-- $`\operatorname{Aut}(K/F)`: set of field automorphisms of $`K` fixing $`F`
+- $`\operatorname{Aut}(K/F)`: type of field automorphisms of $`K` fixing $`F`
 - $`\operatorname{Gal}(K/F)`: Galois group of $`K/F`
 - $`D_\mathfrak{p}`: decomposition group of prime ideal $`\mathfrak{p}`
 - $`I_\mathfrak{p}`: inertia group of prime ideal $`\mathfrak{p}`
@@ -276,7 +276,7 @@ Operations with categories:
 - $`h_I`, $`h_V`: Hilbert function of an ideal $`I` or projective variety $`V`
 - $`\pi^\sharp` or $`\pi^\sharp_U`: the pullback $`\mathcal{O}_Y \to \mathcal{O}_X(\pi^{-1}(U))` obtained from $`\pi \colon X \to Y`
 - $`\mathcal{F}_p`: the stalk of a (pre-)sheaf $`\mathcal{F}` at a point $`p`
-- $`[s]_p`: the germ of $`s \in \mathcal{F}(U)` at the point $`p`
+- $`[s]_p`: the germ of $`s : \mathcal{F}(U)` at the point $`p`
 - $`\mathcal{O}_{X, p}`: shorthand for $`(\mathcal{O}_X)_p`.
 - $`\mathcal{F}^{\operatorname{sh}}`: sheafification of pre-sheaf $`\mathcal{F}`
 - $`\alpha_p \colon \mathcal{F}_p \to \mathcal{G}_p`: morphism of stalks obtained from $`\alpha \colon \mathcal{F} \to \mathcal{G}`

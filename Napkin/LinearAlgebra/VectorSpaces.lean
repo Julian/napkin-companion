@@ -79,7 +79,7 @@ Moreover, a *vector space* is just a module whose commutative ring is actually a
 I'll give you the full definition in a moment, but first, examples…
 
 :::EXAMPLE "Quadratic polynomials, aka my favorite example"
-My favorite example of an $`\mathbb{R}`-vector space is the type of polynomials of degree at most two, namely $$`\{ ax^2 + bx + c \mid a, b, c : \mathbb{R} \}.`
+My favorite example of an $`\mathbb{R}`-vector space is the type of polynomials of degree at most two, whose terms are $$`ax^2 + bx + c` for $`a, b, c : \mathbb{R}`.
 Indeed, you can add any two quadratics, and multiply by constants.
 You can't multiply two quadratics to get a quadratic, but that's irrelevant — in a vector space there need not be a notion of multiplying two vectors together.
 
@@ -91,17 +91,17 @@ The type of _all_ polynomials with real coefficients is an $`\mathbb{R}`-vector 
 :::
 
 :::EXAMPLE "Euclidean space"
-1. The complex numbers $$`\{ a + bi \mid a, b : \mathbb{R} \}` form a real vector space.
+1. The complex numbers $`a + bi`, for $`a, b : \mathbb{R}`, form a real vector space.
    As we'll see later, it has "dimension $`2`".
 2. The real numbers $`\mathbb{R}` form a real vector space of dimension $`1`.
-3. The set of 3D vectors $$`\{ (x, y, z) \mid x, y, z : \mathbb{R} \}` forms a real vector space, because you can add any two triples component-wise.
+3. The 3D vectors $`(x, y, z)`, for $`x, y, z : \mathbb{R}`, form a real vector space, because you can add any two triples component-wise.
    Again, we'll later explain why it has "dimension $`3`".
 :::
 
 :::EXAMPLE "More examples of vector spaces"
-1. The set $$`\mathbb{Q}[\sqrt{2}] = \{ a + b\sqrt{2} \mid a, b : \mathbb{Q} \}` has a structure of a $`\mathbb{Q}`-vector space in the obvious fashion: one can add any two elements, and scale by rational numbers.
+1. The type $`\mathbb{Q}[\sqrt{2}]`, whose terms are $`a + b\sqrt{2}` for $`a, b : \mathbb{Q}`, has a structure of a $`\mathbb{Q}`-vector space in the obvious fashion: one can add any two elements, and scale by rational numbers.
    (It is not an $`\mathbb{R}`-vector space — why?)
-2. The set $$`\{ (x, y, z) \mid x + y + z = 0 \text{ and } x, y, z : \mathbb{R} \}` is a $`2`-dimensional real vector space.
+2. The triples $`(x, y, z)` with $`x, y, z : \mathbb{R}` and $`x + y + z = 0` form a $`2`-dimensional real vector space.
 3. The set of all functions $`f \colon \mathbb{R} \to \mathbb{R}` is also a real vector space (since the notions $`f + g` and $`c \cdot f` both make sense for $`c : \mathbb{R}`).
 :::
 
@@ -131,7 +131,7 @@ I'll try to remember to put $`r \cdot m` for the multiplication of the module an
 :::QUESTION
 In the quadratic-polynomial example above, I was careful to say "degree at most $`2`" instead of "degree $`2`".
 What's the reason for this?
-In other words, why is $$`\{ ax^2 + bx + c \mid a, b, c : \mathbb{R}, a \neq 0 \}` not an $`\mathbb{R}`-vector space?
+In other words, why do the polynomials $`ax^2 + bx + c` with $`a, b, c : \mathbb{R}` and $`a \neq 0` not form an $`\mathbb{R}`-vector space?
 :::
 
 A couple less intuitive but somewhat important examples…
@@ -139,7 +139,7 @@ A couple less intuitive but somewhat important examples…
 :::EXAMPLE "Abelian groups are ℤ-modules"
 (Skip this example if you're not comfortable with groups.)
 
-1. The example of real polynomials $$`\{ ax^2 + bx + c \mid a, b, c : \mathbb{R} \}` is also a $`\mathbb{Z}`-module!
+1. The example of real polynomials $`ax^2 + bx + c`, for $`a, b, c : \mathbb{R}`, is also a $`\mathbb{Z}`-module!
    Indeed, we can add any two such polynomials, and we can scale them by integers.
 2. The integers modulo $`100`, $`\mathbb{Z}/100\mathbb{Z}`, are a $`\mathbb{Z}`-module as well.
    Can you see how?
@@ -327,7 +327,7 @@ That's not the only basis: we could as well have written $$`\{ a(x^2 - 4x) + b(x
 But the beauty of the theorem is that no matter how we try to contrive the generating set, we always will get exactly three elements.
 That's why it makes sense to say $`V` has dimension three.
 
-On the other hand, the set of all polynomials $`\mathbb{R}[x]` is *infinite-dimensional* (which should be intuitively clear).
+On the other hand, the type of all polynomials $`\mathbb{R}[x]` is *infinite-dimensional* (which should be intuitively clear).
 
 A basis $`e_1, \dots, e_n` of $`V` is really cool because it means that to specify $`v : V`, I only have to specify $`a_1, \dots, a_n : k`, and then let $`v = a_1 e_1 + \dots + a_n e_n`.
 You can even think of $`v` as $`(a_1, \dots, a_n)`.

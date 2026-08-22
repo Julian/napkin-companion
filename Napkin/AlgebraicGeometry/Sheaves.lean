@@ -58,7 +58,7 @@ Let us see how the functions in $`\mathcal{O}_V` are related to each other:
 - Each function in $`\mathcal{O}_V` is defined on an open set $`U \subseteq V`.
 - If two functions are defined on the same open set, you can add and multiply them together.
   In other words, $`\mathcal{O}_V(U)` is a ring.
-- Given a function $`f \in \mathcal{O}_V(U)`, we can restrict it to a smaller open subset $`W \subseteq U`.
+- Given a function $`f : \mathcal{O}_V(U)`, we can restrict it to a smaller open subset $`W \subseteq U`.
 
 These are the operations that we will impose on a pre-sheaf.
 
@@ -92,25 +92,25 @@ An element of $`\mathcal{F}(X)` is called a *global section*.
 :::
 
 :::ABUSE
-If $`s \in \mathcal{F}(U_2)` is some section and $`U_1 \subseteq U_2`, then rather than write $`\operatorname{res}_{U_1, U_2}(s)` I will write $`s\restriction_{U_1}` instead: "$`s` restricted to $`U_1`".
+If $`s : \mathcal{F}(U_2)` is some section and $`U_1 \subseteq U_2`, then rather than write $`\operatorname{res}_{U_1, U_2}(s)` I will write $`s\restriction_{U_1}` instead: "$`s` restricted to $`U_1`".
 This is abuse of notation because the section $`s` is just an element of some ring, and in the most abstract of cases may not have a natural interpretation as function.
 :::
 
 :::EXAMPLE "Examples of pre-sheaves"
 1. For an affine variety $`V`, $`\mathcal{O}_V` is of course a sheaf, with $`\mathcal{O}_V(U)` being the ring of regular functions on $`U`.
-   The restriction map just says that if $`U_1 \subseteq U_2`, then a function $`s \in \mathcal{O}_V(U_2)` can also be thought of as a function $`s \restriction_{U_1} \in \mathcal{O}_V(U_1)`, hence the name "restriction".
+   The restriction map just says that if $`U_1 \subseteq U_2`, then a function $`s : \mathcal{O}_V(U_2)` can also be thought of as a function $`s \restriction_{U_1} : \mathcal{O}_V(U_1)`, hence the name "restriction".
 2. Let $`X \subseteq \mathbb{R}^n` be an open set.
    Then there is a sheaf of smooth/differentiable/etc. functions on $`X`.
    In fact, one can do the same construction for any manifold $`M`.
 3. Similarly, if $`X \subseteq \mathbb{C}` is open, we can construct a sheaf of holomorphic functions on $`X`.
 
-In all these examples, the sections $`s \in \mathcal{F}(U)` are really functions on the space, but in general they need not be.
+In all these examples, the sections $`s : \mathcal{F}(U)` are really functions on the space, but in general they need not be.
 :::
 
-We can picture a section $`s \in \mathcal{F}(U)` by drawing an $`xy`-plot of a curve above $`U`, the way functions are drawn in grade school; restriction then corresponds to keeping just a chunk of that curve.
+We can picture a section $`s : \mathcal{F}(U)` by drawing an $`xy`-plot of a curve above $`U`, the way functions are drawn in grade school; restriction then corresponds to keeping just a chunk of that curve.
 
 :::figure "figures/algebraic-geometry/sheaves-section.svg"
-A section $`s \in \mathcal{F}(U)`, pictured as a function drawn above the open set $`U`.
+A section $`s : \mathcal{F}(U)`, pictured as a function drawn above the open set $`U`.
 :::
 
 :::figure "figures/algebraic-geometry/sheaves-restriction.svg"
@@ -162,7 +162,7 @@ The equivalence classes themselves are called *germs*.
 :::
 
 :::DEFINITION
-The germ of a given $`s \in \mathcal{F}(U)` at a point $`p` is the equivalence class for $`(s, U) \in \mathcal{F}_p`.
+The germ of a given $`s : \mathcal{F}(U)` at a point $`p` is the equivalence class for $`(s, U) \in \mathcal{F}_p`.
 We denote this by $`[s]_p`.
 :::
 
@@ -190,9 +190,9 @@ The stalk $`\mathcal{F}_p` can itself be regarded as a ring: for example, additi
 :::
 
 :::EXAMPLE "Germs of real smooth functions"
-Let $`X = \mathbb{R}` and let $`\mathcal{F}` be the pre-sheaf on $`X` of smooth functions (i.e. $`\mathcal{F}(U)` is the set of smooth real-valued functions on $`U`).
+Let $`X = \mathbb{R}` and let $`\mathcal{F}` be the pre-sheaf on $`X` of smooth functions (i.e. $`\mathcal{F}(U)` is the type of smooth real-valued functions on $`U`).
 
-Consider a global section, $`s \colon \mathbb{R} \to \mathbb{R}` (thus $`s \in \mathcal{F}(X)`) and its germ at $`0`.
+Consider a global section, $`s \colon \mathbb{R} \to \mathbb{R}` (thus $`s : \mathcal{F}(X)`) and its germ at $`0`.
 
 1. From the germ we can read off $`s(0)`, obviously.
 2. We can also find $`s'(0)`, because the germ carries enough information to compute the limit $`\lim_{h \to 0} \frac1h[s(h) - s(0)]`.
@@ -276,10 +276,10 @@ A *sheaf* $`\mathcal{F}` on a topological space $`X` is a pre-sheaf obeying two 
 Suppose $`U` is an open set in $`X`, and $`U` is covered by open sets $`U_\alpha \subseteq U`.
 Then:
 
-1. (Identity) If $`s, t \in \mathcal{F}(U)` are sections, and $`s\restriction_{U_\alpha} = t\restriction_{U_\alpha}` for all $`\alpha`, then $`s = t`.
-2. (Gluing) Consider sections $`s_\alpha \in \mathcal{F}(U_\alpha)` for each $`\alpha`.
+1. (Identity) If $`s, t : \mathcal{F}(U)` are sections, and $`s\restriction_{U_\alpha} = t\restriction_{U_\alpha}` for all $`\alpha`, then $`s = t`.
+2. (Gluing) Consider sections $`s_\alpha : \mathcal{F}(U_\alpha)` for each $`\alpha`.
    Suppose that $`s_\alpha \restriction_{U_\alpha \cap U_\beta} = s_\beta \restriction_{U_\alpha \cap U_\beta}` for each $`U_\alpha` and $`U_\beta`.
-   Then we can find $`s \in \mathcal{F}(U)` such that $`s \restriction_{U_\alpha} = s_\alpha`.
+   Then we can find $`s : \mathcal{F}(U)` such that $`s \restriction_{U_\alpha} = s_\alpha`.
 :::
 
 :::REMARK "For keepers of the empty set"
@@ -337,7 +337,7 @@ In fact, the sheaf of locally constant functions is what is called a _sheafifica
 
 :::PROTOTYPE
 A real function on $`U` is a sequence of real numbers $`f(p)` for each $`p \in U` satisfying some local condition.
-Analogously, a section $`s \in \mathcal{F}(U)` is a sequence of germs satisfying some local compatibility condition.
+Analogously, a section $`s : \mathcal{F}(U)` is a sequence of germs satisfying some local compatibility condition.
 :::
 
 Once we impose the sheaf axioms, our metaphorical picture will actually be more or less complete.
@@ -345,7 +345,7 @@ Just as a function was supposed to be a choice of value at each point, a section
 
 :::EXAMPLE "Real functions vs. germs"
 Let $`X` be a space and let $`\mathcal{F}` be the sheaf of smooth functions.
-Take a section $`f \in \mathcal{F}(U)`.
+Take a section $`f : \mathcal{F}(U)`.
 
 - As a function, $`f` is just a choice of value $`f(p) \in \mathbb{R}` at every point $`p`, subject to a local "smooth" condition.
 - Let's now think of $`f` as a sequence of germs.
@@ -373,7 +373,7 @@ We make this precise:
 
 :::DEFINITION
 Let $`\mathcal{F}` be pre-sheaf and let $`U` be an open set.
-A sequence $`(g_p)_{p \in U}` of germs (with $`g_p \in \mathcal{F}_p` for each $`p`) is said to be *compatible* if they can be "locally collated": for any $`p \in U` there exists an open neighborhood $`U_p \ni p` and a section $`s \in \mathcal{F}(U_p)` on it such that $`[s]_q = g_q` for each $`q \in U_p`.
+A sequence $`(g_p)_{p \in U}` of germs (with $`g_p \in \mathcal{F}_p` for each $`p`) is said to be *compatible* if they can be "locally collated": for any $`p \in U` there exists an open neighborhood $`U_p \ni p` and a section $`s : \mathcal{F}(U_p)` on it such that $`[s]_q = g_q` for each $`q \in U_p`.
 
 Intuitively, the germs should "collate together" to some section near each _individual_ point $`q` (but not necessarily to a section on all of $`U`).
 :::
@@ -481,7 +481,7 @@ Then try to work out the general answer.)
 :::
 
 :::PROBLEM "Support of a section is closed"
-Let $`\mathcal{F}` be a sheaf of rings on a space $`X` and let $`s \in \mathcal{F}(X)` be a global section.
+Let $`\mathcal{F}` be a sheaf of rings on a space $`X` and let $`s : \mathcal{F}(X)` be a global section.
 Define the *support* of $`s` as $$`Z = \left\{ p \in X \mid [s]_p \neq 0 \in \mathcal{F}_p \right\}.`
 Show that $`Z` is a closed set of $`X`.
 (Hint: show that the complement $`\{ p \mid [s]_p = 0 \}` is open.)

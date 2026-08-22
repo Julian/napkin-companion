@@ -216,7 +216,7 @@ You'll need to take mod $`4`.
 
 :::EXAMPLE "Ring of integers of ℚ(√3)"
 Let $`K` be as above.
-We claim that $$`\mathcal{O}_K = \mathbb{Z}[\sqrt 3] = \left\{ m + n\sqrt 3 \mid m,n \in \mathbb{Z} \right\}.`
+We claim that $`\mathcal{O}_K = \mathbb{Z}[\sqrt 3]`, whose terms are $`m + n\sqrt 3` for $`m,n : \mathbb{Z}`.
 We set $`\alpha = a + b \sqrt 3`.
 Then $`\alpha \in \mathcal{O}_K` when the minimal polynomial has integer coefficients.
 
@@ -226,7 +226,7 @@ From the exercise, this occurs exactly for $`a,b \in \mathbb{Z}`.
 :::
 
 :::EXAMPLE "Ring of integers of ℚ(√5)"
-We claim that in this case $$`\mathcal{O}_K = \mathbb{Z}\left[ \frac{1+\sqrt5}{2} \right] = \left\{ m + n \cdot \frac{1+\sqrt5}{2} \mid m,n \in \mathbb{Z} \right\}.`
+We claim that in this case $`\mathcal{O}_K = \mathbb{Z}\left[ \frac{1+\sqrt5}{2} \right]`, whose terms are $`m + n \cdot \frac{1+\sqrt5}{2}` for $`m,n : \mathbb{Z}`.
 The proof is exactly the same, except the exercise tells us instead that for $`b \neq 0`, we have both the possibility that $`a,b \in \mathbb{Z}` or that $`a,b \in \mathbb{Z} - \frac{1}{2}`.
 This reflects the fact that $`\frac{1+\sqrt5}{2}` is the root of $`x^2-x-1 = 0`; no such thing is possible with $`\sqrt 3`.
 :::

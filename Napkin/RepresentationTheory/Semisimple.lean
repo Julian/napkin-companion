@@ -51,7 +51,7 @@ For $`V` irreducible, $`\operatorname{Hom}_{\text{rep}}(V^{\oplus 2}, V^{\oplus 
 :::
 
 :::DEFINITION
-For an algebra $`A` and representations $`V` and $`W`, we let $`\operatorname{Hom}_{\text{rep}}(V, W)` be the set of intertwining operators between them.
+For an algebra $`A` and representations $`V` and $`W`, we let $`\operatorname{Hom}_{\text{rep}}(V, W)` be the type of intertwining operators between them.
 (It is also a $`k`-algebra.)
 :::
 

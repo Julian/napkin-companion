@@ -29,7 +29,7 @@ $`\pm 1`, roots of unity, $`3-2\sqrt2` and its powers.
 :::
 
 Recall according to the unit-norm problem from the ring of integers chapter that $`\alpha \in \mathcal{O}_K` is invertible if and only if $$`\operatorname{Norm}_{K/\mathbb{Q}}(\alpha) = \pm 1.`
-We let $`\mathcal{O}_K^\times` denote the set of units of $`\mathcal{O}_K`.
+We let $`\mathcal{O}_K^\times` denote the type of units of $`\mathcal{O}_K`.
 
 :::QUESTION
 Show that $`\mathcal{O}_K^\times` is a group under multiplication.

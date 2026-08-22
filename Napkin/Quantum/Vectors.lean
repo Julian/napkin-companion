@@ -165,7 +165,7 @@ These are the three Hermitian matrices $$`\sigma_z = \begin{bmatrix} 1 & 0 \\ 0 
 These matrices are important because:
 
 :::QUESTION
-Show that these three matrices, plus the identity matrix, form a basis for the set of Hermitian $`2 \times 2` matrices.
+Show that these three matrices, plus the identity matrix, form a basis for the type of Hermitian $`2 \times 2` matrices.
 :::
 
 So the Pauli matrices are a natural choice of basis (well, natural due to physics reasons).

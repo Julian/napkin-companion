@@ -51,8 +51,8 @@ $`\mathbb{R}[x] \otimes \mathbb{R}[y] = \mathbb{R}[x, y]`.
 We know that $`\dim(V \oplus W) = \dim V + \dim W`, even though as sets $`V \oplus W` looks like $`V \times W`.
 What if we wanted a real "product" of spaces, with multiplication of dimensions?
 
-For example, let's pull out my favorite example of a real vector space, namely $$`V = \{ax^2 + bx + c \mid a, b, c : \mathbb{R}\}.`
-Here's another space, a little smaller: $$`W = \{dy + e \mid d, e : \mathbb{R}\}.`
+For example, let's pull out my favorite example of a real vector space, namely $`V`, whose terms are $`ax^2 + bx + c` for $`a, b, c : \mathbb{R}`.
+Here's another space, a little smaller: $`W`, whose terms are $`dy + e` for $`d, e : \mathbb{R}`.
 If we take the direct sum, then we would get some rather unnatural vector space of dimension five (whose elements can be thought of as pairs $`(ax^2 + bx + c, dy + e)`).
 But suppose we want a vector space whose elements are _products_ of polynomials in $`V` and $`W`; it would contain elements like $`4x^2 y + 5xy + y + 3`.
 In particular, the basis would be $$`\{x^2 y, x^2, xy, x, y, 1\}` and thus have dimension six.
@@ -141,7 +141,7 @@ Rotate a column matrix by $`90` degrees.
 Consider the following vector space:
 
 :::EXAMPLE "Functions from ℝ³ → ℝ"
-The set of real functions $`f(x, y, z)` is an infinite-dimensional real vector space.
+The type of real functions $`f(x, y, z)` is an infinite-dimensional real vector space.
 Indeed, we can add two functions to get $`f + g`, and we can think of functions like $`2f`.
 :::
 
@@ -194,7 +194,7 @@ This statement is technically true, but for a generic vector space $`V` without 
 Most importantly, the isomorphism given above depends on what basis you picked.
 
 :::REMARK "Explicit example of unnatural V → V∨"
-Alice or Bob are looking at the same two-dimensional real vector space $$`V = \{(x, y, z) \mid x + y + z = 0\}.`
+Alice or Bob are looking at the same two-dimensional real vector space $`V`, whose terms are the triples $`(x, y, z)` with $`x + y + z = 0`.
 Also, let $`v_{\text{example}} = (3, 5, -8)` be an example of an arbitrary element of $`V` for concreteness.
 
 Suppose Alice chooses the following basis vectors for $`V`. $$`e_1 = (1, 0, -1), \qquad e_2 = (0, 1, -1).`
@@ -237,7 +237,7 @@ The claim is that in fact, every linear map $`V \to W` has such an interpretatio
 First, for notational convenience,
 
 :::DEFINITION
-Let $`\operatorname{Hom}(V, W)` denote the set of linear maps from $`V` to $`W` (which one can interpret as matrices which send $`V` to $`W`), viewed as a vector space over $`k`.
+Let $`\operatorname{Hom}(V, W)` denote the type of linear maps from $`V` to $`W` (which one can interpret as matrices which send $`V` to $`W`), viewed as a vector space over $`k`.
 (The "$`\operatorname{Hom}`" stands for homomorphism.)
 :::
 

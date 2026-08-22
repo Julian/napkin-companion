@@ -351,7 +351,7 @@ The same, with the identified half of the boundary drawn dashed.
 The resulting space should be familiar to those of you who do projective (Euclidean) geometry.
 Indeed, there are several possible geometric interpretations:
 
-- One can think of $`\mathbb{RP}^2` as the set of lines through the origin in $`\mathbb{R}^3`, with each line being a point in $`\mathbb{RP}^2`.
+- One can think of $`\mathbb{RP}^2` as the lines through the origin in $`\mathbb{R}^3`, with each line being a point in $`\mathbb{RP}^2`.
 
   Of course, we can identify each line with a point on the unit sphere $`S^2`, except for the property that two antipodal points actually correspond to the same line, so that $`\mathbb{RP}^2` can be almost thought of as "half a sphere".
   Flattening it gives the picture above.
@@ -367,7 +367,7 @@ Indeed, there are several possible geometric interpretations:
 Observe that these formulations are equivalent by considering the plane $`z = 1` in $`\mathbb{R}^3`, and intersecting each line in the first formulation with this plane.
 :::
 
-We can also express $`\mathbb{RP}^2` using coordinates: it is the set of triples $`(x : y : z)` of real numbers not all zero up to scaling, meaning that $$`(x : y : z) = (\lambda x : \lambda y : \lambda z)`
+We can also express $`\mathbb{RP}^2` using coordinates: its terms are the triples $`(x : y : z)` of real numbers not all zero up to scaling, meaning that $$`(x : y : z) = (\lambda x : \lambda y : \lambda z)`
 for any $`\lambda \neq 0`.
 Using the "lines through the origin in $`\mathbb{R}^3`" interpretation makes it clear why this coordinate system gives the right space.
 The points at infinity are those with $`z = 0`, and any point with $`z \neq 0` gives a Cartesian point since $$`(x : y : z) = \left( \frac xz : \frac yz : 1 \right)`
@@ -375,7 +375,7 @@ hence we can think of it as the Cartesian point $`(\frac xz, \frac yz)`.
 
 In this way we can actually define *real-projective $`n`-space*, $`\mathbb{RP}^n` for any $`n`, as either
 
-1. The set of lines through the origin in $`\mathbb{R}^{n+1}`,
+1. The type of lines through the origin in $`\mathbb{R}^{n+1}`,
 2. Using $`n+1` coordinates as above, or
 3. As $`\mathbb{R}^n` augmented with points at infinity, which themselves form a copy of $`\mathbb{RP}^{n-1}`.
 

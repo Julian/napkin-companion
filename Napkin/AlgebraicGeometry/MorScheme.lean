@@ -95,7 +95,7 @@ Then $`\pi^\sharp` is uniquely determined by $`\pi^\sharp_p`.
 :::
 
 :::PROOF
-Given a section $`s \in \mathcal{O}_Y(U)`, let $`t = \pi^\sharp_U(s) \in \mathcal{O}_X(\pi^{-1}(U))` denote the image under $`\pi^\sharp`.
+Given a section $`s : \mathcal{O}_Y(U)`, let $`t = \pi^\sharp_U(s) : \mathcal{O}_X(\pi^{-1}(U))` denote the image under $`\pi^\sharp`.
 We know $`t_p` for each $`p \in \pi^{-1}(U)`, since it equals $`\pi^\sharp_p(t)` by definition.
 That is, we know all the germs of $`t`.
 So we know $`t`.
@@ -217,8 +217,8 @@ I claim that, surprisingly, you can actually read off $`\pi^\sharp` from just th
 The reason is that we imposed the requirement that a section $`s` can vanish at $`\mathfrak{q} \in Y` if and only if $`\pi^\sharp_X(s)` vanishes at $`\mathfrak{p} \in X`, where $`\pi(\mathfrak{p}) = \mathfrak{q}`.
 So, now:
 
-- Consider the section $`y \in \mathcal{O}_Y(Y)`, which vanishes only at $`(y) \in \operatorname{Spec} \mathbb{C}[y]`; then its image $`\pi^\sharp_Y(y) \in \mathcal{O}_X(X)` must vanish at exactly $`(x) \in \operatorname{Spec} \mathbb{C}[x]`, so $`\pi^\sharp_Y(y) = x^n` for some integer $`n \ge 1`.
-- Consider the section $`y - 4 \in \mathcal{O}_Y(Y)`, which vanishes only at $`(y - 4)`; then its image must vanish at exactly $`(x - 2)` and $`(x + 2)`.
+- Consider the section $`y : \mathcal{O}_Y(Y)`, which vanishes only at $`(y) \in \operatorname{Spec} \mathbb{C}[y]`; then its image $`\pi^\sharp_Y(y) : \mathcal{O}_X(X)` must vanish at exactly $`(x) \in \operatorname{Spec} \mathbb{C}[x]`, so $`\pi^\sharp_Y(y) = x^n` for some integer $`n \ge 1`.
+- Consider the section $`y - 4 : \mathcal{O}_Y(Y)`, which vanishes only at $`(y - 4)`; then its image must vanish at exactly $`(x - 2)` and $`(x + 2)`.
   So $`\pi^\sharp_Y(y) - 4` is divisible by $`(x - 2)^a(x + 2)^b` for some $`a \ge 1` and $`b \ge 1`.
 
 Thus $`y \mapsto x^2` in the top level map of sections $`\pi^\sharp_Y`: and hence also in all the maps of sections (as well as at all the stalks).
@@ -389,7 +389,7 @@ The intuition is that $`\mathcal{O}_U(U) = k[x, y]`, but $`U` is not the plane.
 ::::PROOF
 We already know $`\mathcal{O}_U(U) = k[x, y]` and we have a good handle on it.
 For example, $`y \in \mathcal{O}_U(U)` is a global section which vanishes on what looks like the $`x`-axis.
-Similarly, $`x \in \mathcal{O}_X(X)` is a global section which vanishes on what looks like the $`y`-axis.
+Similarly, $`x : \mathcal{O}_X(X)` is a global section which vanishes on what looks like the $`y`-axis.
 In particular, no point of $`U` vanishes at both.
 
 Now assume for contradiction that we have an isomorphism $`\psi \colon \operatorname{Spec} B \to U`.

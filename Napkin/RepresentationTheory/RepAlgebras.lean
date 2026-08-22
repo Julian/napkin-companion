@@ -85,7 +85,7 @@ However, this is needlessly wordy for our purposes.
 :::EXAMPLE "Group algebra"
 The *group algebra* $`k[G]` is the $`k`-vector space whose *basis elements* are the elements of a group $`G`, and where the product of two basis elements is the group multiplication.
 For example, suppose $`G = \mathbb{Z}/2\mathbb{Z} = \{1_G, x\}`.
-Then $$`k[G] = \left\{ a 1_G + bx \mid a, b : k \right\}` with multiplication given by $$`(a 1_G + bx)(c 1_G + dx) = (ac + bd) 1_G + (bc + ad) x.`
+Then the terms of $`k[G]` are $`a 1_G + bx` for $`a, b : k`, with multiplication given by $$`(a 1_G + bx)(c 1_G + dx) = (ac + bd) 1_G + (bc + ad) x.`
 :::
 
 :::QUESTION
@@ -175,7 +175,7 @@ Rather than $`\rho(a)(v)` we will just write $`\rho(a) v`.
 
 :::EXAMPLE "Representations of groups"
 1. Let $`A = \mathbb{R}[S_3]`.
-   Then let $$`V = \mathbb{R}^{\oplus 3} = \{ (x, y, z) \mid x, y, z : \mathbb{R} \}.` We can let $`A` act on $`V` as follows: given a permutation $`\pi : S_3`, we permute the corresponding coordinates in $`V`.
+   Then let $`V = \mathbb{R}^{\oplus 3}`, whose terms are the triples $`(x, y, z)` with $`x, y, z : \mathbb{R}`. We can let $`A` act on $`V` as follows: given a permutation $`\pi : S_3`, we permute the corresponding coordinates in $`V`.
    So for example, if $$`\text{If } \pi = (1 \; 2) \text{ then } \pi \cdot (x, y, z) = (y, x, z).` This extends linearly to let $`A` act on $`V`, by permuting the coordinates.
 
    From the matrix perspective, what we are doing is representing the permutations in $`S_3` as permutation matrices on $`k^{\oplus 3}`, like $$`(1 \; 2) \mapsto \begin{bmatrix} 0 & 1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 1 \end{bmatrix}.`
@@ -214,7 +214,7 @@ Perhaps this is the reason why people tend to write $`V` as the representation w
 More generally, given representations $`(V, \rho_V)` and $`(W, \rho_W)` the representation $`\rho` of $`V \oplus W` looks like $$`\rho(a) = \begin{bmatrix} \rho_V(a) & 0 \\ 0 & \rho_W(a) \end{bmatrix}.`
 
 :::EXAMPLE "Representation of $`S_n` decomposes"
-Let $`A = \mathbb{R}[S_3]` again, acting via permutation of coordinates on $$`V = \mathbb{R}^{\oplus 3} = \{ (x, y, z) \mid x, y, z : \mathbb{R} \}.` Consider the two subspaces $$`W_1 = \left\{ (t, t, t) \mid t : \mathbb{R} \right\}` $$`W_2 = \left\{ (x, y, z) \mid x + y + z = 0 \right\}.` Note $`V = W_1 \oplus W_2` as vector spaces.
+Let $`A = \mathbb{R}[S_3]` again, acting via permutation of coordinates on $`V = \mathbb{R}^{\oplus 3}`, whose terms are the triples $`(x, y, z)` with $`x, y, z : \mathbb{R}`. Consider the two subspaces $$`W_1 = \left\{ (t, t, t) \mid t : \mathbb{R} \right\}` $$`W_2 = \left\{ (x, y, z) \mid x + y + z = 0 \right\}.` Note $`V = W_1 \oplus W_2` as vector spaces.
 But each of $`W_1` and $`W_2` is a subrepresentation (since the action of $`A` keeps each $`W_i` in place), so $`V = W_1 \oplus W_2` as representations too.
 :::
 
@@ -281,7 +281,7 @@ In this textbook we won't consider infinite-dimensional irreps at all, even when
 :::
 
 :::EXAMPLE "Representation of $`S_n` decomposes"
-Let $`A = \mathbb{R}[S_3]` again, acting via permutation of coordinates on $$`V = \mathbb{R}^{\oplus 3} = \{ (x, y, z) \mid x, y, z : \mathbb{R} \}.` Consider again the two subspaces $$`W_1 = \left\{ (t, t, t) \mid t : \mathbb{R} \right\}` $$`W_2 = \left\{ (x, y, z) \mid x + y + z = 0 \right\}.` As we've seen, $`V = W_1 \oplus W_2`, and thus $`V` is not irreducible.
+Let $`A = \mathbb{R}[S_3]` again, acting via permutation of coordinates on $`V = \mathbb{R}^{\oplus 3}`, whose terms are the triples $`(x, y, z)` with $`x, y, z : \mathbb{R}`. Consider again the two subspaces $$`W_1 = \left\{ (t, t, t) \mid t : \mathbb{R} \right\}` $$`W_2 = \left\{ (x, y, z) \mid x + y + z = 0 \right\}.` As we've seen, $`V = W_1 \oplus W_2`, and thus $`V` is not irreducible.
 But one can show that $`W_1` and $`W_2` are irreducible (and hence indecomposable) as follows.
 
 - For $`W_1` it's obvious, since $`W_1` is one-dimensional.

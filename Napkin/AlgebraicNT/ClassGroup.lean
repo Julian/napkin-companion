@@ -56,7 +56,7 @@ The elements of $`\operatorname{Cl}_K` are called *classes*.
 Equivalently,
 
 :::MORAL
-The class group $`\operatorname{Cl}_K` is the set of nonzero fractional ideals modulo scaling by a constant in $`K`.
+The class group $`\operatorname{Cl}_K` is the type of nonzero fractional ideals modulo scaling by a constant in $`K`.
 :::
 
 You can also think of the classes as the "shapes" of the ideals, as two ideals belong to the same class if and only if they're isomorphic as $`\mathcal{O}_K`-modules.
@@ -86,7 +86,7 @@ Quadratic fields.
 :::
 
 Let's say I have $`K = \mathbb{Q}(\sqrt 2)`.
-As we've seen before, this means $`\mathcal{O}_K = \mathbb{Z}[\sqrt 2]`, meaning $$`\mathcal{O}_K = \left\{ a + b \sqrt 2 \mid a,b \in \mathbb{Z} \right\}.`
+As we've seen before, this means $`\mathcal{O}_K = \mathbb{Z}[\sqrt 2]`, whose terms are $`a + b \sqrt 2` for $`a,b : \mathbb{Z}`.
 The key insight now is that you might think of this as a _lattice_: geometrically, we want to think about this the same way we think about $`\mathbb{Z}^2`.
 
 Perversely, we might try to embed this into $`\mathbb{Q}^2` by sending $`a+b\sqrt 2` to $`(a, b)`.
@@ -201,7 +201,7 @@ Observe that $`r_1 + 2r_2 = n`.
 2. $`\mathbb{Q}(\sqrt 2)` has signature $`(2,0)`.
 3. $`\mathbb{Q}(i)` has signature $`(0,1)`.
 4. Let $`K = \mathbb{Q}(\sqrt[3]{2})`, and let $`\omega` be a cube root of unity.
-   The elements of $`K` are $$`K = \left\{ a + b\sqrt[3]{2} + c\sqrt[3]{4} \mid a,b,c \in \mathbb{Q} \right\}.`
+   The elements of $`K` are $$`a + b\sqrt[3]{2} + c\sqrt[3]{4}` for $`a,b,c : \mathbb{Q}`.
    Then the signature is $`(1,1)`, because the three embeddings are $$`\sigma_1 \colon \sqrt[3]{2} \mapsto \sqrt[3]{2}, \quad \sigma_2 \colon \sqrt[3]{2} \mapsto \sqrt[3]{2} \omega, \quad \sigma_3 \colon \sqrt[3]{2} \mapsto \sqrt[3]{2} \omega^2.`
    The first of these is real and the latter two are conjugate pairs.
 :::

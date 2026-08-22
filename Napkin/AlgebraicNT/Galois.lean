@@ -301,8 +301,7 @@ First, we define the "internal" automorphisms.
 
 :::DEFINITION
 Suppose $`K/F` is a finite extension.
-Then $`\operatorname{Aut}(K/F)` is the set of _field isomorphisms_ $`\sigma \colon K \to K` which fix $`F`.
-In symbols $$`\operatorname{Aut}(K/F) = \left\{ \sigma \colon K \to K \mid \sigma \text{ is identity on } F \right\}.`
+Then $`\operatorname{Aut}(K/F)` is the type of _field isomorphisms_ $`\sigma \colon K \to K` which fix $`F`.
 This is a group under function composition!
 :::
 
@@ -328,7 +327,7 @@ First, let's repeat the proof of the observation that these embeddings shuffle a
 
 :::LEMMA "Root shuffling in Aut(K/F)"
 Let $`f : F[x]`, suppose $`K/F` is a finite extension, and assume $`\alpha : K` is a root of $`f`.
-Then for any $`\sigma \in \operatorname{Aut}(K/F)`, $`\sigma(\alpha)` is also a root of $`f`.
+Then for any $`\sigma : \operatorname{Aut}(K/F)`, $`\sigma(\alpha)` is also a root of $`f`.
 :::
 
 :::PROOF
@@ -339,7 +338,7 @@ Thus, $$`0 = \sigma(f(\alpha)) = \sigma\left( c_n\alpha^n + \dots + c_0 \right) 
 In particular, taking $`f` to be the minimal polynomial of $`\alpha` we deduce
 
 :::MORAL
-An embedding $`\sigma \in \operatorname{Aut}(K/F)` sends an $`\alpha : K` to one of its various Galois conjugates (over $`F`).
+An embedding $`\sigma : \operatorname{Aut}(K/F)` sends an $`\alpha : K` to one of its various Galois conjugates (over $`F`).
 :::
 
 Next, let's look again at the "deficiency" of certain fields.
@@ -526,7 +525,7 @@ Then $`[K:K^G] = \left\lvert G \right\rvert`.
 The inequality itself is not difficult:
 
 :::EXERCISE
-Show that $`[K:F] \ge |\operatorname{Aut}(K/F)|`, and that equality holds if and only if the set of elements fixed by all $`\sigma \in \operatorname{Aut}(K/F)` is exactly $`F`.
+Show that $`[K:F] \ge |\operatorname{Aut}(K/F)|`, and that equality holds if and only if the set of elements fixed by all $`\sigma : \operatorname{Aut}(K/F)` is exactly $`F`.
 (Use the fixed field theorem.)
 :::
 
@@ -558,7 +557,7 @@ If any root of $`p` (in $`\overline F`) lies in $`K`, then all of them do, and i
 Let $`\alpha : K` be the prescribed root.
 Consider the set $$`S = \left\{ \sigma(\alpha) \mid \sigma \in \operatorname{Gal}(K/F) \right\}.`
 (Note that $`\alpha \in S` since $`\operatorname{Gal}(K/F) \ni \operatorname{id}`.)
-By construction, any $`\tau \in \operatorname{Gal}(K/F)` fixes $`S`.
+By construction, any $`\tau : \operatorname{Gal}(K/F)` fixes $`S`.
 So if we construct $$`\tilde p(x) = \prod_{\beta \in S} (x - \beta),` then by Vieta's Formulas, we find that all the coefficients of $`\tilde p` are fixed by elements of $`\sigma`.
 By the _equality case_ we specified in the exercise, it follows that $`\tilde p` has coefficients in $`F`!
 (This is where we use the condition.)

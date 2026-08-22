@@ -253,13 +253,13 @@ Consider $`\mathfrak p = (5)`, which is prime in $`K`, and $`\operatorname{Norm}
 The field $`\mathcal O_K/\mathfrak p` is isomorphic to $`\mathbb F_{25}`.
 In $`L`, $`\mathfrak p` splits to $`\mathfrak P_1 \mathfrak P_2 \mathfrak P_3`, and each residue field $`\mathcal O_L/\mathfrak P_i` is isomorphic to $`\mathbb F_{25}`.
 
-The Frobenius element $`\operatorname{Frob}_{\mathfrak P} \in \operatorname{Gal}(L/K)` induces the power-of-25 isomorphism in the quotient field, thus is the identity.
+The Frobenius element $`\operatorname{Frob}_{\mathfrak P} : \operatorname{Gal}(L/K)` induces the power-of-25 isomorphism in the quotient field, thus is the identity.
 :::
 
 An important property of the Frobenius element is its order is related to the decomposition of $`\mathfrak p` in the higher field $`L` in the nicest way possible:
 
 :::LEMMA "Order of the Frobenius element"
-The Frobenius element $`\operatorname{Frob}_{\mathfrak P} \in \operatorname{Gal}(L/K)` of an extension $`L/K` has order equal to the inertial degree of $`\mathfrak P`, that is, $$`\operatorname{ord} \operatorname{Frob}_{\mathfrak P} = f(\mathfrak P \mid \mathfrak p).`
+The Frobenius element $`\operatorname{Frob}_{\mathfrak P} : \operatorname{Gal}(L/K)` of an extension $`L/K` has order equal to the inertial degree of $`\mathfrak P`, that is, $$`\operatorname{ord} \operatorname{Frob}_{\mathfrak P} = f(\mathfrak P \mid \mathfrak p).`
 In particular, $`\operatorname{Frob}_{\mathfrak P} = \operatorname{id}` if and only if $`\mathfrak p` splits completely in $`L/K`.
 :::
 
@@ -288,7 +288,7 @@ To see why:
 
 :::EXAMPLE "Legendre symbol subsumed by Artin symbol"
 Suppose we want to understand $`\left( \frac 2p \right) \equiv 2^{\frac{p-1}{2}}` where $`p > 2` is prime.
-Consider the element $$`\left( \frac{\mathbb Q(\sqrt 2)/\mathbb Q}{p\mathbb Z} \right) \in \operatorname{Gal}(\mathbb Q(\sqrt 2) / \mathbb Q).`
+Consider the element $$`\left( \frac{\mathbb Q(\sqrt 2)/\mathbb Q}{p\mathbb Z} \right) : \operatorname{Gal}(\mathbb Q(\sqrt 2) / \mathbb Q).`
 It is uniquely determined by where it sends $`\sqrt 2`.
 But in fact we have $$`\left( \frac{\mathbb Q(\sqrt 2)/\mathbb Q}{p\mathbb Z} \right) \left( \sqrt 2 \right) \equiv \left( \sqrt 2 \right)^{p} \equiv 2^{\frac{p-1}{2}} \cdot \sqrt 2 \equiv \left( \frac 2p \right) \sqrt 2 \pmod{\mathfrak P}`
 where $`\left( \frac 2p \right)` is the usual Legendre symbol, and $`\mathfrak P` is above $`p` in $`\mathbb Q(\sqrt 2)`.
@@ -354,7 +354,7 @@ Here is an example along the same lines.
 
 ::::EXAMPLE "Cyclotomic field"
 Let $`\zeta` be a primitive $`m`th root of unity.
-For primes $`p`, we know that $`\operatorname{Frob}_p \in \operatorname{Gal}(\mathbb Q(\zeta)/\mathbb Q)` is "exactly" $`p \pmod m`.
+For primes $`p`, we know that $`\operatorname{Frob}_p : \operatorname{Gal}(\mathbb Q(\zeta)/\mathbb Q)` is "exactly" $`p \pmod m`.
 Let's translate this idea into the notation of Artin reciprocity.
 
 We are going to prove $$`H(\mathbb Q(\zeta) / \mathbb Q, m\infty) = P_{\mathbb Q}(m\infty) = \left\{ \frac ab \mathbb Z \mid a/b \equiv 1 \pmod m \right\}.`
