@@ -12,6 +12,7 @@ Tectonic auto-fetches LaTeX packages from CTAN on first run. Asymptote
 figures are not handled here — `figures/groups/d10.svg` is committed as
 a static artifact since BasicTeX is no longer installed.
 -/
+module
 
 partial def collectTexFigures (dir : System.FilePath)
     : IO (Array System.FilePath) := do
@@ -61,7 +62,7 @@ def buildTikz (texPath : System.FilePath) : IO Unit := do
     throw <| IO.userError s!"pdf2svg failed on {pdfPath}"
   if (← pdfPath.pathExists) then IO.FS.removeFile pdfPath
 
-def main : IO UInt32 := do
+public def main : IO UInt32 := do
   let figDir : System.FilePath := "figures"
   if !(← figDir.isDir) then
     IO.eprintln s!"no '{figDir}' directory; nothing to do"

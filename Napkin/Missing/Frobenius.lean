@@ -20,10 +20,13 @@ outstanding stopgap:
 
     grep -rn "Not in Mathlib." Napkin/Missing
 -/
-import Mathlib.RingTheory.Frobenius
-import Mathlib.FieldTheory.Finite.Basic
+module
+public import Mathlib.RingTheory.Frobenius
+public import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.SetTheory.Cardinal.Finite
-import Mathlib.Data.Real.Basic
+public import Mathlib.Basic.Real.Basic
+
+@[expose] public section
 
 namespace Napkin.Missing
 

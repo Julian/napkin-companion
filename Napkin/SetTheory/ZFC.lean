@@ -1,4 +1,5 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
@@ -11,6 +12,7 @@ open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 open Napkin
+open scoped ZFClass
 
 set_option pp.rawOnError true
 
@@ -539,19 +541,19 @@ example (α : Type*) (s : Set α) (hs : s.Nonempty) :
 
 ## Sets vs classes
 
-Mathlib's `Class` is literally a `Set ZFSet`, a predicate on sets, and the von Neumann universe $`V` is `Class.univ`.
-A set coerces into the class of things equal to it, keeping `Class` membership and `ZFSet` membership separate through the two types.
+Mathlib's `ZFClass` is a predicate on sets (`Set ZFSet`), and the von Neumann universe $`V` is `Set.univ : ZFClass`.
+A set coerces into the class of its members, keeping `ZFClass` membership and `ZFSet` membership separate through the two types.
 
 ```lean
-example : Class := Class.univ
-example (x : ZFSet) : Class := (x : Class)
+example : ZFClass := Set.univ
+example (x : ZFSet) : ZFClass := (x : ZFClass)
 ```
 
-The theorem that $`V` is a proper class is `Class.univ_notMem_univ`: there is no set of all sets.
+The theorem that $`V` is a proper class is `ZFClass.univ_notCMem_univ`: there is no set of all sets.
 
 ```lean
-example : Class.univ ∉ Class.univ :=
-  Class.univ_notMem_univ
+example : .univ ᶜ∉ .univ :=
+  ZFClass.univ_notCMem_univ
 ```
 
 The proof of this is that a set of all sets would contain itself, contradicting foundation.

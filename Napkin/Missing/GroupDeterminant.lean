@@ -20,8 +20,11 @@ outstanding stopgap:
 
     grep -rn "Not in Mathlib." Napkin/Missing
 -/
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+module
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.Data.ZMod.Basic
+
+@[expose] public section
 
 namespace Napkin.Missing
 

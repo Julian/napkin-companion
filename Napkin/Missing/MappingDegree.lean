@@ -20,11 +20,14 @@ outstanding stopgap:
 
     grep -rn "Not in Mathlib." Napkin/Missing
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Tactic.Ring
+
+@[expose] public section
 
 namespace Napkin.Missing
 

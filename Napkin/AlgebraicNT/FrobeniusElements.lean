@@ -1,4 +1,5 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
@@ -9,7 +10,7 @@ import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 import Mathlib.NumberTheory.LSeries.PrimesInAP
 import Mathlib.FieldTheory.PolynomialGaloisGroup
 import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.GroupTheory.Perm.Cycle.Type
 import Napkin.Missing.Frobenius
 
@@ -801,7 +802,7 @@ example : IsSquare (-1 : ZMod 5) := by
 ```lean
 example : IsSquare (-1 : ZMod 5) := by
   -- Reduce to the residue condition 5 % 4 ≠ 3, then decide it.
-  haveI : Fact (Nat.Prime 5) := ⟨by decide⟩
+  have : Fact (Nat.Prime 5) := ⟨by decide⟩
   rw [ZMod.exists_sq_eq_neg_one_iff]
   decide
 ```

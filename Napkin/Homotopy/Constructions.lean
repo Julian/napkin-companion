@@ -1,4 +1,5 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
@@ -9,7 +10,7 @@ import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.Topology.Instances.AddCircle.Real
 import Mathlib.LinearAlgebra.Projectivization.Basic
 import Mathlib.Topology.CWComplex.Classical.Basic
-import Napkin.Missing.Homotopy
+public import Napkin.Missing.Homotopy
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -476,10 +477,10 @@ Both of these are just the unit sphere and unit ball of a Euclidean space, and M
 The sphere is the level set $`\{\,x \mid \operatorname{dist}(x, 0) = 1\,\}` and the closed ball is the sublevel set $`\{\,x \mid \operatorname{dist}(x, 0) \le 1\,\}`.
 
 ```lean
-example (n : ℕ) : Set (EuclideanSpace ℝ (Fin (n + 1))) :=
+noncomputable example (n : ℕ) : Set (EuclideanSpace ℝ (Fin (n + 1))) :=
   Metric.sphere 0 1     -- Sⁿ
 
-example (n : ℕ) : Set (EuclideanSpace ℝ (Fin (n + 1))) :=
+noncomputable example (n : ℕ) : Set (EuclideanSpace ℝ (Fin (n + 1))) :=
   Metric.closedBall 0 1 -- Dⁿ⁺¹
 ```
 

@@ -1,12 +1,13 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.Image
 import Mathlib.Logic.Function.Basic
-import Mathlib.Data.Setoid.Basic
-import Mathlib.Data.Setoid.Partition
+import Mathlib.Order.Setoid.Basic
+import Mathlib.Order.Setoid.Partition
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean

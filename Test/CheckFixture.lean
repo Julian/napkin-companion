@@ -11,6 +11,7 @@ which copies the freshly-rendered HTML over the golden files (review
 the diff before committing).
 -/
 
+module
 import Std.Data.HashSet
 import VersoManual
 import Test.Fixture
@@ -236,7 +237,7 @@ def writeGolden : IO Unit := do
 /-- Run the render-diff check. Returns 0 on pass, nonzero on drift or
     renderer failure. With `--update` in `args`, copies the freshly-
     rendered HTML over the golden files instead of diffing. -/
-def run (args : List String) : IO UInt32 := do
+public def run (args : List String) : IO UInt32 := do
   let update := args.contains "--update"
   let rc ← renderFixture
   if rc != 0 then return rc

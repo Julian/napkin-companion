@@ -1,4 +1,5 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
@@ -6,9 +7,10 @@ import Napkin.Meta.Recall
 import Mathlib.Probability.Notation
 import Mathlib.Probability.Moments.Variance
 import Mathlib.Probability.StrongLaw
-import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
+public import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
 import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
 import Mathlib.Analysis.SpecialFunctions.Bernstein
+public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean

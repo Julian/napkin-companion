@@ -20,8 +20,11 @@ outstanding stopgap:
 
     grep -rn "Not in Mathlib." Napkin/Missing
 -/
-import Mathlib.Topology.Constructions
+module
+public import Mathlib.Topology.Constructions
 import Mathlib.Topology.Constructions.SumProd
+
+@[expose] public section
 
 namespace Napkin.Missing
 

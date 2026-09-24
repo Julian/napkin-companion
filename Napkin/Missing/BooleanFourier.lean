@@ -21,10 +21,13 @@ stopgap:
 
     grep -rn "Not in Mathlib." Napkin/Missing
 -/
+module
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Complex.Basic
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Basic.Complex.Basic
+
+@[expose] public section
 
 namespace Napkin.Missing
 
@@ -142,20 +145,20 @@ theorem chi_boolInner (S T : Finset (Fin n)) :
   simp_rw [hfac]
   by_cases hST : S = T
   · subst hST
-    simp only [iff_self, if_true, Finset.prod_const, Finset.card_univ,
+    simp only [iff_self, ite_true, Finset.prod_const, Finset.card_univ,
       Fintype.card_fin]
-    rw [inv_mul_cancel₀ (pow_ne_zero n two_ne_zero)]
-  · rw [if_neg hST]
+    rw [inv_mul_cancel₀ (pow_ne_zero n (by norm_num))]
+  · rw [ite_eq_right hST]
     have hex : ∃ i, ¬ (i ∈ S ↔ i ∈ T) := by
       rw [← not_forall, ← Finset.ext_iff]
       exact hST
     obtain ⟨i, hi⟩ := hex
-    rw [Finset.prod_eq_zero (Finset.mem_univ i) (if_neg hi), mul_zero]
+    rw [Finset.prod_eq_zero (Finset.mem_univ i) (ite_eq_right hi), mul_zero]
 
 /-- Each character has unit norm: $`\langle \chi_S, \chi_S \rangle = 1`. -/
 theorem chi_self_boolInner (S : Finset (Fin n)) :
     boolInner (chi S) (chi S) = 1 := by
-  rw [chi_boolInner, if_pos rfl]
+  rw [chi_boolInner, ite_eq_left rfl]
 
 /-- The empty-set coefficient is the average value:
 $$`\widehat{f}(\varnothing) = \frac{1}{2^n} \sum_{x} f(x).` -/

@@ -19,6 +19,7 @@ take tens of minutes for the whole book — it is a release gate, not an
 inner-loop check.
 -/
 
+module
 import Napkin.Meta.Exercises
 
 -- The generated files import these, and `lean` can only load a module that
@@ -66,7 +67,7 @@ private def parse : List String → Except String Options
   | "--dir" :: d :: rest => do return { ← parse rest with dir := some d }
   | a :: _ => .error s!"unexpected argument {a}"
 
-def main (args : List String) : IO UInt32 := do
+public def main (args : List String) : IO UInt32 := do
   let opts ←
     match parse args with
     | .ok o => pure o

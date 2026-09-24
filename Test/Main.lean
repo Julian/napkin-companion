@@ -21,9 +21,12 @@ To add a new test:
   3. Append a `TestEntry` to `tests`.
 -/
 
+module
 import Test.CheckFixture
 import Test.CheckSorry
 import Test.CheckPairing
+
+public section
 
 namespace Test
 

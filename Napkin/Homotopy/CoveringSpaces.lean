@@ -1,11 +1,12 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.Topology.Covering.Basic
 import Mathlib.Topology.Covering.Quotient
 import Mathlib.Topology.Homotopy.Lifting
-import Mathlib.Topology.Connected.LocPathConnected
+import Mathlib.Topology.Connected.LocallyPathConnected
 import Mathlib.Analysis.Complex.CoveringMap
 import Napkin.Missing.CoveringClassification
 
@@ -526,7 +527,7 @@ The general lifting criterion is {name}`IsCoveringMap.existsUnique_continuousMap
 
 ```lean
 example {E B A : Type*} [TopologicalSpace E] [TopologicalSpace B]
-    [TopologicalSpace A] [SimplyConnectedSpace A] [LocPathConnectedSpace A]
+    [TopologicalSpace A] [SimplyConnectedSpace A] [LocallyPathConnectedSpace A]
     {p : E → B} (cov : IsCoveringMap p)
     (f : C(A, B)) (a₀ : A) (e₀ : E) (he : p e₀ = f a₀) :
     ∃! F : C(A, E), F a₀ = e₀ ∧ p ∘ F = f :=

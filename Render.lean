@@ -1,3 +1,4 @@
+module
 import Std.Data.HashMap
 import VersoManual
 import Napkin
@@ -747,11 +748,11 @@ document.addEventListener('DOMContentLoaded', function () {
 "#
 
 def napkinExtraHead : Array Verso.Output.Html := #[
-  .tag "style" #[] (.text false napkinFontsCSS),
-  .tag "style" #[] (.text false napkinTypographyCSS),
-  .tag "style" #[] (.text false napkinTocCollapseCSS),
-  .tag "script" #[] (.text false napkinSectionNumberStripJS),
-  .tag "script" #[] (.text false napkinMarginaliaA11yJS)
+  .element "style" #[] (.raw napkinFontsCSS),
+  .element "style" #[] (.raw napkinTypographyCSS),
+  .element "style" #[] (.raw napkinTocCollapseCSS),
+  .element "script" #[] (.raw napkinSectionNumberStripJS),
+  .element "script" #[] (.raw napkinMarginaliaA11yJS)
 ]
 
 def config : Config where
@@ -802,6 +803,6 @@ def buildExerciseFilesStep : ExtraStep := fun mode cfg _state _text => do
   let n ← Napkin.Meta.Exercises.writeAll (cfg.destination / "exercises")
   IO.println s!"Wrote exercise and solution files for {n} chapters."
 
-def main := manualMain (%doc Napkin)
+public def main := manualMain (%doc Napkin)
   (extraSteps := [buildExercisesStep, buildExerciseFilesStep])
   (config := {config with})

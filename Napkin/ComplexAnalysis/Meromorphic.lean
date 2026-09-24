@@ -1,4 +1,5 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Recall
 import Napkin.Meta.Directives
@@ -631,9 +632,9 @@ example (f g h : ℂ → ℂ) (x : ℂ) (hf : f x ≠ 0) (hg : g x ≠ 0)
     logDeriv (fun z => f z * g z * h z) x
       = logDeriv f x + logDeriv g x + logDeriv h x := by
   -- Peel (f·g)·h: the outer product needs `mul_ne_zero`/`.mul` for f·g.
-  rw [logDeriv_mul (f := fun z => f z * g z) (g := h) x
+  rw [logDeriv_fun_mul (f := fun z => f z * g z) (g := h) x
       (mul_ne_zero hf hg) hh (hdf.mul hdg) hdh,
-    logDeriv_mul x hf hg hdf hdg]
+    logDeriv_fun_mul x hf hg hdf hdg]
 ```
 :::
 

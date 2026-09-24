@@ -40,29 +40,30 @@ The chapters consume these as hypotheses; none construct a `*Data` value,
 so an unsatisfiable bundle can never poison a derived exercise.
 -/
 
-import Napkin.Missing.ArtinMap
-import Napkin.Missing.BooleanFourier
-import Napkin.Missing.Chains
-import Napkin.Missing.Cochains
-import Napkin.Missing.ContinuumHypothesis
-import Napkin.Missing.CoveringClassification
-import Napkin.Missing.CupProduct
-import Napkin.Missing.DifferentialForms
-import Napkin.Missing.Divisors
-import Napkin.Missing.Forcing
-import Napkin.Missing.Frobenius
-import Napkin.Missing.GroupDeterminant
-import Napkin.Missing.HolomorphicForm
-import Napkin.Missing.HolomorphicLineBundle
-import Napkin.Missing.Homotopy
-import Napkin.Missing.IntersectionMultiplicity
-import Napkin.Missing.ManifoldForm
-import Napkin.Missing.MappingDegree
-import Napkin.Missing.PadicInverseLimit
-import Napkin.Missing.PlaneCurveNode
-import Napkin.Missing.Quantum
-import Napkin.Missing.RamifiedMap
-import Napkin.Missing.RelativeHomology
-import Napkin.Missing.Residue
-import Napkin.Missing.RiemannSphere
-import Napkin.Missing.SetModels
+module
+public import Napkin.Missing.ArtinMap
+public import Napkin.Missing.BooleanFourier
+public import Napkin.Missing.Chains
+public import Napkin.Missing.Cochains
+public import Napkin.Missing.ContinuumHypothesis
+public import Napkin.Missing.CoveringClassification
+public import Napkin.Missing.CupProduct
+public import Napkin.Missing.DifferentialForms
+public import Napkin.Missing.Divisors
+public import Napkin.Missing.Forcing
+public import Napkin.Missing.Frobenius
+public import Napkin.Missing.GroupDeterminant
+public import Napkin.Missing.HolomorphicForm
+public import Napkin.Missing.HolomorphicLineBundle
+public import Napkin.Missing.Homotopy
+public import Napkin.Missing.IntersectionMultiplicity
+public import Napkin.Missing.ManifoldForm
+public import Napkin.Missing.MappingDegree
+public import Napkin.Missing.PadicInverseLimit
+public import Napkin.Missing.PlaneCurveNode
+public import Napkin.Missing.Quantum
+public import Napkin.Missing.RamifiedMap
+public import Napkin.Missing.RelativeHomology
+public import Napkin.Missing.Residue
+public import Napkin.Missing.RiemannSphere
+public import Napkin.Missing.SetModels

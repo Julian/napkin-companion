@@ -1,11 +1,12 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Napkin.Meta.Recall
-import Mathlib.NumberTheory.RamificationInertia.Basic
-import Mathlib.NumberTheory.RamificationInertia.Galois
+public import Mathlib.NumberTheory.RamificationInertia.Galois
 import Mathlib.NumberTheory.NumberField.Discriminant.Different
+import Mathlib.RingTheory.RamificationInertia.Basic
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -476,47 +477,42 @@ example (K : Type*) [Field K] [NumberField K] {p : ℤ} (hp : Prime p)
 Both quantities carry their expected names:
 
 ```lean
-recall Ideal.ramificationIdx {R : Type*} [CommRing R] {S : Type*}
-    [CommRing S] [Algebra R S] (p : Ideal R) (P : Ideal S) : ℕ
+recall Ideal.ramificationIdx {S : Type*} [CommRing S] (p : Ideal S)
+    {R : Type*} [CommRing R] [Algebra R S] : ℕ
 
-recall Ideal.inertiaDeg {R : Type*} [CommRing R] {S : Type*}
-    [CommRing S] [Algebra R S] (p : Ideal R) (P : Ideal S) : ℕ
+recall Ideal.inertiaDeg {S : Type*} [CommRing S] (p : Ideal S) {R : Type*}
+    [CommRing R] [Algebra R S] : ℕ
 ```
 
 with `ramificationIdx` defined as the largest $`n` with $`p \cdot S \subseteq P^n`, `inertiaDeg` as the degree of the residue field extension $`(S/P) / (R/p)` — that's the "roomy" description again, in logarithmic form — and junk value $`0` whenever the setup is degenerate.
-The identity $`n = \sum e_i f_i` is the *fundamental identity* `Ideal.sum_ramification_inertia`, summing over `IsDedekindDomain.primesOverFinset`.
+The identity $`n = \sum e_i f_i` is the *fundamental identity* `Ideal.sum_ramification_inertia_eq_finrank`, summing over `Ideal.primesOver`.
 
 Prove the fundamental identity in its number field guise.
 
 :::exercise (chili := 1)
 ```lean
-example (K : Type*) [Field K] [NumberField K] {p : ℤ} (hp : Prime p) :
-    ∑ P ∈ IsDedekindDomain.primesOverFinset (Ideal.span {p}) (𝓞 K),
-        Ideal.ramificationIdx (Ideal.span {p}) P
-          * Ideal.inertiaDeg (Ideal.span {p}) P
+example (K : Type*) [Field K] [NumberField K] (p : Ideal ℤ) [p.IsPrime]
+    [Fintype (p.primesOver (𝓞 K))] :
+    ∑ P : p.primesOver (𝓞 K),
+        P.1.ramificationIdx ℤ * P.1.inertiaDeg ℤ
           = Module.finrank ℚ K := by
   sorry
 ```
 :::
 
 :::hint
-Taking $`\mathcal{O}_K` over $`\mathbb{Z}`, whose fraction fields are $`\mathbb{Q}` and $`K`, the sum of $`e_i f_i` across the primes above $`(p)` recovers the degree $`[K:\mathbb{Q}]`.
-The identity itself is `Ideal.sum_ramification_inertia (𝓞 K) ℚ K`; its hypothesis that $`(p)` is maximal follows from `Ideal.span_singleton_prime` together with `Ideal.IsPrime.isMaximal`, and its $`(p) \neq 0` from `Ideal.span_singleton_eq_bot`.
+Taking $`\mathcal{O}_K` over $`\mathbb{Z}`, the sum of $`e_i f_i` across the primes above $`p` equals `Module.finrank ℤ (𝓞 K)` by `Ideal.sum_ramification_inertia_eq_finrank p (𝓞 K)`, and `NumberField.RingOfIntegers.rank K` identifies that with $`[K:\mathbb{Q}]`.
 :::
 
 :::solution
 ```lean
-example (K : Type*) [Field K] [NumberField K] {p : ℤ} (hp : Prime p) :
-    ∑ P ∈ IsDedekindDomain.primesOverFinset (Ideal.span {p}) (𝓞 K),
-        Ideal.ramificationIdx (Ideal.span {p}) P
-          * Ideal.inertiaDeg (Ideal.span {p}) P
+example (K : Type*) [Field K] [NumberField K] (p : Ideal ℤ) [p.IsPrime]
+    [Fintype (p.primesOver (𝓞 K))] :
+    ∑ P : p.primesOver (𝓞 K),
+        P.1.ramificationIdx ℤ * P.1.inertiaDeg ℤ
           = Module.finrank ℚ K := by
-  have hb : Ideal.span {p} ≠ (⊥ : Ideal ℤ) :=
-    Ideal.span_singleton_eq_bot.not.mpr hp.ne_zero
-  haveI hpr : (Ideal.span {p}).IsPrime :=
-    (Ideal.span_singleton_prime hp.ne_zero).mpr hp
-  haveI : (Ideal.span {p}).IsMaximal := hpr.isMaximal hb
-  exact Ideal.sum_ramification_inertia (𝓞 K) ℚ K hb
+  rw [Ideal.sum_ramification_inertia_eq_finrank p (𝓞 K),
+      NumberField.RingOfIntegers.rank K]
 ```
 :::
 
@@ -534,7 +530,7 @@ example {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
     [P.IsPrime] [P.LiesOver p] [Q.IsPrime] [Q.LiesOver p]
     (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
     [IsGaloisGroup G A B] :
-    P.ramificationIdx' A = Q.ramificationIdx' A :=
+    P.ramificationIdx A = Q.ramificationIdx A :=
   Ideal.ramificationIdx_eq_of_isGaloisGroup p P Q G
 ```
 

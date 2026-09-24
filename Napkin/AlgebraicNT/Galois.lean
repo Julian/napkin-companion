@@ -1,9 +1,10 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Napkin.Meta.Recall
-import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.Algebra.Algebra.Hom.Rat
@@ -586,7 +587,7 @@ The fact that fixing $`\mathbb{Q}` is automatic means that `K →+* ℂ` and `K 
 
 ```lean
 noncomputable example (K : Type*) [Field K] [Algebra ℚ K] :
-    (K →+* ℂ) ≃ (K →ₐ[ℚ] ℂ) := RingHom.equivRatAlgHom
+    (K →+* ℂ) ≃ (K →ₐ[ℚ] ℂ) := RingHom.equivRatAlgHom _ _
 ```
 
 The question above asked you to show such an embedding fixes every rational number.

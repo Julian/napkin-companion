@@ -1,9 +1,10 @@
-import Mathlib.Analysis.InnerProductSpace.PiL2
+module
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.InnerProductSpace.TensorProduct
 import Mathlib.LinearAlgebra.UnitaryGroup
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.LinearAlgebra.Matrix.Notation
-import VersoManual
+public import VersoManual
 
 import Napkin.Meta
 import Napkin.Missing.Quantum

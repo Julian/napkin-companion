@@ -1,7 +1,9 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
-import Mathlib.Topology.MetricSpace.Basic
+import Napkin.Meta.Citations
+public import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.Algebra.Monoid.Defs
 import Mathlib.Topology.Instances.Real.Lemmas
 import Mathlib.Analysis.SpecificLimits.Basic

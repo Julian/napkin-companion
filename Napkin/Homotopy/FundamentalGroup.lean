@@ -1,10 +1,11 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.Topology.Path
 import Mathlib.Topology.Homotopy.Path
-import Mathlib.Topology.Homotopy.Equiv
+public import Mathlib.Topology.Homotopy.Equiv
 import Mathlib.Topology.Homotopy.Contractible
 import Mathlib.Topology.Homotopy.HomotopyGroup
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup

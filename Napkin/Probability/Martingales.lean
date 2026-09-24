@@ -1,10 +1,11 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Napkin.Meta.Recall
-import Mathlib.Probability.Notation
-import Mathlib.Probability.Martingale.Basic
+public import Mathlib.Probability.Notation
+public import Mathlib.Probability.Martingale.Basic
 import Mathlib.Probability.Martingale.Convergence
 import Mathlib.Probability.Martingale.OptionalStopping
 import Mathlib.Probability.ConditionalExpectation

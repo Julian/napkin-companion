@@ -1,4 +1,5 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
@@ -6,7 +7,7 @@ import Napkin.Meta.Recall
 import Mathlib.Probability.Notation
 import Mathlib.Probability.Moments.Basic
 import Mathlib.Probability.Moments.Variance
-import Mathlib.Probability.CDF
+public import Mathlib.Probability.CDF
 import Mathlib.Probability.Distributions.Gaussian.Real
 import Mathlib.Probability.Distributions.Uniform
 import Mathlib.Probability.Independence.Integration

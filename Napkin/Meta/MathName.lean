@@ -20,12 +20,16 @@ Resolution happens during elaboration, so a name that no longer exists is
 a build error rather than a silently dead tooltip.
 -/
 
-import VersoManual
+module
+public import VersoManual
 import Verso.Doc.ArgParse
 import Verso.Doc.Elab
 
+public section
+
 open Lean Elab
-open Lean.Doc.Syntax
+open Lean (Html)
+open Lean.Doc (CodeView)
 open Verso
 open Verso.Genre Manual
 open Verso.Doc Elab
@@ -47,17 +51,17 @@ inline_extension Inline.mathName (math : String) (sig : String)
     some <| fun _ _ data _ => do
       let .arr #[.str math, .str sig, .str docs] := data
         | pure .empty
-      let docsHtml : Verso.Output.Html :=
+      let docsHtml : Html :=
         if docs.isEmpty then .empty
-        else {{ <pre class="docstring">{{docs}}</pre> }}
-      let hoverId ← addHover (g := Manual) {{ <code>{{sig}}</code> {{docsHtml}} }}
-      pure {{
-        <code class="hl lean inline napkin-mathname" "data-lean-context"="examples">
-          <span class="const token" "data-verso-hover"={{toString hoverId}}>
-            <code class="math inline">{{math}}</code>
+        else html%{ <pre class="docstring">{docs}</pre> }
+      let hoverId ← addHover (g := Manual) html%{ <code>{sig}</code> {docsHtml} }
+      pure html%{
+        <code class="hl lean inline napkin-mathname" data-lean-context="examples">
+          <span class="const token" data-verso-hover={toString hoverId}>
+            <code class="math inline">{math}</code>
           </span>
         </code>
-      }}
+      }
   extraCss := [r#"
     /* Undo the code-block styling that `.hl.lean.inline` brings, so the
        math renders as math; only the hover behaviour is borrowed. */
@@ -85,7 +89,7 @@ structure MathNameConfig where
 section
 variable [Monad m] [MonadError m]
 
-def MathNameConfig.parse : ArgParse m MathNameConfig :=
+meta def MathNameConfig.parse : ArgParse m MathNameConfig :=
   MathNameConfig.mk <$> .positional `name {
     description := "the Lean name to document"
     signature := .Ident
@@ -94,22 +98,23 @@ def MathNameConfig.parse : ArgParse m MathNameConfig :=
       | other => throwError "Expected a name, got {repr other}"
   }
 
-instance : FromArgs MathNameConfig m := ⟨MathNameConfig.parse⟩
+meta instance : FromArgs MathNameConfig m := ⟨MathNameConfig.parse⟩
 end
 
 /-- `{mathname Foo}`\LaTeX`` — render the math, with `Foo`'s Mathlib
     signature and doc-string available on hover. -/
 @[role]
-def mathname : RoleExpanderOf MathNameConfig
+meta def mathname : RoleExpanderOf MathNameConfig
   | cfg, #[arg] => do
-    let `(inline|code( $mathStr:str )) := arg
+    let some { content := mathStr, .. } := CodeView.of arg
       | throwErrorAt arg "Expected a code span holding the math source"
     let resolved ← realizeGlobalConstNoOverloadWithInfo cfg.name
     let sig := toString (← (PrettyPrinter.ppSignature resolved)).1
     let docs := (← findDocString? (← getEnv) resolved).getD ""
+    let math := mathStr.getVersoCode
     `(Inline.other
-        (Inline.mathName $(quote mathStr.getString) $(quote sig) $(quote docs))
-        #[Inline.code $(quote mathStr.getString)])
+        (Inline.mathName $(quote math) $(quote sig) $(quote docs))
+        #[Inline.code $(quote math)])
   | _, more =>
     if h : more.size > 0 then
       throwErrorAt more[0] "Unexpected contents"

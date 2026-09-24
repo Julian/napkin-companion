@@ -1,11 +1,12 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.RingTheory.Polynomial.HilbertPoly
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.RingTheory.Bezout
-import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.FieldTheory.IsAlgClosed.Basic

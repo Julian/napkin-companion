@@ -1,8 +1,9 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
-import Mathlib.Topology.Homotopy.Equiv
+public import Mathlib.Topology.Homotopy.Equiv
 import Mathlib.Topology.Homotopy.Contractible
 import Mathlib.Algebra.Homology.HomologySequence
 import Napkin.Missing.RelativeHomology
@@ -376,8 +377,7 @@ example {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
 example {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
     [ContractibleSpace X] (e : X ≃ₕ Y) : Nonempty (Y ≃ₕ Unit) := by
   -- Transport contractibility X → Y along e.symm, then read off Y ≃ₕ *.
-  haveI : ContractibleSpace Y := e.symm.contractibleSpace
-  exact ContractibleSpace.hequiv_unit Y
+  exact e.symm.contractibleSpace.hequiv_unit Y
 ```
 :::
 
@@ -494,9 +494,9 @@ example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M] :
 example {R : Type} [Ring R] {M : Type} [AddCommGroup M] [Module R M] :
     ∀ x : RelativeChains (⊤ : Submodule R M), x = 0 := by
   -- C(X, X) is a subsingleton, so every relative chain equals 0.
-  haveI : Subsingleton (RelativeChains (⊤ : Submodule R M)) :=
+  have : Subsingleton (RelativeChains (⊤ : Submodule R M)) :=
     Submodule.Quotient.subsingleton_iff.mpr rfl
-  exact fun x => Subsingleton.elim x 0
+  exact (Subsingleton.elim · 0)
 ```
 :::
 

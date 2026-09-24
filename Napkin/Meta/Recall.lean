@@ -20,8 +20,10 @@ and the existing Mathlib instance satisfying it is verified by `synthInstance`
 Renders in code blocks exactly as written.
 -/
 
-import Mathlib.Tactic.Recall
-import Lean.Elab.Command
+module
+public meta import Lean.Elab.Command
+
+public section
 
 open Lean Elab Command Term
 

@@ -26,7 +26,10 @@ Driven by `BuildExercises.lean` (as `lake exe exercises`) and by a render
 step in `Render.lean`, so the files also land in the published site.
 -/
 
-import Napkin.Meta.Extract
+module
+public import Napkin.Meta.Extract
+
+public section
 
 namespace Napkin.Meta.Exercises
 

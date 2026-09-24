@@ -20,7 +20,10 @@ outstanding stopgap:
 
     grep -rn "Not in Mathlib." Napkin/Missing
 -/
-import Mathlib.SetTheory.ZFC.Basic
+module
+public import Mathlib.SetTheory.ZFC.Basic
+
+@[expose] public section
 
 namespace Napkin.Missing
 

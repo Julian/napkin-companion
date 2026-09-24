@@ -17,6 +17,7 @@ The exe writes directly to the path you pass — never use shell
 redirection (`> foo.svg`), since `lake exe` builds first and its
 build progress would end up in the file.
 -/
+module
 
 structure Node where
   /-- Book-chart coordinates `(x, y)`. -/
@@ -200,7 +201,7 @@ def renderNode (entry : String × Node) : String := Id.run do
   lines := lines.push "  </g>"
   String.intercalate "\n" lines.toList
 
-def main (args : List String) : IO UInt32 := do
+public def main (args : List String) : IO UInt32 := do
   let some path := args.head?
     | IO.eprintln "usage: chaptergraph <output.svg>"
       IO.eprintln "writes the SVG directly to the given path; do not pipe."

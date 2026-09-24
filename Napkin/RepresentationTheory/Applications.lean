@@ -1,10 +1,11 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.Data.Complex.Basic
+import Mathlib.Basic.Complex.Basic
 import Mathlib.RingTheory.Polynomial.RationalRoot
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RepresentationTheory.FDRep
@@ -277,9 +278,9 @@ Simplicity is `IsSimpleGroup`: it says a group has no normal subgroups other tha
 Concretely, every normal subgroup obeys the dichotomy `IsSimpleGroup.eq_bot_or_eq_top_of_normal`.
 
 ```lean
-example (G : Type*) [Group G] [IsSimpleGroup G] (H : Subgroup G)
-    (hH : H.Normal) : H = ⊥ ∨ H = ⊤ :=
-  IsSimpleGroup.eq_bot_or_eq_top_of_normal H hH
+example (G : Type*) [Group G] [IsSimpleGroup G] (H : Subgroup G) [H.Normal] :
+    H = ⊥ ∨ H = ⊤ :=
+  IsSimpleGroup.eq_bot_or_eq_top_of_normal H
 ```
 
 That dichotomy is exactly what a *proper* normal subgroup — one that is not all of $`G`, such as $`Z(G)` in the final contradiction — rules out: it forces the subgroup to be trivial.
@@ -288,7 +289,7 @@ Prove this by feeding the hypothesis $`H \neq \top` to `Or.resolve_right`, which
 :::exercise
 ```lean
 example (G : Type*) [Group G] [IsSimpleGroup G] (H : Subgroup G)
-    (hH : H.Normal) (hne : H ≠ ⊤) : H = ⊥ := by
+    [H.Normal] (hne : H ≠ ⊤) : H = ⊥ := by
   sorry
 ```
 :::
@@ -296,9 +297,9 @@ example (G : Type*) [Group G] [IsSimpleGroup G] (H : Subgroup G)
 :::solution
 ```lean
 example (G : Type*) [Group G] [IsSimpleGroup G] (H : Subgroup G)
-    (hH : H.Normal) (hne : H ≠ ⊤) : H = ⊥ :=
+    [H.Normal] (hne : H ≠ ⊤) : H = ⊥ :=
   -- Only H = ⊥ survives the dichotomy once H ≠ ⊤ is ruled out.
-  (IsSimpleGroup.eq_bot_or_eq_top_of_normal H hH).resolve_right hne
+  (IsSimpleGroup.eq_bot_or_eq_top_of_normal H).resolve_right hne
 ```
 :::
 

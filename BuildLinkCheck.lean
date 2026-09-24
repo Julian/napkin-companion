@@ -13,6 +13,7 @@ Checks only same-site targets: anything with a scheme, a `mailto:`, or a
 bare fragment is skipped, as is the query/fragment part of a URL. A target
 resolves if the file exists, or if it is a directory holding `index.html`.
 -/
+module
 
 open System (FilePath)
 
@@ -45,7 +46,7 @@ private partial def pages (dir : FilePath) : IO (Array FilePath) := do
     else if e.fileName == "index.html" then out := out.push e.path
   return out
 
-def main (args : List String) : IO UInt32 := do
+public def main (args : List String) : IO UInt32 := do
   let some root := args.head? | do
     IO.eprintln "usage: lake exe linkcheck <rendered-site-dir>"
     return 1

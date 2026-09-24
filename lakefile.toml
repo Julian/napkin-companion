@@ -1,5 +1,5 @@
 name = "Napkin"
-version = "2026.5.1"
+version = "2026.10.1"
 keywords = ["math", "textbook"]
 defaultTargets = ["napkin"]
 testDriver = "test"
@@ -13,12 +13,12 @@ weak.verso.code.warnLineLength = 80
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
-rev = "v4.32.0-rc1"
+rev = "v4.36.0-rc2"
 
 [[require]]
 name = "verso"
 git = "https://github.com/leanprover/verso"
-rev = "v4.32.0-rc1"
+rev = "v4.36.0-rc2"
 
 [[lean_lib]]
 name = "Napkin"

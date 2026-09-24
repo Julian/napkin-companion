@@ -1,11 +1,12 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.Order.Basic
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Cofinal
-import Mathlib.Order.Ideal
+public import Mathlib.Order.Ideal
 import Mathlib.Order.PFilter
 import Mathlib.Order.RelClasses
 import Napkin.Missing.Forcing

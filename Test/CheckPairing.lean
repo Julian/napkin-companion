@@ -27,7 +27,10 @@ still matches, since every declaration in the solution is a candidate.
 Invoked by the dispatcher in `Test.Main` via `Test.CheckPairing.run`.
 -/
 
+module
 import Napkin.Meta.Extract
+
+public section
 
 namespace Test.CheckPairing
 

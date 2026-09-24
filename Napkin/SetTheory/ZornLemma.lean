@@ -1,11 +1,12 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.Order.Zorn
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.SetTheory.Ordinal.Arithmetic
-import Mathlib.Data.Real.Basic
+import Mathlib.Basic.Real.Basic
 import Mathlib.Algebra.Algebra.Rat
 
 open Verso.Genre Manual
@@ -288,11 +289,12 @@ Prove that there exists a maximal set $`Y \in \mathcal F` (i.e. $`Y` not contain
 
 ## Transfinite induction
 
-Transfinite induction is `Ordinal.induction`: to prove a statement `p` at every ordinal, it is enough to prove `p j` whenever `p k` already holds for all `k < j`.
+Transfinite induction is `WellFoundedLT.induction`: to prove a statement `p` at every ordinal, it is enough to prove `p j` whenever `p k` already holds for all `k < j`.
 
 ```lean
-recall Ordinal.induction {p : Ordinal.{u} → Prop} (i : Ordinal.{u})
-    (h : ∀ j, (∀ k, k < j → p k) → p j) : p i
+example {p : Ordinal → Prop} (i : Ordinal)
+    (h : ∀ j, (∀ k, k < j → p k) → p j) : p i :=
+  WellFoundedLT.induction i h
 ```
 
 The three-case split — zero, successor, limit — is precisely the shape of Mathlib's `Ordinal.limitRecOn`, the recursor on ordinals: to define something at every ordinal you supply a zero case, a successor case built from the predecessor, and a limit case built from all smaller values.

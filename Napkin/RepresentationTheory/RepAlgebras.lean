@@ -1,12 +1,13 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.MonoidAlgebra.Basic
+public import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.RingTheory.SimpleModule.Basic
 import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.Matrix.Action
+public import Mathlib.LinearAlgebra.Matrix.Action
 import Mathlib.RingTheory.SimpleRing.Matrix
 
 open Verso.Genre Manual
@@ -623,7 +624,7 @@ The `[NeZero d]` hypothesis is what keeps the space nonzero, so the submodule la
 ```lean
 example (k : Type*) [Field k] (d : ℕ) [NeZero d] :
     IsSimpleModule (Matrix (Fin d) (Fin d) k) (Fin d → k) := by
-  haveI : Nonempty (Fin d) := ⟨0⟩
+  have : Nonempty (Fin d) := ⟨0⟩
   rw [isSimpleModule_iff]
   refine ⟨fun p => ?_⟩
   rcases eq_or_ne p ⊥ with hp | hp

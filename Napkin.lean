@@ -1,6 +1,6 @@
-import VersoManual
-import Napkin.Meta.Lean
-import Napkin.Meta.Lint
+module
+public import VersoManual
+public import Napkin.Meta
 import Napkin.Frontmatter.Colophon
 import Napkin.Frontmatter.Preface
 import Napkin.Frontmatter.Advice

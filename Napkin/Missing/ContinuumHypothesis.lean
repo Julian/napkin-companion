@@ -20,10 +20,13 @@ outstanding stopgap:
 
     grep -rn "Not in Mathlib." Napkin/Missing
 -/
-import Mathlib.SetTheory.Cardinal.Continuum
+module
+public import Mathlib.SetTheory.Cardinal.Continuum
 import Mathlib.SetTheory.Cardinal.Aleph
 import Mathlib.Data.Finset.Basic
-import Napkin.Missing.Forcing
+public import Napkin.Missing.Forcing
+
+@[expose] public section
 
 namespace Napkin.Missing
 
@@ -129,14 +132,14 @@ def union (p q : FinPartialFn α β) [DecidableEq α] : FinPartialFn α β where
 theorem union_le_left (p q : FinPartialFn α β) [DecidableEq α] :
     union p q ≤ p := by
   refine ⟨Finset.subset_union_left, fun a ha => ?_⟩
-  simp only [union, ha, if_true]
+  simp only [union, ha, ite_true]
 
 /-- When the domains are disjoint, the overlay also extends `q`. -/
 theorem union_le_right (p q : FinPartialFn α β) [DecidableEq α]
     (h : Disjoint p.dom q.dom) : union p q ≤ q := by
   refine ⟨Finset.subset_union_right, fun a ha => ?_⟩
   have : a ∉ p.dom := fun hp => (Finset.disjoint_left.mp h hp) ha
-  simp only [union, this, if_false]
+  simp only [union, this, ite_false]
 
 /-- **Disjoint conditions are compatible.**  Two conditions whose domains do
 not overlap have a common extension — their union — so they are never

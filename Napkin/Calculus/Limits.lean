@@ -1,4 +1,5 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Recall
 import Napkin.Meta.Directives
@@ -14,7 +15,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.Order.MonotoneConvergence
 import Mathlib.Topology.MetricSpace.Cauchy
-import Mathlib.Order.LiminfLimsup
+public import Mathlib.Order.LiminfLimsup
 import Mathlib.Analysis.Normed.Order.UpperLower
 
 open Verso.Genre Manual
@@ -586,7 +587,7 @@ example : IsLUB (Set.Icc (0 : ℝ) 1) 1 := by
 ## Proofs of the two key completeness properties
 
 Mathlib doesn't define `ℝ` via Dedekind cuts.
-The route taken in `Mathlib.Data.Real.Basic` is the *Cauchy completion of $`\mathbb{Q}`* — `Real` is a quotient of `CauSeq abs ℚ` by the relation "their difference tends to zero."
+The route taken in `Mathlib.Basic.Real.Basic` is the *Cauchy completion of $`\mathbb{Q}`* — `Real` is a quotient of `CauSeq abs ℚ` by the relation "their difference tends to zero."
 This makes the arithmetic operations very direct (term-by-term on representatives) at the cost of having to prove the supremum existence after the fact rather than as the definition.
 Either construction lands at the same total order, the same field operations, and the same `CompleteSpace` instance — and Mathlib provides interconverting API.
 

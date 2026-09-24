@@ -1,4 +1,5 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Recall
 import Napkin.Meta.Directives
@@ -231,9 +232,8 @@ Unfold with `isSolvable_def` and supply the witness `n = 1`; what makes `n = 1` 
 
 :::solution
 ```lean
-example (G : Type*) [Group G] (h : commutator G = ⊥) : IsSolvable G := by
-  rw [isSolvable_def]
-  exact ⟨1, by rwa [derivedSeries_one]⟩
+example (G : Type*) [Group G] (h : commutator G = ⊥) : IsSolvable G :=
+  ⟨1, by rwa [derivedSeries_one]⟩
 ```
 :::
 
@@ -272,17 +272,17 @@ Show that $`A_5` is not solvable.
 
 :::exercise (chili := 1)
 ```lean
-example : ¬ IsSolvable (alternatingGroup (Fin 5)) := by
+example : ¬ Group.IsSolvable (alternatingGroup (Fin 5)) := by
   sorry
 ```
 :::
 
 :::solution
 ```lean
-example : ¬ IsSolvable (alternatingGroup (Fin 5)) := by
-  haveI : IsSimpleGroup (alternatingGroup (Fin 5)) :=
+example : ¬ Group.IsSolvable (alternatingGroup (Fin 5)) := by
+  have : IsSimpleGroup (alternatingGroup (Fin 5)) :=
     alternatingGroup.isSimpleGroup (by simp)
-  rw [← IsSimpleGroup.comm_iff_isSolvable]
+  rw [← this.comm_iff_isSolvable]
   decide
 ```
 :::

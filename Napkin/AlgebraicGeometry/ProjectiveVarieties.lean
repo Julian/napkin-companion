@@ -1,14 +1,15 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
-import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
+public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
 import Mathlib.LinearAlgebra.Projectivization.Basic
-import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
-import Mathlib.Data.Complex.Basic
+public import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
+public import Mathlib.Basic.Complex.Basic
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean

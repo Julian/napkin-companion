@@ -1,4 +1,5 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
@@ -476,7 +477,6 @@ example (C : Type*) [Category C] [Abelian C] {A B : C} (f : A ⟶ B) :
   constructor
   · -- An iso is automatically both monic and epic.
     intro h
-    haveI := h
     exact ⟨inferInstance, inferInstance⟩
   · -- The abelian-category converse: monic and epic ⟹ iso.
     rintro ⟨_, _⟩
@@ -526,7 +526,7 @@ example (C : Type*) [Category C] [Abelian C] (S : ShortComplex C)
     (hf : S.f = 0) (he : S.Exact) {D : C} (g' : S.X₃ ⟶ D) [Mono g'] :
     Mono (S.g ≫ g') := by
   -- Exactness with S.f = 0 makes S.g monic; monics compose.
-  haveI : Mono S.g := (S.exact_iff_mono hf).mp he
+  have : Mono S.g := (S.exact_iff_mono hf).mp he
   exact mono_comp S.g g'
 ```
 :::
@@ -664,7 +664,7 @@ example (C : Type*) [Category C] [Preadditive C] {S : ShortComplex C}
     (hS : S.ShortExact) {D : C} (h h' : S.X₃ ⟶ D)
     (w : S.g ≫ h = S.g ≫ h') : h = h' := by
   -- S.g is epic, so it is right-cancellable.
-  haveI := hS.epi_g
+  have := hS.epi_g
   exact (cancel_epi S.g).mp w
 ```
 :::

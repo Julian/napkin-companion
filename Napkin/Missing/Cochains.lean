@@ -20,9 +20,12 @@ outstanding stopgap:
 
     grep -rn "Not in Mathlib." Napkin/Missing
 -/
-import Napkin.Missing.Chains
+module
+public import Napkin.Missing.Chains
 import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+
+@[expose] public section
 
 namespace Napkin.Missing
 

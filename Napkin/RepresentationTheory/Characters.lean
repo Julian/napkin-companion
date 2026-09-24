@@ -1,8 +1,10 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.RepresentationTheory.Character
+import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -386,20 +388,20 @@ example {k G : Type*} [Field k] [Group G] (V : FDRep k G) (g : G) :
 ```
 
 The scalar product of two characters equals the dimension of the space of equivariant maps $`V \to W`, which is `FDRep.scalar_product_char_eq_finrank_equivariant`.
-The assumption `[Invertible (Fintype.card G : k)]` makes $`|G|` a unit in $`k`, so that the averaging factor $`\frac{1}{|G|}` — written `⅟(Fintype.card G : k)` — makes sense; and `V ⟶ W` is the type of maps of representations from $`V` to $`W` (the equivariant maps), so `Module.finrank k (V ⟶ W)` is the dimension of that space.
+The assumption `[Invertible (Nat.card G : k)]` makes $`|G|` a unit in $`k`, so that the averaging factor $`\frac{1}{|G|}` — written `(Nat.card G : k)⁻¹` — makes sense; and `V ⟶ W` is the type of maps of representations from $`V` to $`W` (the equivariant maps), so `Module.finrank k (V ⟶ W)` is the dimension of that space.
 Over an algebraically closed field this specializes to orthonormality of irreducible characters, `FDRep.char_orthonormal`, taking the value $`1` when $`V \cong W` and $`0` otherwise.
 The hypothesis `[Simple V]` marks $`V` as irreducible, and `Nonempty (V ≅ W)` says there exists an isomorphism of representations $`V ≅ W`, i.e. $`V` and $`W` are isomorphic.
 
 ```lean
 example {k G : Type*} [Field k] [Group G] [Fintype G]
-    [Invertible (Fintype.card G : k)] (V W : FDRep k G) :
-    ⅟(Fintype.card G : k) • ∑ g : G, W.character g * V.character g⁻¹ =
+    [Invertible (Nat.card G : k)] (V W : FDRep k G) :
+    (Nat.card G : k)⁻¹ * ∑ g : G, W.character g * V.character g⁻¹ =
       Module.finrank k (V ⟶ W) :=
   FDRep.scalar_product_char_eq_finrank_equivariant V W
 
 example {k G : Type*} [Field k] [IsAlgClosed k] [Group G] [Fintype G]
-    [Invertible (Fintype.card G : k)] (V W : FDRep k G) [Simple V] [Simple W] :
-    ⅟(Fintype.card G : k) • ∑ g : G, V.character g * W.character g⁻¹ =
+    [Invertible (Nat.card G : k)] (V W : FDRep k G) [Simple V] [Simple W] :
+    (Nat.card G : k)⁻¹ * ∑ g : G, V.character g * W.character g⁻¹ =
       if Nonempty (V ≅ W) then (1 : k) else 0 := FDRep.char_orthonormal V W
 ```
 
@@ -409,8 +411,8 @@ Specialize `FDRep.char_orthonormal` to $`W = V`, then discharge the resulting `i
 :::exercise
 ```lean
 example {k G : Type*} [Field k] [IsAlgClosed k] [Group G] [Fintype G]
-    [Invertible (Fintype.card G : k)] (V : FDRep k G) [Simple V] :
-    ⅟(Fintype.card G : k) • ∑ g : G, V.character g * V.character g⁻¹ =
+    [Invertible (Nat.card G : k)] (V : FDRep k G) [Simple V] :
+    (Nat.card G : k)⁻¹ * ∑ g : G, V.character g * V.character g⁻¹ =
       (1 : k) := by
   sorry
 ```
@@ -419,8 +421,8 @@ example {k G : Type*} [Field k] [IsAlgClosed k] [Group G] [Fintype G]
 :::solution
 ```lean
 example {k G : Type*} [Field k] [IsAlgClosed k] [Group G] [Fintype G]
-    [Invertible (Fintype.card G : k)] (V : FDRep k G) [Simple V] :
-    ⅟(Fintype.card G : k) • ∑ g : G, V.character g * V.character g⁻¹ =
+    [Invertible (Nat.card G : k)] (V : FDRep k G) [Simple V] :
+    (Nat.card G : k)⁻¹ * ∑ g : G, V.character g * V.character g⁻¹ =
       (1 : k) := by
   rw [FDRep.char_orthonormal V V, if_pos ⟨Iso.refl V⟩]
 ```

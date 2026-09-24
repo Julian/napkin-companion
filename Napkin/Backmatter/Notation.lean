@@ -1,6 +1,61 @@
-import VersoManual
-import Mathlib
-import Napkin.Missing
+module
+public import VersoManual
+import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+import Mathlib.AlgebraicGeometry.Limits
+import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
+import Mathlib.Analysis.Calculus.Deriv.Abs
+import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+import Mathlib.Analysis.Complex.AbsMax
+import Mathlib.Analysis.Complex.BranchLogRoot
+import Mathlib.Analysis.Complex.CoveringMap
+import Mathlib.Analysis.Fourier.FiniteAbelian.PontryaginDuality
+import Mathlib.Analysis.InnerProductSpace.EuclideanDist
+import Mathlib.Analysis.InnerProductSpace.Spectrum
+import Mathlib.Analysis.InnerProductSpace.TensorProduct
+import Mathlib.Analysis.Meromorphic.Order
+import Mathlib.Analysis.Normed.Order.UpperLower
+import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
+import Mathlib.CategoryTheory.Abelian.FreydMitchell
+import Mathlib.CategoryTheory.Abelian.Pseudoelements
+import Mathlib.Geometry.Manifold.DerivationBundle
+import Mathlib.Geometry.Manifold.LocalDiffeomorph
+import Mathlib.GroupTheory.SpecificGroups.Alternating.Simple
+import Mathlib.GroupTheory.SpecificGroups.Dihedral
+import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
+import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
+import Mathlib.MeasureTheory.Group.GeometryOfNumbers
+import Mathlib.MeasureTheory.Measure.Hausdorff
+import Mathlib.MeasureTheory.SetAlgebra
+import Mathlib.ModelTheory.Satisfiability
+import Mathlib.NumberTheory.Cyclotomic.Gal
+import Mathlib.NumberTheory.KummerDedekind
+import Mathlib.NumberTheory.LSeries.PrimesInAP
+import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
+import Mathlib.NumberTheory.NumberField.ClassNumber
+import Mathlib.NumberTheory.NumberField.Discriminant.Different
+import Mathlib.NumberTheory.Padics.MahlerBasis
+import Mathlib.NumberTheory.SumTwoSquares
+import Mathlib.NumberTheory.ZetaValues
+import Mathlib.Order.Category.Preord
+import Mathlib.Probability.CDF
+import Mathlib.Probability.Distributions.Gaussian.Real
+import Mathlib.Probability.Distributions.Uniform
+import Mathlib.Probability.Independence.Integration
+import Mathlib.RepresentationTheory.Character
+import Mathlib.RingTheory.Frobenius
+import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
+import Mathlib.RingTheory.MvPolynomial.Homogeneous
+import Mathlib.RingTheory.Nullstellensatz
+import Mathlib.RingTheory.SimpleRing.Matrix
+import Mathlib.SetTheory.Ordinal.Principal
+import Mathlib.SetTheory.ZFC.VonNeumann
+import Mathlib.Topology.Algebra.PontryaginDual
+import Mathlib.Topology.CWComplex.Classical.Basic
+import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
+import Mathlib.Topology.Homotopy.HomotopyGroup
+import Mathlib.Topology.Instances.AddCircle.Real
+import Mathlib.Topology.MetricSpace.Ultra.TotallySeparated
+import Mathlib.Topology.Sheaves.Sheafify
 import Napkin.Meta.Lean
 import Napkin.Meta.MathName
 import Napkin.Meta.Directives
@@ -326,7 +381,7 @@ Where the whole of an entry is a single definition, the notation itself is live:
 Every name here is checked against the Mathlib the book is built with — the block below is hidden, but it elaborates, so a rename upstream breaks the build rather than silently leaving a wrong name on the page.
 
 ```lean -show
-open CategoryTheory MeasureTheory NumberField Napkin.Missing
+open CategoryTheory MeasureTheory NumberField
 open scoped TensorProduct DirectSum Topology
 #check @Nat
 #check @PNat

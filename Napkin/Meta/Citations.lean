@@ -1,10 +1,14 @@
-import VersoManual
+module
+public import VersoManual
 import Verso.Doc.ArgParse
 import Verso.Doc.Elab
 import Napkin.Bibliography
 
+public section
+
 open Lean Elab
-open Lean.Doc.Syntax
+open Lean (Html)
+open Lean.Doc (CodeView)
 open Verso
 open Verso.Genre Manual
 open Verso.Doc Elab
@@ -32,9 +36,9 @@ def citeHref (key : String) : String :=
   s!"Backmatter/References/#{key.replace ":" "-"}"
 
 /-- Render `[Short]` as an `<a class="cite">` link to the bibliography. -/
-def renderCiteRef (key : String) : Verso.Output.Html :=
-  .tag "a" #[("class", "cite"), ("href", citeHref key)]
-    (.text true s!"[{citeShortLabel key}]")
+def renderCiteRef (key : String) : Html :=
+  .element "a" #[("class", "cite"), ("href", citeHref key)]
+    (.text s!"[{citeShortLabel key}]")
 
 /-! ## Inline citation element
 
@@ -62,13 +66,13 @@ inline_extension Inline.napkinRef (key : String) where
 
 /-- `{cite}` `ref:KEY`. The cite key is a code-span string literal. -/
 @[role]
-def cite : RoleExpanderOf Unit
+meta def cite : RoleExpanderOf Unit
   | (), inlines => do
     let #[arg] := inlines
       | throwError "Expected exactly one argument (the citation key)"
-    let `(inline|code( $key:str )) := arg
+    let some { content := key, .. } := CodeView.of arg
       | throwErrorAt arg "Expected a code-span string with the citation key"
-    let keyStr := key.getString
+    let keyStr := key.getVersoCode
     ``(Verso.Doc.Inline.other
         (Napkin.Inline.napkinRef $(quote keyStr)) #[])
 
@@ -85,30 +89,30 @@ block_extension Block.bibliography where
     open Verso.Output.Html in
     some <| fun _ _ _ _ _ => do
       let entries := references.qsort (fun a b => a.short < b.short)
-      let mut items : Array Verso.Output.Html := #[]
+      let mut items : Array Html := #[]
       for r in entries do
         let slug := r.key.replace ":" "-"
-        let titleHtml : Verso.Output.Html :=
+        let titleHtml : Html :=
           match r.url with
           | some u =>
-            .tag "a" #[("href", u)] (.text true r.title)
+            .element "a" #[("href", u)] (.text r.title)
           | none =>
-            .text true r.title
-        let entry : Verso.Output.Html := {{
-          <dt id={{slug}}>{{r.short}}</dt>
+            .text r.title
+        let entry : Html := html%{
+          <dt id={slug}>{r.short}</dt>
           <dd>
-            <span class="bib-authors">{{r.authors}}</span>
-            ", " <span class="bib-year">{{r.year}}</span>
-            ". " <em class="bib-title">{{titleHtml}}</em>
-            ". " <span class="bib-source">{{r.source}}</span> "."
+            <span class="bib-authors">{r.authors}</span>
+            {", "}<span class="bib-year">{r.year}</span>
+            {". "}<em class="bib-title">{titleHtml}</em>
+            {". "}<span class="bib-source">{r.source}</span>{"."}
           </dd>
-        }}
+        }
         items := items.push entry
-      pure {{
+      pure html%{
         <dl class="bibliography">
-          {{Verso.Output.Html.seq items}}
+          {Html.seq items}
         </dl>
-      }}
+      }
   extraCss := [r#"
     dl.bibliography { margin: 1em 0; }
     dl.bibliography > dt {
@@ -123,7 +127,7 @@ block_extension Block.bibliography where
   "#]
 
 @[directive]
-def bibliography : DirectiveExpanderOf Unit
+meta def bibliography : DirectiveExpanderOf Unit
   | (), _ => do
     ``(Verso.Doc.Block.other Block.bibliography #[])
 

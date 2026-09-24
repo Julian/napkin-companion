@@ -1,17 +1,17 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Iso
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.ProdComparison
 import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Order.Category.Preord
-import Mathlib.Tactic.Recall
+public import Mathlib.Order.Category.Preord
 import Napkin.Meta.Recall
 
 open Verso.Genre Manual

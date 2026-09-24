@@ -1,18 +1,19 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Data.Complex.Basic
-import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Basic.Complex.Basic
+public import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.RingTheory.Ideal.Span
-import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Quotient.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.Noetherian.Defs
@@ -676,9 +677,7 @@ example (R : Type*) [CommRing R] : Nontrivial R ↔ (0 : R) ≠ 1 := by
 :::solution
 ```lean
 example (R : Type*) [CommRing R] : Nontrivial R ↔ (0 : R) ≠ 1 := by
-  refine ⟨fun h => ?_, fun h => ⟨0, 1, h⟩⟩
-  haveI := h
-  exact zero_ne_one
+  exact ⟨fun _ => zero_ne_one, (⟨0, 1, ·⟩)⟩
 ```
 :::
 

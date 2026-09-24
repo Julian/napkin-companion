@@ -1,12 +1,13 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Napkin.Meta.Recall
 import Mathlib.NumberTheory.NumberField.ClassNumber
 import Mathlib.NumberTheory.NumberField.Discriminant.Basic
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
-import Mathlib.MeasureTheory.Group.GeometryOfNumbers
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
+public import Mathlib.MeasureTheory.Group.GeometryOfNumbers
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean

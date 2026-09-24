@@ -12,6 +12,10 @@ Everything here is plain string manipulation over the source text — no
 Lean elaboration, no imports.
 -/
 
+module
+
+public section
+
 namespace Napkin.Meta.Extract
 
 /-! ## String helpers -/

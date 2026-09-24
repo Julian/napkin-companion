@@ -1,12 +1,13 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Recall
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 import Mathlib.LinearAlgebra.Alternating.Basic
-import Mathlib.Data.Real.Basic
-import Napkin.Missing.DifferentialForms
+import Mathlib.Basic.Real.Basic
+public import Napkin.Missing.DifferentialForms
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean

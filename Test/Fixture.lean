@@ -22,9 +22,10 @@ exercised in both branches at least once. Specifically:
 * `epigraph`: with cite, attribution-only, neither.
 -/
 
-import VersoManual
-import Napkin.Meta.Directives
-import Napkin.Meta.Citations
+module
+public import VersoManual
+public import Napkin.Meta.Directives
+public import Napkin.Meta.Citations
 import Napkin.Bibliography
 
 open Verso.Genre Manual

@@ -8,11 +8,12 @@ The extraction itself lives in `Napkin.Meta.Exercises`, which the book's
 render step also calls so the same files ship with the site.
 -/
 
+module
 import Napkin.Meta.Exercises
 
 open Napkin.Meta.Exercises
 
-def main (args : List String) : IO UInt32 := do
+public def main (args : List String) : IO UInt32 := do
   let dest : System.FilePath :=
     match args with
     | ["--output", d] => d

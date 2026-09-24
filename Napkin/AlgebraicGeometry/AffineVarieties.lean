@@ -1,10 +1,11 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.RingTheory.Nullstellensatz
 import Mathlib.RingTheory.Spectrum.Prime.Basic
-import Mathlib.RingTheory.Polynomial.Basic
+public import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.Analysis.Complex.Polynomial.Basic
 
 open Verso.Genre Manual

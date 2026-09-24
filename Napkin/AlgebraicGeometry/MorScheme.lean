@@ -1,4 +1,5 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
@@ -6,7 +7,7 @@ import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.Limits
 import Mathlib.AlgebraicGeometry.Over
-import Mathlib.Data.Complex.Basic
+import Mathlib.Basic.Complex.Basic
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean

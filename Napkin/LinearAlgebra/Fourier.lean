@@ -1,13 +1,14 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Napkin.Meta.Recall
 import Mathlib.Analysis.Fourier.AddCircle
 import Mathlib.Analysis.Fourier.ZMod
-import Mathlib.Analysis.Fourier.FiniteAbelian.PontryaginDuality
+public import Mathlib.Analysis.Fourier.FiniteAbelian.PontryaginDuality
 import Mathlib.NumberTheory.ZetaValues
-import Napkin.Missing.BooleanFourier
+public import Napkin.Missing.BooleanFourier
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean

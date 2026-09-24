@@ -1,11 +1,12 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 import Mathlib.SetTheory.Cardinal.Regular
 import Mathlib.SetTheory.Cardinal.Continuum
-import Napkin.Missing.ContinuumHypothesis
+public import Napkin.Missing.ContinuumHypothesis
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean

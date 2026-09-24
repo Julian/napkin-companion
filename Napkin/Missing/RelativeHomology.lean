@@ -20,11 +20,14 @@ outstanding stopgap:
 
     grep -rn "Not in Mathlib." Napkin/Missing
 -/
-import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+module
+public import Mathlib.Topology.ContinuousMap.Basic
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.LinearAlgebra.Quotient.Basic
+
+@[expose] public section
 
 namespace Napkin.Missing
 
@@ -236,7 +239,7 @@ theorem relativeHomology_isZero_of_top (h : D.A₁ = ⊤) :
     IsZero D.relativeHomology := by
   have hs : Subsingleton (D.C₁ ⧸ D.A₁) :=
     Submodule.Quotient.subsingleton_iff.mpr h
-  haveI : Subsingleton (D.relShortComplex.X₂ : Type _) := hs
+  have : Subsingleton (D.relShortComplex.X₂ : Type _) := hs
   have hX2 : IsZero D.relShortComplex.X₂ :=
     ModuleCat.isZero_of_subsingleton _
   have hE : D.relShortComplex.Exact :=

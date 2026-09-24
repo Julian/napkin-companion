@@ -11,51 +11,54 @@ traverse pass (see `assignCalloutNumber`) so cross-references like
 "Theorem 4.5.2" stay consistent with Napkin's print numbering.
 -/
 
-import VersoManual
-import Napkin.Meta.Lint
+module
+public import VersoManual
+public import Napkin.Meta.Lint
 import Napkin.Meta.Citations
 import Verso.Doc.ArgParse
 import Verso.Doc.Elab
-import Napkin.Bibliography
+
+public section
 
 open Verso
 open Verso.Genre Manual
 open Verso.Doc Elab
 open Verso.ArgParse
 open Lean Elab
+open Lean (Html)
 
 namespace Napkin
 
 /-- Render a directive-title string, treating `$`…`` segments as
     inline math the way Verso does in body prose: emit
     `<code class="math inline">…</code>` so KaTeX picks it up.
-    Plain text outside math is HTML-escaped via `.text true`.
+    Plain text outside math is HTML-escaped via `.text`.
 
     A title like `"$`\mathbb{R}` is complete"` produces
     `<code class="math inline">\mathbb{R}</code> is complete`,
     which KaTeX renders as `ℝ is complete` — instead of the literal
     backtick-laden text the previous behavior emitted. -/
-def renderTitleMarkup (s : String) : Verso.Output.Html := Id.run do
+def renderTitleMarkup (s : String) : Html := Id.run do
   let parts := s.splitOn "$`"
-  let mut out : Array Verso.Output.Html := #[]
+  let mut out : Array Html := #[]
   match parts with
   | [] => return .empty
   | first :: rest =>
     if !first.isEmpty then
-      out := out.push (.text true first)
+      out := out.push (.text first)
     for part in rest do
       match part.splitOn "`" with
       | [] => pure ()  -- unreachable: splitOn always returns a non-empty list
       | [_] =>
         -- No closing backtick — emit `$`<rest>` as literal text
         -- (degraded but visible) instead of swallowing the marker.
-        out := out.push (.text true ("$`" ++ part))
+        out := out.push (.text ("$`" ++ part))
       | math :: after =>
         let textAfter := "`".intercalate after
         out := out.push
-          (.tag "code" #[("class", "math inline")] (.text true math))
+          (.element "code" #[("class", "math inline")] (.text math))
         if !textAfter.isEmpty then
-          out := out.push (.text true textAfter)
+          out := out.push (.text textAfter)
   if out.size = 1 then return out[0]!
   return .seq out
 
@@ -69,27 +72,27 @@ def numberedKindLabel (kind : String) (label : String) : String :=
 /-- Title HTML for a callout whose label-and-title reads as
     "Kind N. *Title*" (theorem-, definition-, example-style). -/
 def renderTitledLabel (kindLabel : String) (titleStr : String)
-    : Verso.Output.Html :=
+    : Html :=
   if titleStr.isEmpty then
-    .text true (kindLabel ++ ".")
+    .text (kindLabel ++ ".")
   else
     .seq #[
-      .text true (kindLabel ++ ". "),
-      .tag "em" #[] (renderTitleMarkup titleStr)
+      .text (kindLabel ++ ". "),
+      .element "em" #[] (renderTitleMarkup titleStr)
     ]
 
 /-- Title HTML for a callout whose label-and-title reads as
     "Kind N (Title). " (remark-, abuse-style; italic prefix folded
     into the body paragraph via CSS). -/
 def renderParenLabel (kindLabel : String) (titleStr : String)
-    : Verso.Output.Html :=
+    : Html :=
   if titleStr.isEmpty then
-    .text true (kindLabel ++ ". ")
+    .text (kindLabel ++ ". ")
   else
     .seq #[
-      .text true (kindLabel ++ " ("),
+      .text (kindLabel ++ " ("),
       renderTitleMarkup titleStr,
-      .text true "). "
+      .text "). "
     ]
 
 /-- `<div class="cls"><div class="cls-title">…</div>…</div>` wrapper
@@ -97,24 +100,24 @@ def renderParenLabel (kindLabel : String) (titleStr : String)
     Problem, Statement). `extraCls` is appended to the wrapper's class
     list (e.g. `"statement-theorem"`) but does not affect the inner
     title's class. -/
-def renderBoxCallout (baseCls : String) (title : Verso.Output.Html)
-    (body : Array Verso.Output.Html) (extraCls : String := "")
-    : Verso.Output.Html :=
+def renderBoxCallout (baseCls : String) (title : Html)
+    (body : Array Html) (extraCls : String := "")
+    : Html :=
   let wrapperCls :=
     if extraCls.isEmpty then baseCls else s!"{baseCls} {extraCls}"
-  .tag "div" #[("class", wrapperCls)]
+  .element "div" #[("class", wrapperCls)]
     (.seq #[
-      .tag "div" #[("class", baseCls ++ "-title")] title,
+      .element "div" #[("class", baseCls ++ "-title")] title,
       .seq body
     ])
 
 /-- `<div class="cls"><span class="cls-label">…</span>…</div>` wrapper
     used by inline-label callouts (Remark, Abuse). -/
-def renderInlineLabelCallout (baseCls : String) (label : Verso.Output.Html)
-    (body : Array Verso.Output.Html) : Verso.Output.Html :=
-  .tag "div" #[("class", baseCls)]
+def renderInlineLabelCallout (baseCls : String) (label : Html)
+    (body : Array Html) : Html :=
+  .element "div" #[("class", baseCls)]
     (.seq #[
-      .tag "span" #[("class", baseCls ++ "-label")] label,
+      .element "span" #[("class", baseCls ++ "-label")] label,
       .seq body
     ])
 
@@ -143,10 +146,10 @@ section
 variable [Monad m] [MonadInfoTree m] [MonadLiftT CoreM m] [MonadEnv m]
   [MonadError m] [MonadFileMap m]
 
-def TitledConfig.parse : ArgParse m TitledConfig :=
+meta def TitledConfig.parse : ArgParse m TitledConfig :=
   TitledConfig.mk <$> ((some <$> .positional `title .string) <|> pure none)
 
-instance : FromArgs TitledConfig m := ⟨TitledConfig.parse⟩
+meta instance : FromArgs TitledConfig m := ⟨TitledConfig.parse⟩
 
 end
 
@@ -155,7 +158,7 @@ end
     `Block.…` term, and wrap the result in `Block.other` with the
     elaborated child blocks. Lets each `@[directive]` declaration be
     a one-liner instead of repeating the same scaffolding. -/
-def titledDirective (defaultTitle : String)
+meta def titledDirective (defaultTitle : String)
     (mkBlock : String → DocElabM Term) : DirectiveExpanderOf TitledConfig :=
   fun cfg contents => do
     let title := cfg.title.getD defaultTitle
@@ -187,11 +190,11 @@ Then the `toHtml` callbacks read the label back out via
 /-- Per-chapter counter, stored as a JSON object mapping
     chapter section-number strings (e.g. `"1.2."`) to the
     next-available counter value. -/
-def calloutCounterKey : Lean.Name := `Napkin.calloutCounters
+@[grind =] def calloutCounterKey : Lean.Name := `Napkin.calloutCounters
 /-- Per-block assigned label, stored as a JSON object mapping
     `InternalId` (as a stringified Nat) to its assigned label
     (e.g. `"1.2.3"`). -/
-def calloutNumberKey : Lean.Name := `Napkin.calloutNumbers
+@[grind =] def calloutNumberKey : Lean.Name := `Napkin.calloutNumbers
 
 /-- Read a JSON value out of a TraverseState, returning an empty
     object `{}` when the key is absent or fails to deserialize. -/
@@ -257,7 +260,7 @@ block_extension Block.prototype where
   toHtml :=
     open Verso.Output.Html in
     some <| fun _ goB _ _ content => do
-      pure {{<div class="prototype">{{← content.mapM goB}}</div>}}
+      pure html%{<div class="prototype">{← content.mapM goB}</div>}
   extraCss := [r#"
     /* Prototype boxes are rendered in red per Napkin's convention:
        "I also often highlight a 'prototypical example' for some
@@ -283,7 +286,7 @@ block_extension Block.prototype where
   "#]
 
 @[directive]
-def PROTOTYPE : DirectiveExpanderOf Unit
+meta def PROTOTYPE : DirectiveExpanderOf Unit
   | (), contents => do
     ``(Verso.Doc.Block.other Block.prototype #[$[$(← contents.mapM elabBlock)],*])
 
@@ -299,10 +302,10 @@ block_extension Block.objSvg (src : String) where
   toHtml :=
     open Verso.Output.Html in
     some <| fun _ _ _ data _ => do
-      pure {{
+      pure html%{
         <object class="napkin-svg" type="image/svg+xml"
-                data={{dataStr data}}></object>
-      }}
+                data={dataStr data}></object>
+      }
   extraCss := [r#"
     /* Break out of the 36rem text-measure so the diagram is readable.
        The page lays everything out within a narrow column; for a
@@ -337,15 +340,15 @@ section
 variable [Monad m] [MonadInfoTree m] [MonadLiftT CoreM m] [MonadEnv m]
   [MonadError m] [MonadFileMap m]
 
-def ObjSvgConfig.parse : ArgParse m ObjSvgConfig :=
+meta def ObjSvgConfig.parse : ArgParse m ObjSvgConfig :=
   ObjSvgConfig.mk <$> .positional `src .string
 
-instance : FromArgs ObjSvgConfig m := ⟨ObjSvgConfig.parse⟩
+meta instance : FromArgs ObjSvgConfig m := ⟨ObjSvgConfig.parse⟩
 
 end
 
 @[directive]
-def objSvg : DirectiveExpanderOf ObjSvgConfig
+meta def objSvg : DirectiveExpanderOf ObjSvgConfig
   | cfg, contents => do
     ``(Verso.Doc.Block.other (Block.objSvg $(quote cfg.src))
         #[$[$(← contents.mapM elabBlock)],*])
@@ -362,10 +365,10 @@ block_extension Block.subtitle where
   toHtml :=
     open Verso.Output.Html in
     some <| fun _ goB _ _ content => do
-      pure {{<div class="book-subtitle">{{← content.mapM goB}}</div>}}
+      pure html%{<div class="book-subtitle">{← content.mapM goB}</div>}
 
 @[directive]
-def subtitle : DirectiveExpanderOf Unit
+meta def subtitle : DirectiveExpanderOf Unit
   | (), contents => do
     ``(Verso.Doc.Block.other Block.subtitle
         #[$[$(← contents.mapM elabBlock)],*])
@@ -380,17 +383,17 @@ block_extension Block.leanCompanion where
     some <| fun _ _goB _ _ _content => do
       -- Fixed banner text lives here (one place to tweak), so the per-chapter
       -- `:::LEANCOMPANION` marker carries no body and nothing is duplicated.
-      pure {{
+      pure html%{
         <div class="lean-companion">
           <div class="lean-companion-label">
-            <span class="lean-companion-mark">"∎"</span>
-            "Lean companion"
+            <span class="lean-companion-mark">∎</span>
+            {"Lean companion"}
           </div>
           <div class="lean-companion-intro">
-            <p>"The same material as the chapter above, rebuilt in Lean and Mathlib — with some steps left as exercises for you to finish."</p>
+            <p>The same material as the chapter above, rebuilt in Lean and Mathlib — with some steps left as exercises for you to finish.</p>
           </div>
         </div>
-      }}
+      }
   extraCss := [r#"
     div.lean-companion {
       border: 1px solid #b9a7f0;
@@ -417,7 +420,7 @@ block_extension Block.leanCompanion where
   "#]
 
 @[directive]
-def LEANCOMPANION : DirectiveExpanderOf Unit
+meta def LEANCOMPANION : DirectiveExpanderOf Unit
   | (), contents => do
     ``(Verso.Doc.Block.other Block.leanCompanion
         #[$[$(← contents.mapM elabBlock)],*])
@@ -457,7 +460,7 @@ block_extension Block.example (title : String) where
   "#]
 
 @[directive]
-def EXAMPLE : DirectiveExpanderOf TitledConfig :=
+meta def EXAMPLE : DirectiveExpanderOf TitledConfig :=
   titledDirective "" fun t => ``(Block.example $(quote t))
 
 block_extension Block.aside (title : String) where
@@ -470,12 +473,12 @@ block_extension Block.aside (title : String) where
     open Verso.Output.Html in
     some <| fun _ goB _ data content => do
       let titleStr := dataStr data "Aside"
-      pure {{
+      pure html%{
         <details class="aside">
-          <summary>{{renderTitleMarkup titleStr}}</summary>
-          <div class="aside-body">{{← content.mapM goB}}</div>
+          <summary>{renderTitleMarkup titleStr}</summary>
+          <div class="aside-body">{← content.mapM goB}</div>
         </details>
-      }}
+      }
   extraCss := [r#"
     details.aside {
       margin: 1.25em 0;
@@ -506,7 +509,7 @@ block_extension Block.aside (title : String) where
   "#]
 
 @[directive]
-def aside : DirectiveExpanderOf TitledConfig :=
+meta def aside : DirectiveExpanderOf TitledConfig :=
   titledDirective "Aside" fun t => ``(Block.aside $(quote t))
 
 -- Collapsible worked solution to a reader exercise. Rendered collapsed by
@@ -521,12 +524,12 @@ block_extension Block.solution where
   toHtml :=
     open Verso.Output.Html in
     some <| fun _ goB _ _ content => do
-      pure {{
+      pure html%{
         <details class="solution">
-          <summary>"Solution"</summary>
-          <div class="solution-body">{{← content.mapM goB}}</div>
+          <summary>Solution</summary>
+          <div class="solution-body">{← content.mapM goB}</div>
         </details>
-      }}
+      }
   extraCss := [r#"
     details.solution {
       margin: 1em 0;
@@ -579,18 +582,18 @@ block_extension Block.leanExercise (chili : Nat) where
       -- already claim that label, and these are the companion's.
       let label := numberedKindLabel "Lean exercise"
         ((← lookupCalloutNumber blockId).getD "")
-      let marker : Verso.Output.Html :=
+      let marker : Html :=
         if chiliN == 0 then .empty
         else
-          .tag "span" #[("class", "lean-exercise-chili"),
-                        ("title", s!"Difficulty: {chiliN}/3")]
-            (.text true (chiliPeppers chiliN))
-      pure {{
+          .element "span" #[("class", "lean-exercise-chili"),
+                            ("title", s!"Difficulty: {chiliN}/3")]
+            (.text (chiliPeppers chiliN))
+      pure html%{
         <div class="lean-exercise">
-          <div class="lean-exercise-label">{{.text true label}}{{marker}}</div>
-          {{← content.mapM goB}}
+          <div class="lean-exercise-label">{.text label}{marker}</div>
+          {← content.mapM goB}
         </div>
-      }}
+      }
   extraCss := [r#"
     div.lean-exercise {
       margin: 1.25em 0;
@@ -621,15 +624,15 @@ section
 variable [Monad m] [MonadInfoTree m] [MonadLiftT CoreM m] [MonadEnv m]
   [MonadError m] [MonadFileMap m]
 
-def LeanExerciseConfig.parse : ArgParse m LeanExerciseConfig :=
+meta def LeanExerciseConfig.parse : ArgParse m LeanExerciseConfig :=
   LeanExerciseConfig.mk <$> .namedD `chili .nat 0
 
-instance : FromArgs LeanExerciseConfig m := ⟨LeanExerciseConfig.parse⟩
+meta instance : FromArgs LeanExerciseConfig m := ⟨LeanExerciseConfig.parse⟩
 
 end
 
 @[directive]
-def exercise : DirectiveExpanderOf LeanExerciseConfig
+meta def exercise : DirectiveExpanderOf LeanExerciseConfig
   | cfg, contents => do
     ``(Verso.Doc.Block.other (Block.leanExercise $(quote cfg.chili))
         #[$[$(← contents.mapM elabBlock)],*])
@@ -647,12 +650,12 @@ block_extension Block.hint where
   toHtml :=
     open Verso.Output.Html in
     some <| fun _ goB _ _ content => do
-      pure {{
+      pure html%{
         <details class="hint">
-          <summary>"Hint"</summary>
-          <div class="hint-body">{{← content.mapM goB}}</div>
+          <summary>Hint</summary>
+          <div class="hint-body">{← content.mapM goB}</div>
         </details>
-      }}
+      }
   extraCss := [r#"
     details.hint {
       margin: 0.75em 0;
@@ -679,13 +682,13 @@ block_extension Block.hint where
   "#]
 
 @[directive]
-def hint : DirectiveExpanderOf Unit
+meta def hint : DirectiveExpanderOf Unit
   | (), contents => do
     ``(Verso.Doc.Block.other Block.hint
         #[$[$(← contents.mapM elabBlock)],*])
 
 @[directive]
-def solution : DirectiveExpanderOf Unit
+meta def solution : DirectiveExpanderOf Unit
   | (), contents => do
     ``(Verso.Doc.Block.other Block.solution
         #[$[$(← contents.mapM elabBlock)],*])
@@ -725,7 +728,7 @@ block_extension Block.definition (title : String) where
   "#]
 
 @[directive]
-def DEFINITION : DirectiveExpanderOf TitledConfig :=
+meta def DEFINITION : DirectiveExpanderOf TitledConfig :=
   titledDirective "" fun t => ``(Block.definition $(quote t))
 
 block_extension Block.remark (title : String) where
@@ -758,7 +761,7 @@ block_extension Block.remark (title : String) where
   "#]
 
 @[directive]
-def REMARK : DirectiveExpanderOf TitledConfig :=
+meta def REMARK : DirectiveExpanderOf TitledConfig :=
   titledDirective "" fun t => ``(Block.remark $(quote t))
 
 /-- Derive a stable element id from a figure's source path, so the caption
@@ -788,12 +791,12 @@ block_extension Block.figure (src : String) (alt : String) where
       let naming : Array (String × String) :=
         if alt.isEmpty then #[("role", "img"), ("aria-labelledby", capId)]
         else #[]
-      pure {{
+      pure html%{
         <figure class="napkin-figure">
-          <img src={{src}} alt={{alt}} {{naming}}/>
-          <figcaption id={{capId}}>{{← content.mapM goB}}</figcaption>
+          <img src={src} alt={alt} {...naming}/>
+          <figcaption id={capId}>{← content.mapM goB}</figcaption>
         </figure>
-      }}
+      }
   extraCss := [r#"
     figure.napkin-figure {
       margin: 1.25em 0;
@@ -822,15 +825,15 @@ section
 variable [Monad m] [MonadInfoTree m] [MonadLiftT CoreM m] [MonadEnv m]
   [MonadError m] [MonadFileMap m]
 
-def FigureConfig.parse : ArgParse m FigureConfig :=
+meta def FigureConfig.parse : ArgParse m FigureConfig :=
   FigureConfig.mk <$> .positional `src .string <*> .namedD `alt .string ""
 
-instance : FromArgs FigureConfig m := ⟨FigureConfig.parse⟩
+meta instance : FromArgs FigureConfig m := ⟨FigureConfig.parse⟩
 
 end
 
 @[directive]
-def figure : DirectiveExpanderOf FigureConfig
+meta def figure : DirectiveExpanderOf FigureConfig
   | cfg, contents => do
     ``(Verso.Doc.Block.other (Block.figure $(quote cfg.src) $(quote cfg.alt))
         #[$[$(← contents.mapM elabBlock)],*])
@@ -870,7 +873,7 @@ block_extension Block.exercise (title : String) where
   "#]
 
 @[directive]
-def EXERCISE : DirectiveExpanderOf TitledConfig :=
+meta def EXERCISE : DirectiveExpanderOf TitledConfig :=
   titledDirective "" fun t => ``(Block.exercise $(quote t))
 
 -- Shared "statement" block: theorem/lemma/proposition/corollary/fact all
@@ -951,23 +954,23 @@ block_extension Block.statement (kind : String) (title : String) where
   "#]
 
 @[directive]
-def THEOREM : DirectiveExpanderOf TitledConfig :=
+meta def THEOREM : DirectiveExpanderOf TitledConfig :=
   titledDirective "" fun t => ``(Block.statement "Theorem" $(quote t))
 
 @[directive]
-def LEMMA : DirectiveExpanderOf TitledConfig :=
+meta def LEMMA : DirectiveExpanderOf TitledConfig :=
   titledDirective "" fun t => ``(Block.statement "Lemma" $(quote t))
 
 @[directive]
-def PROPOSITION : DirectiveExpanderOf TitledConfig :=
+meta def PROPOSITION : DirectiveExpanderOf TitledConfig :=
   titledDirective "" fun t => ``(Block.statement "Proposition" $(quote t))
 
 @[directive]
-def COROLLARY : DirectiveExpanderOf TitledConfig :=
+meta def COROLLARY : DirectiveExpanderOf TitledConfig :=
   titledDirective "" fun t => ``(Block.statement "Corollary" $(quote t))
 
 @[directive]
-def FACT : DirectiveExpanderOf TitledConfig :=
+meta def FACT : DirectiveExpanderOf TitledConfig :=
   titledDirective "" fun t => ``(Block.statement "Fact" $(quote t))
 
 -- Lightweight "abuse of notation" callout.
@@ -1007,7 +1010,7 @@ block_extension Block.abuse (title : String) where
   "#]
 
 @[directive]
-def ABUSE : DirectiveExpanderOf TitledConfig :=
+meta def ABUSE : DirectiveExpanderOf TitledConfig :=
   titledDirective "" fun t => ``(Block.abuse $(quote t))
 
 -- Proof block, with a "Proof." prefix and a small QED marker on the
@@ -1020,9 +1023,9 @@ block_extension Block.proof where
   toHtml :=
     open Verso.Output.Html in
     some <| fun _ goB _ _ content => do
-      pure {{
-        <div class="proof">{{← content.mapM goB}}</div>
-      }}
+      pure html%{
+        <div class="proof">{← content.mapM goB}</div>
+      }
   extraCss := [r#"
     div.proof {
       margin: 1em 0 1.25em 0;
@@ -1042,7 +1045,7 @@ block_extension Block.proof where
   "#]
 
 @[directive]
-def PROOF : DirectiveExpanderOf Unit
+meta def PROOF : DirectiveExpanderOf Unit
   | (), contents => do
     ``(Verso.Doc.Block.other Block.proof
         #[$[$(← contents.mapM elabBlock)],*])
@@ -1065,15 +1068,15 @@ block_extension Block.chiliPara (chili : Nat) where
         match data with
         | .num n => n.toFloat.toUInt32.toNat
         | _ => 0
-      pure {{
+      pure html%{
         <div class="chili-para">
           <span class="chili-marker"
-                title={{s!"Difficulty: {chiliN}/3"}}>
-            {{.text true (chiliPeppers chiliN)}}
+                title={s!"Difficulty: {chiliN}/3"}>
+            {.text (chiliPeppers chiliN)}
           </span>
-          {{← content.mapM goB}}
+          {← content.mapM goB}
         </div>
-      }}
+      }
   extraCss := [r#"
     div.chili-para {
       position: relative;
@@ -1118,15 +1121,15 @@ section
 variable [Monad m] [MonadInfoTree m] [MonadLiftT CoreM m] [MonadEnv m]
   [MonadError m] [MonadFileMap m]
 
-def ChiliParaConfig.parse : ArgParse m ChiliParaConfig :=
+meta def ChiliParaConfig.parse : ArgParse m ChiliParaConfig :=
   ChiliParaConfig.mk <$> .namedD `chili .nat 1
 
-instance : FromArgs ChiliParaConfig m := ⟨ChiliParaConfig.parse⟩
+meta instance : FromArgs ChiliParaConfig m := ⟨ChiliParaConfig.parse⟩
 
 end
 
 @[directive]
-def chiliPara : DirectiveExpanderOf ChiliParaConfig
+meta def chiliPara : DirectiveExpanderOf ChiliParaConfig
   | cfg, contents => do
     ``(Verso.Doc.Block.other (Block.chiliPara $(quote cfg.chili))
         #[$[$(← contents.mapM elabBlock)],*])
@@ -1139,7 +1142,7 @@ block_extension Block.question where
   toHtml :=
     open Verso.Output.Html in
     some <| fun _ goB _ _ content => do
-      pure {{<div class="question">{{← content.mapM goB}}</div>}}
+      pure html%{<div class="question">{← content.mapM goB}</div>}
   extraCss := [r#"
     div.question {
       margin: 1em 0;
@@ -1154,7 +1157,7 @@ block_extension Block.question where
   "#]
 
 @[directive]
-def QUESTION : DirectiveExpanderOf Unit
+meta def QUESTION : DirectiveExpanderOf Unit
   | (), contents => do
     ``(Verso.Doc.Block.other Block.question
         #[$[$(← contents.mapM elabBlock)],*])
@@ -1174,12 +1177,12 @@ block_extension Block.problem (title : String) (chili : Nat) where
         match data with
         | .arr #[.str s, .num n] => (s, n.toFloat.toUInt32.toNat)
         | _ => ("", 0)
-      let chiliHtml : Verso.Output.Html :=
+      let chiliHtml : Html :=
         if chiliN == 0 then .seq #[]
-        else .tag "span"
+        else .element "span"
           #[("class", "problem-chili"),
             ("title", s!"Difficulty: {chiliN}/3")]
-          (.text true (chiliPeppers chiliN))
+          (.text (chiliPeppers chiliN))
       let kindLabel := numberedKindLabel "Problem"
         ((← lookupCalloutNumber blockId).getD "")
       let baseTitle := renderTitledLabel kindLabel titleStr
@@ -1220,17 +1223,17 @@ section
 variable [Monad m] [MonadInfoTree m] [MonadLiftT CoreM m] [MonadEnv m]
   [MonadError m] [MonadFileMap m]
 
-def ProblemConfig.parse : ArgParse m ProblemConfig :=
+meta def ProblemConfig.parse : ArgParse m ProblemConfig :=
   ProblemConfig.mk
     <$> ((some <$> .positional `title .string) <|> pure none)
     <*> .namedD `chili .nat 0
 
-instance : FromArgs ProblemConfig m := ⟨ProblemConfig.parse⟩
+meta instance : FromArgs ProblemConfig m := ⟨ProblemConfig.parse⟩
 
 end
 
 @[directive]
-def PROBLEM : DirectiveExpanderOf ProblemConfig
+meta def PROBLEM : DirectiveExpanderOf ProblemConfig
   | cfg, contents => do
     let title := cfg.title.getD ""
     ``(Verso.Doc.Block.other
@@ -1253,20 +1256,20 @@ block_extension Block.epigraph (attribution : String) (citeKey : String) where
         match data with
         | .arr #[.str a, .str c] => (a, c)
         | _ => ("", "")
-      let citeHtml : Verso.Output.Html :=
+      let citeHtml : Html :=
         if cite.isEmpty then .seq #[]
-        else .seq #[.text true " ", renderCiteRef cite]
-      let attribHtml : Verso.Output.Html :=
+        else .seq #[.text " ", renderCiteRef cite]
+      let attribHtml : Html :=
         if attr.isEmpty && cite.isEmpty then .seq #[]
-        else .tag "div"
+        else .element "div"
               #[("class", "epigraph-attribution")]
-              (.seq #[.text true ("— " ++ attr), citeHtml])
-      pure {{
+              (.seq #[.text ("— " ++ attr), citeHtml])
+      pure html%{
         <blockquote class="epigraph">
-          {{← content.mapM goB}}
-          {{attribHtml}}
+          {← content.mapM goB}
+          {attribHtml}
         </blockquote>
-      }}
+      }
 
 structure EpigraphConfig where
   attribution : Option String
@@ -1276,17 +1279,17 @@ section
 variable [Monad m] [MonadInfoTree m] [MonadLiftT CoreM m] [MonadEnv m]
   [MonadError m] [MonadFileMap m]
 
-def EpigraphConfig.parse : ArgParse m EpigraphConfig :=
+meta def EpigraphConfig.parse : ArgParse m EpigraphConfig :=
   EpigraphConfig.mk
     <$> ((some <$> .positional `attribution .string) <|> pure none)
     <*> .named `cite .string true
 
-instance : FromArgs EpigraphConfig m := ⟨EpigraphConfig.parse⟩
+meta instance : FromArgs EpigraphConfig m := ⟨EpigraphConfig.parse⟩
 
 end
 
 @[directive]
-def epigraph : DirectiveExpanderOf EpigraphConfig
+meta def epigraph : DirectiveExpanderOf EpigraphConfig
   | cfg, contents => do
     let attr := cfg.attribution.getD ""
     let cite := cfg.cite.getD ""
@@ -1304,7 +1307,7 @@ block_extension Block.moral where
   toHtml :=
     open Verso.Output.Html in
     some <| fun _ goB _ _ content => do
-      pure {{<div class="moral">{{← content.mapM goB}}</div>}}
+      pure html%{<div class="moral">{← content.mapM goB}</div>}
   extraCss := [r#"
     div.moral {
       margin: 1.25em 0;
@@ -1322,7 +1325,7 @@ block_extension Block.moral where
   "#]
 
 @[directive]
-def MORAL : DirectiveExpanderOf Unit
+meta def MORAL : DirectiveExpanderOf Unit
   | (), contents => do
     ``(Verso.Doc.Block.other Block.moral
         #[$[$(← contents.mapM elabBlock)],*])
@@ -1338,10 +1341,10 @@ block_extension Block.quote where
   toHtml :=
     open Verso.Output.Html in
     some <| fun _ goB _ _ content => do
-      pure {{<blockquote>{{← content.mapM goB}}</blockquote>}}
+      pure html%{<blockquote>{← content.mapM goB}</blockquote>}
 
 @[directive]
-def quote : DirectiveExpanderOf Unit
+meta def quote : DirectiveExpanderOf Unit
   | (), contents => do
     ``(Verso.Doc.Block.other Block.quote
         #[$[$(← contents.mapM elabBlock)],*])

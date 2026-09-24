@@ -1,8 +1,9 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
-import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.InnerProductSpace.Orthonormal
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Napkin.Meta.Recall
@@ -529,7 +530,7 @@ example (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℝ V]
     [FiniteDimensional ℝ V] (u : ℕ → V) (hu : CauchySeq u) :
     ∃ p, Filter.Tendsto u Filter.atTop (nhds p) := by
   -- Finite dimension supplies completeness; completeness gives the limit.
-  haveI := FiniteDimensional.complete ℝ V
+  have := FiniteDimensional.complete ℝ V
   exact cauchySeq_tendsto_of_complete hu
 ```
 :::

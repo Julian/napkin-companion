@@ -1,4 +1,5 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Recall
 import Napkin.Meta.Directives
@@ -478,7 +479,7 @@ example : meromorphicOrderAt (fun z : ℂ => z⁻¹) 0 = (-1 : ℤ) := by
   rw [meromorphicOrderAt_eq_int_iff (by fun_prop)]
   refine ⟨fun _ => 1, analyticAt_const, one_ne_zero, ?_⟩
   filter_upwards with z
-  simp [zpow_neg, zpow_one, smul_eq_mul]
+  simp [zpow_neg, smul_eq_mul]
 ```
 
 Conversely, a function analytic and nonvanishing at $`x` contributes order $`0` to such a sum.

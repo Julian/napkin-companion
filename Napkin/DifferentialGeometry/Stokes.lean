@@ -1,4 +1,5 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Recall
 import Napkin.Meta.Directives
@@ -522,7 +523,7 @@ recall AlternatingMap.compLinearMap_apply
     {ι : Type*}
     {M₂ : Type*} [AddCommMonoid M₂] [Module R M₂]
     (f : M [⋀^ι]→ₗ[R] N) (g : M₂ →ₗ[R] M) (v : ι → M₂) :
-    f.compLinearMap g v = f fun i => g (v i) := rfl
+    f.compLinearMap g v = f fun i => g (v i)
 ```
 
 The pullback along the identity map does nothing to a form — the degenerate case of naturality $`\phi_1^\ast (\phi_2^\ast \alpha) = (\phi_2 \circ \phi_1)^\ast \alpha`.

@@ -1,9 +1,10 @@
+module
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Complex.CoveringMap
 import Mathlib.Analysis.Complex.BranchLogRoot
-import VersoManual
+public import VersoManual
 
 import Napkin.Meta
 
@@ -272,8 +273,8 @@ It does not, however, strengthen this to a holomorphic branch under a single nam
 ```lean
 example : IsCoveringMapOn Complex.exp {0}ᶜ := Complex.isCoveringMapOn_exp
 
-example {X : Type*} [TopologicalSpace X] [LocPathConnectedSpace X] {U : Set X}
-    (hUc : IsSimplyConnected U) (hUo : IsOpen U) {g : X → ℂ}
+example {X : Type*} [TopologicalSpace X] [LocallyPathConnectedSpace X]
+    {U : Set X} (hUc : IsSimplyConnected U) (hUo : IsOpen U) {g : X → ℂ}
     (hgc : ContinuousOn g U) (hU₀ : (0 : ℂ) ∉ g '' U) :
     ∃ f : X → ℂ, ContinuousOn f U ∧ Set.EqOn (Complex.exp ∘ f) g U :=
   Complex.exists_continuousOn_eqOn_exp_comp hUc hUo hgc hU₀

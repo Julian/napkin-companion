@@ -20,8 +20,11 @@ outstanding stopgap:
 
     grep -rn "Not in Mathlib." Napkin/Missing
 -/
-import Mathlib.Analysis.Complex.Basic
+module
+public import Mathlib.Analysis.Complex.Basic
 import Mathlib.Algebra.Group.Basic
+
+@[expose] public section
 
 namespace Napkin.Missing
 

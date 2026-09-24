@@ -11,14 +11,17 @@ Currently checks for:
     Use `[text](url)` instead.
 -/
 
+module
 import Lean.Linter.Basic
 import Lean.Meta.Hint
 import Verso.Parser
-import Lean.Elab.Command
-import Lean.Data.Options
+public import Lean.Elab.Command
+public import Lean.Data.Options
+
+public section
 
 open Lean Linter Elab Command
-open Lean.Doc.Syntax
+open Lean.Doc (InlineView)
 
 /-- Generates suggestions to convert bare-URL autolinks into proper
     `[text](url)` links. -/
@@ -80,26 +83,26 @@ def bareUrl : Linter where
     unless (`Verso.Doc.Concrete).isPrefixOf stx.getKind do return
     unless getLinterValue linter.napkin.bareUrl (← getLinterOptions) do return
     let text ← getFileMap
-    discard <| stx.replaceM fun
-      | `(inline|$s:str) => do
-        if let some ⟨start, stop⟩ := s.raw.getRange? then
-          scanRange text.source start stop fun hitStart hitStop => do
-            let snippet : String := hitStart.extract text.source hitStop
-            let url := snippet.drop 1 |>.dropEnd 1
-            let strLit :=
-              Syntax.mkStrLit snippet
-                (info := .original
-                  {str := text.source, startPos := hitStart, stopPos := hitStart} hitStart
-                  {str := text.source, startPos := hitStop,  stopPos := hitStop}  hitStop)
-            let h ← liftTermElabM <| MessageData.hint
-              m!"Use a Markdown link"
-              #[{suggestion := s!"[{url}]({url})"}]
-              (ref? := strLit)
-            logLint linter.napkin.bareUrl strLit
-              (m!"Bare `<URL>` autolink — Verso renders this as inert \
-                text, not a link" ++ h)
-        pure none
-      | _ => pure none
+    discard <| stx.replaceM fun stx => do
+      let some (.text s) := InlineView.of ⟨stx⟩
+        | pure none
+      if let some ⟨start, stop⟩ := s.content.raw.getRange? then
+        scanRange text.source start stop fun hitStart hitStop => do
+          let snippet : String := hitStart.extract text.source hitStop
+          let url := snippet.drop 1 |>.dropEnd 1
+          let strLit :=
+            Syntax.mkStrLit snippet
+              (info := .original
+                {str := text.source, startPos := hitStart, stopPos := hitStart} hitStart
+                {str := text.source, startPos := hitStop,  stopPos := hitStop}  hitStop)
+          let h ← liftTermElabM <| MessageData.hint
+            m!"Use a Markdown link"
+            #[{suggestion := s!"[{url}]({url})"}]
+            (ref? := strLit)
+          logLint linter.napkin.bareUrl strLit
+            (m!"Bare `<URL>` autolink — Verso renders this as inert \
+              text, not a link" ++ h)
+      pure none
 
 initialize addLinter bareUrl
 

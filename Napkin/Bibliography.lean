@@ -7,6 +7,10 @@ list — both defined in `Napkin.Meta.Citations`.
 Translated from Napkin's `book/references.bib`.
 -/
 
+module
+
+public section
+
 namespace Napkin
 
 structure NapkinRef where

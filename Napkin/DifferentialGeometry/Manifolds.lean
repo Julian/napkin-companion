@@ -1,4 +1,5 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Recall
 import Napkin.Meta.Directives
@@ -807,7 +808,7 @@ example (K : Type*) [Field K]
 example (K : Type*) [Field K]
     (x y : IsLocalRing.CotangentSpace K) : x = y := by
   -- The cotangent space of a field is a subsingleton, so its elements agree.
-  haveI : Subsingleton (IsLocalRing.CotangentSpace K) :=
+  have : Subsingleton (IsLocalRing.CotangentSpace K) :=
     IsLocalRing.subsingleton_cotangentSpace_iff.mpr (Field.toIsField K)
   exact Subsingleton.elim x y
 ```

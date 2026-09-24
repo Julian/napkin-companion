@@ -1,4 +1,5 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
@@ -10,12 +11,11 @@ import Mathlib.CategoryTheory.Equivalence
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Yoneda
+public import Mathlib.CategoryTheory.Yoneda
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Equivalence
 import Mathlib.CategoryTheory.EssentiallySmall
-import Mathlib.Tactic.Recall
 import Napkin.Meta.Recall
 
 open Verso.Genre Manual

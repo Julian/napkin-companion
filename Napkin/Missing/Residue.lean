@@ -20,9 +20,12 @@ outstanding stopgap:
 
     grep -rn "Not in Mathlib." Napkin/Missing
 -/
-import Mathlib.MeasureTheory.Integral.CircleIntegral
+module
+public import Mathlib.MeasureTheory.Integral.CircleIntegral
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Calculus.LogDeriv
+
+@[expose] public section
 
 namespace Napkin.Missing
 

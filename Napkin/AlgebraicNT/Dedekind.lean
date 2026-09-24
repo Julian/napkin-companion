@@ -1,4 +1,5 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
@@ -794,8 +795,7 @@ example (A : Type*) [CommRing A] [IsDedekindDomain A]
 The ideal norm is `Ideal.absNorm`, and its bundling repeats the trick we saw for the element norm — it is a homomorphism by construction, so property (b) is again just `map_mul`:
 
 ```lean
-recall Ideal.absNorm {S : Type*} [CommRing S] [IsDedekindDomain S]
-    [Module.Free ℤ S] :
+recall Ideal.absNorm {S : Type*} [CommRing S] [IsDedekindDomain S] :
     Ideal S →*₀ ℕ
 ```
 
@@ -805,7 +805,7 @@ The question asked which ideals have ideal norm one.
 The norm measures the size of the quotient, so norm one means the quotient is trivial — that is, the whole ring $`(1) = \top`, which is `Ideal.absNorm_eq_one_iff`.
 
 ```lean
-example (S : Type*) [CommRing S] [IsDedekindDomain S] [Module.Free ℤ S]
+example (S : Type*) [CommRing S] [IsDedekindDomain S]
     {I : Ideal S} : Ideal.absNorm I = 1 ↔ I = ⊤ :=
   Ideal.absNorm_eq_one_iff
 ```
@@ -815,7 +815,7 @@ Show that if $`\operatorname{N}(\mathfrak{a}\mathfrak{b}) = 1` then $`\mathfrak{
 
 :::exercise
 ```lean
-example (S : Type*) [CommRing S] [IsDedekindDomain S] [Module.Free ℤ S]
+example (S : Type*) [CommRing S] [IsDedekindDomain S]
     {I J : Ideal S} (h : Ideal.absNorm (I * J) = 1) : I = ⊤ := by
   sorry
 ```
@@ -823,7 +823,7 @@ example (S : Type*) [CommRing S] [IsDedekindDomain S] [Module.Free ℤ S]
 
 :::solution
 ```lean
-example (S : Type*) [CommRing S] [IsDedekindDomain S] [Module.Free ℤ S]
+example (S : Type*) [CommRing S] [IsDedekindDomain S]
     {I J : Ideal S} (h : Ideal.absNorm (I * J) = 1) : I = ⊤ := by
   -- Multiplicativity makes absNorm I a divisor of 1, so it equals 1.
   rw [map_mul] at h

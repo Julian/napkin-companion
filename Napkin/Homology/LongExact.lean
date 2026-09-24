@@ -1,4 +1,5 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
@@ -455,7 +456,7 @@ example {C : Type*} [Category C] [Abelian C] (S : ShortComplex C)
     (hS : S.ShortExact) {W : C} (a b : W ⟶ S.X₁)
     (h : a ≫ S.f = b ≫ S.f) : a = b := by
   -- With `mono_f` in scope, `S.f` is left-cancellable via `cancel_mono`.
-  haveI := hS.mono_f
+  have := hS.mono_f
   exact (cancel_mono S.f).mp h
 ```
 :::

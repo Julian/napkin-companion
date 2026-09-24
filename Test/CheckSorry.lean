@@ -19,7 +19,10 @@ Regenerate the baseline with `lake test -- check-sorry:--update` (review
 the diff before committing).
 -/
 
+module
 import Napkin.Meta.Extract
+
+public section
 
 namespace Test.CheckSorry
 

@@ -1,5 +1,8 @@
-import VersoManual
-import Napkin.Meta.Recall
+module
+public import VersoManual
+public import Napkin.Meta.Recall
+
+public section
 
 open Verso.Genre Manual
 open Verso.Doc Elab
@@ -27,19 +30,19 @@ block_extension Block.savedImport (file : String) (source : String) where
     pure .empty
 
 @[code_block savedLean]
-def savedLean : CodeBlockExpanderOf InlineLean.LeanBlockConfig
+meta def savedLean : CodeBlockExpanderOf InlineLean.LeanBlockConfig
   | args, code => do
     let underlying ← InlineLean.lean args code
-    ``(Block.other (Block.savedLean $(quote (← getFileName)) $(quote (code.getString))) #[$underlying])
+    ``(Block.other (Block.savedLean $(quote (← getFileName)) $(quote (code.getVersoCodeBlock))) #[$underlying])
 
 @[code_block]
-def savedImport : CodeBlockExpanderOf Unit
+meta def savedImport : CodeBlockExpanderOf Unit
   | (), code => do
-    ``(Block.other (Block.savedImport $(quote (← getFileName)) $(quote (code.getString))) #[])
+    ``(Block.other (Block.savedImport $(quote (← getFileName)) $(quote (code.getVersoCodeBlock))) #[])
 
 @[code_block]
-def savedComment : CodeBlockExpanderOf Unit
+meta def savedComment : CodeBlockExpanderOf Unit
   | (), code => do
-    let str := code.getString.trimAsciiEnd.copy
+    let str := code.getVersoCodeBlock.trimAsciiEnd.copy
     let comment := s!"/-!\n{str}\n-/"
     ``(Block.other (Block.savedLean $(quote (← getFileName)) $(quote comment)) #[])

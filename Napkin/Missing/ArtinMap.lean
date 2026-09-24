@@ -20,8 +20,11 @@ outstanding stopgap:
 
     grep -rn "Not in Mathlib." Napkin/Missing
 -/
+module
 import Mathlib.GroupTheory.QuotientGroup.Basic
-import Mathlib.GroupTheory.Index
+public import Mathlib.GroupTheory.Index
+
+@[expose] public section
 
 namespace Napkin.Missing
 
@@ -98,7 +101,7 @@ divides `|C_K(𝔪)|`, since the Galois group is a quotient of the ray class
 group. -/
 theorem card_dvd_rayClassNumber :
     Nat.card G ∣ Nat.card (I ⧸ D.ray) :=
-  Subgroup.card_dvd_of_surjective D.rayArtin D.rayArtin_surjective
+  Subgroup.card_dvd_of_surjective D.rayArtin_surjective
 
 /-- The identity of `Gal(L/K)` collects the principal ideals: every ideal in
 the ray `P_K(𝔪)` has trivial Artin symbol, since the ray lies in the kernel.

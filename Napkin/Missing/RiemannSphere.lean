@@ -20,10 +20,13 @@ outstanding stopgap:
 
     grep -rn "Not in Mathlib." Napkin/Missing
 -/
-import Mathlib.Topology.Compactification.OnePoint.Basic
-import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.Calculus.FDeriv.Mul
+module
+public import Mathlib.Topology.Compactification.OnePoint.Basic
+public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Mul
+
+@[expose] public section
 
 open scoped OnePoint
 open Set

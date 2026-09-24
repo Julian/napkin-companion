@@ -1,4 +1,5 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
@@ -535,7 +536,7 @@ example : IsCompact (Set.Icc (0 : ℝ) 1) := isCompact_Icc
 The Bolzano-Weierstraß theorem — a subset of a Euclidean-like space is compact if and only if it is closed and bounded — is `Metric.isCompact_iff_isClosed_bounded`, available whenever the space is proper (its closed bounded sets are compact).
 
 ```lean
-example (α : Type*) [PseudoMetricSpace α] [T2Space α] [ProperSpace α]
+example (α : Type*) [MetricSpace α] [ProperSpace α]
     (s : Set α) :
     IsCompact s ↔ IsClosed s ∧ Bornology.IsBounded s :=
   Metric.isCompact_iff_isClosed_bounded

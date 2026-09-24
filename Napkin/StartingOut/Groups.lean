@@ -1,5 +1,6 @@
+module
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Algebra.Group.Int.Defs
 import Mathlib.Data.Rat.Defs
 import Mathlib.Algebra.Group.Units.Defs
 import Mathlib.Data.ZMod.Basic
@@ -8,11 +9,11 @@ import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
-import Mathlib.Algebra.Group.Prod
+public import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.PUnit
-import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
-import VersoManual
+public import VersoManual
 
 import Napkin.Meta
 

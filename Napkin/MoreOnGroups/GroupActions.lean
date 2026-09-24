@@ -1,16 +1,18 @@
-import VersoManual
+module
+public import VersoManual
 import Napkin.Meta.Lean
 import Napkin.Meta.Directives
 import Napkin.Meta.Citations
 import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.GroupTheory.Subgroup.Center
+public import Mathlib.GroupTheory.Subgroup.Center
 import Mathlib.Algebra.Group.Conj
-import Mathlib.Algebra.Group.Action.End
+public import Mathlib.Algebra.Group.Action.End
+import Mathlib.Tactic.Group
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
